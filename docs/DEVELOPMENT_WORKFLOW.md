@@ -68,6 +68,30 @@ When running multiple AI coding sessions in parallel:
 5. Open a pull request.
 6. Merge to `main` only through the pull request flow unless there is an explicit emergency exception.
 
+## Local Stack Commands
+
+For the current PostgreSQL + S3-backed development slice:
+
+```bash
+cp .env.example .env
+npm install
+npm run docker:up
+npm run dev:bootstrap
+npm run dev
+```
+
+Useful follow-up commands:
+
+```bash
+npm run db:migrate
+npm run db:seed
+npm run operator:replay -- <run-id>
+npm run operator:rollback -- <publication-id>
+npm test
+```
+
+Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` even locally so the code path matches the AWS deployment target.
+
 ## Commit Examples
 
 ```text

@@ -34,6 +34,8 @@ The approved implementation direction is:
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
+- [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
+- [AWS dev resources](infra/aws/dev/README.md)
 - [TODOs](TODOS.md)
 
 ## Planned Repository Shape
@@ -65,3 +67,37 @@ NyaayWatch should feel investigative, public-interest, calm, exact, and evidence
 ## Development Workflow
 
 This project is intended to be developed in a highly AI-native workflow using ChatGPT Pro and Codex, but product claims still need explicit human judgment and evidence discipline.
+
+## Local Storage Stack
+
+The repository now includes the first runnable storage implementation:
+
+- PostgreSQL is the canonical store for runs, publications, and immutable published snapshot payloads
+- S3 is the raw evidence store for replayable snapshot inputs
+- the public API and UI read only the latest published snapshot
+
+Quickstart:
+
+```bash
+cp .env.example .env
+npm install
+npm run docker:up
+npm run dev:bootstrap
+npm run dev
+```
+
+Public routes:
+
+- `/`
+- `/districts`
+- `/districts/:id`
+- `/methodology`
+- `/api`
+
+Public API:
+
+- `GET /v1/stats/himachal`
+- `GET /v1/districts`
+- `GET /v1/trends`
+
+Operator endpoints require `x-operator-token` and support replay/rollback against the stored publication history.

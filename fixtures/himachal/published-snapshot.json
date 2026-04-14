@@ -1,0 +1,103 @@
+{
+  "snapshot": {
+    "stateCode": "HP",
+    "stateName": "Himachal Pradesh",
+    "sourceName": "NJDG aggregated district dashboard snapshot",
+    "sourceSnapshotAt": "2026-04-10T00:00:00.000Z",
+    "publishedAt": "2026-04-10T12:00:00.000Z",
+    "methodologyVersion": "2026.04-alpha",
+    "qualityState": "complete",
+    "freshnessDays": 0,
+    "sourceAttribution": "National Judicial Data Grid public district aggregates"
+  },
+  "stats": {
+    "pendingCases": 128340,
+    "disposalRate": 92.4,
+    "medianCaseAgeDays": 412,
+    "flaggedDistricts": 3
+  },
+  "districts": [
+    {
+      "districtId": "kangra",
+      "districtName": "Kangra",
+      "rank": 1,
+      "backlogCases": 24110,
+      "disposalRate": 88.2,
+      "medianAgeDays": 477,
+      "filingVsDisposalGap": 11.8,
+      "flagReason": "Backlog remains the state's highest and filings are still outpacing disposals.",
+      "summary": "Kangra remains the clearest district-level slow-justice signal in the current snapshot."
+    },
+    {
+      "districtId": "mandi",
+      "districtName": "Mandi",
+      "rank": 2,
+      "backlogCases": 19320,
+      "disposalRate": 89.7,
+      "medianAgeDays": 433,
+      "filingVsDisposalGap": 9.1,
+      "flagReason": "Disposal remains below the state average while median pending age stays elevated.",
+      "summary": "Mandi is improving more slowly than the state trend and remains materially above median age."
+    },
+    {
+      "districtId": "shimla",
+      "districtName": "Shimla",
+      "rank": 3,
+      "backlogCases": 18045,
+      "disposalRate": 91.2,
+      "medianAgeDays": 425,
+      "filingVsDisposalGap": 6.8,
+      "flagReason": "Backlog growth has slowed but old pending cases remain high.",
+      "summary": "Shimla is no longer worsening sharply, but the age profile still warrants attention."
+    },
+    {
+      "districtId": "solan",
+      "districtName": "Solan",
+      "rank": 4,
+      "backlogCases": 15220,
+      "disposalRate": 93.8,
+      "medianAgeDays": 386,
+      "filingVsDisposalGap": 3.5,
+      "flagReason": "Backlog remains above the state median despite healthier recent disposal.",
+      "summary": "Solan sits above the statewide median backlog but without the same acute pressure as the top three districts."
+    },
+    {
+      "districtId": "kullu",
+      "districtName": "Kullu",
+      "rank": 5,
+      "backlogCases": 12180,
+      "disposalRate": 95.4,
+      "medianAgeDays": 351,
+      "filingVsDisposalGap": 1.9,
+      "flagReason": "Disposal improved, though backlog remains material.",
+      "summary": "Kullu is more stable in the latest snapshot and is not a primary anomaly surface."
+    }
+  ],
+  "trends": [
+    {
+      "snapshotDate": "2025-12-31T00:00:00.000Z",
+      "pendingCases": 119250,
+      "disposalRate": 90.8
+    },
+    {
+      "snapshotDate": "2026-01-31T00:00:00.000Z",
+      "pendingCases": 122880,
+      "disposalRate": 91.1
+    },
+    {
+      "snapshotDate": "2026-02-28T00:00:00.000Z",
+      "pendingCases": 125430,
+      "disposalRate": 91.8
+    },
+    {
+      "snapshotDate": "2026-03-31T00:00:00.000Z",
+      "pendingCases": 127540,
+      "disposalRate": 92.1
+    },
+    {
+      "snapshotDate": "2026-04-10T00:00:00.000Z",
+      "pendingCases": 128340,
+      "disposalRate": 92.4
+    }
+  ]
+}
