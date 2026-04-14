@@ -41,6 +41,7 @@ The approved implementation direction is:
 
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
+- [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
 - [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
 - [AWS dev resources](infra/aws/dev/README.md)
