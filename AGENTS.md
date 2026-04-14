@@ -65,6 +65,15 @@ Keep boundaries legible as the repo grows:
 - Preserve reproducibility. Ingestion, normalization, and publish steps should be replayable and auditable.
 - Do not introduce hidden background behavior that changes published data without an explicit run or publish step.
 
+## Agent Working Style
+
+- Be direct and opinionated. If there is a better approach, say so and explain why.
+- Challenge weak ideas early, especially around security, performance, architecture, typing, error handling, and reproducibility.
+- Stay focused on the assigned slice. Prefer implementing the change over writing long explanations unless tradeoffs or blockers need to be called out.
+- Make reasonable assumptions when the path is clear. Ask clarifying questions only when ambiguity is likely to cause incorrect, unsafe, or misleading work.
+- Do not ship placeholder logic, fake integrations, or open-ended TODOs as finished work.
+- Run relevant tests yourself whenever feasible. If tests fail or cannot run, report the exact command, the output, and whether the blocker is repo-side or external.
+
 ## Public Claim Discipline
 
 - Write calm, exact, evidence-first copy.
@@ -79,9 +88,13 @@ Keep boundaries legible as the repo grows:
 - Use descriptive lowercase kebab-case branch names scoped to one task.
 - Use Conventional Commits.
 - Prefer small, atomic commits.
+- Never commit directly to `main`.
 - Default to opening a pull request for every code change before merging to `main`.
+- For code or doc edits, work on a task-specific branch, commit, push, and open a pull request unless the user explicitly asks for a different flow.
+- Do not present "PR opened" as completion if required validation is still pending or failing. Report the current state of checks and any real blockers precisely.
 - Treat `main` as protected even if branch protection is not configured yet.
 - Do not force-push shared branches unless the user explicitly asks for it.
+- For PR bodies and substantial GitHub comments, use real multiline Markdown via stdin or a body file. Do not rely on escaped `\n` sequences for structure.
 
 ## Parallel Session Rule
 
