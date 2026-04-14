@@ -1,0 +1,262 @@
+{
+  "runId": "run-hp-2026-04-07",
+  "status": "completed",
+  "snapshotDate": "2026-04-07",
+  "completedAt": "2026-04-08T06:15:00.000Z",
+  "methodologyVersion": "2026.1",
+  "sourceName": "NJDG Himachal Pradesh district aggregates",
+  "geographySlug": "himachal-pradesh",
+  "qualityStatus": "complete",
+  "summary": {
+    "pendingCases": 56240,
+    "filingDisposalGapPct": 6.3,
+    "districtsFlagged": 4,
+    "timeToJusticeIndex": 61.4,
+    "trendDirection": "rising"
+  },
+  "flaggedSignals": [
+    {
+      "slug": "mandi",
+      "label": "Mandi backlog rise",
+      "summary": "Mandi's pending cases rose while disposal continued to trail new filings in the latest published snapshot."
+    },
+    {
+      "slug": "kangra",
+      "label": "Kangra ageing pressure",
+      "summary": "Kangra stayed among the highest pending-case districts and kept an elevated time-to-justice index."
+    },
+    {
+      "slug": "shimla",
+      "label": "Shimla disposal stress",
+      "summary": "Shimla disposal rate stayed below the statewide benchmark even as pending volume remained high."
+    }
+  ],
+  "trend": [
+    {
+      "snapshotDate": "2026-03-10",
+      "pendingCases": 52110
+    },
+    {
+      "snapshotDate": "2026-03-24",
+      "pendingCases": 54120
+    },
+    {
+      "snapshotDate": "2026-04-07",
+      "pendingCases": 56240
+    }
+  ],
+  "districts": [
+    {
+      "slug": "kangra",
+      "name": "Kangra",
+      "rank": 1,
+      "pendingCases": 9640,
+      "backlogChangePct": 5.8,
+      "disposalRatePct": 91.4,
+      "filingToDisposalRatio": 1.07,
+      "timeToJusticeIndex": 71.2,
+      "flagged": true,
+      "signalSummary": "Kangra remains one of the most backlogged districts in the published Himachal snapshot.",
+      "plainLanguageSummary": "Kangra matters in this snapshot because it combines a high pending-case count with a disposal rate below the statewide pace.",
+      "qualityStatus": "complete",
+      "evidenceNotes": [
+        "Pending cases increased versus the prior stored snapshot.",
+        "Disposal kept trailing new filings in the latest published run.",
+        "The district stayed in the highest statewide stress tier by time-to-justice index."
+      ],
+      "trend": [
+        {
+          "snapshotDate": "2026-03-10",
+          "pendingCases": 9130,
+          "disposalRatePct": 92.4
+        },
+        {
+          "snapshotDate": "2026-03-24",
+          "pendingCases": 9410,
+          "disposalRatePct": 91.9
+        },
+        {
+          "snapshotDate": "2026-04-07",
+          "pendingCases": 9640,
+          "disposalRatePct": 91.4
+        }
+      ]
+    },
+    {
+      "slug": "mandi",
+      "name": "Mandi",
+      "rank": 2,
+      "pendingCases": 8230,
+      "backlogChangePct": 7.4,
+      "disposalRatePct": 92.1,
+      "filingToDisposalRatio": 1.08,
+      "timeToJusticeIndex": 68.2,
+      "flagged": true,
+      "signalSummary": "Mandi was flagged because pending cases rose faster than disposals in the latest published snapshot.",
+      "plainLanguageSummary": "Mandi was flagged because pending cases rose while disposal kept trailing new filings across the latest published snapshot.",
+      "qualityStatus": "complete",
+      "evidenceNotes": [
+        "Mandi recorded one of the steepest backlog increases in the current Himachal cohort.",
+        "Filings kept outpacing disposal in the latest stored run.",
+        "The district's stress score stayed above the statewide median."
+      ],
+      "trend": [
+        {
+          "snapshotDate": "2026-03-10",
+          "pendingCases": 7510,
+          "disposalRatePct": 93.8
+        },
+        {
+          "snapshotDate": "2026-03-24",
+          "pendingCases": 7890,
+          "disposalRatePct": 92.7
+        },
+        {
+          "snapshotDate": "2026-04-07",
+          "pendingCases": 8230,
+          "disposalRatePct": 92.1
+        }
+      ]
+    },
+    {
+      "slug": "shimla",
+      "name": "Shimla",
+      "rank": 3,
+      "pendingCases": 7120,
+      "backlogChangePct": 4.9,
+      "disposalRatePct": 89.6,
+      "filingToDisposalRatio": 1.11,
+      "timeToJusticeIndex": 64.7,
+      "flagged": true,
+      "signalSummary": "Shimla disposal stayed below the statewide pace while backlog pressure continued to rise.",
+      "plainLanguageSummary": "Shimla matters because its disposal rate stayed weak relative to new filings, leaving the district with a growing pending load.",
+      "qualityStatus": "complete",
+      "evidenceNotes": [
+        "Shimla's disposal rate remained below the statewide benchmark in the current snapshot.",
+        "Backlog continued to climb versus both prior stored snapshots."
+      ],
+      "trend": [
+        {
+          "snapshotDate": "2026-03-10",
+          "pendingCases": 6710,
+          "disposalRatePct": 90.8
+        },
+        {
+          "snapshotDate": "2026-03-24",
+          "pendingCases": 6940,
+          "disposalRatePct": 90.1
+        },
+        {
+          "snapshotDate": "2026-04-07",
+          "pendingCases": 7120,
+          "disposalRatePct": 89.6
+        }
+      ]
+    },
+    {
+      "slug": "solan",
+      "name": "Solan",
+      "rank": 4,
+      "pendingCases": 6010,
+      "backlogChangePct": 3.2,
+      "disposalRatePct": 94.8,
+      "filingToDisposalRatio": 1.03,
+      "timeToJusticeIndex": 57.1,
+      "flagged": false,
+      "signalSummary": "Solan is being watched because backlog still rose, but less sharply than the highest-stress districts.",
+      "plainLanguageSummary": "Solan remains visible in the ranking because pending cases rose, even though disposal stayed closer to the statewide norm.",
+      "qualityStatus": "complete",
+      "evidenceNotes": [
+        "Backlog growth stayed below the highest-risk districts.",
+        "Disposal rate remained near the statewide benchmark."
+      ],
+      "trend": [
+        {
+          "snapshotDate": "2026-03-10",
+          "pendingCases": 5790,
+          "disposalRatePct": 95.1
+        },
+        {
+          "snapshotDate": "2026-03-24",
+          "pendingCases": 5920,
+          "disposalRatePct": 94.9
+        },
+        {
+          "snapshotDate": "2026-04-07",
+          "pendingCases": 6010,
+          "disposalRatePct": 94.8
+        }
+      ]
+    },
+    {
+      "slug": "hamirpur",
+      "name": "Hamirpur",
+      "rank": 5,
+      "pendingCases": 4820,
+      "backlogChangePct": 2.5,
+      "disposalRatePct": 96.4,
+      "filingToDisposalRatio": 1.01,
+      "timeToJusticeIndex": 51.4,
+      "flagged": false,
+      "signalSummary": "Hamirpur is currently a lower-stress district in the published Himachal cohort.",
+      "plainLanguageSummary": "Hamirpur is included as a comparison district because backlog pressure remained relatively contained in the current snapshot.",
+      "qualityStatus": "complete",
+      "evidenceNotes": [
+        "Pending cases rose more slowly than the statewide average.",
+        "Disposal stayed close to parity with filings."
+      ],
+      "trend": [
+        {
+          "snapshotDate": "2026-03-10",
+          "pendingCases": 4690,
+          "disposalRatePct": 96.8
+        },
+        {
+          "snapshotDate": "2026-03-24",
+          "pendingCases": 4760,
+          "disposalRatePct": 96.5
+        },
+        {
+          "snapshotDate": "2026-04-07",
+          "pendingCases": 4820,
+          "disposalRatePct": 96.4
+        }
+      ]
+    },
+    {
+      "slug": "kullu",
+      "name": "Kullu",
+      "rank": 6,
+      "pendingCases": 4510,
+      "backlogChangePct": 3.6,
+      "disposalRatePct": 95.2,
+      "filingToDisposalRatio": 1.04,
+      "timeToJusticeIndex": 54.6,
+      "flagged": true,
+      "signalSummary": "Kullu was flagged for sustained backlog growth across three stored snapshots.",
+      "plainLanguageSummary": "Kullu was flagged because its backlog kept growing across every stored point in the current trend window.",
+      "qualityStatus": "complete",
+      "evidenceNotes": [
+        "The district's backlog increased at each stored snapshot in the series.",
+        "Disposal stayed below filings, though not as sharply as Mandi or Shimla."
+      ],
+      "trend": [
+        {
+          "snapshotDate": "2026-03-10",
+          "pendingCases": 4190,
+          "disposalRatePct": 95.9
+        },
+        {
+          "snapshotDate": "2026-03-24",
+          "pendingCases": 4360,
+          "disposalRatePct": 95.4
+        },
+        {
+          "snapshotDate": "2026-04-07",
+          "pendingCases": 4510,
+          "disposalRatePct": 95.2
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,18 @@
 
 ## Review
 
+### Replace Fixture Snapshot Store With AWS-Backed Production Storage
+
+**What:** Replace the current fixture-backed snapshot store with the intended production storage shape: PostgreSQL for canonical run and publish state, plus S3 for raw artifacts and replayable evidence inputs.
+
+**Why:** The repo now proves the published snapshot boundary end-to-end, but it still uses JSON fixtures as the backing store. The next step should spend the confirmed AWS credits on the real production substrate rather than building against a second temporary platform.
+
+**Context:** The user has confirmed access to AWS student credits and wants them used for this project. The approved architecture already points to one AWS-hosted containerized app, PostgreSQL, and S3. Implement that path directly and preserve the current read-model and publish-safety semantics while swapping the storage adapter.
+
+**Effort:** L
+**Priority:** P1
+**Depends on:** Current alpha slice already in repo
+
 ### Source Terms And Redistribution Review
 
 **What:** Define the rules for storing, exposing, and redistributing raw snapshots versus normalized exports.
@@ -51,3 +63,12 @@
 **Depends on:** Initial public UI implementation existing so the added checks can reference real routes and components
 
 ## Completed
+
+### Narrow Alpha Vertical Slice
+
+- published snapshot boundary with explicit published-run state
+- operator API and CLI publish control
+- homepage for latest published Himachal snapshot
+- district evidence page
+- `GET /v1/stats/himachal`
+- regression coverage for publish safety, stale and empty states, and UI/API parity
