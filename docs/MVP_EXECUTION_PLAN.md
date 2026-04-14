@@ -47,7 +47,7 @@ This file should stay useful over time. To prevent drift:
 
 ## Current Status
 
-Current MVP phase: `Phase 2 complete, Phase 3 next`
+Current MVP phase: `Phase 3 complete, Phase 4 next`
 
 Already shipped:
 
@@ -60,13 +60,13 @@ Already shipped:
 
 Main gap to MVP:
 
-- the run pipeline is now real, but the public trust surfaces still need their full district-workspace, methodology, and export completion work
+- launch hardening now depends on browser E2E, stronger API contracts, persistent-stack integration coverage, accessibility QA, and a staging environment
 
 ## Next Recommended Task
 
-`P3.1` is the next recommended task.
+`P4.1` is the next recommended task.
 
-Complete `/districts` as the main Himachal district-browsing workspace so the public product starts matching the approved information architecture instead of relying on the homepage preview alone.
+Add browser E2E coverage for the citizen flow, reporter flow, and developer parity flow so the expanded public trust surfaces are verified like a public product instead of a backend slice.
 
 ## MVP Definition
 
@@ -125,11 +125,16 @@ Outcome:
 
 Tasks:
 
-- [ ] `P3.1` Complete `/districts` as the main district-browsing workspace for ranking and scanning.
-- [ ] `P3.2` Expand `/districts/:id` to include historical context, supporting chart or table, and durable citation/export surfaces.
-- [ ] `P3.3` Add `/data` or equivalent public download surface with CSV parity to the published snapshot.
-- [ ] `P3.4` Expand `/methodology` to cover formulas, caveats, snapshot semantics, and change history.
-- [ ] `P3.5` Ensure stale, partial, and freshness states are visible anywhere a trust-critical metric is shown.
+- [x] `P3.1` Complete `/districts` as the main district-browsing workspace for ranking and scanning.
+  Completed on 2026-04-14 with server-rendered search, sort, flagged-only scanning, and trust metadata around the Himachal district workspace.
+- [x] `P3.2` Expand `/districts/:id` to include historical context, supporting chart or table, and durable citation/export surfaces.
+  Completed on 2026-04-14 with published district-history views, citation metadata, and district-specific CSV export.
+- [x] `P3.3` Add `/data` or equivalent public download surface with CSV parity to the published snapshot.
+  Completed on 2026-04-14 with `/data`, richer statewide CSV metadata columns, and district-history CSV parity from published snapshots.
+- [x] `P3.4` Expand `/methodology` to cover formulas, caveats, snapshot semantics, and change history.
+  Completed on 2026-04-14 with methodology sections for formulas, freshness/quality semantics, publish boundaries, and published snapshot lineage.
+- [x] `P3.5` Ensure stale, partial, and freshness states are visible anywhere a trust-critical metric is shown.
+  Completed on 2026-04-14 with explicit trust-status banners and snapshot metadata across overview, district workspace, district detail, data, and methodology routes.
 
 Done when:
 
@@ -200,3 +205,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-14: Initial execution plan created from `README.md`, design doc, engineering test plan, TODO backlog, and shipped storage work.
 - 2026-04-14: Phase 2 completed with real NJDG Himachal capture, deterministic extract/normalize, gated publish, replay from stored raw evidence, and operator runbook updates.
 - 2026-04-14: Added `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` to document current public judiciary sources, digitization limits, and the realistic public-data-backed scope ceiling.
+- 2026-04-14: Phase 3 completed with a full `/districts` workspace, district history and export surfaces, `/data`, expanded methodology, and visible freshness / quality state across public trust-critical metrics.

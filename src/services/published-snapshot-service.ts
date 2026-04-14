@@ -6,6 +6,7 @@ import {
   PublishedSnapshotSchema,
   type DistrictSnapshot,
   type PublishedSnapshot,
+  type QualityState,
 } from "../domain/snapshot-schema.js";
 import { SnapshotCandidateSchema, type SnapshotCandidate } from "../domain/snapshot-candidate-schema.js";
 import { extractCaptureBundle } from "../extract/njdg-html.js";
@@ -31,6 +32,34 @@ export interface RunInspection {
   artifacts: ArtifactRecord[];
   candidate: SnapshotCandidate | null;
   publishedSnapshot: PublishedSnapshotRecord | null;
+}
+
+export interface SnapshotHistoryEntry {
+  snapshot: PublishedSnapshot["snapshot"];
+  stats: PublishedSnapshot["stats"];
+}
+
+export interface DistrictHistoryPoint {
+  districtId: string;
+  districtName: string;
+  snapshotDate: string;
+  publishedAt: string;
+  methodologyVersion: string;
+  qualityState: QualityState;
+  freshnessDays: number;
+  rank: number;
+  backlogCases: number;
+  disposalRate: number;
+  medianAgeDays: number;
+  filingVsDisposalGap: number;
+  flagReason: string;
+  summary: string;
+}
+
+export interface DistrictDetail {
+  snapshot: PublishedSnapshot["snapshot"];
+  district: DistrictSnapshot;
+  history: DistrictHistoryPoint[];
 }
 
 export class PublishedSnapshotService {
@@ -65,9 +94,38 @@ export class PublishedSnapshotService {
     return district ? { snapshot: record.payload.snapshot, district } : null;
   }
 
+  async getDistrictDetail(districtId: string): Promise<DistrictDetail | null> {
+    const record = await this.getPublishedSnapshot();
+    if (!record) {
+      return null;
+    }
+
+    const district = record.payload.districts.find((item) => item.districtId === districtId);
+    if (!district) {
+      return null;
+    }
+
+    const history = (await this.loadHistoricalSnapshots())
+      .map((snapshot) => buildDistrictHistoryPoint(snapshot, districtId))
+      .filter((point): point is DistrictHistoryPoint => point !== null);
+
+    return {
+      snapshot: record.payload.snapshot,
+      district,
+      history,
+    };
+  }
+
   async getTrends(): Promise<{ snapshot: PublishedSnapshot["snapshot"]; trends: PublishedSnapshot["trends"] } | null> {
     const record = await this.getPublishedSnapshot();
     return record ? { snapshot: record.payload.snapshot, trends: record.payload.trends } : null;
+  }
+
+  async listSnapshotHistory(): Promise<SnapshotHistoryEntry[]> {
+    return (await this.loadHistoricalSnapshots()).map((snapshot) => ({
+      snapshot: snapshot.snapshot,
+      stats: snapshot.stats,
+    }));
   }
 
   async listRuns(): Promise<RunRecord[]> {
@@ -273,14 +331,41 @@ export class PublishedSnapshotService {
   }
 
   async renderDistrictCsv(): Promise<string | null> {
-    const result = await this.listDistricts();
-    if (!result) {
+    const record = await this.getPublishedSnapshot();
+    if (!record) {
       return null;
     }
 
-    const header = "district_id,district_name,rank,backlog_cases,disposal_rate,median_age_days,filing_vs_disposal_gap,flag_reason";
-    const rows = result.districts.map((district) =>
+    const { snapshot, districts } = record.payload;
+    const header = [
+      "snapshot_date",
+      "published_at",
+      "methodology_version",
+      "quality_state",
+      "freshness_days",
+      "state_code",
+      "source_name",
+      "source_attribution",
+      "district_id",
+      "district_name",
+      "rank",
+      "backlog_cases",
+      "disposal_rate",
+      "median_age_days",
+      "filing_vs_disposal_gap",
+      "flag_reason",
+      "summary",
+    ].join(",");
+    const rows = districts.map((district) =>
       [
+        snapshot.sourceSnapshotAt,
+        snapshot.publishedAt,
+        csvCell(snapshot.methodologyVersion),
+        snapshot.qualityState,
+        snapshot.freshnessDays,
+        snapshot.stateCode,
+        csvCell(snapshot.sourceName),
+        csvCell(snapshot.sourceAttribution),
         district.districtId,
         csvCell(district.districtName),
         district.rank,
@@ -289,6 +374,51 @@ export class PublishedSnapshotService {
         district.medianAgeDays,
         district.filingVsDisposalGap,
         csvCell(district.flagReason),
+        csvCell(district.summary),
+      ].join(","),
+    );
+
+    return [header, ...rows].join("\n");
+  }
+
+  async renderDistrictHistoryCsv(districtId: string): Promise<string | null> {
+    const detail = await this.getDistrictDetail(districtId);
+    if (!detail) {
+      return null;
+    }
+
+    const header = [
+      "snapshot_date",
+      "published_at",
+      "methodology_version",
+      "quality_state",
+      "freshness_days",
+      "district_id",
+      "district_name",
+      "rank",
+      "backlog_cases",
+      "disposal_rate",
+      "median_age_days",
+      "filing_vs_disposal_gap",
+      "flag_reason",
+      "summary",
+    ].join(",");
+    const rows = detail.history.map((point) =>
+      [
+        point.snapshotDate,
+        point.publishedAt,
+        csvCell(point.methodologyVersion),
+        point.qualityState,
+        point.freshnessDays,
+        point.districtId,
+        csvCell(point.districtName),
+        point.rank,
+        point.backlogCases,
+        point.disposalRate,
+        point.medianAgeDays,
+        point.filingVsDisposalGap,
+        csvCell(point.flagReason),
+        csvCell(point.summary),
       ].join(","),
     );
 
@@ -350,7 +480,12 @@ export class PublishedSnapshotService {
       }
     }
 
-    return snapshots;
+    return snapshots.sort((left, right) => {
+      return (
+        left.snapshot.sourceSnapshotAt.localeCompare(right.snapshot.sourceSnapshotAt) ||
+        left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt)
+      );
+    });
   }
 }
 
@@ -435,4 +570,28 @@ function buildFailureNote(prefix: string, error: unknown): string {
 
 function csvCell(value: string): string {
   return `"${value.replaceAll('"', '""')}"`;
+}
+
+function buildDistrictHistoryPoint(snapshot: PublishedSnapshot, districtId: string): DistrictHistoryPoint | null {
+  const district = snapshot.districts.find((item) => item.districtId === districtId);
+  if (!district) {
+    return null;
+  }
+
+  return {
+    districtId: district.districtId,
+    districtName: district.districtName,
+    snapshotDate: snapshot.snapshot.sourceSnapshotAt,
+    publishedAt: snapshot.snapshot.publishedAt,
+    methodologyVersion: snapshot.snapshot.methodologyVersion,
+    qualityState: snapshot.snapshot.qualityState,
+    freshnessDays: snapshot.snapshot.freshnessDays,
+    rank: district.rank,
+    backlogCases: district.backlogCases,
+    disposalRate: district.disposalRate,
+    medianAgeDays: district.medianAgeDays,
+    filingVsDisposalGap: district.filingVsDisposalGap,
+    flagReason: district.flagReason,
+    summary: district.summary,
+  };
 }

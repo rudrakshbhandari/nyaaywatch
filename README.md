@@ -18,13 +18,13 @@ The product is intentionally:
 - transparency-first, not AI-forward
 - open source, but source-aware about raw data redistribution
 
-The current repository now includes the Phase 2 real-run pipeline:
+The current repository now includes the Phase 3 public trust surfaces on top of the real-run pipeline:
 
 - PostgreSQL-backed canonical run, candidate, and publish state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - operator fetch, inspect, publish, replay, and rollback controls
-- homepage, district index, district detail, methodology, and API surfaces backed by the latest published snapshot
-- regression tests for migration safety, real-source fixture capture, publish gating, replay and rollback behavior, and public/operator route behavior
+- homepage, district workspace, district evidence, data download, methodology, and API surfaces backed by the latest published snapshot
+- regression tests for migration safety, real-source fixture capture, publish gating, replay and rollback behavior, district history/export behavior, and public/operator route behavior
 
 ## Core Direction
 
@@ -111,6 +111,7 @@ Public routes:
 - `/`
 - `/districts`
 - `/districts/:id`
+- `/data`
 - `/methodology`
 - `/api`
 
@@ -142,5 +143,6 @@ Current regression coverage includes:
 - publish gating on run status and candidate presence
 - latest published snapshot reads
 - replay and rollback behavior
+- district history and CSV export parity for published snapshots
 - public API and HTML route behavior
 - operator token enforcement

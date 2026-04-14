@@ -102,11 +102,12 @@ The alpha should be architected so the same model can expand state by state acro
 The repository now ships a narrow alpha reference implementation of this architecture:
 
 - one Node/TypeScript service with an operator boundary and public boundary
-- server-rendered public pages for `/` and `/districts/:id`
-- public JSON for `GET /v1/stats/himachal` and district detail payloads
-- fixture-backed snapshot runs and a published-run pointer that make the trust boundary explicit and testable
+- server-rendered public pages for `/`, `/districts`, `/districts/:id`, `/data`, `/methodology`, and `/api`
+- public JSON for `GET /v1/stats/himachal`, `GET /v1/districts`, and `GET /v1/trends`
+- PostgreSQL-backed run, publication, and published-snapshot state plus S3-backed raw evidence artifacts
+- published district-history and CSV export surfaces that stay inside the active public snapshot lineage
 
-This does not change the intended production direction. It proves the public trust boundary first while the canonical PostgreSQL and S3 backing stores are still to be wired in.
+This does not change the intended production direction. It proves the public trust boundary first while keeping the Himachal alpha legible, reproducible, and explicitly snapshot-based.
 
 ## Credit-Aware Infrastructure Direction
 

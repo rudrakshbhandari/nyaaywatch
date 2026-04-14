@@ -1,7 +1,12 @@
 import request from "supertest";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createTestApp, createTestContext, seedTestSnapshot } from "./helpers.js";
+import {
+  createTestApp,
+  createTestContext,
+  insertHistoricalPublishedSnapshot,
+  seedTestSnapshot,
+} from "./helpers.js";
 
 describe("HTTP routes", () => {
   const pools: Array<{ end: () => Promise<void> }> = [];
@@ -15,6 +20,24 @@ describe("HTTP routes", () => {
   it("serves the public API and HTML from the latest published snapshot", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
+    await insertHistoricalPublishedSnapshot(context.pool, {
+      runId: "run_historical",
+      snapshotId: "snapshot_historical",
+      publicationId: "publication_historical",
+      sourceSnapshotAt: "2026-03-31T00:00:00.000Z",
+      publishedAt: "2026-04-01T09:00:00.000Z",
+      methodologyVersion: "2026.03-alpha",
+      districtOverrides: {
+        kangra: {
+          rank: 2,
+          backlogCases: 22880,
+          disposalRate: 87.1,
+          medianAgeDays: 460,
+          filingVsDisposalGap: 12.7,
+          summary: "Kangra was already one of the strongest district signals in the prior published snapshot.",
+        },
+      },
+    });
     await seedTestSnapshot(context.service);
     const app = createTestApp(context.config, context.service);
 
@@ -25,10 +48,38 @@ describe("HTTP routes", () => {
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
     expect(homepage.text).toContain("Published snapshot");
+    expect(homepage.text).toContain("Freshness and quality state");
+
+    const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
+    expect(districtsPage.status).toBe(200);
+    expect(districtsPage.text).toContain("District workspace");
+    expect(districtsPage.text).toContain("Flagged signals only");
+    expect(districtsPage.text).toContain("Kangra");
 
     const districtPage = await request(app).get("/districts/kangra");
     expect(districtPage.status).toBe(200);
-    expect(districtPage.text).toContain("Kangra");
+    expect(districtPage.text).toContain("Published district history");
+    expect(districtPage.text).toContain("/data/districts/kangra.csv");
+
+    const dataPage = await request(app).get("/data");
+    expect(dataPage.status).toBe(200);
+    expect(dataPage.text).toContain("Data downloads");
+    expect(dataPage.text).toContain("CSV/API parity");
+
+    const districtCsv = await request(app).get("/data/districts.csv");
+    expect(districtCsv.status).toBe(200);
+    expect(districtCsv.text).toContain("snapshot_date,published_at,methodology_version");
+    expect(districtCsv.text).toContain("National Judicial Data Grid public district dashboard for Himachal Pradesh");
+
+    const districtHistoryCsv = await request(app).get("/data/districts/kangra.csv");
+    expect(districtHistoryCsv.status).toBe(200);
+    expect(districtHistoryCsv.text).toContain("2026-03-31T00:00:00.000Z");
+    expect(districtHistoryCsv.text).toContain("2026-04-10T00:00:00.000Z");
+
+    const methodologyPage = await request(app).get("/methodology");
+    expect(methodologyPage.status).toBe(200);
+    expect(methodologyPage.text).toContain("How the public metrics are derived");
+    expect(methodologyPage.text).toContain("Published methodology and snapshot lineage");
   });
 
   it("protects operator endpoints and exposes fetch, publish, replay, and rollback flows", async () => {
