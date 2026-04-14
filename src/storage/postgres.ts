@@ -63,6 +63,12 @@ interface RunInsert {
   note?: string | null;
 }
 
+interface RunUpdate {
+  status: string;
+  qualityState?: QualityState;
+  note?: string | null;
+}
+
 interface ArtifactInsert {
   id: string;
   runId: string;
@@ -144,14 +150,23 @@ export class PgWarehouseStore {
     return mapRun(result.rows[0]);
   }
 
-  async updateRunStatus(runId: string, status: string): Promise<void> {
-    await this.db.query(
+  async updateRun(runId: string, input: RunUpdate): Promise<RunRecord> {
+    const result = await this.db.query(
       `UPDATE runs
       SET status = $2,
+          quality_state = COALESCE($3, quality_state),
+          note = COALESCE($4, note),
           completed_at = CASE WHEN $2 IN ('completed', 'published', 'replayed') THEN NOW() ELSE completed_at END
       WHERE id = $1`,
-      [runId, status],
+      [runId, input.status, input.qualityState ?? null, input.note ?? null],
     );
+
+    const refreshed = await this.getRunById(runId);
+    if (!refreshed) {
+      throw new Error(`Run ${runId} was not found after update.`);
+    }
+
+    return refreshed;
   }
 
   async insertArtifact(input: ArtifactInsert): Promise<ArtifactRecord> {

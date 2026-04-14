@@ -47,7 +47,7 @@ This file should stay useful over time. To prevent drift:
 
 ## Current Status
 
-Current MVP phase: `Phase 1 complete, Phase 2 not started`
+Current MVP phase: `Phase 2 complete, Phase 3 next`
 
 Already shipped:
 
@@ -60,20 +60,13 @@ Already shipped:
 
 Main gap to MVP:
 
-- the storage layer is real, but the ingest and publish path still needs to be driven by real Himachal source capture and deterministic transforms rather than local seed bootstrap alone
+- the run pipeline is now real, but the public trust surfaces still need their full district-workspace, methodology, and export completion work
 
 ## Next Recommended Task
 
-`P2.1` is the next recommended task.
+`P3.1` is the next recommended task.
 
-Build the first real Himachal ingest run that:
-
-- fetches the upstream aggregate source
-- stores the raw artifact in S3
-- records a `runs` row in PostgreSQL
-- leaves behind a replayable evidence input for later extract/normalize steps
-
-This is the next task because it unlocks every later MVP item without changing the public trust boundary.
+Complete `/districts` as the main Himachal district-browsing workspace so the public product starts matching the approved information architecture instead of relying on the homepage preview alone.
 
 ## MVP Definition
 
@@ -103,11 +96,16 @@ Outcome:
 
 Tasks:
 
-- [ ] `P2.1` Add `ingest/` capture for the Himachal aggregate source that writes raw artifacts to S3 and creates a `runs` record in PostgreSQL.
-- [ ] `P2.2` Add `extract/` and `normalize/` transforms that turn a stored raw artifact into a deterministic publishable snapshot candidate.
-- [ ] `P2.3` Replace seed-only publish flow with operator publish from a completed real run.
-- [ ] `P2.4` Enforce publish gating on run completeness, transform validity, and artifact presence.
-- [ ] `P2.5` Add an operator runbook for `fetch -> inspect -> publish -> replay -> rollback`.
+- [x] `P2.1` Add `ingest/` capture for the Himachal aggregate source that writes raw artifacts to S3 and creates a `runs` record in PostgreSQL.
+  Completed on 2026-04-14 by adding real NJDG Himachal HTML capture into stored raw run artifacts.
+- [x] `P2.2` Add `extract/` and `normalize/` transforms that turn a stored raw artifact into a deterministic publishable snapshot candidate.
+  Completed on 2026-04-14 with deterministic HTML extraction plus candidate normalization from stored artifacts.
+- [x] `P2.3` Replace seed-only publish flow with operator publish from a completed real run.
+  Completed on 2026-04-14 via operator fetch/inspect/publish endpoints and CLI commands.
+- [x] `P2.4` Enforce publish gating on run completeness, transform validity, and artifact presence.
+  Completed on 2026-04-14 with publish-time checks on run status, candidate validity, and required artifacts.
+- [x] `P2.5` Add an operator runbook for `fetch -> inspect -> publish -> replay -> rollback`.
+  Completed on 2026-04-14 in `docs/STORAGE_AND_OPERATIONS.md` and `docs/DEVELOPMENT_WORKFLOW.md`.
 
 Done when:
 
@@ -117,7 +115,7 @@ Done when:
 
 Blockers:
 
-- none currently identified inside the repo
+- none
 
 ## Phase 3: Public Trust Surface Completion
 
@@ -200,4 +198,5 @@ Track those in `TODOS.md`, not here.
 ## Update Log
 
 - 2026-04-14: Initial execution plan created from `README.md`, design doc, engineering test plan, TODO backlog, and shipped storage work.
+- 2026-04-14: Phase 2 completed with real NJDG Himachal capture, deterministic extract/normalize, gated publish, replay from stored raw evidence, and operator runbook updates.
 - 2026-04-14: Added `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` to document current public judiciary sources, digitization limits, and the realistic public-data-backed scope ceiling.
