@@ -1,0 +1,12 @@
+.DS_Store
+.env
+.env.*
+node_modules/
+dist/
+build/
+.pytest_cache/
+__pycache__/
+.venv/
+.idea/
+.vscode/
+.gstack/
