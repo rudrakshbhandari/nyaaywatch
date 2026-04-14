@@ -20,13 +20,15 @@ If this file and those docs conflict, update the work so it matches the repo doc
 
 At the start of every new session:
 
-1. Run `git rev-parse --abbrev-ref HEAD`.
-2. If the result is `HEAD` or `main`, create or switch to a named branch before planning or implementation.
-3. Read `README.md` first.
-4. Read the design, test-plan, and execution-plan docs when the task touches product behavior, public claims, architecture, testing, or roadmap priorities.
-5. Summarize the implementation slice before editing.
+1. Run `git fetch origin main`.
+2. Run `git rev-parse --abbrev-ref HEAD`.
+3. If the result is `HEAD` or `main`, create or switch to a named branch before planning or implementation.
+4. Run `git merge-base --is-ancestor origin/main HEAD` and, if it fails, sync the worktree with the latest `origin/main` before planning or implementation.
+5. Read `README.md` first.
+6. Read the design, test-plan, and execution-plan docs when the task touches product behavior, public claims, architecture, testing, or roadmap priorities.
+7. Summarize the implementation slice before editing.
 
-Never make code or documentation changes before branch creation succeeds.
+Never make code or documentation changes before branch creation succeeds and the worktree is verified to include the latest `origin/main`.
 
 ## Critical Product Guardrails
 

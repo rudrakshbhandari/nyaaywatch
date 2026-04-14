@@ -37,5 +37,20 @@ jobs:
       - name: Unit and integration tests
         run: npm test
 
+      - name: Start local persistent stack
+        run: npm run docker:up
+
+      - name: Persistent stack replay and rollback tests
+        run: npm run test:persistent
+        env:
+          RUN_PERSISTENT_STACK_TESTS: "1"
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+          AWS_REGION: ap-south-1
+          AWS_ENDPOINT_URL_S3: http://127.0.0.1:4566
+          AWS_S3_FORCE_PATH_STYLE: "true"
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          OPERATOR_API_TOKEN: operator-test-token
+
       - name: Browser E2E tests
         run: npm run test:e2e

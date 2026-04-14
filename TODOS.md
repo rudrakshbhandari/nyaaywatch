@@ -46,19 +46,12 @@ Use this file for:
 **Priority:** P2
 **Depends on:** First implementation slice landing so the extracted design system reflects real component usage
 
-### Extend QA Coverage For Responsive And Accessibility Trust Surfaces
-
-**What:** Expand `docs/ENG_REVIEW_TEST_PLAN.md` to include responsive behavior, accessibility checks, and visual trust-surface QA for the public routes.
-
-**Why:** The design review now specifies mobile district browsing behavior, accessibility baselines, trust strips, quality badges, caveats, and public-state behavior. If these are not reflected in the test plan, they are likely to be treated as optional polish during implementation.
-
-**Context:** The current engineering test plan is strong on publish safety, API parity, and trust-critical data flows, but it does not yet explicitly test mobile list behavior for `/districts`, keyboard navigation, screen-reader-friendly heading structure, chart text alternatives, contrast, or freshness/quality-state presentation. Adding those checks will make the design requirements enforceable rather than aspirational.
-
-**Effort:** M
-**Priority:** P2
-**Depends on:** Initial public UI implementation existing so the added checks can reference real routes and components
-
 ## Completed
+
+### Responsive And Accessibility Trust-Surface QA
+
+- `docs/ENG_REVIEW_TEST_PLAN.md` now treats responsive/mobile trust surfaces, keyboard navigation, and accessibility smoke checks as implemented coverage
+- Playwright now verifies mobile district browsing behavior, trust-metadata visibility, keyboard navigation, and axe smoke checks across the public routes
 
 ### Narrow Alpha Vertical Slice
 
@@ -75,4 +68,4 @@ Use this file for:
 - S3-backed raw artifact and replay input storage
 - operator replay and rollback flows
 - local Docker dev stack for PostgreSQL plus LocalStack S3
-- automated migration, service, and route coverage for the storage slice
+- automated migration, service, route, and persistent-stack integration coverage for the storage slice

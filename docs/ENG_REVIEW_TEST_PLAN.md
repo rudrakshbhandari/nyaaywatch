@@ -54,8 +54,10 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - HTTP tests covering public API parity plus the district workspace, district history/export surfaces, data downloads, methodology content, and operator fetch, inspect, publish, replay, rollback, and token enforcement
 - browser E2E covering the citizen flow, reporter flow, and developer parity flow against a deterministic fixture-backed app server
 - API contract tests enforcing stable schemas for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
+- Playwright responsive/accessibility QA covering mobile trust surfaces, keyboard navigation, and axe smoke checks across the public routes
+- persistent-stack integration coverage for fetch, publish, replay, and rollback using local Docker PostgreSQL plus LocalStack S3 with the real `pg` and AWS SDK code paths
 
-Responsive/accessibility QA, persistent-stack replay coverage, and staging validation remain required as the public surface grows.
+Staging validation remains required so the AWS-hosted runtime and operator flow are proven outside local development.
 
 ## Implementation Note
 
