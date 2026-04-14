@@ -80,6 +80,7 @@ Keep boundaries legible as the repo grows:
 - Use Conventional Commits.
 - Prefer small, atomic commits.
 - Default to opening a pull request for every code change before merging to `main`.
+- Default to opening ready pull requests, not draft pull requests, unless the user explicitly asks for a draft PR.
 - Treat `main` as protected even if branch protection is not configured yet.
 - Do not force-push shared branches unless the user explicitly asks for it.
 
