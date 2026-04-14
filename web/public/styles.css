@@ -1,0 +1,263 @@
+:root {
+  color-scheme: light;
+  --page-bg: #f7f1e6;
+  --surface: rgba(255, 252, 246, 0.88);
+  --surface-strong: #fffaf0;
+  --border: rgba(83, 54, 23, 0.16);
+  --text: #1d1308;
+  --muted: #5c4937;
+  --accent: #8c2f19;
+  --accent-soft: rgba(140, 47, 25, 0.12);
+  --warning: #b66800;
+  --shadow: 0 24px 60px rgba(45, 26, 7, 0.08);
+  --radius: 24px;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(140, 47, 25, 0.12), transparent 28%),
+    radial-gradient(circle at top right, rgba(120, 86, 35, 0.12), transparent 30%),
+    linear-gradient(180deg, #f2e7d3 0%, var(--page-bg) 48%, #efe8dc 100%);
+}
+
+a {
+  color: inherit;
+  text-decoration-color: rgba(140, 47, 25, 0.35);
+}
+
+.site-shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.site-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.brand {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.brand-mark {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.brand-subtitle,
+.header-links a,
+.section-note,
+.trust-label,
+.metric-label,
+.cell-note,
+.inline-link {
+  color: var(--muted);
+}
+
+.header-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.page-stack {
+  display: grid;
+  gap: 22px;
+}
+
+.hero-card,
+.content-card,
+.metric-card,
+.signal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.hero-card,
+.content-card {
+  border-radius: var(--radius);
+  padding: 28px;
+}
+
+.hero-card h1,
+.content-card h2 {
+  margin: 0;
+  line-height: 1.05;
+}
+
+.hero-card h1 {
+  font-size: clamp(2.3rem, 5vw, 4.5rem);
+  max-width: 14ch;
+}
+
+.lede {
+  max-width: 62ch;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.warning-banner {
+  margin: 18px 0;
+  padding: 14px 16px;
+  border-left: 4px solid var(--warning);
+  background: rgba(182, 104, 0, 0.1);
+  border-radius: 14px;
+}
+
+.trust-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.trust-strip strong {
+  display: block;
+  margin-top: 4px;
+}
+
+.metric-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.metric-card {
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.metric-value {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.section-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 14px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  font-size: 0.82rem;
+  margin-right: 8px;
+}
+
+.badge-alert {
+  background: rgba(140, 47, 25, 0.18);
+}
+
+.cell-note {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.trend-list,
+.evidence-list {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.trend-list li,
+.evidence-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.signal-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.signal-card {
+  border-radius: 18px;
+  padding: 18px;
+}
+
+@media (max-width: 760px) {
+  .site-header,
+  .section-header,
+  .trend-list li,
+  .evidence-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .site-shell {
+    width: min(100% - 20px, 1120px);
+  }
+
+  .hero-card,
+  .content-card {
+    padding: 22px;
+  }
+}
