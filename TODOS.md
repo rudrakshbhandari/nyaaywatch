@@ -26,4 +26,28 @@
 **Priority:** P2
 **Depends on:** Initial alpha implementation and some operating evidence
 
+### Extract Alpha Design Foundation Into DESIGN.md
+
+**What:** Move the alpha design foundation, token rules, and component vocabulary from `docs/OPENNYAYA_DESIGN.md` into a dedicated `DESIGN.md`.
+
+**Why:** The design review turned the plan into the current design-system source of truth. As implementation grows across more screens and eventually more states, contributors need one reusable foundation file instead of mining the product plan for typography, color, spacing, surface, and component rules.
+
+**Context:** The repo currently has no standalone `DESIGN.md`. The plan now contains explicit UI foundations for the public dossier visual language, trust strips, quality badges, responsive rules, and accessibility expectations. Extracting those rules after the first implementation slice lands will keep the plan strategic and make the design system easier to evolve.
+
+**Effort:** M
+**Priority:** P2
+**Depends on:** First implementation slice landing so the extracted design system reflects real component usage
+
+### Extend QA Coverage For Responsive And Accessibility Trust Surfaces
+
+**What:** Expand `docs/ENG_REVIEW_TEST_PLAN.md` to include responsive behavior, accessibility checks, and visual trust-surface QA for the public routes.
+
+**Why:** The design review now specifies mobile district browsing behavior, accessibility baselines, trust strips, quality badges, caveats, and public-state behavior. If these are not reflected in the test plan, they are likely to be treated as optional polish during implementation.
+
+**Context:** The current engineering test plan is strong on publish safety, API parity, and trust-critical data flows, but it does not yet explicitly test mobile list behavior for `/districts`, keyboard navigation, screen-reader-friendly heading structure, chart text alternatives, contrast, or freshness/quality-state presentation. Adding those checks will make the design requirements enforceable rather than aspirational.
+
+**Effort:** M
+**Priority:** P2
+**Depends on:** Initial public UI implementation existing so the added checks can reference real routes and components
+
 ## Completed
