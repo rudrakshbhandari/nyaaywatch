@@ -200,3 +200,4 @@ Track those in `TODOS.md`, not here.
 ## Update Log
 
 - 2026-04-14: Initial execution plan created from `README.md`, design doc, engineering test plan, TODO backlog, and shipped storage work.
+- 2026-04-14: Added `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` to document current public judiciary sources, digitization limits, and the realistic public-data-backed scope ceiling.
