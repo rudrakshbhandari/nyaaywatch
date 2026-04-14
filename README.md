@@ -135,6 +135,7 @@ Operator endpoints require `x-operator-token`:
 npm run typecheck
 npm test
 npm run test:e2e
+RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
 ```
 
 Current regression coverage includes:
@@ -146,8 +147,12 @@ Current regression coverage includes:
 - replay and rollback behavior
 - district history and CSV export parity for published snapshots
 - browser E2E for citizen, reporter, and developer-parity public flows
+- browser E2E for responsive mobile trust surfaces and accessibility smoke checks
 - stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
+- persistent-stack replay and rollback coverage through local PostgreSQL plus LocalStack S3
 - public API and HTML route behavior
 - operator token enforcement
 
-GitHub Actions now runs `npm run typecheck`, `npm test`, and `npm run test:e2e` on pushes and pull requests.
+GitHub Actions now runs `npm run typecheck`, `npm test`, `RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent`, and `npm run test:e2e` on pushes and pull requests.
+
+If `5432` or `4566` are already in use locally, override `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env` before running `npm run docker:up`, then point `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` at the same host ports.

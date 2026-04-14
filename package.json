@@ -16,6 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:persistent": "vitest run tests/persistent-stack.integration.test.ts",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/dev/seed.ts",
     "dev:bootstrap": "tsx src/dev/bootstrap.ts",
@@ -24,7 +25,7 @@
     "operator:publish": "tsx src/dev/operator.ts publish",
     "operator:replay": "tsx src/dev/operator.ts replay",
     "operator:rollback": "tsx src/dev/operator.ts rollback",
-    "docker:up": "docker compose up -d postgres localstack",
+    "docker:up": "docker compose up -d --wait postgres localstack",
     "docker:down": "docker compose down -v"
   },
   "dependencies": {
@@ -35,6 +36,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@playwright/test": "^1.59.1",
     "@types/express": "^5.0.3",
     "@types/node": "^24.6.0",

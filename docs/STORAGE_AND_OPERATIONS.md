@@ -87,6 +87,8 @@ All operator endpoints require `x-operator-token`.
 
 `docker-compose.yml` starts PostgreSQL plus LocalStack S3 with `ap-south-1` configured so the app exercises the same S3 code path in development.
 
+If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env` before starting the stack, then keep `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` aligned with those host ports.
+
 ## Operator Runbook
 
 ### Fetch -> Inspect -> Publish

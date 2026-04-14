@@ -60,13 +60,13 @@ Already shipped:
 
 Main gap to MVP:
 
-- launch hardening now depends on persistent-stack integration coverage, responsive/accessibility QA, and a staging environment with basic logging and operator validation
+- launch hardening now depends on a staging environment with basic logging and operator validation
 
 ## Next Recommended Task
 
-`P4.3` is the next recommended task.
+`P4.5` is the next recommended task.
 
-Add replay and rollback integration coverage against the persistent local Postgres plus S3 dev stack so publish safety is proven outside the in-memory test harness.
+Deploy the isolated AWS staging stack, run the documented operator validation flow against it, and record the resulting staging URL plus resource names.
 
 ## MVP Definition
 
@@ -158,8 +158,10 @@ Tasks:
   Completed on 2026-04-14 with Playwright browser coverage against a deterministic fixture-backed app server.
 - [x] `P4.2` Add stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`.
   Completed on 2026-04-14 with strict schema contract tests across the public observability endpoints.
-- [ ] `P4.3` Add replay and rollback integration coverage against the persistent local Postgres plus S3 dev stack.
-- [ ] `P4.4` Add responsive and accessibility trust-surface QA checks now called out in `TODOS.md`.
+- [x] `P4.3` Add replay and rollback integration coverage against the persistent local Postgres plus S3 dev stack.
+  Completed on 2026-04-14 with a Docker-backed integration test that exercises fetch, publish, replay, and rollback through real PostgreSQL and LocalStack S3 clients.
+- [x] `P4.4` Add responsive and accessibility trust-surface QA checks now called out in `TODOS.md`.
+  Completed on 2026-04-14 with Playwright mobile trust-surface coverage, keyboard-navigation checks, and axe smoke tests across the public routes.
 - [ ] `P4.5` Stand up a staging deployment on isolated AWS resources with basic logging and operator validation flow.
 
 Done when:
@@ -209,3 +211,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-14: Added `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` to document current public judiciary sources, digitization limits, and the realistic public-data-backed scope ceiling.
 - 2026-04-14: Phase 3 completed with a full `/districts` workspace, district history and export surfaces, `/data`, expanded methodology, and visible freshness / quality state across public trust-critical metrics.
 - 2026-04-14: Phase 4 verification started with GitHub Actions CI, Playwright browser E2E for public trust flows, and stable API contract tests.
+- 2026-04-14: Added persistent-stack integration coverage for replay/rollback via Docker PostgreSQL plus LocalStack S3, plus responsive/accessibility trust-surface QA in Playwright.
