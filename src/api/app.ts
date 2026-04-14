@@ -142,6 +142,38 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     }),
   );
 
+  app.get(
+    "/operator/runs/:runId",
+    operatorOnly(config),
+    asyncRoute(async (request, response) => {
+      const inspection = await service.inspectRun(readRouteParam(request.params.runId));
+      if (!inspection) {
+        response.status(404).json({ error: "Run not found." });
+        return;
+      }
+
+      response.json(inspection);
+    }),
+  );
+
+  app.post(
+    "/operator/runs/fetch",
+    operatorOnly(config),
+    asyncRoute(async (request, response) => {
+      const result = await service.captureRun(request.body?.note);
+      response.status(201).json(result);
+    }),
+  );
+
+  app.post(
+    "/operator/runs/:runId/publish",
+    operatorOnly(config),
+    asyncRoute(async (request, response) => {
+      const result = await service.publishRun(readRouteParam(request.params.runId), request.body?.note);
+      response.status(201).json(result);
+    }),
+  );
+
   app.post(
     "/operator/runs/:runId/replay",
     operatorOnly(config),

@@ -1,6 +1,7 @@
 import {
   CopyObjectCommand,
   CreateBucketCommand,
+  GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
   PutBucketTaggingCommand,
@@ -22,6 +23,7 @@ export interface ArtifactStore {
   ensureBucket(): Promise<void>;
   uploadJson(key: string, payload: unknown, metadata?: Record<string, string>): Promise<StoredArtifact>;
   copyObject(sourceKey: string, destinationKey: string, metadata?: Record<string, string>): Promise<StoredArtifact>;
+  downloadJson<T>(key: string): Promise<T>;
 }
 
 export class S3ArtifactStore implements ArtifactStore {
@@ -114,6 +116,22 @@ export class S3ArtifactStore implements ArtifactStore {
     };
   }
 
+  async downloadJson<T>(key: string): Promise<T> {
+    const response = await this.client.send(
+      new GetObjectCommand({
+        Bucket: this.config.S3_BUCKET,
+        Key: key,
+      }),
+    );
+
+    const body = await response.Body?.transformToString();
+    if (!body) {
+      throw new Error(`Artifact ${key} was empty.`);
+    }
+
+    return JSON.parse(body) as T;
+  }
+
   private async applyBucketTags(): Promise<void> {
     await this.client.send(
       new PutBucketTaggingCommand({
@@ -168,5 +186,14 @@ export class InMemoryArtifactStore implements ArtifactStore {
       checksumSha256: sha256(body),
       sizeBytes: Buffer.byteLength(body),
     };
+  }
+
+  async downloadJson<T>(key: string): Promise<T> {
+    const body = this.objects.get(key);
+    if (!body) {
+      throw new Error(`Missing artifact ${key}`);
+    }
+
+    return JSON.parse(body) as T;
   }
 }

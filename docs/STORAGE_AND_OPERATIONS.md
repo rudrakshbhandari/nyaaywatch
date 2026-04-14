@@ -1,11 +1,11 @@
 # Storage And Operator Flow
 
-This repository now ships the first real storage slice for NyaayWatch's published snapshot boundary.
+This repository now ships the real Himachal run pipeline for NyaayWatch's published snapshot boundary.
 
 ## What Lives Where
 
-- PostgreSQL stores canonical run state, run artifacts metadata, published snapshot payloads, and publication history.
-- S3 stores the raw evidence artifacts that back a run and provide replayable operator inputs.
+- PostgreSQL stores canonical run state, run artifact metadata, published snapshot payloads, and publication history.
+- S3 stores the raw captured NJDG HTML bundles and normalized snapshot-candidate artifacts that back a run.
 - The public API and UI read only the latest publication event for Himachal Pradesh.
 
 ## Storage Model
@@ -20,6 +20,7 @@ This repository now ships the first real storage slice for NyaayWatch's publishe
 ### S3 layout
 
 - Raw evidence inputs use `raw/<env>/hp/<source-date>/...`
+- Normalized candidates use `normalize/<env>/hp/<source-date>/...`
 - Replay copies use `raw/<env>/hp/replays/<run-id>/...`
 - Buckets must be `nyaaywatch-` prefixed.
 - Region is fixed to `ap-south-1`.
@@ -27,12 +28,27 @@ This repository now ships the first real storage slice for NyaayWatch's publishe
 
 ## Operator Flow
 
-### Publish
+### Fetch
 
 1. Store raw evidence input in S3.
 2. Insert a `runs` row in PostgreSQL.
-3. Insert `run_artifacts` metadata rows.
-4. Materialize and store the immutable `published_snapshots` payload.
+3. Insert `run_artifacts` metadata rows for the captured NJDG HTML bundle.
+4. Re-read the stored raw artifact and run deterministic `extract/` and `normalize/` transforms against it.
+5. Store the resulting snapshot candidate as a second run artifact.
+6. Mark the run `completed` only if the candidate is valid.
+
+### Inspect
+
+1. Read the run, artifact metadata, and stored snapshot candidate from PostgreSQL plus S3.
+2. Confirm the run is `completed` and not `failed` or still `pending`.
+3. Review the candidate payload before publish.
+
+### Publish
+
+1. Require a `completed` run.
+2. Require both the raw capture artifact and the snapshot-candidate artifact to exist.
+3. Require the candidate payload to validate and the run quality state to be non-partial.
+4. Materialize the immutable `published_snapshots` payload from the stored candidate.
 5. Append a `publication_history` row with `action=publish`.
 
 ### Replay
@@ -40,10 +56,8 @@ This repository now ships the first real storage slice for NyaayWatch's publishe
 1. Read the existing run and its raw artifact metadata from PostgreSQL.
 2. Copy the referenced S3 objects into an isolated replay prefix.
 3. Create a new `runs` row with `replay_of_run_id`.
-4. Re-materialize the published snapshot payload from the stored snapshot boundary.
-5. Append a new `publication_history` publish event.
-
-Current replay keeps the same public payload shape and source snapshot semantics. It does not yet rerun a separate extract/normalize pipeline because those modules have not landed in this slice.
+4. Re-run `extract/` and `normalize/` against the copied raw artifact.
+5. Publish the replay run through the same gating rules as a normal run.
 
 ### Rollback
 
@@ -54,6 +68,9 @@ Current replay keeps the same public payload shape and source snapshot semantics
 ## Operator Surfaces
 
 - `GET /operator/runs`
+- `GET /operator/runs/:runId`
+- `POST /operator/runs/fetch`
+- `POST /operator/runs/:runId/publish`
 - `GET /operator/publications`
 - `POST /operator/runs/:runId/replay`
 - `POST /operator/publications/:publicationId/rollback`
@@ -69,6 +86,28 @@ All operator endpoints require `x-operator-token`.
 5. Run `npm run dev`.
 
 `docker-compose.yml` starts PostgreSQL plus LocalStack S3 with `ap-south-1` configured so the app exercises the same S3 code path in development.
+
+## Operator Runbook
+
+### Fetch -> Inspect -> Publish
+
+1. Start the local stack with `npm run docker:up`.
+2. Bootstrap or run the app with `npm run dev`.
+3. Create a run:
+   `npm run operator:fetch -- "Manual Himachal fetch"`
+4. Inspect the stored candidate:
+   `npm run operator:inspect -- <run-id>`
+5. Publish the completed run:
+   `npm run operator:publish -- <run-id> "Publish latest Himachal snapshot"`
+
+### Replay -> Rollback
+
+1. Replay a prior run from stored raw evidence:
+   `npm run operator:replay -- <run-id> "Replay stored evidence"`
+2. Roll back to an earlier publication if needed:
+   `npm run operator:rollback -- <publication-id> "Rollback to prior publication"`
+
+Local `npm run dev:bootstrap` and `npm run db:seed` use captured Himachal NJDG fixture HTML so the same fetch/inspect/publish path can run offline in development and tests.
 
 ## AWS Notes
 
