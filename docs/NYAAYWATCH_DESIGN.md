@@ -97,6 +97,25 @@ Snapshot Observatory:
 
 The alpha should be architected so the same model can expand state by state across India over time, but the user-facing product should remain explicitly Himachal-first until additional states clear the same trust, methodology, and operational readiness bar.
 
+## Current Implementation Note
+
+The repository now ships a narrow alpha reference implementation of this architecture:
+
+- one Node/TypeScript service with an operator boundary and public boundary
+- server-rendered public pages for `/` and `/districts/:id`
+- public JSON for `GET /v1/stats/himachal` and district detail payloads
+- fixture-backed snapshot runs and a published-run pointer that make the trust boundary explicit and testable
+
+This does not change the intended production direction. It proves the public trust boundary first while the canonical PostgreSQL and S3 backing stores are still to be wired in.
+
+## Credit-Aware Infrastructure Direction
+
+The user has confirmed access to `AWS $10k` in startup/student credits plus additional tooling credits from the YC student pack. That should influence implementation priority:
+
+- prefer AWS for the first deploy rather than introducing a parallel hosting path
+- use credits to fund the one-container app, PostgreSQL, S3 artifact storage, and logging around publish actions
+- keep optional third-party credits in support roles only so the public product still stands on reproducible stored evidence even if those credits expire
+
 ## MVP Public Experience
 
 Canonical homepage hero:

@@ -51,3 +51,20 @@
 **Depends on:** Initial public UI implementation existing so the added checks can reference real routes and components
 
 ## Completed
+
+### Narrow Alpha Vertical Slice
+
+- published snapshot boundary with explicit published-run state
+- operator API and CLI publish control
+- homepage for latest published Himachal snapshot
+- district evidence page
+- `GET /v1/stats/himachal`
+- regression coverage for publish safety, stale and empty states, and UI/API parity
+
+### AWS-Backed Snapshot Store
+
+- PostgreSQL-backed canonical run and publish state
+- S3-backed raw artifact and replay input storage
+- operator replay and rollback flows
+- local Docker dev stack for PostgreSQL plus LocalStack S3
+- automated migration, service, and route coverage for the storage slice

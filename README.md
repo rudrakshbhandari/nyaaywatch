@@ -18,6 +18,14 @@ The product is intentionally:
 - transparency-first, not AI-forward
 - open source, but source-aware about raw data redistribution
 
+The current repository now includes the first real AWS-oriented storage slice:
+
+- PostgreSQL-backed canonical run and publish state
+- S3-backed raw evidence artifact storage
+- operator replay and rollback controls
+- homepage, district index, district detail, methodology, and API surfaces backed by the latest published snapshot
+- regression tests for migration safety, publish reads, replay and rollback behavior, and public/operator route behavior
+
 ## Core Direction
 
 The approved implementation direction is:
@@ -49,6 +57,16 @@ The implementation is expected to evolve into these boundaries inside one repo:
 - `api/`
 - `web/`
 - `docs/`
+
+The current code uses those boundaries in a pragmatic way:
+
+- `src/api/` holds the Express server, public routes, operator routes, and HTML rendering
+- `src/services/` holds published snapshot orchestration
+- `src/storage/` holds PostgreSQL and S3 adapters
+- `src/db/` holds migrations and migration runner code
+- `fixtures/` holds reproducible Himachal seed inputs for local development and tests
+
+## Local Development
 
 ## Non-Goals For Alpha
 
@@ -101,3 +119,18 @@ Public API:
 - `GET /v1/trends`
 
 Operator endpoints require `x-operator-token` and support replay/rollback against the stored publication history.
+
+## Testing
+
+```bash
+npm run typecheck
+npm test
+```
+
+Current regression coverage includes:
+
+- migration safety and idempotence
+- latest published snapshot reads
+- replay and rollback behavior
+- public API and HTML route behavior
+- operator token enforcement
