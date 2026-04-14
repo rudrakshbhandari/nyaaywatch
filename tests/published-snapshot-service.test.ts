@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createTestContext, seedTestSnapshot } from "./helpers.js";
+import { createTestContext, insertHistoricalPublishedSnapshot, seedTestSnapshot } from "./helpers.js";
 
 describe("PublishedSnapshotService", () => {
   const pools: Array<{ end: () => Promise<void> }> = [];
@@ -87,5 +87,44 @@ describe("PublishedSnapshotService", () => {
     expect(rollback.action).toBe("rollback");
     expect(publicationsAfterRollback).toHaveLength(3);
     expect(activeSnapshot?.id).toBe(seeded.snapshot.id);
+  });
+
+  it("derives district history, snapshot history, and CSV exports from published snapshots", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+
+    await insertHistoricalPublishedSnapshot(context.pool, {
+      runId: "run_old",
+      snapshotId: "snapshot_old",
+      publicationId: "publication_old",
+      sourceSnapshotAt: "2026-03-31T00:00:00.000Z",
+      publishedAt: "2026-04-01T09:00:00.000Z",
+      methodologyVersion: "2026.03-alpha",
+      districtOverrides: {
+        kangra: {
+          rank: 2,
+          backlogCases: 22880,
+          disposalRate: 87.1,
+          medianAgeDays: 460,
+          filingVsDisposalGap: 12.7,
+        },
+      },
+    });
+    await seedTestSnapshot(context.service);
+
+    const detail = await context.service.getDistrictDetail("kangra");
+    const history = await context.service.listSnapshotHistory();
+    const statewideCsv = await context.service.renderDistrictCsv();
+    const districtCsv = await context.service.renderDistrictHistoryCsv("kangra");
+
+    expect(detail?.history).toHaveLength(2);
+    expect(detail?.history[0]?.snapshotDate).toBe("2026-03-31T00:00:00.000Z");
+    expect(detail?.history[1]?.snapshotDate).toBe("2026-04-10T00:00:00.000Z");
+    expect(history).toHaveLength(2);
+    expect(history[0]?.snapshot.methodologyVersion).toBe("2026.03-alpha");
+    expect(statewideCsv).toContain("snapshot_date,published_at,methodology_version");
+    expect(statewideCsv).toContain("summary");
+    expect(districtCsv).toContain("2026-03-31T00:00:00.000Z");
+    expect(districtCsv).toContain("2026-04-10T00:00:00.000Z");
   });
 });

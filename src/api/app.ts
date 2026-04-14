@@ -3,6 +3,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import type { AppConfig } from "../config/env.js";
 import {
   renderApiPage,
+  renderDataPage,
   renderDistrictPage,
   renderDistrictsPage,
   renderEmptyState,
@@ -69,6 +70,19 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   );
 
   app.get(
+    "/data/districts/:districtId.csv",
+    asyncRoute(async (request, response) => {
+      const csv = await service.renderDistrictHistoryCsv(readRouteParam(request.params.districtId));
+      if (!csv) {
+        response.status(404).type("text/plain").send("District export not available.");
+        return;
+      }
+
+      response.type("text/csv").send(csv);
+    }),
+  );
+
+  app.get(
     "/",
     asyncRoute(async (_request, response) => {
       const snapshot = await service.getPublishedSnapshot();
@@ -90,7 +104,7 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
         return;
       }
 
-      response.send(renderDistrictsPage(snapshot.payload));
+      response.send(renderDistrictsPage(snapshot.payload, parseDistrictsQuery(_request.query)));
     }),
   );
 
@@ -98,19 +112,26 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/districts/:districtId",
     asyncRoute(async (request, response) => {
       const districtId = readRouteParam(request.params.districtId);
-      const payload = await service.getDistrict(districtId);
+      const payload = await service.getDistrictDetail(districtId);
       if (!payload) {
         response.status(404).send(renderEmptyState("District Not Found", "This district was not found in the latest published snapshot."));
         return;
       }
 
+      response.send(renderDistrictPage(payload.snapshot, payload.district, payload.history));
+    }),
+  );
+
+  app.get(
+    "/data",
+    asyncRoute(async (_request, response) => {
       const snapshot = await service.getPublishedSnapshot();
       if (!snapshot) {
-        response.status(404).send(renderEmptyState("District Not Found", "No published snapshot is available."));
+        response.status(503).send(renderEmptyState("Data Downloads", "No published snapshot is available yet."));
         return;
       }
 
-      response.send(renderDistrictPage(snapshot.payload, payload.district));
+      response.send(renderDataPage(snapshot.payload));
     }),
   );
 
@@ -118,7 +139,8 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/methodology",
     asyncRoute(async (_request, response) => {
       const snapshot = await service.getPublishedSnapshot();
-      response.send(renderMethodologyPage(snapshot?.payload.snapshot ?? null));
+      const history = await service.listSnapshotHistory();
+      response.send(renderMethodologyPage(snapshot?.payload.snapshot ?? null, history));
     }),
   );
 
@@ -224,4 +246,24 @@ function operatorOnly(config: AppConfig) {
 
 function readRouteParam(value: string | string[]): string {
   return Array.isArray(value) ? value[0] ?? "" : value;
+}
+
+function parseDistrictsQuery(query: Request["query"]) {
+  return {
+    search: typeof query.q === "string" ? query.q : "",
+    sort: normalizeSort(typeof query.sort === "string" ? query.sort : ""),
+    view: normalizeView(typeof query.view === "string" ? query.view : ""),
+  } as const;
+}
+
+function normalizeSort(value: string) {
+  if (value === "backlog" || value === "disposal" || value === "age" || value === "gap" || value === "rank") {
+    return value;
+  }
+
+  return "rank";
+}
+
+function normalizeView(value: string) {
+  return value === "flagged" ? "flagged" : "all";
 }
