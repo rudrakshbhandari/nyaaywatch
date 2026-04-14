@@ -11,3 +11,6 @@ __pycache__/
 .idea/
 .vscode/
 .gstack/
+playwright-report/
+test-results/
+output/playwright/

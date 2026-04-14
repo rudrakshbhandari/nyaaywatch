@@ -52,8 +52,10 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - migration tests covering PostgreSQL schema application and idempotent reruns
 - service tests covering real-source fixture capture, publish gating, publish, replay, rollback, latest-publication reads, district history derivation, and CSV export parity
 - HTTP tests covering public API parity plus the district workspace, district history/export surfaces, data downloads, methodology content, and operator fetch, inspect, publish, replay, rollback, and token enforcement
+- browser E2E covering the citizen flow, reporter flow, and developer parity flow against a deterministic fixture-backed app server
+- API contract tests enforcing stable schemas for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
 
-The current automated suite does not yet include browser E2E because the UI slice is server-rendered and still early. That remains required as the public surface grows.
+Responsive/accessibility QA, persistent-stack replay coverage, and staging validation remain required as the public surface grows.
 
 ## Implementation Note
 
