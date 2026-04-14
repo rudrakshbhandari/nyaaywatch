@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-04-10T00:00:00.000Z",
+  "source": "https://njdg.ecourts.gov.in/hp-district-aggregates",
+  "stateCode": "HP",
+  "totals": {
+    "pendingCases": 128340,
+    "disposalRate": 92.4,
+    "medianCaseAgeDays": 412
+  },
+  "districtRows": [
+    {
+      "districtName": "Kangra",
+      "pendingCases": 24110,
+      "disposalRate": 88.2,
+      "medianAgeDays": 477
+    },
+    {
+      "districtName": "Mandi",
+      "pendingCases": 19320,
+      "disposalRate": 89.7,
+      "medianAgeDays": 433
+    },
+    {
+      "districtName": "Shimla",
+      "pendingCases": 18045,
+      "disposalRate": 91.2,
+      "medianAgeDays": 425
+    },
+    {
+      "districtName": "Solan",
+      "pendingCases": 15220,
+      "disposalRate": 93.8,
+      "medianAgeDays": 386
+    },
+    {
+      "districtName": "Kullu",
+      "pendingCases": 12180,
+      "disposalRate": 95.4,
+      "medianAgeDays": 351
+    }
+  ]
+}

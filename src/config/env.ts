@@ -1,0 +1,31 @@
+import dotenv from "dotenv";
+import { z } from "zod";
+
+dotenv.config();
+
+const EnvSchema = z.object({
+  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  PORT: z.coerce.number().int().positive().default(3000),
+  DATABASE_URL: z.string().url(),
+  AWS_REGION: z.literal("ap-south-1").default("ap-south-1"),
+  AWS_ENDPOINT_URL_S3: z.string().url().optional(),
+  AWS_S3_FORCE_PATH_STYLE: z
+    .string()
+    .optional()
+    .transform((value) => value === "true"),
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  S3_BUCKET: z
+    .string()
+    .min(1)
+    .regex(/^nyaaywatch-[a-z0-9-]+$/, "S3_BUCKET must be nyaaywatch-prefixed"),
+  DEPLOY_ENV: z.enum(["dev", "staging"]).default("dev"),
+  OPERATOR_API_TOKEN: z.string().min(8),
+  STATE_CODE: z.literal("HP").default("HP"),
+});
+
+export type AppConfig = z.infer<typeof EnvSchema>;
+
+export function loadConfig(rawEnv: NodeJS.ProcessEnv = process.env): AppConfig {
+  return EnvSchema.parse(rawEnv);
+}

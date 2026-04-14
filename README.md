@@ -18,14 +18,13 @@ The product is intentionally:
 - transparency-first, not AI-forward
 - open source, but source-aware about raw data redistribution
 
-The current repository now includes the first narrow alpha vertical slice:
+The current repository now includes the first real AWS-oriented storage slice:
 
-- published snapshot boundary with explicit publish state
-- operator API and CLI for publish control
-- homepage for the latest published Himachal snapshot
-- district evidence page
-- `GET /v1/stats/himachal`
-- regression tests for publish safety, stale and empty states, and UI/API parity
+- PostgreSQL-backed canonical run and publish state
+- S3-backed raw evidence artifact storage
+- operator replay and rollback controls
+- homepage, district index, district detail, methodology, and API surfaces backed by the latest published snapshot
+- regression tests for migration safety, publish reads, replay and rollback behavior, and public/operator route behavior
 
 ## Core Direction
 
@@ -43,6 +42,8 @@ The approved implementation direction is:
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
+- [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
+- [AWS dev resources](infra/aws/dev/README.md)
 - [TODOs](TODOS.md)
 
 ## Planned Repository Shape
@@ -59,72 +60,13 @@ The implementation is expected to evolve into these boundaries inside one repo:
 
 The current code uses those boundaries in a pragmatic way:
 
-- `api/` holds the Express server, public routes, operator routes, publish logic, and read-model services
-- `web/` holds the server-rendered React pages and styles
-- `shared/` holds typed contracts and schemas shared by API, CLI, and tests
-- `warehouse/fixtures/` holds reproducible snapshot-run fixtures for the current alpha slice
-- `warehouse/state/` holds the currently published run pointer
-
-This is a fixture-backed reference implementation of the public trust boundary. The production direction remains PostgreSQL for canonical state plus S3 for raw scrape artifacts.
+- `src/api/` holds the Express server, public routes, operator routes, and HTML rendering
+- `src/services/` holds published snapshot orchestration
+- `src/storage/` holds PostgreSQL and S3 adapters
+- `src/db/` holds migrations and migration runner code
+- `fixtures/` holds reproducible Himachal seed inputs for local development and tests
 
 ## Local Development
-
-```bash
-npm install
-npm run dev
-```
-
-Default server: [http://localhost:3000](http://localhost:3000)
-
-Available routes in the current slice:
-
-- `/` - homepage for the latest published Himachal snapshot
-- `/districts/:slug` - district evidence page
-- `/v1/stats/himachal` - public statewide stats payload
-- `/v1/districts/:slug` - district detail payload
-- `/operator/runs` - operator-only run inspection endpoint
-- `POST /operator/publish/:runId` - operator-only publish endpoint
-
-Operator routes require `x-operator-token`. The default local token is `dev-operator-token` unless `OPERATOR_TOKEN` is set.
-
-CLI publish flow:
-
-```bash
-npm run publish:snapshot -- run-hp-2026-04-07
-```
-
-## Testing
-
-```bash
-npm run typecheck
-npm test
-```
-
-Current regression coverage includes:
-
-- publish safety for valid, failed, and empty runs
-- homepage empty state when nothing is published
-- stale snapshot presentation while keeping the last published data visible
-- homepage and `/v1/stats/himachal` topline parity
-- district evidence page availability for the published snapshot
-
-## Credit-Aware Deployment Direction
-
-The approved architecture already matches the strongest infrastructure credit available to this project: `AWS $10k in student credits`.
-
-Use those credits first for the production version of this slice:
-
-- one AWS-hosted containerized app for the Node service
-- PostgreSQL as the canonical store
-- S3 for raw scrape artifacts and replayable evidence inputs
-- CloudWatch or equivalent AWS-native logging around publish runs and operator actions
-
-Additional user-provided credits from the YC student pack can support development or operator tooling without changing the core product posture:
-
-- `OpenAI` credits for internal developer workflows only, not public legal-analysis claims
-- `Firecrawl` credits for operator-side scraping and extraction helpers
-- `Browser Use` credits for browser QA and smoke testing
-- `Langfuse` or equivalent observability credits for internal model and prompt evaluation if AI-assisted operator tooling is added later
 
 ## Non-Goals For Alpha
 
@@ -143,3 +85,52 @@ NyaayWatch should feel investigative, public-interest, calm, exact, and evidence
 ## Development Workflow
 
 This project is intended to be developed in a highly AI-native workflow using ChatGPT Pro and Codex, but product claims still need explicit human judgment and evidence discipline.
+
+## Local Storage Stack
+
+The repository now includes the first runnable storage implementation:
+
+- PostgreSQL is the canonical store for runs, publications, and immutable published snapshot payloads
+- S3 is the raw evidence store for replayable snapshot inputs
+- the public API and UI read only the latest published snapshot
+
+Quickstart:
+
+```bash
+cp .env.example .env
+npm install
+npm run docker:up
+npm run dev:bootstrap
+npm run dev
+```
+
+Public routes:
+
+- `/`
+- `/districts`
+- `/districts/:id`
+- `/methodology`
+- `/api`
+
+Public API:
+
+- `GET /v1/stats/himachal`
+- `GET /v1/districts`
+- `GET /v1/trends`
+
+Operator endpoints require `x-operator-token` and support replay/rollback against the stored publication history.
+
+## Testing
+
+```bash
+npm run typecheck
+npm test
+```
+
+Current regression coverage includes:
+
+- migration safety and idempotence
+- latest published snapshot reads
+- replay and rollback behavior
+- public API and HTML route behavior
+- operator token enforcement

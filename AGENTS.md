@@ -90,6 +90,7 @@ Keep boundaries legible as the repo grows:
 - Prefer small, atomic commits.
 - Never commit directly to `main`.
 - Default to opening a pull request for every code change before merging to `main`.
+- Default to opening ready pull requests, not draft pull requests, unless the user explicitly asks for a draft PR.
 - For code or doc edits, work on a task-specific branch, commit, push, and open a pull request unless the user explicitly asks for a different flow.
 - Do not present "PR opened" as completion if required validation is still pending or failing. Report the current state of checks and any real blockers precisely.
 - Treat `main` as protected even if branch protection is not configured yet.
