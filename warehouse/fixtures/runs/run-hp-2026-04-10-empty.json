@@ -1,0 +1,20 @@
+{
+  "runId": "run-hp-2026-04-10-empty",
+  "status": "completed",
+  "snapshotDate": "2026-04-10",
+  "completedAt": "2026-04-10T04:00:00.000Z",
+  "methodologyVersion": "2026.1",
+  "sourceName": "NJDG Himachal Pradesh district aggregates",
+  "geographySlug": "himachal-pradesh",
+  "qualityStatus": "partial",
+  "summary": {
+    "pendingCases": 0,
+    "filingDisposalGapPct": 0,
+    "districtsFlagged": 0,
+    "timeToJusticeIndex": 0,
+    "trendDirection": "flat"
+  },
+  "flaggedSignals": [],
+  "trend": [],
+  "districts": []
+}

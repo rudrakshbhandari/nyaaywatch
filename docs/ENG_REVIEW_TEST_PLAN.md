@@ -47,6 +47,18 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - API contract tests with stable schema snapshots
 - operator replay / rollback tests
 
+## Implemented In The Current Alpha Slice
+
+The current repository now covers the narrow slice with automated regression tests for:
+
+- publish safety for valid, empty, and failed runs
+- homepage empty state when no published snapshot exists
+- homepage stale-state behavior while preserving the last published snapshot
+- UI/API parity between homepage toplines and `GET /v1/stats/himachal`
+- district detail availability for a published district route
+
+The remaining items in this plan still stand, especially browser E2E, replay or rollback behavior against a persistent store, and contract snapshots once the PostgreSQL-backed API is in place.
+
 ## Implementation Note
 
 The alpha should prefer complete test coverage over shortcuts. The public trust boundary, publish safety boundary, and API contract boundary are all non-negotiable.

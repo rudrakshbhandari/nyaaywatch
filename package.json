@@ -1,0 +1,31 @@
+{
+  "name": "nyaaywatch",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Published snapshot alpha slice for NyaayWatch",
+  "scripts": {
+    "dev": "tsx api/src/server.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/api/src/server.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "publish:snapshot": "tsx scripts/publish-snapshot.ts"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@types/supertest": "^6.0.3",
+    "supertest": "^7.1.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
