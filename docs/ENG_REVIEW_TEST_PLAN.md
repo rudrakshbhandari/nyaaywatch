@@ -1,4 +1,4 @@
-# OpenNyaya Engineering Test Plan
+# NyaayWatch Engineering Test Plan
 
 Copied from the approved `/plan-eng-review` artifact so implementation in future threads has direct test guidance.
 

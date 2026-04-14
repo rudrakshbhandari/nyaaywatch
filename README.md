@@ -1,6 +1,6 @@
-# OpenNyaya
+# NyaayWatch
 
-OpenNyaya makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh.
+NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh.
 
 ## Current Status
 
@@ -31,7 +31,7 @@ The approved implementation direction is:
 
 ## Key Files
 
-- [Design doc](docs/OPENNYAYA_DESIGN.md)
+- [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [TODOs](TODOS.md)
 
@@ -59,7 +59,7 @@ The implementation is expected to evolve into these boundaries inside one repo:
 
 ## Product Voice
 
-OpenNyaya should feel investigative, public-interest, calm, exact, and evidence-first.
+NyaayWatch should feel investigative, public-interest, calm, exact, and evidence-first.
 
 ## Development Workflow
 

@@ -6,7 +6,7 @@
 
 **What:** Define the rules for storing, exposing, and redistributing raw snapshots versus normalized exports.
 
-**Why:** OpenNyaya is open source and source-aware; without an explicit redistribution posture, future data/export decisions can drift into legal or product ambiguity.
+**Why:** NyaayWatch is open source and source-aware; without an explicit redistribution posture, future data/export decisions can drift into legal or product ambiguity.
 
 **Context:** The approved design keeps code, schemas, methodology, and API contracts open, but intentionally does not assume that raw upstream artifacts can be redistributed without constraints. Review NJDG/public-source terms, decide what evidence packs can bundle directly, and lock the citation/attribution rules for raw artifacts versus normalized outputs.
 
@@ -28,7 +28,7 @@
 
 ### Extract Alpha Design Foundation Into DESIGN.md
 
-**What:** Move the alpha design foundation, token rules, and component vocabulary from `docs/OPENNYAYA_DESIGN.md` into a dedicated `DESIGN.md`.
+**What:** Move the alpha design foundation, token rules, and component vocabulary from `docs/NYAAYWATCH_DESIGN.md` into a dedicated `DESIGN.md`.
 
 **Why:** The design review turned the plan into the current design-system source of truth. As implementation grows across more screens and eventually more states, contributors need one reusable foundation file instead of mining the product plan for typography, color, spacing, surface, and component rules.
 

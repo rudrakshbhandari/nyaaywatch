@@ -1,10 +1,10 @@
-# OpenNyaya Design
+# NyaayWatch Design
 
 Source of truth copied from the approved `/office-hours` design artifact so the repo can travel cleanly across new Codex threads.
 
 ## Canonical Product Definition
 
-OpenNyaya makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh and expanding over time toward nationwide Indian coverage.
+NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh and expanding over time toward nationwide Indian coverage.
 
 ## Problem Statement
 
@@ -20,7 +20,7 @@ The first version should let an ordinary citizen, reporter, or civic group answe
 
 ## Release Posture
 
-OpenNyaya v1 should launch as a clearly labeled public alpha with:
+NyaayWatch v1 should launch as a clearly labeled public alpha with:
 
 - explicit scope limits
 - explicit data caveats
@@ -29,7 +29,7 @@ OpenNyaya v1 should launch as a clearly labeled public alpha with:
 
 ## Open Source Posture
 
-OpenNyaya should be genuinely open source for:
+NyaayWatch should be genuinely open source for:
 
 - pipeline code
 - normalization logic
@@ -53,13 +53,13 @@ Start as a single repository with clear internal boundaries:
 
 ## Development Workflow
 
-OpenNyaya should assume a highly AI-native development workflow:
+NyaayWatch should assume a highly AI-native development workflow:
 
 - heavy use of ChatGPT Pro and Codex
 - rapid iteration on schemas, read models, tests, docs, and public copy
 - explicit human review of formulas, methodology, caveats, and product claims
 
-OpenNyaya should be AI-native in how it is built, not AI-branded in what it claims to be.
+NyaayWatch should be AI-native in how it is built, not AI-branded in what it claims to be.
 
 ## Constraints
 
@@ -117,7 +117,7 @@ The first public page should include:
 
 ## Public Information Architecture
 
-OpenNyaya alpha should feel like a public evidence front page, not a generic analytics dashboard. The first screen must answer three questions in order:
+NyaayWatch alpha should feel like a public evidence front page, not a generic analytics dashboard. The first screen must answer three questions in order:
 
 1. What is this?
 2. Why should I trust it?
@@ -141,7 +141,7 @@ The first viewport should not try to show the full table, chart, anomalies, and 
 
 ```text
 +---------------------------------------------------------------+
-| Header: OpenNyaya | Methodology | Data Download | API Docs    |
+| Header: NyaayWatch | Methodology | Data Download | API Docs   |
 +---------------------------------------------------------------+
 | Investigative headline                                        |
 | One-sentence framing                                          |
@@ -196,7 +196,7 @@ The structure should scale from "one state with many districts" to "many states 
 
 Alpha should implement this hierarchy for Himachal now rather than forcing a future redesign when additional states are added.
 
-Alpha should not expose empty national scaffolding such as disabled state pickers, placeholder maps, or "coming soon" geography controls. It should instead state clearly in copy that OpenNyaya is starting with Himachal Pradesh and is being designed to expand across India over time once the trust model is proven.
+Alpha should not expose empty national scaffolding such as disabled state pickers, placeholder maps, or "coming soon" geography controls. It should instead state clearly in copy that NyaayWatch is starting with Himachal Pradesh and is being designed to expand across India over time once the trust model is proven.
 
 ### District Evidence Page Hierarchy
 
@@ -294,17 +294,17 @@ It should avoid:
 - real-time
 - up to the minute
 
-If the latest published snapshot is stale, OpenNyaya should continue showing it on public surfaces with a prominent freshness warning and trust context. The product should prefer "last trustworthy published snapshot with an explicit warning" over blank states or silent degradation.
+If the latest published snapshot is stale, NyaayWatch should continue showing it on public surfaces with a prominent freshness warning and trust context. The product should prefer "last trustworthy published snapshot with an explicit warning" over blank states or silent degradation.
 
 ## Interaction State Coverage
 
-OpenNyaya must specify what the user sees in degraded states, not just what the backend stores. Trust is highest-risk when the data is stale, partial, or missing.
+NyaayWatch must specify what the user sees in degraded states, not just what the backend stores. Trust is highest-risk when the data is stale, partial, or missing.
 
 ### Public Surface State Table
 
 | Surface | Loading | Empty | Error | Success | Partial / Stale |
 |---|---|---|---|---|---|
-| Homepage `/` | Skeleton layout for headline, trust strip, metrics, and preview surfaces; no fake numbers | No published snapshot yet message, short explanation of what OpenNyaya is preparing, and links to methodology plus project status context | Calm error banner explaining the public snapshot could not be loaded, with a retry affordance and methodology link | Latest published Himachal snapshot with trust strip, toplines, preview ranking, trend, and flagged signals | Continue showing last published snapshot with an amber freshness banner; if quality is partial, label affected metrics and point to caveats |
+| Homepage `/` | Skeleton layout for headline, trust strip, metrics, and preview surfaces; no fake numbers | No published snapshot yet message, short explanation of what NyaayWatch is preparing, and links to methodology plus project status context | Calm error banner explaining the public snapshot could not be loaded, with a retry affordance and methodology link | Latest published Himachal snapshot with trust strip, toplines, preview ranking, trend, and flagged signals | Continue showing last published snapshot with an amber freshness banner; if quality is partial, label affected metrics and point to caveats |
 | District index `/districts` | Table skeleton with filter placeholders and note that rankings are loading from latest published snapshot | No districts available in current published snapshot, with explanation that publication is not ready or geography is not yet covered | Error banner above table with plain-language explanation and retry affordance | Sortable / scannable district table tied to the same published snapshot as the homepage | Rows with partial or inconsistent quality stay visible but are badged and may sort below fully trustworthy rows by default |
 | District page `/districts/:id` | Skeleton for summary, trust strip, metrics, and chart | District not available in published coverage, with explanation of current geographic scope and a path back to the district index | Error state that preserves page shell and explains that district evidence could not be loaded | District summary, flagged explanation, evidence surfaces, export actions, and caveats | Keep district page visible with explicit badges for partial quality, stale snapshot, or changed methodology; never imply certainty the data does not have |
 | Methodology `/methodology` | Text skeleton and section anchors loading | Not applicable | Error message with fallback link to the public repo docs if available | Formula explanations, caveats, change log, and snapshot semantics | If some methodology sections are unavailable, show the last published version with a note that a fuller update is pending |
@@ -326,7 +326,7 @@ Before the first trustworthy public snapshot is published, the homepage should s
 
 The pre-publish homepage should include:
 
-- a clear statement that OpenNyaya is starting with Himachal Pradesh
+- a clear statement that NyaayWatch is starting with Himachal Pradesh
 - a plain explanation that the first public snapshot has not been published yet
 - a short explanation of what will appear once publication is ready
 - a methodology link so users can inspect how claims will be made
@@ -341,7 +341,7 @@ The tone should be warm, exact, and restrained:
 
 ### Partial Quality Presentation Rule
 
-If a district, metric, or snapshot is only partially trustworthy, OpenNyaya should keep it explorable when it still adds public value, but the design must make the downgrade unmistakable.
+If a district, metric, or snapshot is only partially trustworthy, NyaayWatch should keep it explorable when it still adds public value, but the design must make the downgrade unmistakable.
 
 Rules:
 
@@ -352,7 +352,7 @@ Rules:
 - exports and API responses must carry the same quality signals as the UI
 - if a metric crosses from usable to misleading, it should be suppressed entirely rather than shown with cosmetic caveats
 
-OpenNyaya should prefer "show with explicit qualification" over "silently hide," but it should also prefer suppression over displaying numbers that would create a false sense of certainty.
+NyaayWatch should prefer "show with explicit qualification" over "silently hide," but it should also prefer suppression over displaying numbers that would create a false sense of certainty.
 
 ## MVP Data Model
 
@@ -396,7 +396,7 @@ These statuses must map to visible public treatment rules rather than remaining 
 
 ## Methodology Governance
 
-OpenNyaya should publish visible change control for:
+NyaayWatch should publish visible change control for:
 
 - metric formulas
 - anomaly thresholds
@@ -406,11 +406,11 @@ OpenNyaya should publish visible change control for:
 Public responses should make it possible to distinguish:
 
 - upstream judicial system change
-- OpenNyaya methodology or parser change
+- NyaayWatch methodology or parser change
 
 ## Collection And Ethics Policy
 
-OpenNyaya should:
+NyaayWatch should:
 
 - collect only publicly accessible aggregated data required for the observability product
 - scrape at a conservative civic-tech frequency
@@ -451,7 +451,7 @@ The alpha is successful if:
 
 ## User Journey And Emotional Arc
 
-OpenNyaya should guide users through a deliberate emotional sequence:
+NyaayWatch should guide users through a deliberate emotional sequence:
 
 1. Calm orientation
 2. Investigative focus
@@ -473,13 +473,13 @@ The product should not begin in an alarmist tone. It should first help a user un
 
 ### Time-Horizon Design
 
-- first 5 seconds: understand what OpenNyaya is and that the data is grounded in a published snapshot
+- first 5 seconds: understand what NyaayWatch is and that the data is grounded in a published snapshot
 - first 5 minutes: inspect where Himachal appears to be struggling and why specific districts are flagged
-- long-term relationship: trust that OpenNyaya is careful, reproducible, and worth returning to as more Indian geographies are added
+- long-term relationship: trust that NyaayWatch is careful, reproducible, and worth returning to as more Indian geographies are added
 
 ### Tone Progression Rule
 
-OpenNyaya copy and layout should move from calm to investigative without crossing into agitation:
+NyaayWatch copy and layout should move from calm to investigative without crossing into agitation:
 
 - homepage tone: calm, public-interest, exact
 - district exploration tone: sharper and more analytical
@@ -489,7 +489,7 @@ Urgency should come from the evidence, not from visual drama or activist slogans
 
 ## Visual Direction And AI Slop Guardrails
 
-OpenNyaya alpha should look like an investigative public dossier, not a startup dashboard and not a glossy activism campaign.
+NyaayWatch alpha should look like an investigative public dossier, not a startup dashboard and not a glossy activism campaign.
 
 ### Core Visual Stance
 
@@ -516,7 +516,7 @@ The specific target is a public dossier visual language:
 - caveats and quality signals should be visible without overpowering the primary evidence
 - methodology, download, and API links should feel like trust-supporting utilities, not competing calls to action
 
-### AI Slop Blacklist For OpenNyaya
+### AI Slop Blacklist For NyaayWatch
 
 Do not ship:
 
@@ -539,7 +539,7 @@ Do not ship:
 
 ### Visual Density Rule
 
-OpenNyaya should prefer fewer, stronger surfaces over many equal surfaces. If a layout can delete 30 percent of its chrome and still communicate better, it should. The design should feel cared for, not merely populated.
+NyaayWatch should prefer fewer, stronger surfaces over many equal surfaces. If a layout can delete 30 percent of its chrome and still communicate better, it should. The design should feel cared for, not merely populated.
 
 ## Alpha Design Foundation
 
@@ -607,7 +607,7 @@ Every new user-facing screen in alpha should be assembled from this vocabulary b
 
 ## Responsive And Accessibility Requirements
 
-OpenNyaya must be intentionally designed for desktop, tablet, and mobile. Responsive behavior is not a visual afterthought; it determines whether the public evidence model remains legible on real devices.
+NyaayWatch must be intentionally designed for desktop, tablet, and mobile. Responsive behavior is not a visual afterthought; it determines whether the public evidence model remains legible on real devices.
 
 ### Responsive Layout Rules
 
