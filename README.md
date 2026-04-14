@@ -33,6 +33,7 @@ The approved implementation direction is:
 
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
+- [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
 - [TODOs](TODOS.md)
 
 ## Planned Repository Shape
