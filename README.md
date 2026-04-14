@@ -134,6 +134,7 @@ Operator endpoints require `x-operator-token`:
 ```bash
 npm run typecheck
 npm test
+npm run test:e2e
 ```
 
 Current regression coverage includes:
@@ -144,5 +145,9 @@ Current regression coverage includes:
 - latest published snapshot reads
 - replay and rollback behavior
 - district history and CSV export parity for published snapshots
+- browser E2E for citizen, reporter, and developer-parity public flows
+- stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
 - public API and HTML route behavior
 - operator token enforcement
+
+GitHub Actions now runs `npm run typecheck`, `npm test`, and `npm run test:e2e` on pushes and pull requests.

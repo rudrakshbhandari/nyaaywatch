@@ -60,13 +60,13 @@ Already shipped:
 
 Main gap to MVP:
 
-- launch hardening now depends on browser E2E, stronger API contracts, persistent-stack integration coverage, accessibility QA, and a staging environment
+- launch hardening now depends on persistent-stack integration coverage, responsive/accessibility QA, and a staging environment with basic logging and operator validation
 
 ## Next Recommended Task
 
-`P4.1` is the next recommended task.
+`P4.3` is the next recommended task.
 
-Add browser E2E coverage for the citizen flow, reporter flow, and developer parity flow so the expanded public trust surfaces are verified like a public product instead of a backend slice.
+Add replay and rollback integration coverage against the persistent local Postgres plus S3 dev stack so publish safety is proven outside the in-memory test harness.
 
 ## MVP Definition
 
@@ -154,8 +154,10 @@ Outcome:
 
 Tasks:
 
-- [ ] `P4.1` Add browser E2E coverage for the citizen flow, reporter flow, and developer parity flow.
-- [ ] `P4.2` Add stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`.
+- [x] `P4.1` Add browser E2E coverage for the citizen flow, reporter flow, and developer parity flow.
+  Completed on 2026-04-14 with Playwright browser coverage against a deterministic fixture-backed app server.
+- [x] `P4.2` Add stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`.
+  Completed on 2026-04-14 with strict schema contract tests across the public observability endpoints.
 - [ ] `P4.3` Add replay and rollback integration coverage against the persistent local Postgres plus S3 dev stack.
 - [ ] `P4.4` Add responsive and accessibility trust-surface QA checks now called out in `TODOS.md`.
 - [ ] `P4.5` Stand up a staging deployment on isolated AWS resources with basic logging and operator validation flow.
@@ -206,3 +208,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-14: Phase 2 completed with real NJDG Himachal capture, deterministic extract/normalize, gated publish, replay from stored raw evidence, and operator runbook updates.
 - 2026-04-14: Added `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` to document current public judiciary sources, digitization limits, and the realistic public-data-backed scope ceiling.
 - 2026-04-14: Phase 3 completed with a full `/districts` workspace, district history and export surfaces, `/data`, expanded methodology, and visible freshness / quality state across public trust-critical metrics.
+- 2026-04-14: Phase 4 verification started with GitHub Actions CI, Playwright browser E2E for public trust flows, and stable API contract tests.
