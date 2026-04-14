@@ -50,8 +50,8 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 ## Current Implemented Coverage
 
 - migration tests covering PostgreSQL schema application and idempotent reruns
-- service tests covering publish, replay, rollback, and latest-publication reads
-- HTTP tests covering public API parity and operator token enforcement
+- service tests covering real-source fixture capture, publish gating, publish, replay, rollback, and latest-publication reads
+- HTTP tests covering public API parity plus operator fetch, inspect, publish, replay, rollback, and token enforcement
 
 The current automated suite does not yet include browser E2E because the UI slice is server-rendered and still early. That remains required as the public surface grows.
 

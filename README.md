@@ -4,7 +4,7 @@ NyaayWatch makes Indian court-system data transparent and usable so the public c
 
 ## Current Status
 
-This repo is being started from an approved design and engineering review. The first release is a public alpha for Himachal Pradesh focused on:
+This repo is now implementing the approved design and engineering review for a Himachal Pradesh public alpha focused on:
 
 - transparent public scorecards
 - flagged district-level signals
@@ -18,13 +18,13 @@ The product is intentionally:
 - transparency-first, not AI-forward
 - open source, but source-aware about raw data redistribution
 
-The current repository now includes the first real AWS-oriented storage slice:
+The current repository now includes the Phase 2 real-run pipeline:
 
-- PostgreSQL-backed canonical run and publish state
-- S3-backed raw evidence artifact storage
-- operator replay and rollback controls
+- PostgreSQL-backed canonical run, candidate, and publish state
+- S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
+- operator fetch, inspect, publish, replay, and rollback controls
 - homepage, district index, district detail, methodology, and API surfaces backed by the latest published snapshot
-- regression tests for migration safety, publish reads, replay and rollback behavior, and public/operator route behavior
+- regression tests for migration safety, real-source fixture capture, publish gating, replay and rollback behavior, and public/operator route behavior
 
 ## Core Direction
 
@@ -62,10 +62,10 @@ The implementation is expected to evolve into these boundaries inside one repo:
 The current code uses those boundaries in a pragmatic way:
 
 - `src/api/` holds the Express server, public routes, operator routes, and HTML rendering
-- `src/services/` holds published snapshot orchestration
+- `src/services/` holds published snapshot orchestration and the run pipeline
 - `src/storage/` holds PostgreSQL and S3 adapters
 - `src/db/` holds migrations and migration runner code
-- `fixtures/` holds reproducible Himachal seed inputs for local development and tests
+- `fixtures/` holds reproducible captured Himachal NJDG HTML inputs for local development and tests
 
 ## Local Development
 
@@ -89,10 +89,10 @@ This project is intended to be developed in a highly AI-native workflow using Ch
 
 ## Local Storage Stack
 
-The repository now includes the first runnable storage implementation:
+The repository now includes a runnable real-run storage implementation:
 
-- PostgreSQL is the canonical store for runs, publications, and immutable published snapshot payloads
-- S3 is the raw evidence store for replayable snapshot inputs
+- PostgreSQL is the canonical store for runs, publications, immutable published snapshot payloads, and run artifact metadata
+- S3 is the raw evidence store for replayable NJDG HTML captures and normalized snapshot candidates
 - the public API and UI read only the latest published snapshot
 
 Quickstart:
@@ -119,7 +119,13 @@ Public API:
 - `GET /v1/districts`
 - `GET /v1/trends`
 
-Operator endpoints require `x-operator-token` and support replay/rollback against the stored publication history.
+Operator endpoints require `x-operator-token`:
+
+- `POST /operator/runs/fetch`
+- `GET /operator/runs/:runId`
+- `POST /operator/runs/:runId/publish`
+- `POST /operator/runs/:runId/replay`
+- `POST /operator/publications/:publicationId/rollback`
 
 ## Testing
 
@@ -131,6 +137,8 @@ npm test
 Current regression coverage includes:
 
 - migration safety and idempotence
+- golden-fixture capture using stored Himachal NJDG HTML pages
+- publish gating on run status and candidate presence
 - latest published snapshot reads
 - replay and rollback behavior
 - public API and HTML route behavior

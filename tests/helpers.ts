@@ -3,7 +3,7 @@ import { type Pool } from "pg";
 
 import { loadConfig, type AppConfig } from "../src/config/env.js";
 import { runMigrations } from "../src/db/migrate.js";
-import { loadSeedFixture } from "../src/dev/fixtures.js";
+import { createFixtureSourceClient } from "../src/dev/fixtures.js";
 import { createApp } from "../src/api/app.js";
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../src/storage/artifact-store.js";
@@ -24,17 +24,15 @@ export async function createTestContext() {
   const config = createTestConfig();
   const store = PgWarehouseStore.fromPool(pool);
   const artifactStore = new InMemoryArtifactStore();
-  const service = new PublishedSnapshotService(config, store, artifactStore);
+  const sourceClient = createFixtureSourceClient();
+  const service = new PublishedSnapshotService(config, store, artifactStore, sourceClient);
 
   return { pool, config, service };
 }
 
 export async function seedTestSnapshot(service: PublishedSnapshotService) {
-  const fixture = await loadSeedFixture();
-  return service.seedPublishedSnapshot({
-    ...fixture,
-    note: "Test seed publish.",
-  });
+  const captured = await service.captureRun("Test fixture capture.");
+  return service.publishRun(captured.run.id, "Test fixture publish.");
 }
 
 export function createTestApp(config: AppConfig, service: PublishedSnapshotService) {

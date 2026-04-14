@@ -85,6 +85,9 @@ Useful follow-up commands:
 ```bash
 npm run db:migrate
 npm run db:seed
+npm run operator:fetch -- "Manual Himachal fetch"
+npm run operator:inspect -- <run-id>
+npm run operator:publish -- <run-id> "Publish latest run"
 npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm test
