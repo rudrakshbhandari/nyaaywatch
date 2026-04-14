@@ -13,6 +13,15 @@ Before making changes, read:
 
 Do not start implementation from assumptions that contradict those files.
 
+## Startup Workflow
+
+At the start of every new agent session:
+
+1. Read the required repository documents before implementation.
+2. Check the current branch state before planning or coding.
+3. Summarize the implementation slice you intend to take.
+4. Begin work only after the branch bootstrap rules below are satisfied.
+
 ## Product Guardrails
 
 - Build for Himachal Pradesh first. Do not add nationwide scaffolding to public UX unless explicitly requested.
@@ -72,15 +81,38 @@ Keep boundaries legible as the repo grows:
 
 ## Branch And Worktree Practice
 
+- Before any implementation or planning work, run `git rev-parse --abbrev-ref HEAD`.
 - Do not work from detached `HEAD`. Create or switch to a named branch before implementation work starts.
+- If the result is `HEAD`, do not proceed until a named branch has been created and checked out.
 - Do not implement directly on `main`.
 - Use one active branch per worktree.
 - Do not reuse the same branch across multiple simultaneous worktrees or AI coding sessions.
 - Branch names should describe one scoped task, for example `feat/published-district-api` or `fix/freshness-badge-copy`.
+- Infer branch names from the task:
+  - product or feature implementation: `feat/<area>-<outcome>`
+  - bug or regression fix: `fix/<area>-<issue>`
+  - docs-only change: `chore/docs-<topic>`
+  - repo workflow or tooling change: `chore/<tooling-topic>`
+  - test coverage expansion without major product changes: `test/<area>-coverage`
+- Branch slug rules:
+  - use lowercase kebab-case
+  - use 2 to 6 words when possible
+  - prefer scope plus outcome, for example `feat/alpha-vertical-slice`
+  - if the request is ambiguous, choose a reasonable default and proceed
+- Report the chosen branch name in the first progress update after branch creation.
+- Never make code or documentation changes before branch creation succeeds.
 - Rebase or merge intentionally; do not force-push shared branches unless the user explicitly asks for it.
 - Before starting a new task in a new worktree, branch from the latest intended base branch rather than from another in-progress feature branch unless the dependency is explicit.
 - If parallel sessions may touch the same files or subsystem, stop and coordinate scope rather than creating hidden merge conflicts.
 - Treat each worktree as owning a narrow slice of responsibility until integration happens.
+
+Examples:
+
+- "implement the alpha vertical slice" -> `feat/alpha-vertical-slice`
+- "fix stale snapshot banner logic" -> `fix/stale-snapshot-banner`
+- "update architecture docs for publish flow" -> `chore/docs-publish-flow`
+- "add publish-gate regression tests" -> `test/publish-gate-coverage`
+- "tighten repo guardrails for agents" -> `chore/repo-guardrails`
 
 ## Multi-Agent Session Rules
 
