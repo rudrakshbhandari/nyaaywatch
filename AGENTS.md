@@ -11,7 +11,8 @@ Primary repo context lives in:
 1. `README.md`
 2. `docs/NYAAYWATCH_DESIGN.md`
 3. `docs/ENG_REVIEW_TEST_PLAN.md`
-4. `TODOS.md`
+4. `docs/MVP_EXECUTION_PLAN.md`
+5. `TODOS.md`
 
 If this file and those docs conflict, update the work so it matches the repo docs or fix the docs intentionally.
 
@@ -22,7 +23,7 @@ At the start of every new session:
 1. Run `git rev-parse --abbrev-ref HEAD`.
 2. If the result is `HEAD` or `main`, create or switch to a named branch before planning or implementation.
 3. Read `README.md` first.
-4. Read the design, test-plan, and TODO docs when the task touches product behavior, public claims, architecture, testing, or roadmap priorities.
+4. Read the design, test-plan, and execution-plan docs when the task touches product behavior, public claims, architecture, testing, or roadmap priorities.
 5. Summarize the implementation slice before editing.
 
 Never make code or documentation changes before branch creation succeeds.
@@ -61,6 +62,7 @@ Keep boundaries legible as the repo grows:
 - Keep changes small and scoped. Do not mix unrelated refactors into the same task.
 - Add or update tests for every behavior change.
 - Update docs when product behavior, methodology, schema, or operator workflows change.
+- Update `docs/MVP_EXECUTION_PLAN.md` in the same change when a plan item is completed, superseded, or reordered.
 - Prefer explicit schemas, typed boundaries, and deterministic transforms over implicit behavior.
 - Preserve reproducibility. Ingestion, normalization, and publish steps should be replayable and auditable.
 - Do not introduce hidden background behavior that changes published data without an explicit run or publish step.

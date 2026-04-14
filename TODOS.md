@@ -1,5 +1,13 @@
 # TODOS
 
+`docs/MVP_EXECUTION_PLAN.md` is the ordered path to the Himachal alpha MVP.
+
+Use this file for:
+
+- review backlog
+- post-MVP follow-up work
+- important items that are not yet part of the ordered execution path
+
 ## Review
 
 ### Source Terms And Redistribution Review
