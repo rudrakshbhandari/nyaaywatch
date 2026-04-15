@@ -50,6 +50,8 @@ Application config constraints to preserve during staging validation:
 - `EnvironmentName` must remain `staging` so `DEPLOY_ENV` satisfies the app env schema.
 - `ProjectName` must stay `nyaaywatch`-prefixed so the derived `S3_BUCKET` passes env validation.
 - The generated `DATABASE_URL` now uses `uselibpqcompat=true&sslmode=require` because the app container must connect to RDS over TLS without assuming a bundled CA chain.
+- The runtime image must include `dist/src/db/migrations/*.sql`; the container cannot rely on source-only migration files once compiled.
+- The task role must allow both `s3:GetBucketTagging` and `s3:PutBucketTagging`, and the app must not rewrite bucket tags when the desired app tags are already present on a CloudFormation-managed bucket.
 
 Recommended naming:
 
@@ -139,4 +141,16 @@ aws logs tail /ecs/nyaaywatch-staging --follow --region ap-south-1
 
 ## Current Status
 
-The staging IaC and runbook are committed, but the stack still needs to be deployed and validated in AWS before `P4.5` can be marked complete in `docs/MVP_EXECUTION_PLAN.md`.
+`P4.5` was completed on 2026-04-15 against the live `nyaaywatch-staging` stack in `ap-south-1`.
+
+Validated successfully:
+
+- `/health`
+- `POST /operator/runs/fetch`
+- `GET /operator/runs/:runId`
+- `POST /operator/runs/:runId/publish`
+- `POST /operator/runs/:runId/replay`
+- `POST /operator/publications/:publicationId/rollback`
+- `GET /v1/stats/himachal` after rollback to confirm the public API reads the active publication pointer
+
+Temporary proof stacks from earlier failed attempts can be deleted after validation; they are not part of the long-lived staging shape.

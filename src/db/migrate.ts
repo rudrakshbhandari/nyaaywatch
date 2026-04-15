@@ -1,12 +1,31 @@
+import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath, type URL } from "node:url";
 
 import { Pool } from "pg";
 
 import { loadConfig } from "../config/env.js";
 
-const migrationsDirectory = join(dirname(fileURLToPath(import.meta.url)), "migrations");
+export function resolveMigrationsDirectory(moduleUrl: string | URL = import.meta.url): string {
+  const moduleDirectory = dirname(fileURLToPath(moduleUrl));
+  const candidateDirectories = [
+    join(moduleDirectory, "migrations"),
+    resolve(moduleDirectory, "..", "..", "..", "src", "db", "migrations"),
+  ];
+
+  for (const candidateDirectory of candidateDirectories) {
+    if (existsSync(candidateDirectory)) {
+      return candidateDirectory;
+    }
+  }
+
+  throw new Error(
+    `Unable to locate SQL migrations directory. Checked: ${candidateDirectories.join(", ")}`,
+  );
+}
+
+const migrationsDirectory = resolveMigrationsDirectory();
 
 export async function runMigrations(pool: Pick<Pool, "query">): Promise<string[]> {
   await pool.query(

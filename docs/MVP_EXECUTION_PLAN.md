@@ -162,7 +162,8 @@ Tasks:
   Completed on 2026-04-14 with a Docker-backed integration test that exercises fetch, publish, replay, and rollback through real PostgreSQL and LocalStack S3 clients.
 - [x] `P4.4` Add responsive and accessibility trust-surface QA checks now called out in `TODOS.md`.
   Completed on 2026-04-14 with Playwright mobile trust-surface coverage, keyboard-navigation checks, and axe smoke tests across the public routes.
-- [ ] `P4.5` Stand up a staging deployment on isolated AWS resources with basic logging and operator validation flow.
+- [x] `P4.5` Stand up a staging deployment on isolated AWS resources with basic logging and operator validation flow.
+  Completed on 2026-04-15 with a live AWS staging stack in `ap-south-1`, successful `/health`, `fetch`, `inspect`, `publish`, `replay`, and `rollback` validation, and confirmation that the public API reads from the active publication pointer after rollback.
 
 Done when:
 
@@ -171,7 +172,7 @@ Done when:
 
 Blockers:
 
-- `P4.5` depends on `P2.3` because staging should exercise the real run and publish path
+- none
 
 ## Phase 5: Launch Gates
 
@@ -213,3 +214,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-14: Phase 4 verification started with GitHub Actions CI, Playwright browser E2E for public trust flows, and stable API contract tests.
 - 2026-04-14: Added persistent-stack integration coverage for replay/rollback via Docker PostgreSQL plus LocalStack S3, plus responsive/accessibility trust-surface QA in Playwright.
 - 2026-04-14: Staging deployment hardening updated the AWS stack to self-provision its VPC, pin a supported `ap-south-1` PostgreSQL engine version, and use an RDS TLS-compatible connection string; `P4.5` remains open until the operator validation flow succeeds on a live AWS stack.
+- 2026-04-15: Completed `P4.5` on a live AWS staging stack after fixing container migration packaging, S3 bucket idempotence/tag-handling for CloudFormation-managed buckets, and missing `s3:GetBucketTagging` task-role access; operator `fetch -> inspect -> publish -> replay -> rollback` now succeeds end to end in staging.
