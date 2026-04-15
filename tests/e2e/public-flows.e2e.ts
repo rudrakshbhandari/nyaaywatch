@@ -9,7 +9,7 @@ test("citizen flow loads the homepage, district workspace, and district permalin
 
   await page.getByRole("link", { name: "Open the full district index" }).click();
   await expect(page).toHaveURL(/\/districts$/);
-  await expect(page.getByRole("heading", { name: "Find the districts under the most pressure." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
   await expect(page.getByText("Districts currently on the watchlist")).toBeVisible();
 
   await page.getByRole("link", { name: "Kangra" }).first().click();

@@ -339,8 +339,9 @@ export function renderLayout(title: string, body: string): string {
         border: 1px solid rgba(196, 93, 47, 0.08);
       }
       .badge.complete {
-        background: #d5ece4;
-        color: #0c3b2e;
+        background: #1f5c4b;
+        color: #ffffff;
+        border-color: #1f5c4b;
       }
       .badge.stale, .badge.partial {
         background: var(--warning-bg);
@@ -380,10 +381,12 @@ export function renderLayout(title: string, body: string): string {
         color: var(--ink);
       }
       button {
+        appearance: none;
         cursor: pointer;
-        background: var(--accent-deep);
-        border-color: var(--accent-deep);
-        color: white;
+        background-color: #7a3016;
+        border-color: #7a3016;
+        color: #fff;
+        font-weight: 700;
         transition: transform 180ms ease, box-shadow 180ms ease;
       }
       button:hover, button:focus-visible {
@@ -636,11 +639,9 @@ export function renderLayout(title: string, body: string): string {
       }
       @keyframes rise {
         from {
-          opacity: 0;
           transform: translateY(8px);
         }
         to {
-          opacity: 1;
           transform: translateY(0);
         }
       }
