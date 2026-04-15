@@ -47,7 +47,7 @@ This file should stay useful over time. To prevent drift:
 
 ## Current Status
 
-Current MVP phase: `Phase 3 complete, Phase 4 next`
+Current MVP phase: `Phase 5 complete, MVP launch gates satisfied`
 
 Already shipped:
 
@@ -60,13 +60,13 @@ Already shipped:
 
 Main gap to MVP:
 
-- launch hardening now depends on a staging environment with basic logging and operator validation
+- none inside the current Himachal alpha MVP path
 
 ## Next Recommended Task
 
-`P4.5` is the next recommended task.
+MVP-critical phases are complete.
 
-Deploy the isolated AWS staging stack, run the documented operator validation flow against it, and record the resulting staging URL plus resource names.
+Pull the next task from `TODOS.md` or from a deliberate post-MVP roadmap decision.
 
 ## MVP Definition
 
@@ -183,8 +183,12 @@ Outcome:
 Tasks:
 
 - [ ] `P5.1` Complete source terms and redistribution review for raw artifacts, evidence packs, and normalized exports.
-- [ ] `P5.2` Add a release-readiness checklist covering caveats, freshness labels, methodology versioning, and publish safety.
-- [ ] `P5.3` Confirm public copy avoids live, predictive, or verdict-like framing across all routes and docs.
+- [x] `P5.1` Complete source terms and redistribution review for raw artifacts, evidence packs, and normalized exports.
+  Completed on 2026-04-14 in `docs/PUBLIC_DATA_EXPOSURE_POLICY.md` using the current official eCourts copyright and disclaimer pages to lock alpha exposure to published read-model outputs while keeping raw captures and bundled evidence packs internal.
+- [x] `P5.2` Add a release-readiness checklist covering caveats, freshness labels, methodology versioning, and publish safety.
+  Completed on 2026-04-14 in `docs/ALPHA_RELEASE_CHECKLIST.md`.
+- [x] `P5.3` Confirm public copy avoids live, predictive, or verdict-like framing across all routes and docs.
+  Completed on 2026-04-14 with tightened public route wording, copy guardrail tests, and design/test-plan doc updates aligned to citation surfaces plus published snapshots.
 
 Done when:
 
@@ -215,3 +219,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-14: Added persistent-stack integration coverage for replay/rollback via Docker PostgreSQL plus LocalStack S3, plus responsive/accessibility trust-surface QA in Playwright.
 - 2026-04-14: Staging deployment hardening updated the AWS stack to self-provision its VPC, pin a supported `ap-south-1` PostgreSQL engine version, and use an RDS TLS-compatible connection string; `P4.5` remains open until the operator validation flow succeeds on a live AWS stack.
 - 2026-04-15: Completed `P4.5` on a live AWS staging stack after fixing container migration packaging, S3 bucket idempotence/tag-handling for CloudFormation-managed buckets, and missing `s3:GetBucketTagging` task-role access; operator `fetch -> inspect -> publish -> replay -> rollback` now succeeds end to end in staging.
+- 2026-04-14: Completed Phase 5 launch gates with a written public exposure policy, a release-readiness checklist, and route-level copy guardrail coverage for published-snapshot wording.
