@@ -305,6 +305,27 @@ export function renderLayout(title: string, body: string): string {
         flex-wrap: wrap;
         margin-top: 12px;
       }
+      .panel-list {
+        display: grid;
+        gap: 12px;
+      }
+      .panel-item {
+        padding-top: 12px;
+        border-top: 1px solid rgba(16, 32, 51, 0.08);
+      }
+      .panel-item:first-child {
+        padding-top: 0;
+        border-top: none;
+      }
+      .panel-item strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .panel-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
       .badge {
         display: inline-flex;
         align-items: center;
@@ -744,33 +765,34 @@ export function renderHomePage(snapshot: PublishedSnapshot): string {
       <section class="hero">
         <article class="hero-copy">
           <div class="kicker"><strong>Public alpha</strong><span>Himachal Pradesh only</span></div>
-          <div class="eyebrow">Common-language justice tracking</div>
+          <div class="eyebrow">Published Himachal snapshot</div>
           <h1 class="display-title">See where cases are getting stuck in Himachal Pradesh.</h1>
-          <p class="lede">NyaayWatch turns one published court snapshot into a calm public briefing. You can see the size of the queue, which districts need a closer look, and what the numbers actually mean before you share them.</p>
-          <p class="rail-note">This is a dated public snapshot with stored evidence behind it, not a live court feed.</p>
+          <p class="lede">Read one published court snapshot the way a citizen, reporter, or civic group would: start with backlog, see which districts are under the most strain, and inspect the evidence before repeating a claim.</p>
+          <p class="rail-note">Every figure on this page is tied to a published snapshot and stored source evidence. Nothing here is a live court feed.</p>
           <div class="action-links">
             <a class="button-link primary" href="/districts">Explore districts</a>
             <a class="button-link secondary" href="/methodology">How we calculate this</a>
           </div>
         </article>
         <aside class="hero-panel">
-          <div>
-            <div class="eyebrow">Latest publication</div>
-            <div class="meta-value numeric">${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))}</div>
-            <div class="meta-note">Source snapshot date</div>
-          </div>
-          <div>
-            <div class="meta-value">${escapeHtml(snapshot.snapshot.methodologyVersion)}</div>
-            <div class="meta-note">Methodology version now visible on every trust-critical surface.</div>
-          </div>
-          <div>
-            <div class="meta-value numeric">${snapshot.snapshot.freshnessDays} day(s)</div>
-            <div class="meta-note">Freshness tells you how old the published source snapshot is.</div>
-          </div>
-          <div class="badge-row">
-            <span class="badge">Plain-language public view</span>
-            <span class="badge">Stored evidence</span>
-            <span class="badge">Shareable district pages</span>
+          <div class="eyebrow">Latest publication</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value numeric">${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))}</strong>
+              <span>Source snapshot date for every public number on the page.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value">${escapeHtml(snapshot.snapshot.methodologyVersion)}</strong>
+              <span>Methodology version repeated anywhere trust-critical metrics appear.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value numeric">${snapshot.snapshot.freshnessDays} day(s)</strong>
+              <span>Freshness tells you how old the underlying published source snapshot is.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Stored evidence, not live scraping</strong>
+              <span>District pages and exports stay pinned to the same publication until a newer run is reviewed and published.</span>
+            </div>
           </div>
         </aside>
       </section>
@@ -851,22 +873,25 @@ export function renderDistrictsPage(snapshot: PublishedSnapshot, options: Distri
       <section class="hero">
         <article class="hero-copy">
           <div class="kicker"><strong>District workspace</strong><span>Browse, compare, inspect</span></div>
-          <div class="eyebrow">District-by-district scan</div>
-          <h1 class="display-title">Find the districts under the most pressure.</h1>
-          <p class="lede">Sort by queue size, case-clearing pace, waiting time, or file-clear gap. Open any district row for the shareable evidence page.</p>
+          <div class="eyebrow">Published district scan</div>
+          <h1 class="display-title">Scan the districts under the most pressure.</h1>
+          <p class="lede">Sort the current snapshot by backlog, disposal pace, waiting time, or filing gap. When a district looks unusual, open its evidence page for history, caveats, and export links.</p>
         </article>
         <aside class="hero-panel">
-          <div>
-            <div class="meta-value numeric">${districts.length} of ${snapshot.districts.length}</div>
-            <div class="meta-note">${escapeHtml(VIEW_LABELS[options.view])}${options.search ? ` matching "${escapeHtml(options.search)}"` : ""}.</div>
-          </div>
-          <div>
-            <div class="meta-value numeric">${snapshot.stats.flaggedDistricts}</div>
-            <div class="meta-note">Districts currently on the watchlist in the published snapshot.</div>
-          </div>
-          <div class="badge-row">
-            <span class="badge">Search by district</span>
-            <span class="badge">Switch urgency sort</span>
+          <div class="eyebrow">Current scan</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value numeric">${districts.length} of ${snapshot.districts.length}</strong>
+              <span>${escapeHtml(VIEW_LABELS[options.view])}${options.search ? ` matching "${escapeHtml(options.search)}"` : ""}.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value numeric">${snapshot.stats.flaggedDistricts}</strong>
+              <span>Districts currently on the watchlist in the active published snapshot.</span>
+            </div>
+            <div class="panel-item">
+              <strong>${escapeHtml(SORT_LABELS[options.sort])}</strong>
+              <span>Search and sort let you inspect the same snapshot from different pressure angles without leaving the public trust boundary.</span>
+            </div>
           </div>
         </aside>
       </section>
@@ -931,22 +956,29 @@ export function renderDistrictPage(
       <section class="hero">
         <article class="hero-copy">
           <div class="kicker"><strong>${escapeHtml(district.districtName)}</strong><span>District evidence page</span></div>
-          <div class="eyebrow">District snapshot</div>
+          <div class="eyebrow">District evidence</div>
           <h1>${escapeHtml(district.districtName)}</h1>
           <p class="lede">${escapeHtml(district.summary)}</p>
         </article>
         <aside class="hero-panel">
-          <div>
-            <div class="meta-value">Watch rank #${district.rank}</div>
-            <div class="meta-note">Higher ranks mean the district appears closer to the front of the current statewide queue-pressure list.</div>
-          </div>
-          <div>
-            <div class="meta-value">${escapeHtml(snapshot.methodologyVersion)}</div>
-            <div class="meta-note">The same methodology version is shown on the homepage, exports, and API.</div>
-          </div>
-          <div class="badge-row">
-            <span class="badge">Shareable permalink</span>
-            <span class="badge">Published history only</span>
+          <div class="eyebrow">Evidence frame</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value">Watch rank #${district.rank}</strong>
+              <span>Higher ranks place the district closer to the front of the current statewide pressure scan.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value">${escapeHtml(snapshot.methodologyVersion)}</strong>
+              <span>The same methodology version appears on the homepage, exports, and API.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Shareable permalink</strong>
+              <span>This district summary is meant to stand on its own without requiring homepage context.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Published history only</strong>
+              <span>Comparisons stay inside previous public snapshots rather than unpublished run state.</span>
+            </div>
           </div>
         </aside>
       </section>
@@ -1021,7 +1053,7 @@ export function renderDataPage(snapshot: PublishedSnapshot): string {
           <div class="kicker"><strong>Data access</strong><span>Published snapshot only</span></div>
           <div class="eyebrow">CSV and API</div>
           <h1>Download exactly what the public site is showing.</h1>
-          <p class="lede">These files and endpoints stay pinned to the active published snapshot. If a newer run is incomplete, it stays private until an operator publishes it.</p>
+          <p class="lede">Use these downloads when you need the exact rows behind the public site. They stay pinned to the active publication until a newer run is reviewed and published.</p>
         </article>
       </section>
       ${renderTrustStrip(snapshot.snapshot)}
@@ -1087,7 +1119,7 @@ export function renderMethodologyPage(
           <div class="kicker"><strong>Methodology</strong><span>How every public number is built</span></div>
           <div class="eyebrow">Trust and reproducibility</div>
           <h1>Every public number comes from one stored published snapshot.</h1>
-          <p class="lede">Operators can capture newer runs in private, but the public surface stays on the last safe publication until a publish action succeeds. That keeps the product reproducible and auditable.</p>
+          <p class="lede">Operators can capture newer runs in private, but public pages stay on the last reviewed publication until a publish succeeds. That keeps every public claim reproducible and auditable.</p>
         </article>
       </section>
       ${snapshot ? renderTrustStrip(snapshot) : ""}
@@ -1148,19 +1180,42 @@ export function renderApiPage(): string {
           <a href="/methodology">Methodology</a>
         </nav>
       </header>
-      <section class="hero hero-single">
+      <section class="hero">
         <article class="hero-copy">
           <div class="kicker"><strong>API</strong><span>Published read model</span></div>
           <div class="eyebrow">Developer access</div>
-          <h1>The API mirrors the latest published snapshot.</h1>
-          <p class="lede">There is no richer hidden state than the public trust surface supports.</p>
+          <h1>The API matches the latest published snapshot.</h1>
+          <p class="lede">If a number is public on the site, you can fetch it here. If it has not been published yet, the API does not expose it.</p>
         </article>
+        <aside class="hero-panel">
+          <div class="eyebrow">Available now</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value numeric">3 endpoints</strong>
+              <span>Statewide stats, district rows, and published trend history.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Published snapshot only</strong>
+              <span>The API never exposes fresher unpublished state than the public pages themselves.</span>
+            </div>
+            <div class="panel-item">
+              <strong>CSV parity</strong>
+              <span>The <code>/data</code> downloads stay aligned with the same published read model.</span>
+            </div>
+          </div>
+          <div class="action-links">
+            <a class="button-link secondary" href="/data">Download the matching CSVs</a>
+          </div>
+        </aside>
       </section>
       <article class="callout">
-        <h2>Endpoints</h2>
-        <p><code>GET /v1/stats/himachal</code></p>
-        <p><code>GET /v1/districts</code></p>
-        <p><code>GET /v1/trends</code></p>
+        <div class="eyebrow">Endpoints</div>
+        <h2>Public routes available today</h2>
+        <ul class="download-list">
+          <li><strong><code>GET /v1/stats/himachal</code></strong><br /><span class="muted">Statewide backlog, disposal pace, wait estimate, and watchlist count for the active publication.</span></li>
+          <li><strong><code>GET /v1/districts</code></strong><br /><span class="muted">District-level rows with rankings, queue size, disposal pace, wait estimate, and flag explanations.</span></li>
+          <li><strong><code>GET /v1/trends</code></strong><br /><span class="muted">Published snapshot history for the statewide trend surface.</span></li>
+        </ul>
       </article>
     `,
   );
