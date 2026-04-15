@@ -5,7 +5,9 @@ This directory defines the isolated AWS staging shape for NyaayWatch's Himachal 
 - one ECS Fargate service running the application container
 - one PostgreSQL RDS instance as the canonical store
 - one `nyaaywatch-` prefixed S3 bucket for raw and normalized artifacts
-- CloudWatch Logs for basic container logging
+- CloudWatch Logs for structured application logging
+- CloudWatch alarms for health-check failure, ALB target 5xx responses, and structured app errors
+- one CloudWatch dashboard for release-time operational review
 - an operator validation flow that exercises fetch, inspect, publish, replay, and rollback against staging
 
 ## Resources
@@ -14,8 +16,11 @@ The staging stack template provisions:
 
 - S3 bucket tagged `project=nyaaywatch env=staging`
 - CloudWatch log group `/ecs/nyaaywatch-staging`
+- SNS topic for alarm fan-out
+- CloudWatch dashboard `nyaaywatch-staging`
 - ECS cluster, task definition, and Fargate service
 - public Application Load Balancer
+- HTTPS listener with an ACM certificate
 - PostgreSQL RDS instance in private subnets
 - IAM roles granting the task access to the staging bucket and CloudWatch logs
 
@@ -31,6 +36,12 @@ Deployment helper:
 infra/aws/staging/deploy-stack.sh
 ```
 
+Image build helper:
+
+```bash
+infra/aws/staging/build-and-push.sh
+```
+
 ## Required Inputs
 
 You need:
@@ -38,6 +49,11 @@ You need:
 - an ECR image URI for the app container
 - a strong database password
 - an operator API token for staging
+- an ACM certificate ARN for the public hostname
+
+Optional:
+
+- an alarm email address to subscribe to the staging SNS topic
 
 The stack creates its own isolated VPC with:
 
@@ -57,10 +73,23 @@ Recommended naming:
 
 - stack name: `nyaaywatch-staging`
 - ECR repo: `nyaaywatch-staging`
+- alarm dashboard: `nyaaywatch-staging`
 
 ## Deploy
 
-1. Build and push the application image to ECR.
+1. Build and push the application image to ECR as `linux/amd64`.
+
+```bash
+./infra/aws/staging/build-and-push.sh \
+  723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:alpha-20260415
+```
+
+Why the explicit platform:
+
+- the staging ECS service runs on Fargate with `linux/amd64`
+- a default Apple Silicon build can push a manifest that Fargate cannot pull
+- the helper script forces the correct platform and pushes directly to ECR
+
 2. Deploy the CloudFormation stack:
 
 ```bash
@@ -68,7 +97,9 @@ Recommended naming:
   nyaaywatch-staging \
   723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
   '<operator-token>' \
-  '<database-password>'
+  '<database-password>' \
+  '<certificate-arn>' \
+  '[alarm-email]'
 ```
 
 3. Wait for the stack to finish and note the outputs:
@@ -79,8 +110,17 @@ Recommended naming:
    - `ArtifactsBucketName`
    - `DatabaseEndpoint`
    - `LogGroupName`
+   - `AlarmTopicArn`
+   - `DashboardName`
+   - `CertificateArn`
 
 4. Copy the live values into `docs/DEPLOYMENT_STATUS.md` so the current staging URL and resource names are discoverable without re-querying AWS.
+
+Note:
+
+- once an ACM certificate for `nyaaywatch.in` is attached, the direct ALB hostname will not match that certificate name on `https://...elb.amazonaws.com`
+- use the public hostname for browser verification
+- use AWS metrics and logs for low-level ALB verification rather than relying on the raw ALB HTTPS hostname
 
 ## Operator Validation Flow
 
@@ -141,6 +181,13 @@ curl -fsSL -X POST "http://<service-url>/operator/publications/<publication-id>/
 aws logs tail /ecs/nyaaywatch-staging --follow --region ap-south-1
 ```
 
+8. Review alarms and dashboard:
+
+```bash
+aws cloudwatch describe-alarms --region ap-south-1
+aws cloudwatch get-dashboard --dashboard-name nyaaywatch-staging --region ap-south-1
+```
+
 ## Current Status
 
 `P4.5` was completed on 2026-04-15 against the live `nyaaywatch-staging` stack in `ap-south-1`.
@@ -154,6 +201,14 @@ Validated successfully:
 - `POST /operator/runs/:runId/replay`
 - `POST /operator/publications/:publicationId/rollback`
 - `GET /v1/stats/himachal` after rollback to confirm the public API reads the active publication pointer
+
+Operational hardening added on 2026-04-15:
+
+- CloudWatch dashboard `nyaaywatch-staging`
+- SNS alarm topic `arn:aws:sns:ap-south-1:723951822728:nyaaywatch-staging-alerts`
+- ACM certificate output `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
+- structured JSON request and operator logs in `/ecs/nyaaywatch-staging`
+- a documented `linux/amd64` image build path for Apple Silicon deploys
 
 Temporary proof stacks from earlier failed attempts can be deleted after validation; they are not part of the long-lived staging shape.
 

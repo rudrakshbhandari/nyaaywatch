@@ -121,18 +121,18 @@ function buildFlagReason(
   },
 ): string {
   if (district.filingVsDisposalGap > 0 && context.isFlagged) {
-    return "Monthly institutions exceeded disposals while pending volume remains among the state's highest.";
+    return "New cases are coming in faster than this district is clearing them, and the queue is already among the state's biggest.";
   }
 
   if (district.medianAgeDays > context.stateMedianAgeDays && context.isFlagged) {
-    return "The estimated median pending age remains above the statewide midpoint in this published snapshot.";
+    return "People appear to be waiting longer here than in much of Himachal, based on the latest published snapshot.";
   }
 
   if (district.disposalRate < context.stateDisposalRate) {
-    return "Monthly disposal is running below the statewide rate in the latest published snapshot.";
+    return "This district is clearing cases more slowly than the Himachal average in the latest published snapshot.";
   }
 
-  return "This district is not one of the strongest flagged signals in the current published snapshot.";
+  return "This district is not among the clearest pressure signals in the current published snapshot.";
 }
 
 function buildSummary(
@@ -144,8 +144,8 @@ function buildSummary(
   },
   isFlagged: boolean,
 ): string {
-  const sentence = `${district.districtName} shows ${district.backlogCases.toLocaleString("en-IN")} pending cases, an estimated median pending age of ${district.medianAgeDays} days, and a ${district.disposalRate.toFixed(1)}% disposal rate.`;
-  return isFlagged ? `${sentence} It remains a priority district for closer inspection in this snapshot.` : sentence;
+  const sentence = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. A typical pending case falls around ${district.medianAgeDays} days old, and the district cleared ${district.disposalRate.toFixed(1)}% as many cases as it received last month.`;
+  return isFlagged ? `${sentence} It stays on the watchlist in this snapshot.` : sentence;
 }
 
 function inferMedianAgeDays(ageBuckets: {

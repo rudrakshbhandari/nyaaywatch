@@ -1,5 +1,5 @@
 import request from "supertest";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   createTestApp,
@@ -47,13 +47,16 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
-    expect(homepage.text).toContain("Published snapshot");
+    expect(homepage.text).toContain("published snapshot");
     expect(homepage.text).toContain("Freshness and quality state");
+    expect(homepage.text).toContain("See where cases are getting stuck in Himachal Pradesh.");
+    expect(homepage.text).toContain("Cases cleared for every 100 filed");
+    expect(homepage.text).toContain("Explain Cases cleared for every 100 filed");
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
-    expect(districtsPage.text).toContain("District workspace");
-    expect(districtsPage.text).toContain("Flagged signals only");
+    expect(districtsPage.text).toContain("Find the districts under the most pressure.");
+    expect(districtsPage.text).toContain("Watchlist only");
     expect(districtsPage.text).toContain("Kangra");
 
     const districtPage = await request(app).get("/districts/kangra");
@@ -63,7 +66,7 @@ describe("HTTP routes", () => {
 
     const dataPage = await request(app).get("/data");
     expect(dataPage.status).toBe(200);
-    expect(dataPage.text).toContain("Data downloads");
+    expect(dataPage.text).toContain("Download exactly what the public site is showing.");
     expect(dataPage.text).toContain("CSV/API parity");
 
     const districtCsv = await request(app).get("/data/districts.csv");
@@ -80,6 +83,23 @@ describe("HTTP routes", () => {
     expect(methodologyPage.status).toBe(200);
     expect(methodologyPage.text).toContain("How the public metrics are derived");
     expect(methodologyPage.text).toContain("Published methodology and snapshot lineage");
+  });
+
+  it("emits structured request logs for non-health routes and skips the ALB health check noise", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service);
+    const infoSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    await request(app).get("/");
+    await request(app).get("/health");
+
+    const messages = infoSpy.mock.calls.map((call) => String(call[0]));
+    expect(messages.some((message) => message.includes("\"event\":\"http_request\""))).toBe(true);
+    expect(messages.some((message) => message.includes("\"path\":\"/health\""))).toBe(false);
+
+    infoSpy.mockRestore();
   });
 
   it("protects operator endpoints and exposes fetch, publish, replay, and rollback flows", async () => {
