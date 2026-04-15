@@ -128,6 +128,8 @@ function createTestConfig(): AppConfig {
     DEPLOY_ENV: "dev",
     OPERATOR_API_TOKEN: "operator-test-token",
     STATE_CODE: "HP",
+    CANONICAL_HOST: "nyaaywatch.in",
+    LEGACY_HOSTS: "nyaaywatch.com,www.nyaaywatch.com",
   });
 }
 

@@ -21,7 +21,7 @@ Recommendation:
 ## Certificate
 
 - [ ] Request an ACM certificate in the same AWS region as the load balancer
-- [ ] Include every hostname that will serve the app, such as root plus `www` or `alpha`
+- [ ] Include every hostname that will serve or redirect through the app, such as `nyaaywatch.in`, `www.nyaaywatch.in`, `nyaaywatch.com`, and `www.nyaaywatch.com`
 - [ ] Complete DNS validation
 - [ ] Wait for certificate status `ISSUED`
 
@@ -32,6 +32,7 @@ Recommendation:
 - [ ] Attach the ACM certificate to the HTTPS listener
 - [ ] Forward HTTPS traffic to the existing application target group
 - [ ] Keep or add an HTTP listener that redirects `80 -> 443`
+- [ ] Add host-based redirect rules so `nyaaywatch.com` and `www.nyaaywatch.com` return `301` to `https://nyaaywatch.in`
 
 ## DNS
 

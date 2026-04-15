@@ -16,6 +16,22 @@ import { PublishedSnapshotService } from "../services/published-snapshot-service
 export function createApp(config: AppConfig, service: PublishedSnapshotService) {
   const app = express();
   app.use(express.json());
+  app.set("trust proxy", true);
+  app.use((request, response, next) => {
+    const requestHost = readRequestHost(request);
+    if (!shouldRedirectToCanonicalHost(config, requestHost)) {
+      next();
+      return;
+    }
+
+    const protocol = request.get("x-forwarded-proto") ?? request.protocol;
+    const queryIndex = request.originalUrl.indexOf("?");
+    const path = queryIndex >= 0 ? request.originalUrl.slice(0, queryIndex) : request.originalUrl;
+    const query = queryIndex >= 0 ? request.originalUrl.slice(queryIndex) : "";
+
+    response.redirect(301, `${protocol}://${config.CANONICAL_HOST}${path}${query}`);
+  });
+
   app.use((request, response, next) => {
     const startedAt = Date.now();
 
@@ -249,6 +265,18 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   });
 
   return app;
+}
+
+function readRequestHost(request: Request) {
+  return (request.get("x-forwarded-host") ?? request.get("host") ?? "").split(":")[0].trim().toLowerCase();
+}
+
+function shouldRedirectToCanonicalHost(config: AppConfig, requestHost: string) {
+  if (!config.CANONICAL_HOST || requestHost.length === 0) {
+    return false;
+  }
+
+  return config.LEGACY_HOSTS.includes(requestHost) && requestHost !== config.CANONICAL_HOST;
 }
 
 function asyncRoute(
