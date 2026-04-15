@@ -16,12 +16,12 @@ Keep this file updated whenever the staging stack changes, a public alpha URL is
 
 - Stack name: `nyaaywatch-staging`
 - Region: `ap-south-1`
-- Public URL: `TODO`
-- ECS service: `TODO`
-- ALB DNS name: `TODO`
+- Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
+- ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
+- ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
-- Artifacts bucket: `TODO`
-- Database endpoint: `TODO`
+- Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
+- Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
 
 ### Public Alpha
@@ -83,3 +83,19 @@ Before treating a deployment as the public alpha:
 1. fill in this file with the actual live URL and resource names
 2. run `docs/ALPHA_RELEASE_CHECKLIST.md`
 3. confirm the domain cutover steps in `docs/DOMAIN_CUTOVER_CHECKLIST.md` if a custom domain is involved
+
+## Last Verified
+
+- Verified on: `2026-04-14`
+- Verified by: `codex-cli`
+- Health check:
+
+```bash
+curl -fsSL http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com/health
+```
+
+- Result:
+
+```json
+{"ok":true,"region":"ap-south-1","stateCode":"HP"}
+```
