@@ -57,7 +57,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - Playwright responsive/accessibility QA covering mobile trust surfaces, keyboard navigation, and axe smoke checks across the public routes
 - persistent-stack integration coverage for fetch, publish, replay, and rollback using local Docker PostgreSQL plus LocalStack S3 with the real `pg` and AWS SDK code paths
 
-Staging validation remains required so the AWS-hosted runtime and operator flow are proven outside local development.
+Staging validation completed on 2026-04-15 with a live AWS `ap-south-1` stack covering `/health`, operator `fetch`, `inspect`, `publish`, `replay`, `rollback`, and confirmation that the public stats endpoint reflects the active publication after rollback.
 
 ## Implementation Note
 

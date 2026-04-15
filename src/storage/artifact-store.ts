@@ -1,6 +1,7 @@
 import {
   CopyObjectCommand,
   CreateBucketCommand,
+  GetBucketTaggingCommand,
   GetObjectCommand,
   HeadBucketCommand,
   HeadObjectCommand,
@@ -26,6 +27,8 @@ export interface ArtifactStore {
   downloadJson<T>(key: string): Promise<T>;
 }
 
+type BucketTag = { Key: string; Value: string };
+
 export class S3ArtifactStore implements ArtifactStore {
   private readonly client: S3Client;
 
@@ -50,12 +53,18 @@ export class S3ArtifactStore implements ArtifactStore {
       await this.applyBucketTags();
       return;
     } catch {
-      await this.client.send(
-        new CreateBucketCommand({
-          Bucket: this.config.S3_BUCKET,
-          CreateBucketConfiguration: { LocationConstraint: this.config.AWS_REGION },
-        }),
-      );
+      try {
+        await this.client.send(
+          new CreateBucketCommand({
+            Bucket: this.config.S3_BUCKET,
+            CreateBucketConfiguration: { LocationConstraint: this.config.AWS_REGION },
+          }),
+        );
+      } catch (error) {
+        if (!isBucketAlreadyOwnedError(error)) {
+          throw error;
+        }
+      }
       await this.applyBucketTags();
     }
   }
@@ -133,18 +142,78 @@ export class S3ArtifactStore implements ArtifactStore {
   }
 
   private async applyBucketTags(): Promise<void> {
+    const existingTags = await this.getExistingBucketTags();
+    const desiredTags: BucketTag[] = [
+      { Key: "project", Value: "nyaaywatch" },
+      { Key: "env", Value: this.config.DEPLOY_ENV },
+    ];
+
+    if (bucketHasDesiredTags(existingTags, desiredTags)) {
+      return;
+    }
+
     await this.client.send(
       new PutBucketTaggingCommand({
         Bucket: this.config.S3_BUCKET,
         Tagging: {
-          TagSet: [
-            { Key: "project", Value: "nyaaywatch" },
-            { Key: "env", Value: this.config.DEPLOY_ENV },
-          ],
+          TagSet: mergeBucketTags(existingTags, desiredTags),
         },
       }),
     );
   }
+
+  private async getExistingBucketTags(): Promise<BucketTag[]> {
+    try {
+      const response = await this.client.send(
+        new GetBucketTaggingCommand({
+          Bucket: this.config.S3_BUCKET,
+        }),
+      );
+
+      return (response.TagSet ?? []).flatMap((tag) =>
+        tag.Key && tag.Value ? [{ Key: tag.Key, Value: tag.Value }] : [],
+      );
+    } catch (error) {
+      const name =
+        typeof error === "object" && error !== null && "name" in error && typeof error.name === "string"
+          ? error.name
+          : undefined;
+
+      if (name === "NoSuchTagSet") {
+        return [];
+      }
+
+      throw error;
+    }
+  }
+}
+
+function isBucketAlreadyOwnedError(error: unknown): boolean {
+  const name =
+    typeof error === "object" && error !== null && "name" in error && typeof error.name === "string"
+      ? error.name
+      : undefined;
+
+  return name === "BucketAlreadyOwnedByYou" || name === "BucketAlreadyExists";
+}
+
+function mergeBucketTags(
+  existingTags: BucketTag[],
+  desiredTags: BucketTag[],
+): BucketTag[] {
+  const mergedTags = new Map(existingTags.map((tag) => [tag.Key, tag.Value]));
+
+  for (const tag of desiredTags) {
+    mergedTags.set(tag.Key, tag.Value);
+  }
+
+  return Array.from(mergedTags, ([Key, Value]) => ({ Key, Value }));
+}
+
+function bucketHasDesiredTags(existingTags: BucketTag[], desiredTags: BucketTag[]): boolean {
+  const existingTagMap = new Map(existingTags.map((tag) => [tag.Key, tag.Value]));
+
+  return desiredTags.every((tag) => existingTagMap.get(tag.Key) === tag.Value);
 }
 
 export class InMemoryArtifactStore implements ArtifactStore {
