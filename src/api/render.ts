@@ -183,9 +183,10 @@ export function renderLayout(title: string, body: string): string {
         line-height: 0.95;
       }
       h1 {
-        font-size: clamp(3.2rem, 7vw, 6rem);
+        font-size: clamp(2.85rem, 5vw, 4.8rem);
         margin-bottom: 16px;
         text-wrap: balance;
+        line-height: 0.98;
       }
       h2 {
         font-size: clamp(2rem, 3.4vw, 3rem);
@@ -200,12 +201,20 @@ export function renderLayout(title: string, body: string): string {
         max-width: 62ch;
         color: var(--muted);
       }
+      .display-title {
+        font-size: clamp(4rem, 7vw, 6rem);
+        letter-spacing: -0.035em;
+      }
       .hero {
         display: grid;
         grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.95fr);
         gap: 26px;
         align-items: stretch;
         margin-bottom: 24px;
+      }
+      .hero-single {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 980px;
       }
       .hero > :only-child {
         grid-column: 1 / -1;
@@ -225,6 +234,13 @@ export function renderLayout(title: string, body: string): string {
         padding: 22px;
         display: grid;
         gap: 18px;
+        align-content: start;
+      }
+      .hero-single .hero-copy {
+        max-width: 980px;
+      }
+      .hero-copy > :last-child {
+        margin-bottom: 0;
       }
       .eyebrow {
         text-transform: uppercase;
@@ -617,6 +633,15 @@ export function renderLayout(title: string, body: string): string {
         }
       }
       @media (max-width: 720px) {
+        h1 {
+          font-size: clamp(2.7rem, 13vw, 4.25rem);
+        }
+        .display-title {
+          font-size: clamp(3.35rem, 17vw, 5rem);
+        }
+        .lede {
+          font-size: 1rem;
+        }
         header {
           align-items: flex-start;
         }
@@ -720,7 +745,7 @@ export function renderHomePage(snapshot: PublishedSnapshot): string {
         <article class="hero-copy">
           <div class="kicker"><strong>Public alpha</strong><span>Himachal Pradesh only</span></div>
           <div class="eyebrow">Common-language justice tracking</div>
-          <h1>See where cases are getting stuck in Himachal Pradesh.</h1>
+          <h1 class="display-title">See where cases are getting stuck in Himachal Pradesh.</h1>
           <p class="lede">NyaayWatch turns one published court snapshot into a calm public briefing. You can see the size of the queue, which districts need a closer look, and what the numbers actually mean before you share them.</p>
           <p class="rail-note">This is a dated public snapshot with stored evidence behind it, not a live court feed.</p>
           <div class="action-links">
@@ -827,7 +852,7 @@ export function renderDistrictsPage(snapshot: PublishedSnapshot, options: Distri
         <article class="hero-copy">
           <div class="kicker"><strong>District workspace</strong><span>Browse, compare, inspect</span></div>
           <div class="eyebrow">District-by-district scan</div>
-          <h1>Find the districts under the most pressure.</h1>
+          <h1 class="display-title">Find the districts under the most pressure.</h1>
           <p class="lede">Sort by queue size, case-clearing pace, waiting time, or file-clear gap. Open any district row for the shareable evidence page.</p>
         </article>
         <aside class="hero-panel">
@@ -991,7 +1016,7 @@ export function renderDataPage(snapshot: PublishedSnapshot): string {
           <a href="/api">API Docs</a>
         </nav>
       </header>
-      <section class="hero">
+      <section class="hero hero-single">
         <article class="hero-copy">
           <div class="kicker"><strong>Data access</strong><span>Published snapshot only</span></div>
           <div class="eyebrow">CSV and API</div>
@@ -1057,7 +1082,7 @@ export function renderMethodologyPage(
           <a href="/api">API Docs</a>
         </nav>
       </header>
-      <section class="hero">
+      <section class="hero hero-single">
         <article class="hero-copy">
           <div class="kicker"><strong>Methodology</strong><span>How every public number is built</span></div>
           <div class="eyebrow">Trust and reproducibility</div>
@@ -1123,7 +1148,7 @@ export function renderApiPage(): string {
           <a href="/methodology">Methodology</a>
         </nav>
       </header>
-      <section class="hero">
+      <section class="hero hero-single">
         <article class="hero-copy">
           <div class="kicker"><strong>API</strong><span>Published read model</span></div>
           <div class="eyebrow">Developer access</div>
