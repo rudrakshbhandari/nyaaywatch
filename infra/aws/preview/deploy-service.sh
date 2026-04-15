@@ -65,28 +65,6 @@ else
     >/dev/null
 fi
 
-for _ in {1..60}; do
-  status="$(
-    aws apprunner describe-service \
-      --region "$region" \
-      --service-arn "$service_arn" \
-      --query "Service.Status" \
-      --output text
-  )"
-
-  case "$status" in
-    RUNNING)
-      break
-      ;;
-    CREATE_FAILED|DELETE_FAILED|OPERATION_FAILED)
-      echo "App Runner service $service_name entered failure state: $status" >&2
-      exit 1
-      ;;
-  esac
-
-  sleep 10
-done
-
 preview_url="$(
   aws apprunner describe-service \
     --region "$region" \
@@ -100,13 +78,17 @@ if [[ -z "$preview_url" || "$preview_url" == "None" ]]; then
   exit 1
 fi
 
-for _ in {1..12}; do
-  if curl --fail --silent --show-error "https://$preview_url/health" >/dev/null; then
-    echo "https://$preview_url"
-    exit 0
-  fi
-  sleep 10
-done
+status="$(
+  aws apprunner describe-service \
+    --region "$region" \
+    --service-arn "$service_arn" \
+    --query "Service.Status" \
+    --output text
+)"
 
-echo "App Runner service $service_name reached RUNNING but /health never returned success." >&2
-exit 1
+if [[ "$status" == "CREATE_FAILED" || "$status" == "DELETE_FAILED" || "$status" == "OPERATION_FAILED" ]]; then
+  echo "App Runner service $service_name entered failure state: $status" >&2
+  exit 1
+fi
+
+echo "https://$preview_url"
