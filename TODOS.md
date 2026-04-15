@@ -10,25 +10,13 @@ Use this file for:
 
 ## Review
 
-### Source Terms And Redistribution Review
-
-**What:** Define the rules for storing, exposing, and redistributing raw snapshots versus normalized exports.
-
-**Why:** NyaayWatch is open source and source-aware; without an explicit redistribution posture, future data/export decisions can drift into legal or product ambiguity.
-
-**Context:** The approved design keeps code, schemas, methodology, and API contracts open, but intentionally does not assume that raw upstream artifacts can be redistributed without constraints. Review NJDG/public-source terms, decide what evidence packs can bundle directly, and lock the citation/attribution rules for raw artifacts versus normalized outputs.
-
-**Effort:** M
-**Priority:** P1
-**Depends on:** Reviewing upstream source terms and deciding how evidence packs cite or bundle source material
-
 ### Multi-State Expansion Readiness Gates
 
 **What:** Define explicit readiness criteria for expanding beyond Himachal Pradesh.
 
 **Why:** “Himachal first” only stays disciplined if expansion has measurable gates instead of happening because momentum or ambition makes it feel time.
 
-**Context:** The approved design says wider Indian coverage should happen only after the trust model proves itself. Capture the concrete gates, likely scrape stability, publish safety, methodology maturity, API stability, anomaly credibility, and operational reliability, so future scope expansion does not bypass the reasoning that shaped this alpha.
+**Context:** The approved design says wider Indian coverage should happen only after the trust model proves itself. The gating policy now lives in `docs/MULTI_STATE_EXPANSION_GATES.md`; update it when the readiness bar changes or when a candidate geography is reviewed against it.
 
 **Effort:** M
 **Priority:** P2
@@ -47,6 +35,16 @@ Use this file for:
 **Depends on:** First implementation slice landing so the extracted design system reflects real component usage
 
 ## Completed
+
+### Source Terms And Redistribution Review
+
+- completed in `docs/PUBLIC_DATA_EXPOSURE_POLICY.md`
+- the current alpha now explicitly limits public exposure to published read-model outputs and citation metadata while keeping raw upstream captures and unpublished operator artifacts internal
+
+### Multi-State Expansion Readiness Gates
+
+- completed in `docs/MULTI_STATE_EXPANSION_GATES.md`
+- expansion beyond Himachal now requires explicit gates for source viability, deterministic normalization, trust parity, publish safety, methodology defensibility, product IA discipline, and operating evidence
 
 ### Responsive And Accessibility Trust-Surface QA
 

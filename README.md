@@ -45,6 +45,7 @@ The approved implementation direction is:
 - [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
 - [Public data exposure policy](docs/PUBLIC_DATA_EXPOSURE_POLICY.md)
 - [Alpha release checklist](docs/ALPHA_RELEASE_CHECKLIST.md)
+- [Multi-state expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
 - [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
