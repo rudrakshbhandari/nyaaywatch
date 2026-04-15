@@ -78,6 +78,25 @@ Keep boundaries legible as the repo grows:
 - Do not ship placeholder logic, fake integrations, or open-ended TODOs as finished work.
 - Run relevant tests yourself whenever feasible. If tests fail or cannot run, report the exact command, the output, and whether the blocker is repo-side or external.
 
+## Autonomous Execution
+
+- Do everything you reasonably can yourself before asking the user for help.
+- Do not ask the user to run commands, edit files, install dependencies, or debug work the agent can perform directly.
+- When the path is clear, act on reasonable assumptions instead of stopping for confirmation.
+- Try multiple programmatic approaches before concluding that something is blocked.
+
+Ask the user only when:
+
+1. required information is truly unavailable in the repo or environment, such as passwords, API keys, or 2FA codes
+2. a physical or manual action is required outside the agent's execution environment
+3. the system blocks further execution and there is no safe programmatic workaround
+
+If asking becomes necessary, include:
+
+- what you tried
+- why it failed
+- the minimal input or action needed from the user
+
 ## Public Claim Discipline
 
 - Write calm, exact, evidence-first copy.
