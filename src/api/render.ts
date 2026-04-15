@@ -410,7 +410,7 @@ export function renderDistrictsPage(snapshot: PublishedSnapshot, options: Distri
         <article class="card">
           <div class="muted">Flagged districts</div>
           <h2>${snapshot.stats.flaggedDistricts}</h2>
-          <p class="inline-note">These are the strongest current snapshot signals, not verdicts.</p>
+          <p class="inline-note">These are the strongest current snapshot flags for closer inspection.</p>
         </article>
         <article class="card">
           <div class="muted">Highest backlog</div>
@@ -505,7 +505,7 @@ export function renderDistrictPage(
           <article class="callout">
             <div class="eyebrow">Caveats</div>
             <h2>How to read this page</h2>
-            <p>District signals are descriptive flags from the current published snapshot. They do not establish legal fault, court performance intent, or live status.</p>
+            <p>District signals are descriptive flags from the current published snapshot. They do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed.</p>
             <p class="muted">If the freshness state turns stale, this page continues serving the last operator-published snapshot rather than unpublished or partial data.</p>
           </article>
         </div>
@@ -562,7 +562,7 @@ export function renderDataPage(snapshot: PublishedSnapshot): string {
         <article class="callout">
           <div class="eyebrow">Export caveats</div>
           <h2>What these files do and do not contain</h2>
-          <p>These exports contain normalized snapshot read-model fields only. They do not redistribute raw NJDG HTML artifacts or imply case-level completeness.</p>
+          <p>These exports contain normalized snapshot read-model fields only. Raw capture bundles and operator evidence artifacts stay outside the public download boundary.</p>
           <p class="muted">Use the methodology page for formula details and the district pages for citation-ready narrative context.</p>
         </article>
       </section>
@@ -595,7 +595,7 @@ export function renderMethodologyPage(
         <article class="callout">
           <div class="eyebrow">Scope and semantics</div>
           <h2>Alpha scope</h2>
-          <p>Himachal Pradesh only. NyaayWatch is snapshot-based and evidence-first. It does not make live, predictive, or legal-analysis claims, and it does not expose unpublished run state.</p>
+          <p>Himachal Pradesh only. NyaayWatch is snapshot-based and evidence-first. It publishes dated aggregates after operator review and keeps unpublished run state private.</p>
           <p class="muted">Historical context is built from prior published snapshots, not from raw captured pages shown directly to the public.</p>
         </article>
         <article class="callout">
@@ -699,7 +699,7 @@ function renderTrustStatus(snapshot: PublishedSnapshot["snapshot"]): string {
       ? `This public surface is serving a stale but previously published snapshot from ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}. It remains visible so the site never falls through to partial unpublished data.`
       : snapshot.qualityState === "partial"
         ? "This snapshot is marked partial. Public trust surfaces should treat it as incomplete until a full publish replaces it."
-        : `This public surface is showing the latest safe published snapshot from ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}, not a live feed.`;
+        : `This public surface is showing the latest safe published snapshot from ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} after operator review.`;
 
   return `
     <section class="status-banner ${escapeHtml(snapshot.qualityState)}">

@@ -15,7 +15,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 
 - homepage loads only the latest published snapshot, never partial run data
 - district page explains why a district was flagged and shows matching snapshot / methodology metadata
-- evidence pack / CSV export matches the same published snapshot the UI shows
+- citation surface / CSV export matches the same published snapshot the UI shows
 - operator can inspect a failed run, replay it safely, and block unsafe publish
 - API responses match the same published snapshot numbers shown in the public UI
 - API schema remains stable across snapshot updates and methodology version changes
@@ -35,7 +35,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 
 - scheduled run -> fetch -> extract -> normalize -> derive -> publish snapshot -> homepage/API reflect new published data
 - failed run -> operator review -> replay or block publish -> public still sees last known good snapshot
-- citizen flow: homepage -> district page -> evidence pack download
+- citizen flow: homepage -> district page -> citation surface / CSV download
 - reporter flow: district trend -> methodology -> export
 - developer flow: `/v1/stats/himachal` reproduces homepage toplines with stable schema
 
@@ -46,6 +46,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - browser E2E for the public trust flow
 - API contract tests with stable schema snapshots
 - operator replay / rollback tests
+- public-copy guardrail tests for published-snapshot framing
 
 ## Current Implemented Coverage
 
@@ -56,6 +57,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - API contract tests enforcing stable schemas for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
 - Playwright responsive/accessibility QA covering mobile trust surfaces, keyboard navigation, and axe smoke checks across the public routes
 - persistent-stack integration coverage for fetch, publish, replay, and rollback using local Docker PostgreSQL plus LocalStack S3 with the real `pg` and AWS SDK code paths
+- route-level copy guardrail tests enforcing published-snapshot, non-verdict, non-continuous-refresh public wording
 
 Staging validation completed on 2026-04-15 with a live AWS `ap-south-1` stack covering `/health`, operator `fetch`, `inspect`, `publish`, `replay`, `rollback`, and confirmation that the public stats endpoint reflects the active publication after rollback.
 

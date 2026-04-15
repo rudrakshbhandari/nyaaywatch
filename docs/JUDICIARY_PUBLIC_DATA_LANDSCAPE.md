@@ -184,3 +184,4 @@ What should change is documentation clarity:
 - future contributors should have a clear source inventory
 - the repo should be explicit that cross-tier public coverage exists, but in asymmetrical forms
 - the repo should be explicit that "all courts" is a staged aggregate-observability roadmap, not an immediate full-record claim
+- the repo should record a launch-specific public exposure policy for raw artifacts versus normalized published exports

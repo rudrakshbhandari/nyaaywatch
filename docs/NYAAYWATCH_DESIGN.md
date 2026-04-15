@@ -130,7 +130,7 @@ The first public page should include:
 - trend chart for backlog direction
 - anomaly callouts
 - visible trust metadata near headline metrics
-- lightweight public-action surfaces such as district permalinks and evidence packs
+- lightweight public-action surfaces such as district permalinks, citation metadata, and CSV exports
 - methodology page
 - download CSV button
 - API docs link
@@ -188,7 +188,7 @@ Homepage
   -> Open district permalink
       -> Read district explanation
       -> Inspect evidence and methodology context
-      -> Download evidence pack / CSV
+      -> Download citation-ready CSV
   -> Open methodology page
   -> Open API docs
 ```
@@ -234,7 +234,7 @@ District pages should prioritize:
 3. Key district metrics and directional change
 4. Short anomaly explanation written as a flagged signal, not a verdict
 5. Supporting chart or historical table
-6. Evidence pack / CSV export actions
+6. Citation metadata and CSV export actions
 7. Caveats, quality state, and methodology links
 
 District detail should not live primarily in modals, side panels, or expandable table rows. The district ranking table is the discovery surface; the district evidence page is the durable inspection and citation surface. Every district row should link to a dedicated permalink page that can be shared by reporters, civic groups, and citizens without requiring homepage context.
@@ -488,7 +488,7 @@ The product should not begin in an alarmist tone. It should first help a user un
 | 2 | Scans statewide signals | Curious and alert | District preview, trend surface, and flagged signals that show where to look next without shouting |
 | 3 | Opens district index or district page | Focused and investigative | Strong ranking or flagged context, direct drill-down path, and plain-language summaries |
 | 4 | Reads district explanation | Concerned, but still grounded | Short anomaly explanation framed as a signal with supporting numbers and caveats |
-| 5 | Checks evidence pack, methodology, or exports | Reassured and confident | Snapshot metadata, formula links, quality badges, and reproducible evidence actions |
+| 5 | Checks citation metadata, methodology, or exports | Reassured and confident | Snapshot metadata, formula links, quality badges, and reproducible evidence actions |
 | 6 | Shares or cites the finding | Safe to reference publicly | Durable permalink, exportability, clear dates, source attribution, and caveat visibility |
 
 ### Time-Horizon Design

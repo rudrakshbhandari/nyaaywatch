@@ -25,6 +25,7 @@ The current repository now includes the Phase 3 public trust surfaces on top of 
 - operator fetch, inspect, publish, replay, and rollback controls
 - homepage, district workspace, district evidence, data download, methodology, and API surfaces backed by the latest published snapshot
 - regression tests for migration safety, real-source fixture capture, publish gating, replay and rollback behavior, district history/export behavior, and public/operator route behavior
+- Phase 5 launch policy docs for public exposure, release readiness, and public-copy guardrails
 
 ## Core Direction
 
@@ -42,6 +43,8 @@ The approved implementation direction is:
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
+- [Public data exposure policy](docs/PUBLIC_DATA_EXPOSURE_POLICY.md)
+- [Alpha release checklist](docs/ALPHA_RELEASE_CHECKLIST.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
 - [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
