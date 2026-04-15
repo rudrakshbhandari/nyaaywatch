@@ -144,8 +144,10 @@ delete_and_wait() {
   while :; do
     local status
     status="$(describe_status "$arn")"
-    if [[ "$status" == "MISSING" ]]; then
-      log "service deleted"
+    # App Runner keeps the service around with Status=DELETED for a short
+    # window after delete completes; both DELETED and MISSING mean done.
+    if [[ "$status" == "MISSING" || "$status" == "DELETED" ]]; then
+      log "service deleted (status: $status)"
       return 0
     fi
     if (( $(date +%s) >= deadline )); then
@@ -153,6 +155,26 @@ delete_and_wait() {
       return 1
     fi
     log "delete in progress (status: $status), waiting ${poll_interval_seconds}s..."
+    sleep "$poll_interval_seconds"
+  done
+}
+
+wait_for_name_available() {
+  # After delete, the service name may briefly remain reserved. Poll
+  # list-services until the name is gone so the next create-service call
+  # doesn't hit a ServiceName conflict.
+  local deadline=$(($(date +%s) + 180))
+  while :; do
+    local found
+    found="$(find_service_arn)"
+    if [[ -z "$found" || "$found" == "None" ]]; then
+      return 0
+    fi
+    if (( $(date +%s) >= deadline )); then
+      log "service name $service_name still reserved after 180s; proceeding anyway"
+      return 0
+    fi
+    log "waiting for service name $service_name to be released..."
     sleep "$poll_interval_seconds"
   done
 }
@@ -197,9 +219,11 @@ if [[ -n "$service_arn" && "$service_arn" != "None" ]]; then
         log "failed to delete stuck service; aborting"
         exit 1
       fi
+      wait_for_name_available
       service_arn="$(create_service)"
       ;;
-    MISSING|None|"")
+    DELETED|MISSING|None|"")
+      wait_for_name_available
       service_arn="$(create_service)"
       ;;
     *)
