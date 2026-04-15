@@ -1,6 +1,7 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 
 import type { AppConfig } from "../config/env.js";
+import { logError, logInfo } from "../lib/logger.js";
 import {
   renderApiPage,
   renderDataPage,
@@ -15,6 +16,25 @@ import { PublishedSnapshotService } from "../services/published-snapshot-service
 export function createApp(config: AppConfig, service: PublishedSnapshotService) {
   const app = express();
   app.use(express.json());
+  app.use((request, response, next) => {
+    const startedAt = Date.now();
+
+    response.on("finish", () => {
+      if (request.path === "/health") {
+        return;
+      }
+
+      logInfo("http_request", {
+        method: request.method,
+        path: request.originalUrl,
+        statusCode: response.statusCode,
+        durationMs: Date.now() - startedAt,
+        isOperatorRoute: request.path.startsWith("/operator/"),
+      });
+    });
+
+    next();
+  });
 
   app.get("/health", (_request, response) => {
     response.json({ ok: true, region: config.AWS_REGION, stateCode: config.STATE_CODE });
@@ -219,6 +239,12 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
 
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";
+    logError("http_request_failed", {
+      method: _request.method,
+      path: _request.originalUrl,
+      statusCode: 500,
+      error: message,
+    });
     response.status(500).json({ error: message });
   });
 

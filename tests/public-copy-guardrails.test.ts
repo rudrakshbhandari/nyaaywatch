@@ -28,11 +28,11 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/",
-        requiredText: "published Himachal Pradesh snapshot",
+        requiredText: "This is a dated public snapshot with stored evidence behind it, not a live court feed.",
       },
       {
         path: "/districts",
-        requiredText: "current snapshot flags for closer inspection",
+        requiredText: "Find the districts under the most pressure.",
       },
       {
         path: "/districts/kangra",

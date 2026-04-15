@@ -29,6 +29,16 @@ Parameters:
   OperatorApiToken:
     Type: String
     NoEcho: true
+  CertificateArn:
+    Type: String
+    Description: ACM certificate ARN for the public HTTPS listener.
+  AlarmEmail:
+    Type: String
+    Default: ""
+    Description: Optional email address to subscribe to staging alarms.
+
+Conditions:
+  HasAlarmEmail: !Not [!Equals [!Ref AlarmEmail, ""]]
 
 Resources:
   Vpc:
@@ -138,6 +148,29 @@ Resources:
     Properties:
       LogGroupName: !Sub "/ecs/${ProjectName}-${EnvironmentName}"
       RetentionInDays: 14
+
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${ProjectName}-${EnvironmentName}-alerts"
+
+  AlarmTopicSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasAlarmEmail
+    Properties:
+      Endpoint: !Ref AlarmEmail
+      Protocol: email
+      TopicArn: !Ref AlarmTopic
+
+  ApplicationErrorMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Ref ApplicationLogGroup
+      FilterPattern: '{ $.level = "error" }'
+      MetricTransformations:
+        - MetricName: !Sub "${ProjectName}-${EnvironmentName}-app-errors"
+          MetricNamespace: NyaayWatch/Observability
+          MetricValue: "1"
 
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -331,16 +364,35 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       DefaultActions:
-        - Type: forward
-          TargetGroupArn: !Ref TargetGroup
+        - Type: redirect
+          RedirectConfig:
+            Protocol: HTTPS
+            Port: "443"
+            Host: "#{host}"
+            Path: "/#{path}"
+            Query: "#{query}"
+            StatusCode: HTTP_301
       LoadBalancerArn: !Ref LoadBalancer
       Port: 80
       Protocol: HTTP
 
+  HttpsListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Certificates:
+        - CertificateArn: !Ref CertificateArn
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS13-1-2-Res-2021-06
+
   Service:
     Type: AWS::ECS::Service
     DependsOn:
-      - Listener
+      - HttpsListener
     Properties:
       Cluster: !Ref Cluster
       DesiredCount: !Ref DesiredCount
@@ -359,6 +411,111 @@ Resources:
           ContainerPort: !Ref ContainerPort
           TargetGroupArn: !Ref TargetGroup
 
+  StagingDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub "${ProjectName}-${EnvironmentName}"
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "title": "ALB 5XX and target health",
+                "view": "timeSeries",
+                "region": "ap-south-1",
+                "stacked": false,
+                "metrics": [
+                  [ "AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", "${LoadBalancer.LoadBalancerFullName}" ],
+                  [ ".", "HTTPCode_Target_5XX_Count", ".", "${LoadBalancer.LoadBalancerFullName}", "TargetGroup", "${TargetGroup.TargetGroupFullName}" ],
+                  [ ".", "UnHealthyHostCount", ".", "${LoadBalancer.LoadBalancerFullName}", "TargetGroup", "${TargetGroup.TargetGroupFullName}" ],
+                  [ ".", "HealthyHostCount", ".", "${LoadBalancer.LoadBalancerFullName}", "TargetGroup", "${TargetGroup.TargetGroupFullName}" ]
+                ]
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "title": "Latency and app errors",
+                "view": "timeSeries",
+                "region": "ap-south-1",
+                "stacked": false,
+                "metrics": [
+                  [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${LoadBalancer.LoadBalancerFullName}", "TargetGroup", "${TargetGroup.TargetGroupFullName}" ],
+                  [ "NyaayWatch/Observability", "${ProjectName}-${EnvironmentName}-app-errors" ]
+                ]
+              }
+            }
+          ]
+        }
+
+  HealthEndpointFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-${EnvironmentName}-health-endpoint"
+      AlarmDescription: !Sub "The ${EnvironmentName} target group is failing the /health check."
+      Namespace: AWS/ApplicationELB
+      MetricName: UnHealthyHostCount
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 2
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      Dimensions:
+        - Name: LoadBalancer
+          Value: !GetAtt LoadBalancer.LoadBalancerFullName
+        - Name: TargetGroup
+          Value: !GetAtt TargetGroup.TargetGroupFullName
+      AlarmActions:
+        - !Ref AlarmTopic
+
+  AlbTarget5xxAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-${EnvironmentName}-alb-target-5xx"
+      AlarmDescription: !Sub "The ${EnvironmentName} load balancer or app target is returning 5xx responses."
+      Namespace: AWS/ApplicationELB
+      MetricName: HTTPCode_Target_5XX_Count
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      Dimensions:
+        - Name: LoadBalancer
+          Value: !GetAtt LoadBalancer.LoadBalancerFullName
+        - Name: TargetGroup
+          Value: !GetAtt TargetGroup.TargetGroupFullName
+      AlarmActions:
+        - !Ref AlarmTopic
+
+  ApplicationErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-${EnvironmentName}-app-errors"
+      AlarmDescription: !Sub "Structured application errors were emitted in ${EnvironmentName}."
+      Namespace: NyaayWatch/Observability
+      MetricName: !Sub "${ProjectName}-${EnvironmentName}-app-errors"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref AlarmTopic
+
 Outputs:
   ServiceUrl:
     Value: !Sub "http://${LoadBalancer.DNSName}"
@@ -376,3 +533,9 @@ Outputs:
     Value: !Ref ApplicationLogGroup
   ClusterName:
     Value: !Ref Cluster
+  CertificateArn:
+    Value: !Ref CertificateArn
+  AlarmTopicArn:
+    Value: !Ref AlarmTopic
+  DashboardName:
+    Value: !Ref StagingDashboard

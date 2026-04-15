@@ -204,6 +204,7 @@ These matter, but they are not required to reach the Himachal alpha MVP:
 
 - multi-state expansion readiness gates, now documented in `docs/MULTI_STATE_EXPANSION_GATES.md`
 - extracting a standalone `DESIGN.md`
+- release cadence and observability refinements, now partially documented in `docs/RELEASE_POLICY.md` and `docs/DEPLOYMENT_STATUS.md`
 - broader post-MVP operational maturity work that does not affect the first public alpha
 
 Track those in `TODOS.md`, not here.
@@ -220,3 +221,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-15: Completed `P4.5` on a live AWS staging stack after fixing container migration packaging, S3 bucket idempotence/tag-handling for CloudFormation-managed buckets, and missing `s3:GetBucketTagging` task-role access; operator `fetch -> inspect -> publish -> replay -> rollback` now succeeds end to end in staging.
 - 2026-04-14: Completed Phase 5 launch gates with a written public exposure policy, a release-readiness checklist, and route-level copy guardrail coverage for published-snapshot wording.
 - 2026-04-15: Documented post-MVP multi-state expansion readiness gates and synced `TODOS.md` so the completed Phase 5 redistribution review no longer appears as open backlog.
+- 2026-04-15: Added post-MVP release policy, live deployment-status evidence, CloudWatch observability outputs, and a repeatable `linux/amd64` ECR build path after the first public-alpha review and post-deploy validation cycle.

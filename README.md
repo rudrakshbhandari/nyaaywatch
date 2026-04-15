@@ -45,6 +45,7 @@ The approved implementation direction is:
 - [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
 - [Public data exposure policy](docs/PUBLIC_DATA_EXPOSURE_POLICY.md)
 - [Alpha release checklist](docs/ALPHA_RELEASE_CHECKLIST.md)
+- [Alpha release policy](docs/RELEASE_POLICY.md)
 - [Deployment status](docs/DEPLOYMENT_STATUS.md)
 - [Domain cutover checklist](docs/DOMAIN_CUTOVER_CHECKLIST.md)
 - [Multi-state expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md)

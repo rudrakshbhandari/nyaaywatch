@@ -12,6 +12,7 @@ import { SnapshotCandidateSchema, type SnapshotCandidate } from "../domain/snaps
 import { extractCaptureBundle } from "../extract/njdg-html.js";
 import type { HimachalSourceClient } from "../ingest/himachal-source-client.js";
 import { createId } from "../lib/ids.js";
+import { logError, logInfo } from "../lib/logger.js";
 import { freshnessDays } from "../lib/time.js";
 import { buildSnapshotCandidate } from "../normalize/snapshot-candidate.js";
 import type { ArtifactStore } from "../storage/artifact-store.js";
@@ -158,6 +159,10 @@ export class PublishedSnapshotService {
 
   async captureRun(note?: string): Promise<RunInspection> {
     await this.artifactStore.ensureBucket();
+    logInfo("operator_fetch_started", {
+      stateCode: this.config.STATE_CODE,
+      note: note ?? null,
+    });
 
     const bundle = await this.sourceClient.captureLatest();
     const extracted = extractCaptureBundle(bundle);
@@ -200,8 +205,18 @@ export class PublishedSnapshotService {
         throw new Error(`Run ${run.id} was not found after capture.`);
       }
 
+      logInfo("operator_fetch_completed", {
+        runId: run.id,
+        sourceSnapshotAt: extracted.sourceSnapshotAt,
+        qualityState: inspection.run.qualityState,
+        artifactCount: inspection.artifacts.length,
+      });
+
       return inspection;
     } catch (error) {
+      logError("operator_fetch_failed", {
+        error: error instanceof Error ? error.message : String(error),
+      });
       await this.store.updateRun(run.id, {
         status: "failed",
         note: buildFailureNote("Capture failed", error),
@@ -211,6 +226,10 @@ export class PublishedSnapshotService {
   }
 
   async publishRun(runId: string, note?: string): Promise<{ run: RunRecord; publication: PublicationRecord; snapshot: PublishedSnapshotRecord }> {
+    logInfo("operator_publish_started", {
+      runId,
+      note: note ?? null,
+    });
     const inspection = await this.inspectRun(runId);
     if (!inspection) {
       throw new Error(`Run ${runId} was not found.`);
@@ -249,11 +268,23 @@ export class PublishedSnapshotService {
         qualityState: inspection.run.qualityState,
       });
 
+      logInfo("operator_publish_completed", {
+        runId,
+        publicationId: publication.id,
+        snapshotId: snapshot.id,
+        action: publication.action,
+        replayOfRunId: inspection.run.replayOfRunId ?? null,
+      });
+
       return { run, publication, snapshot };
     });
   }
 
   async replayRun(runId: string, note?: string): Promise<{ run: RunRecord; publication: PublicationRecord; snapshot: PublishedSnapshotRecord }> {
+    logInfo("operator_replay_started", {
+      sourceRunId: runId,
+      note: note ?? null,
+    });
     const sourceInspection = await this.inspectRun(runId);
     if (!sourceInspection) {
       throw new Error(`Run ${runId} was not found.`);
@@ -299,8 +330,20 @@ export class PublishedSnapshotService {
       });
 
       await this.buildAndStoreSnapshotCandidate(replayRun.id, copiedArtifact.key, note);
-      return this.publishRun(replayRun.id, note ?? `Replay publish of ${sourceInspection.run.id}`);
+      const replayResult = await this.publishRun(replayRun.id, note ?? `Replay publish of ${sourceInspection.run.id}`);
+      logInfo("operator_replay_completed", {
+        sourceRunId: sourceInspection.run.id,
+        replayRunId: replayRun.id,
+        publicationId: replayResult.publication.id,
+        snapshotId: replayResult.snapshot.id,
+      });
+      return replayResult;
     } catch (error) {
+      logError("operator_replay_failed", {
+        sourceRunId: sourceInspection.run.id,
+        replayRunId: replayRun.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
       await this.store.updateRun(replayRun.id, {
         status: "failed",
         note: buildFailureNote("Replay failed", error),
@@ -310,6 +353,10 @@ export class PublishedSnapshotService {
   }
 
   async rollbackPublication(publicationId: string, note?: string): Promise<PublicationRecord> {
+    logInfo("operator_rollback_started", {
+      targetPublicationId: publicationId,
+      note: note ?? null,
+    });
     const target = await this.store.getPublicationById(publicationId);
     if (!target) {
       throw new Error(`Publication ${publicationId} was not found.`);
@@ -320,7 +367,7 @@ export class PublishedSnapshotService {
       throw new Error("Rollback requires an existing publication history.");
     }
 
-    return this.store.insertPublication({
+    const rollback = await this.store.insertPublication({
       id: createId("publication"),
       stateCode: this.config.STATE_CODE,
       publishedSnapshotId: target.publishedSnapshotId,
@@ -328,6 +375,15 @@ export class PublishedSnapshotService {
       note: note ?? `Rollback to publication ${target.id}`,
       previousPublicationId: latest.id,
     });
+
+    logInfo("operator_rollback_completed", {
+      targetPublicationId: publicationId,
+      rollbackPublicationId: rollback.id,
+      restoredSnapshotId: rollback.publishedSnapshotId,
+      previousPublicationId: rollback.previousPublicationId,
+    });
+
+    return rollback;
   }
 
   async renderDistrictCsv(): Promise<string | null> {
