@@ -35,10 +35,21 @@ infra/aws/staging/deploy-stack.sh
 
 You need:
 
-- one VPC with at least two public subnets and two private subnets in `ap-south-1`
 - an ECR image URI for the app container
 - a strong database password
 - an operator API token for staging
+
+The stack creates its own isolated VPC with:
+
+- two public subnets for the ALB and ECS tasks
+- two private subnets for PostgreSQL
+- an internet gateway
+
+Application config constraints to preserve during staging validation:
+
+- `EnvironmentName` must remain `staging` so `DEPLOY_ENV` satisfies the app env schema.
+- `ProjectName` must stay `nyaaywatch`-prefixed so the derived `S3_BUCKET` passes env validation.
+- The generated `DATABASE_URL` now uses `uselibpqcompat=true&sslmode=require` because the app container must connect to RDS over TLS without assuming a bundled CA chain.
 
 Recommended naming:
 
@@ -53,9 +64,6 @@ Recommended naming:
 ```bash
 ./infra/aws/staging/deploy-stack.sh \
   nyaaywatch-staging \
-  vpc-xxxxxxxx \
-  subnet-public-a,subnet-public-b \
-  subnet-private-a,subnet-private-b \
   723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
   '<operator-token>' \
   '<database-password>'
@@ -63,6 +71,9 @@ Recommended naming:
 
 3. Wait for the stack to finish and note the outputs:
    - `ServiceUrl`
+   - `VpcId`
+   - `PublicSubnetIds`
+   - `PrivateSubnetIds`
    - `ArtifactsBucketName`
    - `DatabaseEndpoint`
    - `LogGroupName`
