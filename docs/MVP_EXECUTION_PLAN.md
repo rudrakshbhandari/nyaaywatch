@@ -182,7 +182,6 @@ Outcome:
 
 Tasks:
 
-- [ ] `P5.1` Complete source terms and redistribution review for raw artifacts, evidence packs, and normalized exports.
 - [x] `P5.1` Complete source terms and redistribution review for raw artifacts, evidence packs, and normalized exports.
   Completed on 2026-04-14 in `docs/PUBLIC_DATA_EXPOSURE_POLICY.md` using the current official eCourts copyright and disclaimer pages to lock alpha exposure to published read-model outputs while keeping raw captures and bundled evidence packs internal.
 - [x] `P5.2` Add a release-readiness checklist covering caveats, freshness labels, methodology versioning, and publish safety.
@@ -197,7 +196,7 @@ Done when:
 
 Blockers:
 
-- if `P5.1` limits raw evidence exposure, public evidence-pack scope may need to narrow before launch
+- none
 
 ## Deferred Until After MVP
 
