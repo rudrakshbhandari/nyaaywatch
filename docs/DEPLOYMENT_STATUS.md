@@ -12,6 +12,13 @@ Keep this file updated whenever the staging stack changes, a public alpha URL is
 - Backing services: local Node app, local PostgreSQL, LocalStack S3
 - Intended use: development, fixture-backed QA, local operator-flow checks
 
+### Pull Request Previews
+
+- URL shape: App Runner service URL posted back to each PR
+- Backing runtime: same app image with `APP_MODE=preview`
+- Data source: in-memory fixture-seeded published snapshot
+- Intended use: web design, UI/UX, copy, and responsive review without live infra dependencies
+
 ### AWS Staging
 
 - Stack name: `nyaaywatch-staging`

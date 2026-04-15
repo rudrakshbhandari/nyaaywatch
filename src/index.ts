@@ -1,38 +1,29 @@
-import { Pool } from "pg";
-
 import { createApp } from "./api/app.js";
 import { loadConfig } from "./config/env.js";
 import { runMigrations } from "./db/migrate.js";
 import { NjdgHimachalSourceClient } from "./ingest/himachal-source-client.js";
 import { logError, logInfo } from "./lib/logger.js";
+import { createPreviewRuntime, type AppRuntime } from "./preview/runtime.js";
 import { PublishedSnapshotService } from "./services/published-snapshot-service.js";
 import { S3ArtifactStore } from "./storage/artifact-store.js";
 import { PgWarehouseStore } from "./storage/postgres.js";
+import { Pool } from "pg";
 
-const config = loadConfig();
-const pool = new Pool({ connectionString: config.DATABASE_URL });
-
-await runMigrations(pool);
-
-const store = PgWarehouseStore.fromPool(pool);
-const artifactStore = new S3ArtifactStore(config);
-const sourceClient = new NjdgHimachalSourceClient();
-const service = new PublishedSnapshotService(config, store, artifactStore, sourceClient);
-const app = createApp(config, service);
-
-const server = app.listen(config.PORT, () => {
+const runtime = process.env.APP_MODE === "preview" ? await createPreviewRuntime() : await createRuntime();
+const server = runtime.app.listen(runtime.config.PORT, () => {
   logInfo("server_started", {
-    port: config.PORT,
-    deployEnv: config.DEPLOY_ENV,
-    awsRegion: config.AWS_REGION,
-    stateCode: config.STATE_CODE,
+    port: runtime.config.PORT,
+    deployEnv: runtime.config.DEPLOY_ENV,
+    awsRegion: runtime.config.AWS_REGION,
+    stateCode: runtime.config.STATE_CODE,
+    appMode: process.env.APP_MODE ?? "default",
   });
 });
 
 process.on("SIGTERM", async () => {
   logInfo("server_shutdown_requested", { signal: "SIGTERM" });
   server.close();
-  await pool.end();
+  await runtime.close();
 });
 
 process.on("uncaughtException", (error) => {
@@ -47,3 +38,23 @@ process.on("unhandledRejection", (reason) => {
     reason: reason instanceof Error ? reason.message : String(reason),
   });
 });
+
+async function createRuntime(): Promise<AppRuntime> {
+  const config = loadConfig();
+  const pool = new Pool({ connectionString: config.DATABASE_URL });
+
+  await runMigrations(pool);
+
+  const store = PgWarehouseStore.fromPool(pool);
+  const artifactStore = new S3ArtifactStore(config);
+  const sourceClient = new NjdgHimachalSourceClient();
+  const service = new PublishedSnapshotService(config, store, artifactStore, sourceClient);
+
+  return {
+    app: createApp(config, service),
+    config,
+    async close() {
+      await pool.end();
+    },
+  };
+}
