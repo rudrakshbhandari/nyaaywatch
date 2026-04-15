@@ -80,6 +80,8 @@ Recommended naming:
    - `DatabaseEndpoint`
    - `LogGroupName`
 
+4. Copy the live values into `docs/DEPLOYMENT_STATUS.md` so the current staging URL and resource names are discoverable without re-querying AWS.
+
 ## Operator Validation Flow
 
 Run the staging validation only after the ECS service is healthy and the ALB URL responds on `/health`.
@@ -154,3 +156,7 @@ Validated successfully:
 - `GET /v1/stats/himachal` after rollback to confirm the public API reads the active publication pointer
 
 Temporary proof stacks from earlier failed attempts can be deleted after validation; they are not part of the long-lived staging shape.
+
+## Next Operational Step
+
+After staging is healthy and documented, use `docs/DOMAIN_CUTOVER_CHECKLIST.md` to attach the real public domain to the ALB if you want this stack to serve the public alpha.

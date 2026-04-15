@@ -49,8 +49,16 @@ Run this checklist before the first public launch and before any materially diff
 - [ ] Publish gating still requires completed run state, required artifacts, and non-partial quality state.
 - [ ] Rollback returns the public API and UI to the intended prior publication.
 - [ ] Cloud logs and operator notes are available for the release run.
+- [ ] `docs/DEPLOYMENT_STATUS.md` contains the actual live URL and current resource names for the target environment.
 
-### 6. Verification
+### 6. Domain And HTTPS
+
+- [ ] The intended public hostname is chosen explicitly.
+- [ ] HTTPS is active with a valid ACM-backed certificate.
+- [ ] DNS points at the intended AWS load balancer.
+- [ ] `docs/DOMAIN_CUTOVER_CHECKLIST.md` is complete if a custom domain is involved.
+
+### 7. Verification
 
 - [ ] `npm run typecheck`
 - [ ] `npm test`
