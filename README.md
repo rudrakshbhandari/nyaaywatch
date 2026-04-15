@@ -160,6 +160,6 @@ Current regression coverage includes:
 - public API and HTML route behavior
 - operator token enforcement
 
-GitHub Actions now runs `npm run typecheck`, `npm test`, `RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent`, and `npm run test:e2e` on pushes and pull requests.
+GitHub Actions now runs `npm run typecheck`, `npm test`, `RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent`, and `npm run test:e2e` on pushes and pull requests. Pushes to `main` then auto-build a `linux/amd64` image, publish it to ECR, and roll the live ECS service after verification passes.
 
 If `5432` or `4566` are already in use locally, override `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env` before running `npm run docker:up`, then point `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` at the same host ports.

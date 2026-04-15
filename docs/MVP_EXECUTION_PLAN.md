@@ -222,3 +222,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-14: Completed Phase 5 launch gates with a written public exposure policy, a release-readiness checklist, and route-level copy guardrail coverage for published-snapshot wording.
 - 2026-04-15: Documented post-MVP multi-state expansion readiness gates and synced `TODOS.md` so the completed Phase 5 redistribution review no longer appears as open backlog.
 - 2026-04-15: Added post-MVP release policy, live deployment-status evidence, CloudWatch observability outputs, and a repeatable `linux/amd64` ECR build path after the first public-alpha review and post-deploy validation cycle.
+- 2026-04-15: Added automatic `main` deploys that build a `linux/amd64` image in GitHub Actions, push to ECR, roll the live ECS service, and verify `/health` against the staging stack.

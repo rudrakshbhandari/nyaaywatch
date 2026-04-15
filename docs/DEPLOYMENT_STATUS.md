@@ -32,6 +32,7 @@ Keep this file updated whenever the staging stack changes, a public alpha URL is
 - Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image and rolling the ECS service in place
 
 Operational notes:
 
@@ -45,6 +46,7 @@ Operational notes:
 - Domain: `https://nyaaywatch.in`
 - Backing stack: `nyaaywatch-staging`
 - Status: `live`
+- Release path: verified `main` merges auto-roll the live ECS service through GitHub Actions
 - Current active publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Public stats source snapshot date: `2026-04-10`
