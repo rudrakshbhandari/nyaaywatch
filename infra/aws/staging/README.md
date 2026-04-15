@@ -42,6 +42,12 @@ Image build helper:
 infra/aws/staging/build-and-push.sh
 ```
 
+ECS service rollout helper:
+
+```bash
+infra/aws/staging/redeploy-service.sh
+```
+
 ## Required Inputs
 
 You need:
@@ -121,6 +127,21 @@ Note:
 - once an ACM certificate for `nyaaywatch.in` is attached, the direct ALB hostname will not match that certificate name on `https://...elb.amazonaws.com`
 - use the public hostname for browser verification
 - use AWS metrics and logs for low-level ALB verification rather than relying on the raw ALB HTTPS hostname
+
+## Automatic Deploy From `main`
+
+Merges to `main` now auto-deploy through GitHub Actions after the verify job passes.
+
+The deploy job:
+
+- assumes `arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role` via GitHub OIDC
+- builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`
+- discovers the live ECS service from the `nyaaywatch-staging` CloudFormation stack
+- registers a fresh task definition revision pinned to the commit-SHA image
+- updates the ECS service and waits for steady state
+- confirms the raw ALB `ServiceUrl` still answers `/health`
+
+This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
 
 ## Operator Validation Flow
 
