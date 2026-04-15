@@ -325,6 +325,10 @@ Resources:
               Value: !Ref EnvironmentName
             - Name: STATE_CODE
               Value: HP
+            - Name: CANONICAL_HOST
+              Value: nyaaywatch.in
+            - Name: LEGACY_HOSTS
+              Value: nyaaywatch.com,www.nyaaywatch.com
             - Name: OPERATOR_API_TOKEN
               Value: !Ref OperatorApiToken
             - Name: DATABASE_URL
@@ -376,6 +380,27 @@ Resources:
       Port: 80
       Protocol: HTTP
 
+  CanonicalHttpRedirectRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: redirect
+          RedirectConfig:
+            Protocol: HTTPS
+            Port: "443"
+            Host: nyaaywatch.in
+            Path: "/#{path}"
+            Query: "#{query}"
+            StatusCode: HTTP_301
+      Conditions:
+        - Field: host-header
+          HostHeaderConfig:
+            Values:
+              - nyaaywatch.com
+              - www.nyaaywatch.com
+      ListenerArn: !Ref Listener
+      Priority: 10
+
   HttpsListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -388,6 +413,27 @@ Resources:
       Port: 443
       Protocol: HTTPS
       SslPolicy: ELBSecurityPolicy-TLS13-1-2-Res-2021-06
+
+  CanonicalHttpsRedirectRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - Type: redirect
+          RedirectConfig:
+            Protocol: HTTPS
+            Port: "443"
+            Host: nyaaywatch.in
+            Path: "/#{path}"
+            Query: "#{query}"
+            StatusCode: HTTP_301
+      Conditions:
+        - Field: host-header
+          HostHeaderConfig:
+            Values:
+              - nyaaywatch.com
+              - www.nyaaywatch.com
+      ListenerArn: !Ref HttpsListener
+      Priority: 10
 
   Service:
     Type: AWS::ECS::Service

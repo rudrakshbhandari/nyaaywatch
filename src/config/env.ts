@@ -22,6 +22,16 @@ const EnvSchema = z.object({
   DEPLOY_ENV: z.enum(["dev", "staging"]).default("dev"),
   OPERATOR_API_TOKEN: z.string().min(8),
   STATE_CODE: z.literal("HP").default("HP"),
+  CANONICAL_HOST: z.string().min(1).optional(),
+  LEGACY_HOSTS: z
+    .string()
+    .optional()
+    .transform((value) =>
+      value
+        ?.split(",")
+        .map((host) => host.trim().toLowerCase())
+        .filter(Boolean) ?? [],
+    ),
 });
 
 export type AppConfig = z.infer<typeof EnvSchema>;

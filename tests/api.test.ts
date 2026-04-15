@@ -85,6 +85,21 @@ describe("HTTP routes", () => {
     expect(methodologyPage.text).toContain("Published methodology and snapshot lineage");
   });
 
+  it("redirects legacy .com hosts to the canonical .in hostname", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service);
+
+    const response = await request(app)
+      .get("/districts?view=flagged")
+      .set("host", "nyaaywatch.com")
+      .set("x-forwarded-proto", "https");
+
+    expect(response.status).toBe(301);
+    expect(response.headers.location).toBe("https://nyaaywatch.in/districts?view=flagged");
+  });
+
   it("emits structured request logs for non-health routes and skips the ALB health check noise", async () => {
     const context = await createTestContext();
     pools.push(context.pool);

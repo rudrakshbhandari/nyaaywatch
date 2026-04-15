@@ -55,7 +55,7 @@ You need:
 - an ECR image URI for the app container
 - a strong database password
 - an operator API token for staging
-- an ACM certificate ARN for the public hostname
+- an ACM certificate ARN for every public hostname the ALB must terminate, including `nyaaywatch.in`, `www.nyaaywatch.in`, `nyaaywatch.com`, and `www.nyaaywatch.com` if `.com -> .in` canonical redirects are enabled
 
 Optional:
 
@@ -124,9 +124,10 @@ Why the explicit platform:
 
 Note:
 
-- once an ACM certificate for `nyaaywatch.in` is attached, the direct ALB hostname will not match that certificate name on `https://...elb.amazonaws.com`
+- once an ACM certificate for the public hostnames is attached, the direct ALB hostname will not match that certificate name on `https://...elb.amazonaws.com`
 - use the public hostname for browser verification
 - use AWS metrics and logs for low-level ALB verification rather than relying on the raw ALB HTTPS hostname
+- the staging stack now includes ALB host-header redirect rules that canonically send `nyaaywatch.com` and `www.nyaaywatch.com` to `https://nyaaywatch.in`
 
 ## Automatic Deploy From `main`
 
