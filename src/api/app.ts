@@ -11,6 +11,7 @@ import {
   renderHomePage,
   renderMethodologyPage,
 } from "./render.js";
+import { attachLabRoutes } from "./lab/routes.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 
 export function createApp(config: AppConfig, service: PublishedSnapshotService) {
@@ -183,6 +184,8 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get("/api", (_request, response) => {
     response.send(renderApiPage());
   });
+
+  attachLabRoutes(app, service);
 
   app.get(
     "/operator/runs",
