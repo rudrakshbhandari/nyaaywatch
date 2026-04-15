@@ -81,6 +81,8 @@ export function renderLayout(title: string, body: string): string {
         color-scheme: light;
         --paper: #f6efe6;
         --paper-strong: #fff8ef;
+        --panel: rgba(255, 251, 245, 0.9);
+        --panel-strong: rgba(255, 252, 247, 0.96);
         --ink: #102033;
         --muted: #5b6577;
         --line: rgba(16, 32, 51, 0.12);
@@ -93,7 +95,7 @@ export function renderLayout(title: string, body: string): string {
         --warning-bg: #fff2d8;
         --ok: #114737;
         --ok-bg: #dff3ec;
-        --shadow: 0 24px 60px rgba(16, 32, 51, 0.08);
+        --shadow: 0 18px 40px rgba(16, 32, 51, 0.06);
       }
       * {
         box-sizing: border-box;
@@ -106,9 +108,9 @@ export function renderLayout(title: string, body: string): string {
         font-family: "Instrument Sans", sans-serif;
         line-height: 1.5;
         background:
-          radial-gradient(circle at top left, rgba(196, 93, 47, 0.18), transparent 28%),
-          radial-gradient(circle at top right, rgba(13, 124, 117, 0.14), transparent 26%),
-          linear-gradient(180deg, #f9f4ed 0%, #f6efe6 34%, #f3eadf 100%);
+          radial-gradient(circle at top left, rgba(196, 93, 47, 0.12), transparent 24%),
+          radial-gradient(circle at top right, rgba(13, 124, 117, 0.1), transparent 22%),
+          linear-gradient(180deg, #fbf5ee 0%, #f4ecdf 100%);
         color: var(--ink);
         text-rendering: optimizeLegibility;
       }
@@ -120,14 +122,14 @@ export function renderLayout(title: string, body: string): string {
       header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         gap: 24px;
         flex-wrap: wrap;
         margin-bottom: 24px;
       }
       nav {
         display: flex;
-        gap: 14px;
+        gap: 10px;
         flex-wrap: wrap;
         align-items: center;
       }
@@ -138,6 +140,18 @@ export function renderLayout(title: string, body: string): string {
         color: var(--ink);
         text-decoration: none;
         position: relative;
+      }
+      nav a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(16, 32, 51, 0.08);
+        background: rgba(255, 251, 245, 0.72);
+        font-weight: 600;
+        transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
       }
       nav a::after, .action-links a::after {
         content: "";
@@ -154,6 +168,12 @@ export function renderLayout(title: string, body: string): string {
       nav a:hover::after, nav a:focus-visible::after, .action-links a:hover::after, .action-links a:focus-visible::after {
         transform: scaleX(1);
       }
+      nav a:hover,
+      nav a:focus-visible {
+        background: var(--panel-strong);
+        border-color: rgba(16, 32, 51, 0.14);
+        transform: translateY(-1px);
+      }
       h1, h2, h3, p {
         margin-top: 0;
       }
@@ -163,9 +183,10 @@ export function renderLayout(title: string, body: string): string {
         line-height: 0.95;
       }
       h1 {
-        font-size: clamp(3.2rem, 7vw, 6rem);
+        font-size: clamp(2.85rem, 5vw, 4.8rem);
         margin-bottom: 16px;
         text-wrap: balance;
+        line-height: 0.98;
       }
       h2 {
         font-size: clamp(2rem, 3.4vw, 3rem);
@@ -180,6 +201,10 @@ export function renderLayout(title: string, body: string): string {
         max-width: 62ch;
         color: var(--muted);
       }
+      .display-title {
+        font-size: clamp(4rem, 7vw, 6rem);
+        letter-spacing: -0.035em;
+      }
       .hero {
         display: grid;
         grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.95fr);
@@ -187,24 +212,35 @@ export function renderLayout(title: string, body: string): string {
         align-items: stretch;
         margin-bottom: 24px;
       }
+      .hero-single {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: 980px;
+      }
       .hero > :only-child {
         grid-column: 1 / -1;
       }
       .hero-copy, .hero-panel, .trust-strip, .card, table, .callout, .controls, .status-banner {
-        background: rgba(255, 248, 239, 0.76);
-        backdrop-filter: blur(14px);
+        background: var(--panel);
+        backdrop-filter: blur(10px);
         border: 1px solid var(--line);
         box-shadow: var(--shadow);
       }
       .hero-copy {
-        padding: 28px;
-        border-radius: 34px;
+        padding: 26px;
+        border-radius: 26px;
       }
       .hero-panel {
-        border-radius: 34px;
-        padding: 24px;
+        border-radius: 24px;
+        padding: 22px;
         display: grid;
         gap: 18px;
+        align-content: start;
+      }
+      .hero-single .hero-copy {
+        max-width: 980px;
+      }
+      .hero-copy > :last-child {
+        margin-bottom: 0;
       }
       .eyebrow {
         text-transform: uppercase;
@@ -230,8 +266,8 @@ export function renderLayout(title: string, body: string): string {
         color: var(--accent-deep);
       }
       .trust-strip, .card, .callout, .controls, .status-banner {
-        border-radius: 26px;
-        padding: 20px;
+        border-radius: 22px;
+        padding: 18px;
       }
       .hero-panel .meta-value {
         font-size: 1.05rem;
@@ -269,20 +305,43 @@ export function renderLayout(title: string, body: string): string {
         flex-wrap: wrap;
         margin-top: 12px;
       }
+      .panel-list {
+        display: grid;
+        gap: 12px;
+      }
+      .panel-item {
+        padding-top: 12px;
+        border-top: 1px solid rgba(16, 32, 51, 0.08);
+      }
+      .panel-item:first-child {
+        padding-top: 0;
+        border-top: none;
+      }
+      .panel-item strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+      .panel-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
       .badge {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        border-radius: 999px;
-        padding: 6px 11px;
+        border-radius: 12px;
+        padding: 7px 10px;
         font-size: 0.82rem;
         font-weight: 600;
         background: var(--accent-soft);
         color: var(--accent-deep);
+        border: 1px solid rgba(196, 93, 47, 0.08);
       }
       .badge.complete {
-        background: #d5ece4;
-        color: #0c3b2e;
+        background: #1f5c4b;
+        color: #ffffff;
+        border-color: #1f5c4b;
       }
       .badge.stale, .badge.partial {
         background: var(--warning-bg);
@@ -322,10 +381,12 @@ export function renderLayout(title: string, body: string): string {
         color: var(--ink);
       }
       button {
+        appearance: none;
         cursor: pointer;
-        background: var(--accent-deep);
-        border-color: var(--accent-deep);
-        color: white;
+        background-color: #7a3016;
+        border-color: #7a3016;
+        color: #fff;
+        font-weight: 700;
         transition: transform 180ms ease, box-shadow 180ms ease;
       }
       button:hover, button:focus-visible {
@@ -466,7 +527,7 @@ export function renderLayout(title: string, body: string): string {
       }
       .action-links {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
         margin-top: 16px;
       }
@@ -475,7 +536,8 @@ export function renderLayout(title: string, body: string): string {
         align-items: center;
         justify-content: center;
         gap: 8px;
-        padding: 12px 16px;
+        min-height: 48px;
+        padding: 12px 18px;
         border-radius: 999px;
         border: 1px solid var(--line);
         text-decoration: none;
@@ -488,7 +550,7 @@ export function renderLayout(title: string, body: string): string {
         border-color: var(--ink);
       }
       .button-link.secondary {
-        background: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.72);
       }
       .button-link:hover, .button-link:focus-visible {
         transform: translateY(-1px);
@@ -555,8 +617,10 @@ export function renderLayout(title: string, body: string): string {
         gap: 24px;
       }
       .rail-note {
-        padding-left: 14px;
-        border-left: 3px solid rgba(196, 93, 47, 0.3);
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(196, 93, 47, 0.12);
+        background: rgba(196, 93, 47, 0.08);
       }
       .hero-copy,
       .hero-panel,
@@ -575,11 +639,9 @@ export function renderLayout(title: string, body: string): string {
       }
       @keyframes rise {
         from {
-          opacity: 0;
           transform: translateY(8px);
         }
         to {
-          opacity: 1;
           transform: translateY(0);
         }
       }
@@ -593,6 +655,28 @@ export function renderLayout(title: string, body: string): string {
         }
       }
       @media (max-width: 720px) {
+        h1 {
+          font-size: clamp(2.7rem, 13vw, 4.25rem);
+        }
+        .display-title {
+          font-size: clamp(3.35rem, 17vw, 5rem);
+        }
+        .lede {
+          font-size: 1rem;
+        }
+        header {
+          align-items: flex-start;
+        }
+        nav {
+          width: 100%;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 2px;
+        }
+        nav a {
+          min-height: 42px;
+          padding: 0 12px;
+        }
         table, thead, tbody, th, td, tr {
           display: block;
         }
@@ -682,33 +766,34 @@ export function renderHomePage(snapshot: PublishedSnapshot): string {
       <section class="hero">
         <article class="hero-copy">
           <div class="kicker"><strong>Public alpha</strong><span>Himachal Pradesh only</span></div>
-          <div class="eyebrow">Common-language justice tracking</div>
-          <h1>See where cases are getting stuck in Himachal Pradesh.</h1>
-          <p class="lede">NyaayWatch turns one published court snapshot into a calm public briefing. You can see the size of the queue, which districts need a closer look, and what the numbers actually mean before you share them.</p>
-          <p class="rail-note">This is a dated public snapshot with stored evidence behind it, not a live court feed.</p>
+          <div class="eyebrow">Published Himachal snapshot</div>
+          <h1 class="display-title">See where cases are getting stuck in Himachal Pradesh.</h1>
+          <p class="lede">Read one published court snapshot the way a citizen, reporter, or civic group would: start with backlog, see which districts are under the most strain, and inspect the evidence before repeating a claim.</p>
+          <p class="rail-note">Every figure on this page is tied to a published snapshot and stored source evidence. Nothing here is a live court feed.</p>
           <div class="action-links">
             <a class="button-link primary" href="/districts">Explore districts</a>
             <a class="button-link secondary" href="/methodology">How we calculate this</a>
           </div>
         </article>
         <aside class="hero-panel">
-          <div>
-            <div class="eyebrow">Latest publication</div>
-            <div class="meta-value numeric">${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))}</div>
-            <div class="meta-note">Source snapshot date</div>
-          </div>
-          <div>
-            <div class="meta-value">${escapeHtml(snapshot.snapshot.methodologyVersion)}</div>
-            <div class="meta-note">Methodology version now visible on every trust-critical surface.</div>
-          </div>
-          <div>
-            <div class="meta-value numeric">${snapshot.snapshot.freshnessDays} day(s)</div>
-            <div class="meta-note">Freshness tells you how old the published source snapshot is.</div>
-          </div>
-          <div class="badge-row">
-            <span class="badge">Plain-language public view</span>
-            <span class="badge">Stored evidence</span>
-            <span class="badge">Shareable district pages</span>
+          <div class="eyebrow">Latest publication</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value numeric">${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))}</strong>
+              <span>Source snapshot date for every public number on the page.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value">${escapeHtml(snapshot.snapshot.methodologyVersion)}</strong>
+              <span>Methodology version repeated anywhere trust-critical metrics appear.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value numeric">${snapshot.snapshot.freshnessDays} day(s)</strong>
+              <span>Freshness tells you how old the underlying published source snapshot is.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Stored evidence, not live scraping</strong>
+              <span>District pages and exports stay pinned to the same publication until a newer run is reviewed and published.</span>
+            </div>
           </div>
         </aside>
       </section>
@@ -789,22 +874,25 @@ export function renderDistrictsPage(snapshot: PublishedSnapshot, options: Distri
       <section class="hero">
         <article class="hero-copy">
           <div class="kicker"><strong>District workspace</strong><span>Browse, compare, inspect</span></div>
-          <div class="eyebrow">District-by-district scan</div>
-          <h1>Find the districts under the most pressure.</h1>
-          <p class="lede">Sort by queue size, case-clearing pace, waiting time, or file-clear gap. Open any district row for the shareable evidence page.</p>
+          <div class="eyebrow">Published district scan</div>
+          <h1 class="display-title">Scan the districts under the most pressure.</h1>
+          <p class="lede">Sort the current snapshot by backlog, disposal pace, waiting time, or filing gap. When a district looks unusual, open its evidence page for history, caveats, and export links.</p>
         </article>
         <aside class="hero-panel">
-          <div>
-            <div class="meta-value numeric">${districts.length} of ${snapshot.districts.length}</div>
-            <div class="meta-note">${escapeHtml(VIEW_LABELS[options.view])}${options.search ? ` matching "${escapeHtml(options.search)}"` : ""}.</div>
-          </div>
-          <div>
-            <div class="meta-value numeric">${snapshot.stats.flaggedDistricts}</div>
-            <div class="meta-note">Districts currently on the watchlist in the published snapshot.</div>
-          </div>
-          <div class="badge-row">
-            <span class="badge">Search by district</span>
-            <span class="badge">Switch urgency sort</span>
+          <div class="eyebrow">Current scan</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value numeric">${districts.length} of ${snapshot.districts.length}</strong>
+              <span>${escapeHtml(VIEW_LABELS[options.view])}${options.search ? ` matching "${escapeHtml(options.search)}"` : ""}.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value numeric">${snapshot.stats.flaggedDistricts}</strong>
+              <span>Districts currently on the watchlist in the active published snapshot.</span>
+            </div>
+            <div class="panel-item">
+              <strong>${escapeHtml(SORT_LABELS[options.sort])}</strong>
+              <span>Search and sort let you inspect the same snapshot from different pressure angles without leaving the public trust boundary.</span>
+            </div>
           </div>
         </aside>
       </section>
@@ -869,22 +957,29 @@ export function renderDistrictPage(
       <section class="hero">
         <article class="hero-copy">
           <div class="kicker"><strong>${escapeHtml(district.districtName)}</strong><span>District evidence page</span></div>
-          <div class="eyebrow">District snapshot</div>
+          <div class="eyebrow">District evidence</div>
           <h1>${escapeHtml(district.districtName)}</h1>
           <p class="lede">${escapeHtml(district.summary)}</p>
         </article>
         <aside class="hero-panel">
-          <div>
-            <div class="meta-value">Watch rank #${district.rank}</div>
-            <div class="meta-note">Higher ranks mean the district appears closer to the front of the current statewide queue-pressure list.</div>
-          </div>
-          <div>
-            <div class="meta-value">${escapeHtml(snapshot.methodologyVersion)}</div>
-            <div class="meta-note">The same methodology version is shown on the homepage, exports, and API.</div>
-          </div>
-          <div class="badge-row">
-            <span class="badge">Shareable permalink</span>
-            <span class="badge">Published history only</span>
+          <div class="eyebrow">Evidence frame</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value">Watch rank #${district.rank}</strong>
+              <span>Higher ranks place the district closer to the front of the current statewide pressure scan.</span>
+            </div>
+            <div class="panel-item">
+              <strong class="meta-value">${escapeHtml(snapshot.methodologyVersion)}</strong>
+              <span>The same methodology version appears on the homepage, exports, and API.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Shareable permalink</strong>
+              <span>This district summary is meant to stand on its own without requiring homepage context.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Published history only</strong>
+              <span>Comparisons stay inside previous public snapshots rather than unpublished run state.</span>
+            </div>
           </div>
         </aside>
       </section>
@@ -954,12 +1049,12 @@ export function renderDataPage(snapshot: PublishedSnapshot): string {
           <a href="/api">API Docs</a>
         </nav>
       </header>
-      <section class="hero">
+      <section class="hero hero-single">
         <article class="hero-copy">
           <div class="kicker"><strong>Data access</strong><span>Published snapshot only</span></div>
           <div class="eyebrow">CSV and API</div>
           <h1>Download exactly what the public site is showing.</h1>
-          <p class="lede">These files and endpoints stay pinned to the active published snapshot. If a newer run is incomplete, it stays private until an operator publishes it.</p>
+          <p class="lede">Use these downloads when you need the exact rows behind the public site. They stay pinned to the active publication until a newer run is reviewed and published.</p>
         </article>
       </section>
       ${renderTrustStrip(snapshot.snapshot)}
@@ -1020,12 +1115,12 @@ export function renderMethodologyPage(
           <a href="/api">API Docs</a>
         </nav>
       </header>
-      <section class="hero">
+      <section class="hero hero-single">
         <article class="hero-copy">
           <div class="kicker"><strong>Methodology</strong><span>How every public number is built</span></div>
           <div class="eyebrow">Trust and reproducibility</div>
           <h1>Every public number comes from one stored published snapshot.</h1>
-          <p class="lede">Operators can capture newer runs in private, but the public surface stays on the last safe publication until a publish action succeeds. That keeps the product reproducible and auditable.</p>
+          <p class="lede">Operators can capture newer runs in private, but public pages stay on the last reviewed publication until a publish succeeds. That keeps every public claim reproducible and auditable.</p>
         </article>
       </section>
       ${snapshot ? renderTrustStrip(snapshot) : ""}
@@ -1090,15 +1185,38 @@ export function renderApiPage(): string {
         <article class="hero-copy">
           <div class="kicker"><strong>API</strong><span>Published read model</span></div>
           <div class="eyebrow">Developer access</div>
-          <h1>The API mirrors the latest published snapshot.</h1>
-          <p class="lede">There is no richer hidden state than the public trust surface supports.</p>
+          <h1>The API matches the latest published snapshot.</h1>
+          <p class="lede">If a number is public on the site, you can fetch it here. If it has not been published yet, the API does not expose it.</p>
         </article>
+        <aside class="hero-panel">
+          <div class="eyebrow">Available now</div>
+          <div class="panel-list">
+            <div class="panel-item">
+              <strong class="meta-value numeric">3 endpoints</strong>
+              <span>Statewide stats, district rows, and published trend history.</span>
+            </div>
+            <div class="panel-item">
+              <strong>Published snapshot only</strong>
+              <span>The API never exposes fresher unpublished state than the public pages themselves.</span>
+            </div>
+            <div class="panel-item">
+              <strong>CSV parity</strong>
+              <span>The <code>/data</code> downloads stay aligned with the same published read model.</span>
+            </div>
+          </div>
+          <div class="action-links">
+            <a class="button-link secondary" href="/data">Download the matching CSVs</a>
+          </div>
+        </aside>
       </section>
       <article class="callout">
-        <h2>Endpoints</h2>
-        <p><code>GET /v1/stats/himachal</code></p>
-        <p><code>GET /v1/districts</code></p>
-        <p><code>GET /v1/trends</code></p>
+        <div class="eyebrow">Endpoints</div>
+        <h2>Public routes available today</h2>
+        <ul class="download-list">
+          <li><strong><code>GET /v1/stats/himachal</code></strong><br /><span class="muted">Statewide backlog, disposal pace, wait estimate, and watchlist count for the active publication.</span></li>
+          <li><strong><code>GET /v1/districts</code></strong><br /><span class="muted">District-level rows with rankings, queue size, disposal pace, wait estimate, and flag explanations.</span></li>
+          <li><strong><code>GET /v1/trends</code></strong><br /><span class="muted">Published snapshot history for the statewide trend surface.</span></li>
+        </ul>
       </article>
     `,
   );

@@ -28,11 +28,11 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/",
-        requiredText: "This is a dated public snapshot with stored evidence behind it, not a live court feed.",
+        requiredText: "Every figure on this page is tied to a published snapshot and stored source evidence.",
       },
       {
         path: "/districts",
-        requiredText: "Find the districts under the most pressure.",
+        requiredText: "Scan the districts under the most pressure.",
       },
       {
         path: "/districts/kangra",

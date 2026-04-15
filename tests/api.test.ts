@@ -55,7 +55,7 @@ describe("HTTP routes", () => {
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
-    expect(districtsPage.text).toContain("Find the districts under the most pressure.");
+    expect(districtsPage.text).toContain("Scan the districts under the most pressure.");
     expect(districtsPage.text).toContain("Watchlist only");
     expect(districtsPage.text).toContain("Kangra");
 
