@@ -16,19 +16,19 @@ Keep this file updated whenever the staging stack changes, a public alpha URL is
 
 - Stack name: `nyaaywatch-staging`
 - Region: `ap-south-1`
-- Public URL: `TODO`
-- ECS service: `TODO`
-- ALB DNS name: `TODO`
+- Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
+- ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
+- ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
-- Artifacts bucket: `TODO`
-- Database endpoint: `TODO`
+- Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
+- Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
 
 ### Public Alpha
 
-- Domain: `TODO`
-- Backing stack: `TODO`
-- Status: `not yet assigned`
+- Domain: `https://nyaaywatch.in`
+- Backing stack: `nyaaywatch-staging`
+- Status: `live`
 
 ## How To Retrieve The AWS Staging URL
 

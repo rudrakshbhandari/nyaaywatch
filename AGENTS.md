@@ -85,6 +85,17 @@ Keep boundaries legible as the repo grows:
 - When the path is clear, act on reasonable assumptions instead of stopping for confirmation.
 - Try multiple programmatic approaches before concluding that something is blocked.
 
+## Browser And Tool Recovery
+
+- Treat browser-session failures as a recovery task, not a stopping point.
+- If an embedded browser tool or MCP transport fails, first try to restore it or switch to another programmatic browser path before asking the user to intervene.
+- Preferred fallback order for authenticated web work is:
+  1. repair the existing browser or MCP session
+  2. switch to a CLI-driven browser workflow
+  3. reuse authenticated browser state such as cookies or saved session data
+  4. call the underlying service API directly when the authenticated state is already available locally
+- Only ask the user to log in again, provide a token, or perform a manual browser action after these recovery paths have been attempted and documented.
+
 Ask the user only when:
 
 1. required information is truly unavailable in the repo or environment, such as passwords, API keys, or 2FA codes
