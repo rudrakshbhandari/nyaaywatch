@@ -8,12 +8,6 @@ Parameters:
   EnvironmentName:
     Type: String
     Default: staging
-  VpcId:
-    Type: AWS::EC2::VPC::Id
-  PublicSubnetIds:
-    Type: List<AWS::EC2::Subnet::Id>
-  PrivateSubnetIds:
-    Type: List<AWS::EC2::Subnet::Id>
   ContainerImage:
     Type: String
     Description: Fully-qualified container image URI in ECR.
@@ -37,6 +31,98 @@ Parameters:
     NoEcho: true
 
 Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}"
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}"
+
+  VpcGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref Vpc
+
+  PublicSubnetAz1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs ap-south-1]
+      CidrBlock: 10.42.0.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-public-a"
+      VpcId: !Ref Vpc
+
+  PublicSubnetAz2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [1, !GetAZs ap-south-1]
+      CidrBlock: 10.42.1.0/24
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-public-b"
+      VpcId: !Ref Vpc
+
+  PrivateSubnetAz1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs ap-south-1]
+      CidrBlock: 10.42.10.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-private-a"
+      VpcId: !Ref Vpc
+
+  PrivateSubnetAz2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [1, !GetAZs ap-south-1]
+      CidrBlock: 10.42.11.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-private-b"
+      VpcId: !Ref Vpc
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+
+  PublicDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VpcGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnetAz1RouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetAz1
+
+  PublicSubnetAz2RouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetAz2
+
   ArtifactsBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -57,7 +143,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Public ingress for the NyaayWatch staging ALB
-      VpcId: !Ref VpcId
+      VpcId: !Ref Vpc
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -71,7 +157,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: App container access for NyaayWatch staging
-      VpcId: !Ref VpcId
+      VpcId: !Ref Vpc
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: !Ref ContainerPort
@@ -85,7 +171,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: PostgreSQL access for NyaayWatch staging
-      VpcId: !Ref VpcId
+      VpcId: !Ref Vpc
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 5432
@@ -99,7 +185,9 @@ Resources:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: Private subnets for NyaayWatch staging PostgreSQL
-      SubnetIds: !Ref PrivateSubnetIds
+      SubnetIds:
+        - !Ref PrivateSubnetAz1
+        - !Ref PrivateSubnetAz2
 
   StagingDatabase:
     Type: AWS::RDS::DBInstance
@@ -111,7 +199,7 @@ Resources:
       DBName: !Ref DatabaseName
       DBSubnetGroupName: !Ref DatabaseSubnetGroup
       Engine: postgres
-      EngineVersion: "16.4"
+      EngineVersion: "16.13"
       MasterUsername: !Ref DatabaseUsername
       MasterUserPassword: !Ref DatabasePassword
       MultiAZ: false
@@ -206,7 +294,7 @@ Resources:
             - Name: OPERATOR_API_TOKEN
               Value: !Ref OperatorApiToken
             - Name: DATABASE_URL
-              Value: !Sub "postgresql://${DatabaseUsername}:${DatabasePassword}@${StagingDatabase.Endpoint.Address}:5432/${DatabaseName}"
+              Value: !Sub "postgresql://${DatabaseUsername}:${DatabasePassword}@${StagingDatabase.Endpoint.Address}:5432/${DatabaseName}?uselibpqcompat=true&sslmode=require"
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -221,7 +309,9 @@ Resources:
       Scheme: internet-facing
       SecurityGroups:
         - !Ref LoadBalancerSecurityGroup
-      Subnets: !Ref PublicSubnetIds
+      Subnets:
+        - !Ref PublicSubnetAz1
+        - !Ref PublicSubnetAz2
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -230,7 +320,7 @@ Resources:
       Port: !Ref ContainerPort
       Protocol: HTTP
       TargetType: ip
-      VpcId: !Ref VpcId
+      VpcId: !Ref Vpc
       HealthCheckEnabled: true
       HealthCheckPath: /health
       Matcher:
@@ -257,10 +347,12 @@ Resources:
       TaskDefinition: !Ref TaskDefinition
       NetworkConfiguration:
         AwsvpcConfiguration:
-          AssignPublicIp: DISABLED
+          AssignPublicIp: ENABLED
           SecurityGroups:
             - !Ref ServiceSecurityGroup
-          Subnets: !Ref PrivateSubnetIds
+          Subnets:
+            - !Ref PublicSubnetAz1
+            - !Ref PublicSubnetAz2
       LoadBalancers:
         - ContainerName: !Sub "${ProjectName}-${EnvironmentName}"
           ContainerPort: !Ref ContainerPort
@@ -269,6 +361,12 @@ Resources:
 Outputs:
   ServiceUrl:
     Value: !Sub "http://${LoadBalancer.DNSName}"
+  VpcId:
+    Value: !Ref Vpc
+  PublicSubnetIds:
+    Value: !Join [",", [!Ref PublicSubnetAz1, !Ref PublicSubnetAz2]]
+  PrivateSubnetIds:
+    Value: !Join [",", [!Ref PrivateSubnetAz1, !Ref PrivateSubnetAz2]]
   ArtifactsBucketName:
     Value: !Ref ArtifactsBucket
   DatabaseEndpoint:
