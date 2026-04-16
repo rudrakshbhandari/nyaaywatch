@@ -4,6 +4,8 @@ Operational source of truth for where NyaayWatch is currently running and how to
 
 Keep this file updated whenever the staging stack changes, a public alpha URL is assigned, or a domain cutover is completed.
 
+Use this document as the live environment map. For routine release go/no-go decisions, use `docs/ALPHA_RELEASE_CHECKLIST.md` plus `docs/RELEASE_POLICY.md`. Use `docs/DOMAIN_CUTOVER_CHECKLIST.md` only for future hostname, certificate, or DNS changes.
+
 ## Current Environments
 
 ### Local Development

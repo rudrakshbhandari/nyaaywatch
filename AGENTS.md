@@ -9,10 +9,11 @@ Use this file for operating rules, not full project context.
 Primary repo context lives in:
 
 1. `README.md`
-2. `docs/NYAAYWATCH_DESIGN.md`
-3. `docs/ENG_REVIEW_TEST_PLAN.md`
-4. `docs/MVP_EXECUTION_PLAN.md`
-5. `TODOS.md`
+2. `DESIGN.md`
+3. `docs/NYAAYWATCH_DESIGN.md`
+4. `docs/ENG_REVIEW_TEST_PLAN.md`
+5. `docs/MVP_EXECUTION_PLAN.md`
+6. `TODOS.md`
 
 If this file and those docs conflict, update the work so it matches the repo docs or fix the docs intentionally.
 

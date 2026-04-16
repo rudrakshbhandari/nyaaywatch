@@ -2,6 +2,8 @@
 
 Operating policy for keeping the Himachal Pradesh public alpha trustworthy.
 
+This policy sets cadence, publisher rules, and blocking criteria. Use `docs/ALPHA_RELEASE_CHECKLIST.md` as the release go/no-go runbook, `docs/DEPLOYMENT_STATUS.md` as the live environment map, and `docs/DOMAIN_CUTOVER_CHECKLIST.md` only for hostname, certificate, or DNS changes.
+
 This document answers four practical questions:
 
 1. How often should NyaayWatch publish?

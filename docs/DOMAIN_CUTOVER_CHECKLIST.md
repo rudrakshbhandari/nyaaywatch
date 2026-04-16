@@ -1,6 +1,6 @@
 # Domain Cutover Checklist
 
-Checklist for pointing a real NyaayWatch domain at the validated AWS deployment.
+Recorded cutover state for pointing the real NyaayWatch domain at the validated AWS deployment.
 
 This assumes the app continues to run on the existing AWS staging or public-alpha stack with an Application Load Balancer.
 
@@ -11,9 +11,9 @@ This assumes the app continues to run on the existing AWS staging or public-alph
 - Backing stack: `nyaaywatch-staging` in `ap-south-1`
 - Evidence source: `docs/DEPLOYMENT_STATUS.md` and `docs/ALPHA_RELEASE_CHECKLIST.md`
 
-Use the checked items below as the recorded cutover state for `nyaaywatch.in`. Treat the legacy `.com` hostnames as a separate follow-up unless they are actively routed in DNS with matching ACM coverage.
+Treat the checked items below as the completed `nyaaywatch.in` cutover record. Reuse this document only if the hostname, certificate coverage, or DNS target changes again. Treat the legacy `.com` hostnames as a separate optional follow-up unless they are actively routed in DNS with matching ACM coverage.
 
-## Choose The Public Hostname
+## Reuse This Checklist If The Public Hostname Changes
 
 Decide explicitly before touching DNS:
 
@@ -27,15 +27,15 @@ Recommendation:
 - use `app.` if you expect the root domain to stay marketing or documentation-oriented
 - use the root domain only if the app itself is the primary public surface
 
-## Certificate
+## Recorded Certificate State
 
 - [x] Request an ACM certificate in the same AWS region as the load balancer
 - [x] Include the active public hostname `nyaaywatch.in`
 - [x] Complete DNS validation
 - [x] Wait for certificate status `ISSUED`
-- [ ] If `nyaaywatch.com`, `www.nyaaywatch.com`, or `www.nyaaywatch.in` will be served publicly, confirm they are all covered by ACM before routing traffic to them
+- [ ] Optional future follow-up: if `nyaaywatch.com`, `www.nyaaywatch.com`, or `www.nyaaywatch.in` will be served publicly, confirm they are all covered by ACM before routing traffic to them
 
-## Load Balancer
+## Recorded Load Balancer State
 
 - [x] Confirm the target ALB is the one serving `nyaaywatch-staging`
 - [x] Add or verify an HTTPS listener on port `443`
@@ -43,15 +43,15 @@ Recommendation:
 - [x] Forward HTTPS traffic to the existing application target group
 - [x] Keep or add an HTTP listener that redirects `80 -> 443`
 - [x] Application-level redirect behavior sends legacy `.com` host headers to `https://nyaaywatch.in`
-- [ ] If the `.com` hostnames are pointed at the ALB publicly, re-verify browser-visible `301` redirects with certificate coverage for those hosts
+- [ ] Optional future follow-up: if the `.com` hostnames are pointed at the ALB publicly, re-verify browser-visible `301` redirects with certificate coverage for those hosts
 
-## DNS
+## Recorded DNS State
 
 - [x] Create the ACM validation records for `nyaaywatch.in`
 - [x] Create the public DNS record pointing `nyaaywatch.in` at the ALB
 - [x] Keep the TTL low enough to support rollback during cutover
 
-## Application Verification After Cutover
+## Recorded Application Verification
 
 - [x] Open the domain in a browser and confirm the homepage loads over HTTPS
 - [x] Confirm the certificate hostname matches the chosen domain
@@ -60,20 +60,19 @@ Recommendation:
 - [x] Confirm the public UI still reads from the latest published snapshot
 - [x] Confirm operator endpoints are still unauthorized without the operator token
 
-## Repo Updates After Cutover
+## Recorded Repo Updates
 
 - [x] write the final public URL into `docs/DEPLOYMENT_STATUS.md`
 - [x] note the chosen hostname and environment in the release checklist
 - [x] if the domain changes public positioning, update any affected copy or docs in the same PR
 
-## Rollback Plan
+## Future Incident Rollback Actions
 
-If anything is wrong after cutover:
+If a future DNS or certificate change causes regressions:
 
-- [x] record the rollback procedure below before changing DNS again
-- [ ] revert DNS to the prior hostname or remove the new record if a future cutover issue appears
-- [ ] keep the ALB and certificate in place until the issue is understood
-- [ ] record the exact failure mode and retry only after verification succeeds on the ALB URL itself
+- revert DNS to the prior hostname or remove the changed record
+- keep the ALB and certificate in place until the issue is understood
+- record the exact failure mode and retry only after verification succeeds on the ALB URL itself
 
 ## Recorded Cutover Evidence
 
@@ -83,7 +82,7 @@ If anything is wrong after cutover:
 - Latest confirmed public verification date: `2026-04-15`
 - Latest confirmed operator rejection check: unauthenticated `GET /operator/publications` returned `401`
 
-## Rollback Procedure
+## Detailed Rollback Procedure
 
 If the public hostname regresses after a future DNS or certificate change:
 
