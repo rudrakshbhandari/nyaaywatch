@@ -47,7 +47,7 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 
 ### What Did Not Yet Clear
 
-- Operating evidence: this review happened in one short operator session on 2026-04-16. It does not satisfy the accelerated-plan requirement for distinct windows spaced by at least 2 hours.
+- Operating evidence: this review happened in one short operator session on 2026-04-16. It does not satisfy the accelerated-plan requirement for a second independent Punjab window at least `1 hour` later, with `2+ hours` preferred.
 - Public trust parity review: the internal operator flow worked, but Punjab has not yet gone through the public-surface parity review required before public exposure.
 - Methodology defensibility for public launch: Punjab currently reuses the same lower-court methodology version, but there is not yet a Punjab-specific written public review of caveats, parity assumptions, or any state-specific source quirks.
 - Product and IA discipline: no Punjab public UX has been added, which is correct for now, but that means Punjab has not yet cleared the public-exposure bar.
@@ -60,6 +60,6 @@ Do not expose Punjab publicly yet.
 
 Required next step:
 
-1. Run one more Punjab publish window at least 2 hours after the 2026-04-16 publish window.
+1. Run one more Punjab publish window at least `1 hour` after the 2026-04-16 publish window. Prefer `2+ hours` when practical.
 2. Record the second window plus the review outcome in this log.
 3. Re-check public trust parity before any public Punjab release.

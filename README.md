@@ -51,6 +51,8 @@ The approved implementation direction is:
 - [Multi-state expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md)
 - [Accelerated expansion plan](docs/ACCELERATED_EXPANSION_PLAN.md)
 - [Expansion review log](docs/EXPANSION_REVIEW_LOG.md)
+- [Punjab go-live checklist](docs/PUNJAB_GO_LIVE_CHECKLIST.md)
+- [Punjab public readiness review](docs/PUNJAB_PUBLIC_READINESS_REVIEW.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
 - [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
