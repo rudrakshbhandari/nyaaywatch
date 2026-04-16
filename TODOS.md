@@ -10,18 +10,6 @@ Use this file for:
 
 ## Review
 
-### Multi-State Expansion Readiness Gates
-
-**What:** Define explicit readiness criteria for expanding beyond Himachal Pradesh.
-
-**Why:** “Himachal first” only stays disciplined if expansion has measurable gates instead of happening because momentum or ambition makes it feel time.
-
-**Context:** The approved design says wider Indian coverage should happen only after the trust model proves itself. The gating policy now lives in `docs/MULTI_STATE_EXPANSION_GATES.md`; update it when the readiness bar changes or when a candidate geography is reviewed against it.
-
-**Effort:** M
-**Priority:** P2
-**Depends on:** Initial alpha implementation and some operating evidence
-
 ### Extract Alpha Design Foundation Into DESIGN.md
 
 **What:** Move the alpha design foundation, token rules, and component vocabulary from `docs/NYAAYWATCH_DESIGN.md` into a dedicated `DESIGN.md`.
@@ -50,6 +38,11 @@ Use this file for:
 
 - completed in `docs/RELEASE_POLICY.md`, `docs/DEPLOYMENT_STATUS.md`, and `infra/aws/staging/stack.yaml`
 - the alpha now has a fixed twice-weekly publish recommendation, a tight publisher allowlist, blocked-release rules, CloudWatch alarms for health and app errors, a release-review dashboard, and a documented log-review routine
+
+### Release History And Operating Evidence Tracking
+
+- completed in `docs/RELEASE_HISTORY.md`, `docs/OPERATING_EVIDENCE.md`, and the `release:record` workflow
+- the alpha now writes markdown plus JSON evidence artifacts and keeps a tracked release ledger tied to publication ids, rollback targets, and reviewer notes
 
 ### Responsive And Accessibility Trust-Surface QA
 

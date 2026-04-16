@@ -19,8 +19,9 @@ For every public publish, keep:
 
 1. a prepublish verification summary for the target run
 2. a postpublish verification summary for the active publication
-3. the generated release evidence markdown file
-4. the run id, publication id, and rollback target publication id
+3. the generated release evidence markdown and JSON files
+4. a tracked entry in `docs/RELEASE_HISTORY.md`
+5. the run id, publication id, and rollback target publication id
 
 Suggested minimum operating bar before discussing another geography publicly:
 
@@ -49,14 +50,21 @@ Run postpublish verification and write a release evidence artifact:
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
 ```
 
+Record the publish in the tracked release ledger:
+
+```bash
+npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
+```
+
 By default, postpublish evidence is written to:
 
 ```text
 output/release-evidence/<publication-id>.md
+output/release-evidence/<publication-id>.json
 ```
 
 ## Review Discipline
 
 - Treat the current active publication as the rollback target until a new publish succeeds.
 - Do not publish if the prepublish summary says the target run is not `completed` or lacks a stored candidate.
-- Do not treat a postpublish run as finished until the evidence markdown file exists and the active publication matches the intended publication id.
+- Do not treat a postpublish run as finished until the evidence files exist, the active publication matches the intended publication id, and `docs/RELEASE_HISTORY.md` has been updated.

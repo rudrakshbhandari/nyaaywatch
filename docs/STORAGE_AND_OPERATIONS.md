@@ -107,6 +107,8 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
    `npm run operator:publish -- <run-id> "Publish latest Himachal snapshot"`
 8. After publish, save a release evidence artifact:
    `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in`
+9. Record the release in the tracked ledger:
+   `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
 
 ### Replay -> Rollback
 
