@@ -49,6 +49,7 @@ The approved implementation direction is:
 - [Deployment status](docs/DEPLOYMENT_STATUS.md)
 - [Domain cutover checklist](docs/DOMAIN_CUTOVER_CHECKLIST.md)
 - [Multi-state expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md)
+- [Accelerated expansion plan](docs/ACCELERATED_EXPANSION_PLAN.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
 - [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
