@@ -73,6 +73,10 @@ Treat a release as blocked if any one of these is true:
    aws logs tail /ecs/nyaaywatch-staging --since 30m --region ap-south-1
    ```
 3. If any `level=error` log line appears, either fix it first or explicitly record why it is safe to ignore for this release.
+4. Run the public verification script against the target hostname:
+   ```bash
+   npm run release:verify -- --base-url=https://nyaaywatch.in
+   ```
 
 ### During publish
 
@@ -90,6 +94,7 @@ For the next 15 minutes:
 - watch the dashboard
 - confirm the public hostname still passes `/health`
 - confirm `GET /v1/stats/himachal` reflects the intended active publication
+- rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
 
 ### Weekly review
 
