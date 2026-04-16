@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import { z } from "zod";
 
+import { SUPPORTED_STATE_CODES } from "../geographies.js";
+
 dotenv.config();
 
 const EnvSchema = z.object({
@@ -21,7 +23,7 @@ const EnvSchema = z.object({
     .regex(/^nyaaywatch-[a-z0-9-]+$/, "S3_BUCKET must be nyaaywatch-prefixed"),
   DEPLOY_ENV: z.enum(["dev", "staging"]).default("dev"),
   OPERATOR_API_TOKEN: z.string().min(8),
-  STATE_CODE: z.literal("HP").default("HP"),
+  STATE_CODE: z.enum(SUPPORTED_STATE_CODES).default("HP"),
   CANONICAL_HOST: z.string().min(1).optional(),
   LEGACY_HOSTS: z
     .string()

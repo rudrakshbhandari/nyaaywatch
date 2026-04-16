@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createTestContext, insertHistoricalPublishedSnapshot, seedTestSnapshot } from "./helpers.js";
+import { createScopedTestService, createTestContext, insertHistoricalPublishedSnapshot, seedTestSnapshot } from "./helpers.js";
 
 describe("PublishedSnapshotService", () => {
   const pools: Array<{ end: () => Promise<void> }> = [];
@@ -132,5 +132,33 @@ describe("PublishedSnapshotService", () => {
     expect(statewideCsv).toContain("summary");
     expect(districtCsv).toContain("2026-03-31T00:00:00.000Z");
     expect(districtCsv).toContain("2026-04-10T00:00:00.000Z");
+  });
+
+  it("can capture an internal Punjab trial without changing the public Himachal scope", async () => {
+    const context = await createTestContext({ stateCode: "PB" });
+    pools.push(context.pool);
+
+    const captured = await context.service.captureRun("Punjab internal trial capture");
+
+    expect(captured.run.stateCode).toBe("PB");
+    expect(captured.candidate?.snapshot.stateCode).toBe("PB");
+    expect(captured.candidate?.snapshot.stateName).toBe("Punjab");
+    expect(captured.artifacts.every((artifact) => artifact.s3Key.includes("/pb/"))).toBe(true);
+  });
+
+  it("keeps internal Punjab runs isolated from the Himachal-scoped service", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+
+    const himachalService = createScopedTestService(context.pool, "HP");
+    const punjabService = createScopedTestService(context.pool, "PB");
+    const capturedPunjab = await punjabService.captureRun("Punjab isolation capture");
+    const publishedPunjab = await punjabService.publishRun(capturedPunjab.run.id, "Punjab internal publish");
+
+    await expect(himachalService.rollbackPublication(publishedPunjab.publication.id)).rejects.toThrow("does not belong to HP");
+    await expect(himachalService.publishRun(capturedPunjab.run.id)).rejects.toThrow("was not found");
+    expect(await himachalService.inspectRun(capturedPunjab.run.id)).toBeNull();
+    expect(await himachalService.getPublishedSnapshot()).toBeNull();
+    expect((await punjabService.getPublishedSnapshot())?.stateCode).toBe("PB");
   });
 });

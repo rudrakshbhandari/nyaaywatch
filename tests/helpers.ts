@@ -9,6 +9,7 @@ import { loadConfig, type AppConfig } from "../src/config/env.js";
 import { runMigrations } from "../src/db/migrate.js";
 import { createFixtureSourceClient } from "../src/dev/fixtures.js";
 import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
+import { getStateProfile, type SupportedStateCode } from "../src/geographies.js";
 import { createApp } from "../src/api/app.js";
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../src/storage/artifact-store.js";
@@ -16,7 +17,7 @@ import { PgWarehouseStore } from "../src/storage/postgres.js";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-export async function createTestContext() {
+export async function createTestContext(options: { stateCode?: SupportedStateCode } = {}) {
   const db = newDb({ autoCreateForeignKeyIndices: true, noAstCoverageCheck: true });
   db.public.registerFunction({
     name: "version",
@@ -28,11 +29,12 @@ export async function createTestContext() {
   const pool = new adapter.Pool() as Pool;
   await runMigrations(pool);
 
-  const config = createTestConfig();
+  const config = createTestConfig(options.stateCode);
+  const profile = getStateProfile(config.STATE_CODE);
   const store = PgWarehouseStore.fromPool(pool);
   const artifactStore = new InMemoryArtifactStore();
-  const sourceClient = createFixtureSourceClient();
-  const service = new PublishedSnapshotService(config, store, artifactStore, sourceClient);
+  const sourceClient = createFixtureSourceClient(config.STATE_CODE);
+  const service = new PublishedSnapshotService(config, profile, store, artifactStore, sourceClient);
 
   return { pool, config, service };
 }
@@ -116,7 +118,25 @@ export function createTestApp(config: AppConfig, service: PublishedSnapshotServi
   return createApp(config, service);
 }
 
-function createTestConfig(): AppConfig {
+export function createScopedTestService(
+  pool: Pool,
+  stateCode: SupportedStateCode,
+  overrides: Partial<AppConfig> = {},
+) {
+  const config = createTestConfig(stateCode);
+  const mergedConfig = { ...config, ...overrides, STATE_CODE: stateCode } satisfies AppConfig;
+  const profile = getStateProfile(stateCode);
+
+  return new PublishedSnapshotService(
+    mergedConfig,
+    profile,
+    PgWarehouseStore.fromPool(pool),
+    new InMemoryArtifactStore(),
+    createFixtureSourceClient(stateCode),
+  );
+}
+
+function createTestConfig(stateCode: SupportedStateCode = "HP"): AppConfig {
   return loadConfig({
     NODE_ENV: "test",
     PORT: "3000",
@@ -127,7 +147,7 @@ function createTestConfig(): AppConfig {
     S3_BUCKET: "nyaaywatch-test-artifacts",
     DEPLOY_ENV: "dev",
     OPERATOR_API_TOKEN: "operator-test-token",
-    STATE_CODE: "HP",
+    STATE_CODE: stateCode,
     CANONICAL_HOST: "nyaaywatch.in",
     LEGACY_HOSTS: "nyaaywatch.com,www.nyaaywatch.com",
   });

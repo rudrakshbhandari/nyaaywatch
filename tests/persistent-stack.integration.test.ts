@@ -5,6 +5,7 @@ import { Pool } from "pg";
 import { loadConfig } from "../src/config/env.js";
 import { runMigrations } from "../src/db/migrate.js";
 import { createFixtureSourceClient } from "../src/dev/fixtures.js";
+import { getStateProfile } from "../src/geographies.js";
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
 import { S3ArtifactStore } from "../src/storage/artifact-store.js";
 import { PgWarehouseStore } from "../src/storage/postgres.js";
@@ -43,12 +44,14 @@ describePersistent("persistent Postgres + S3 integration", () => {
     databaseUrl.pathname = `/${databaseName}`;
     testPool = new Pool({ connectionString: databaseUrl.toString() });
     await runMigrations(testPool);
+    const config = { ...baseConfig, DATABASE_URL: databaseUrl.toString() };
 
     service = new PublishedSnapshotService(
-      { ...baseConfig, DATABASE_URL: databaseUrl.toString() },
+      config,
+      getStateProfile(config.STATE_CODE),
       PgWarehouseStore.fromPool(testPool),
       new S3ArtifactStore(baseConfig),
-      createFixtureSourceClient(),
+      createFixtureSourceClient(config.STATE_CODE),
     );
   }, 90_000);
 

@@ -3,8 +3,8 @@ import { z } from "zod";
 export const QualityStateSchema = z.enum(["complete", "partial", "stale"]);
 
 export const SnapshotMetadataSchema = z.object({
-  stateCode: z.literal("HP"),
-  stateName: z.literal("Himachal Pradesh"),
+  stateCode: z.string().min(1),
+  stateName: z.string().min(1),
   sourceName: z.string().min(1),
   sourceSnapshotAt: z.string().datetime(),
   publishedAt: z.string().datetime(),

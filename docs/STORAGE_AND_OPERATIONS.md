@@ -1,12 +1,13 @@
 # Storage And Operator Flow
 
-This repository now ships the real Himachal run pipeline for NyaayWatch's published snapshot boundary.
+This repository now ships the real Himachal run pipeline for NyaayWatch's published snapshot boundary, plus the first internal multi-geography operator scaffolding for post-alpha expansion work.
 
 ## What Lives Where
 
 - PostgreSQL stores canonical run state, run artifact metadata, published snapshot payloads, and publication history.
 - S3 stores the raw captured NJDG HTML bundles and normalized snapshot-candidate artifacts that back a run.
 - The public API and UI read only the latest publication event for Himachal Pradesh.
+- Internal operator flows can now target supported candidate states without widening public UX or public API claims.
 
 ## Storage Model
 
@@ -27,6 +28,10 @@ This repository now ships the real Himachal run pipeline for NyaayWatch's publis
 - All buckets are tagged with `project=nyaaywatch` and `env=dev` or `env=staging`.
 
 ## Operator Flow
+
+The live public product remains Himachal-first.
+
+Internal candidate geographies use the same fetch / inspect / publish / replay / rollback machinery, but only through operator tooling or a separately configured runtime. The current first internal candidate state is Punjab (`PB`).
 
 ### Fetch
 
@@ -97,18 +102,22 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
 2. Bootstrap or run the app with `npm run dev`.
 3. Create a run:
    `npm run operator:fetch -- "Manual Himachal fetch"`
-4. Inspect the stored candidate:
+4. For an internal candidate state trial, override the operator target explicitly:
+   `npm run operator:fetch -- --state PB "Internal Punjab fetch"`
+5. Inspect the stored candidate:
    `npm run operator:inspect -- <run-id>`
-5. Review publication history and the current rollback target:
+6. Review publication history and the current rollback target:
    `npm run operator:publications`
-6. Run prepublish verification against the public hostname:
+7. Run prepublish verification against the public hostname:
    `npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in`
-7. Publish the completed run:
-   `npm run operator:publish -- <run-id> "Publish latest Himachal snapshot"`
-8. After publish, save a release evidence artifact:
+8. Publish the completed run:
+   `npm run operator:publish -- <run-id> "Publish completed snapshot"`
+9. After publish, save a release evidence artifact:
    `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in`
-9. Record the release in the tracked ledger:
+10. Record the release in the tracked ledger:
    `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
+
+The `--state` override is intended for internal trials only. It does not add public routes, a public state selector, or public multi-state claims by itself.
 
 ### Replay -> Rollback
 
