@@ -10,17 +10,17 @@ Use this file for:
 
 ## Review
 
-### Punjab Live Rollout Verification
+### State-Aware Live Release Tooling
 
-**What:** Deploy and verify the already-implemented narrow Punjab public surface on the live stack.
+**What:** Extend the live release helpers and operator exposure so non-default states can be published and recorded without manual one-off ECS task overrides.
 
-**Why:** The implementation and local parity checks are done. The remaining work is rollout discipline: publish the Punjab snapshot intentionally, verify the public hostname, and record the live result without implying nationwide parity.
+**Why:** Punjab is now live publicly, but the rollout used manual ECS task overrides because the deployed operator HTTP endpoints and release helper scripts remain Himachal-scoped.
 
-**Context:** `docs/EXPANSION_REVIEW_LOG.md` now records two live Punjab windows plus the completed narrow state-scoped public-surface implementation. `docs/PUNJAB_GO_LIVE_CHECKLIST.md` now shows the local implementation and parity gates as largely cleared, while live verification and deployment gates remain open.
+**Context:** `docs/EXPANSION_REVIEW_LOG.md` and `docs/DEPLOYMENT_STATUS.md` now record the Punjab public rollout and the remaining tooling gap. `release:verify` already supports `--state-slug`; `release:prepublish`, `release:postpublish`, and `release:record` still need the same state-scoped path.
 
 **Effort:** M
 **Priority:** P1
-**Depends on:** intentional AWS/runtime rollout plan for Punjab
+**Depends on:** agreement on whether state-scoped live publish should happen through HTTP operator routes, ECS task wrappers, or both
 
 ## Completed
 
@@ -58,6 +58,11 @@ Use this file for:
 
 - completed in the public app with explicit `/states/punjab/...` routes, state-scoped API endpoints, dynamic supported-state navigation, and route-parity coverage
 - Himachal remains the default unscoped surface, while Punjab is now available as the first approved explicit state-scoped public route family pending live deployment verification
+
+### Punjab Live Rollout Verification
+
+- completed on 2026-04-16 with live fetch `run_ff674e79-8752-4b4d-9b32-4c7a368d339c`, publication `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`, and public verification on `https://nyaaywatch.in/states/punjab`
+- release verification passed with `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab`, and the rollout evidence is now recorded in the deployment, release-history, and expansion-review docs
 
 ### Internal Multi-Geography Pipeline Scaffolding
 

@@ -13,7 +13,7 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - first successful capture date: 2026-04-16
 - latest successful validation date: 2026-04-16
 - reviewer: Codex
-- decision: `approved for narrow public rollout work`
+- decision: `live on the public site`
 
 ### Trial Evidence
 
@@ -27,10 +27,16 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - second window replay run id: `run_13854ef4-33c1-4204-bd66-37685148e7c4`
 - second window replay publication id: `publication_cb511366-8bfb-4467-9e5c-5a2db394d545`
 - second window rollback publication id: `publication_3512d69b-35e0-4a63-b3f1-35f738af7441`
+- live rollout fetch run id: `run_ff674e79-8752-4b4d-9b32-4c7a368d339c`
+- live rollout publication id: `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`
+- live rollout snapshot id: `snapshot_09384231-203b-41ec-8fe7-a71e9c456b9d`
+- live deploy run id: `24537940704`
 - raw artifact key: `raw/dev/pb/2026-04-16/run_e440dc29-3f34-42da-a5ad-36b3b67e2b3a-njdg-dashboard-html.json`
 - normalized artifact key: `normalize/dev/pb/2026-04-16/run_e440dc29-3f34-42da-a5ad-36b3b67e2b3a-snapshot-candidate.json`
 - second window raw artifact key: `raw/dev/pb/2026-04-16/run_726b1bb9-04c8-43dc-9dfe-c977abf812e0-njdg-dashboard-html.json`
 - second window normalized artifact key: `normalize/dev/pb/2026-04-16/run_726b1bb9-04c8-43dc-9dfe-c977abf812e0-snapshot-candidate.json`
+- live rollout raw artifact key: `raw/staging/pb/2026-04-16/run_ff674e79-8752-4b4d-9b32-4c7a368d339c-njdg-dashboard-html.json`
+- live rollout normalized artifact key: `normalize/staging/pb/2026-04-16/run_ff674e79-8752-4b4d-9b32-4c7a368d339c-snapshot-candidate.json`
 
 ### Observed Output
 
@@ -53,20 +59,20 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - Rollback clarity: rollback restored the original Punjab publication cleanly after the replay publication.
 - Operating evidence: a second independent Punjab window ran on 2026-04-16 at least 2 hours and 43 minutes after the first one, with the same statewide outputs and another successful replay plus rollback cycle.
 - Public-readiness review groundwork: `docs/PUNJAB_PUBLIC_READINESS_REVIEW.md` now covers metadata shape, copy posture, and exposure-boundary assumptions for a future narrow public rollout.
+- Live rollout verification: the deployed public stack now serves Punjab at `/states/punjab`, `/v1/states/punjab/...`, and `/states/punjab/data/districts.csv`, and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passed with `districtCount=22`, `trendCount=1`, and CSV metadata parity confirmed.
 
-### What Did Not Yet Clear
+### Operational Notes
 
-- Deployment readiness: the AWS runtime and live release flow still need an explicit Punjab rollout plan before public exposure on `https://nyaaywatch.in`.
-- Live public verification: the state-scoped Punjab routes, CSV, and API still need browser and release verification against the real public hostname after deploy.
+- The live public runtime is now state-aware for read paths, but the public operator HTTP endpoints remain Himachal-scoped because the deployed app still binds operator routes to the single configured `STATE_CODE`.
+- Punjab live publishing was therefore executed through one-off ECS tasks with `STATE_CODE=PB` rather than through `https://nyaaywatch.in/operator/...`.
+- Follow-on release tooling should generalize state-scoped live publish helpers so future expansions do not require manual ECS task overrides.
 
 ### Recommendation
 
-Punjab is still the right first candidate state for the accelerated expansion track, and it has now cleared the internal evidence bar.
+Punjab is now the first non-Himachal geography live on the public site, and the rollout cleared the narrow public expansion path without adding nationwide scaffolding.
 
-Punjab is ready for a narrow public deployment PR and rollout review.
+The next expansion slice should not be more Punjab proof. It should be one of:
 
-Required next step:
-
-1. Deploy the explicit Punjab state-scoped public surface intentionally.
-2. Verify Punjab UI, API, CSV, and trust-metadata parity through the real public hostname.
-3. Record the rollout result in the release and expansion docs.
+1. state-aware live release tooling and operator-route cleanup
+2. one additional state trial using the same evidence discipline
+3. a separate later track for High Courts rather than mixing court tiers now
