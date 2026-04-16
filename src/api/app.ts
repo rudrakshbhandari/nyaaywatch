@@ -159,6 +159,7 @@ export function createApp(
   app.get(
     "/data/districts.csv",
     asyncRoute(async (_request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const csv = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).renderDistrictCsv();
       if (!csv) {
         response.status(404).type("text/plain").send("No published snapshot available.");
@@ -172,6 +173,7 @@ export function createApp(
   app.get(
     "/data/districts/:districtId.csv",
     asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const csv = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).renderDistrictHistoryCsv(
         readRouteParam(request.params.districtId),
       );
@@ -251,6 +253,7 @@ export function createApp(
   app.get(
     "/data",
     asyncRoute(async (_request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
       const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
       const snapshot = await currentService.getPublishedSnapshot();
@@ -375,6 +378,7 @@ export function createApp(
   app.get(
     "/states/:stateSlug/data",
     asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
         response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
@@ -399,6 +403,7 @@ export function createApp(
   app.get(
     "/states/:stateSlug/data/districts.csv",
     asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
         response.status(404).type("text/plain").send("State not found.");
@@ -418,6 +423,7 @@ export function createApp(
   app.get(
     "/states/:stateSlug/data/districts/:districtId.csv",
     asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
         response.status(404).type("text/plain").send("State not found.");
@@ -733,6 +739,14 @@ function asyncRoute(
   return (request: Request, response: Response, next: NextFunction) => {
     void handler(request, response, next).catch(next);
   };
+}
+
+function applyPublishedDataCacheHeaders(response: Response) {
+  response.set({
+    "Cache-Control": "no-store, max-age=0, must-revalidate",
+    "CDN-Cache-Control": "no-store",
+    "Cloudflare-CDN-Cache-Control": "no-store",
+  });
 }
 
 function operatorOnly(config: AppConfig) {
