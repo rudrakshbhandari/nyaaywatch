@@ -78,6 +78,7 @@ Keep boundaries legible as the repo grows:
 - Make reasonable assumptions when the path is clear. Ask clarifying questions only when ambiguity is likely to cause incorrect, unsafe, or misleading work.
 - Do not ship placeholder logic, fake integrations, or open-ended TODOs as finished work.
 - Run relevant tests yourself whenever feasible. If tests fail or cannot run, report the exact command, the output, and whether the blocker is repo-side or external.
+- Every final user-facing completion message must end with a concise `Next steps` section or sentence. If there is nothing meaningful left to do, say that explicitly instead of omitting the section.
 
 ## Autonomous Execution
 
@@ -152,3 +153,4 @@ A change is not done until, where relevant:
 - public-facing caveats and provenance still hold
 - commit scope is clean and intentionally named
 - the branch is pushed and a pull request link is included in the final output for any code or doc change, unless the user explicitly requested no-PR local work
+- the final user-facing message includes clear next steps, recommended follow-up work, or an explicit statement that no further action is recommended right now
