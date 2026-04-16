@@ -51,7 +51,12 @@ A cycle is one operator-reviewed publish attempt through the full trust boundary
 5. optional `replay` or `rollback`
 6. `release:record`
 
-For the accelerated plan, cycles should be spaced by **at least 2 hours** so they represent distinct release windows and give time for:
+For the accelerated plan, follow this spacing rule:
+
+- **minimum:** at least `1 hour`
+- **preferred:** `2+ hours` when practical
+
+The reason is not that `2 hours` is magical. The point is to create a release window that is operationally independent from the previous one and gives time for:
 
 - log review
 - postpublish verification
@@ -150,7 +155,7 @@ Goal:
 Actions:
 
 1. Run one Himachal publish cycle in the morning
-2. Wait at least 2 hours
+2. Wait at least 1 hour
 3. Run a second Himachal publish cycle or replay/rollback exercise
 4. Record both in `docs/RELEASE_HISTORY.md`
 5. Capture and review source artifacts for the chosen next state
@@ -158,7 +163,7 @@ Actions:
 
 Required outputs by end of Day 1:
 
-- two distinct Himachal evidence-backed release windows on the same day or across adjacent windows
+- two distinct Himachal evidence-backed release windows separated by at least 1 hour
 - one named next state with source notes
 - explicit go / no-go on source viability for that state
 
@@ -178,7 +183,7 @@ Actions:
    - `inspect`
    - `publish`
    - `verify`
-5. Wait at least 2 hours
+5. Wait at least 1 hour
 6. Run either:
    - a second publish window, or
    - replay plus rollback
