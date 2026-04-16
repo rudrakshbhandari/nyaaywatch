@@ -10,6 +10,18 @@ Use this file for:
 
 ## Review
 
+### Punjab Spaced Follow-Up Window
+
+**What:** Run one additional live Punjab publish window at least 2 hours after the first 2026-04-16 internal trial window, then re-evaluate whether Punjab can move from internal trial to narrow public expansion.
+
+**Why:** The first real Punjab trial cleared source viability and operator safety, but it did not satisfy the accelerated-plan requirement for distinct spaced release windows. That remaining gap is the main reason Punjab is still internal-only.
+
+**Context:** `docs/EXPANSION_REVIEW_LOG.md` now records a successful live Punjab `fetch -> inspect -> publish -> replay -> rollback` session on 2026-04-16. The next check is not more scaffolding. It is a second evidence-backed Punjab window run later in time.
+
+**Effort:** S
+**Priority:** P1
+**Depends on:** None
+
 ### Extract Alpha Design Foundation Into DESIGN.md
 
 **What:** Move the alpha design foundation, token rules, and component vocabulary from `docs/NYAAYWATCH_DESIGN.md` into a dedicated `DESIGN.md`.
