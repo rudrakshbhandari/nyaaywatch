@@ -44,7 +44,8 @@ Keep this file updated whenever the staging stack changes, a public alpha URL is
 Operational notes:
 
 - Port `80` on the ALB redirects to `443`.
-- Canonical `.com -> .in` routing requires the ACM certificate to cover `nyaaywatch.com` and `www.nyaaywatch.com` in addition to the `.in` hostnames.
+- The app itself redirects legacy `.com` host headers to the canonical `.in` hostname.
+- Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 
