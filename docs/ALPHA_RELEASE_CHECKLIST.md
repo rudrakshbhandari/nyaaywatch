@@ -56,7 +56,7 @@ Run this checklist before the first public launch and before any materially diff
 - [x] The intended public hostname is chosen explicitly.
 - [x] HTTPS is active with a valid ACM-backed certificate.
 - [x] DNS points at the intended AWS load balancer.
-- [x] `docs/DOMAIN_CUTOVER_CHECKLIST.md` is complete if a custom domain is involved.
+- [x] `docs/DOMAIN_CUTOVER_CHECKLIST.md` records the completed `nyaaywatch.in` cutover and any remaining optional legacy-host follow-up.
 
 ### 7. Verification
 
