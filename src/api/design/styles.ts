@@ -19,14 +19,14 @@ export const BASE_CSS = `
     --ink: #0c0a08;
     --ink-soft: #2f2b26;
     --ink-mid: #56514a;
-    --ink-muted: #7a756d;
+    --ink-muted: #5f5a53;
     --rule: #d9d3c8;
     --rule-soft: #e7e1d4;
     --paper: #f4efe3;
     --paper-bright: #fbf7ea;
     --accent: #bd2716;
     --accent-dark: #8a1408;
-    --flag: #a0720a;
+    --flag: #6f4b00;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
