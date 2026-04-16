@@ -1,56 +1,15 @@
 import type { PublishedSnapshot, DistrictSnapshot } from "../../domain/snapshot-schema.js";
 import { escapeHtml } from "../../lib/html.js";
 
-export type LabVariantId = "editorial" | "terminal" | "product" | "civic";
-
-export interface LabVariantMeta {
-  id: LabVariantId;
-  name: string;
-  influences: string;
-  pitch: string;
-  accentHex: string;
-}
-
-export const LAB_VARIANTS: readonly LabVariantMeta[] = [
-  {
-    id: "editorial",
-    name: "Editorial",
-    influences: "NYT \u00b7 The Pudding \u00b7 Rest of World",
-    pitch:
-      "Treats each publication like an investigative brief. Big serif display, long-read lede, data embedded as evidence inside a story.",
-    accentHex: "#b3301a",
-  },
-  {
-    id: "terminal",
-    name: "Terminal",
-    influences: "Bloomberg \u00b7 FT \u00b7 Observable",
-    pitch:
-      "Dense, numeric, serious. Near-black backdrop, monospace numerals, small multiples. Reads as an instrument, not a magazine.",
-    accentHex: "#7cf0b7",
-  },
-  {
-    id: "product",
-    name: "Product",
-    influences: "Linear \u00b7 Vercel \u00b7 Stripe",
-    pitch:
-      "Crisp modern product surface. Tight geometric sans, strong accent, gradient hero, dashboard-shaped content blocks.",
-    accentHex: "#6366f1",
-  },
-  {
-    id: "civic",
-    name: "Civic",
-    influences: "gov.uk \u00b7 ProPublica \u00b7 Every Layout",
-    pitch:
-      "Restrained public-service style. System fonts, square edges, black on white, one strong link color, accessible by default.",
-    accentHex: "#1d4ed8",
-  },
-] as const;
-
-export function findVariant(id: string): LabVariantMeta | undefined {
-  return LAB_VARIANTS.find((variant) => variant.id === id);
-}
-
-export interface LabViewModel {
+/**
+ * Canonical view model for the NyaayWatch public site.
+ *
+ * Every page on the site ultimately needs the same shape: "what does the
+ * latest published snapshot look like for a reader?" This module owns that
+ * shape so the HTML renderers stay thin — they compose HomeViewModel and
+ * copy into markup, nothing more.
+ */
+export interface HomeViewModel {
   snapshot: PublishedSnapshot;
   pendingCases: number;
   pendingLakh: string;
@@ -73,7 +32,7 @@ export interface LabViewModel {
   freshnessDays: number;
 }
 
-export function buildViewModel(snapshot: PublishedSnapshot): LabViewModel {
+export function buildViewModel(snapshot: PublishedSnapshot): HomeViewModel {
   const pending = snapshot.stats.pendingCases;
   const clearance = snapshot.stats.disposalRate;
   const typicalDays = snapshot.stats.medianCaseAgeDays;

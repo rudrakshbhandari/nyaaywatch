@@ -4,8 +4,8 @@ import {
   buildViewModel,
   escapeHtml,
   formatMonth,
-  type LabViewModel,
-} from "./shared.js";
+  type HomeViewModel,
+} from "./view-model.js";
 
 const FONTS_LINK = `
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,26 +24,10 @@ function infoIcon(key: GlossaryKey): string {
   </details>`;
 }
 
-function renderVariantSwitcher(active: "editorial"): string {
-  return `<div class="lab-switcher" aria-label="Design variants">
-    <a href="/lab" class="lab-switcher__home">\u2190 Lab</a>
-    <span class="lab-switcher__sep"></span>
-    <span class="lab-switcher__label">Viewing</span>
-    <strong>Editorial</strong>
-    <nav class="lab-switcher__nav">
-      <a href="/lab/editorial" class="${active === "editorial" ? "is-active" : ""}">Editorial</a>
-      <a href="/lab/terminal">Terminal</a>
-      <a href="/lab/product">Product</a>
-      <a href="/lab/civic">Civic</a>
-    </nav>
-  </div>`;
-}
-
-export function renderEditorialHome(snapshot: PublishedSnapshot): string {
+export function renderHome(snapshot: PublishedSnapshot): string {
   const model = buildViewModel(snapshot);
   const copy = buildCopy(model);
-  const e = copy.editorial;
-  const n = e.bigNumbers;
+  const n = copy.bigNumbers;
 
   const trendBars = renderTrendChart(model);
   const watchlistCards = model.topThree
@@ -77,15 +61,13 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${escapeHtml(copy.brand)} \u2014 ${escapeHtml(e.headline)}</title>
+  <title>${escapeHtml(copy.brand)} \u2014 ${escapeHtml(copy.headline)}</title>
   ${FONTS_LINK}
-  <style>${editorialCss()}</style>
+  <style>${homeCss()}</style>
 </head>
 <body>
-  ${renderVariantSwitcher("editorial")}
-
   <header class="masthead">
-    <a href="/lab/editorial" class="masthead__brand">
+    <a href="/" class="masthead__brand">
       <span class="masthead__mark">NW</span>
       <span class="masthead__wordmark">NyaayWatch</span>
     </a>
@@ -97,16 +79,16 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
     </nav>
   </header>
 
-  <div class="ticker">${escapeHtml(e.ticker)}</div>
+  <div class="ticker">${escapeHtml(copy.ticker)}</div>
 
   <main>
     <section class="hero">
-      <p class="hero__eyebrow">${escapeHtml(e.eyebrow)}</p>
-      <h1 class="hero__hed">${escapeHtml(e.headline)}</h1>
-      <p class="hero__lede">${escapeHtml(e.lede)}</p>
+      <p class="hero__eyebrow">${escapeHtml(copy.eyebrow)}</p>
+      <h1 class="hero__hed">${escapeHtml(copy.headline)}</h1>
+      <p class="hero__lede">${escapeHtml(copy.lede)}</p>
       <div class="hero__cta">
-        <a class="btn btn--primary" href="/districts">${escapeHtml(e.ctaPrimary)} \u2192</a>
-        <a class="btn btn--ghost" href="/methodology">${escapeHtml(e.ctaSecondary)}</a>
+        <a class="btn btn--primary" href="/districts">${escapeHtml(copy.ctaPrimary)} \u2192</a>
+        <a class="btn btn--ghost" href="/methodology">${escapeHtml(copy.ctaSecondary)}</a>
       </div>
     </section>
 
@@ -137,25 +119,25 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
 
     <section class="watchlist">
       <header class="section-head">
-        <h2>${escapeHtml(e.sectionWatchlist)}</h2>
-        <p class="section-head__lede">${escapeHtml(e.sectionWatchlistLede)}</p>
+        <h2>${escapeHtml(copy.sectionWatchlist)}</h2>
+        <p class="section-head__lede">${escapeHtml(copy.sectionWatchlistLede)}</p>
       </header>
       <div class="watchlist__grid">${watchlistCards}</div>
     </section>
 
     <section class="trend">
       <header class="section-head">
-        <h2>${escapeHtml(e.sectionTrend)}</h2>
-        <p class="section-head__lede">${escapeHtml(e.sectionTrendLede)}</p>
+        <h2>${escapeHtml(copy.sectionTrend)}</h2>
+        <p class="section-head__lede">${escapeHtml(copy.sectionTrendLede)}</p>
       </header>
       ${trendBars}
     </section>
 
     <section class="about">
       <header class="section-head">
-        <h2>${escapeHtml(e.sectionWhat)}</h2>
+        <h2>${escapeHtml(copy.sectionWhat)}</h2>
       </header>
-      <p class="about__body">${escapeHtml(e.sectionWhatBody)}</p>
+      <p class="about__body">${escapeHtml(copy.sectionWhatBody)}</p>
     </section>
   </main>
 
@@ -198,7 +180,7 @@ function extractLakhUnit(formatted: string): string {
   return "";
 }
 
-function renderTrendChart(model: LabViewModel): string {
+function renderTrendChart(model: HomeViewModel): string {
   const max = Math.max(...model.trendsOldestFirst.map((point) => point.pendingCases));
   const rows = model.trendsOldestFirst
     .map((point) => {
@@ -213,7 +195,7 @@ function renderTrendChart(model: LabViewModel): string {
   return `<ol class="trend-list" aria-label="Statewide backlog over time">${rows}</ol>`;
 }
 
-function editorialCss(): string {
+function homeCss(): string {
   return `
     :root {
       --ink: #0c0a08;
@@ -248,22 +230,6 @@ function editorialCss(): string {
       font-weight: 800;
       letter-spacing: -0.025em;
     }
-
-    .lab-switcher {
-      display: flex; align-items: center; gap: 14px;
-      padding: 10px 28px; font-size: 11px;
-      background: var(--ink); color: #ede8dd;
-      border-bottom: 1px solid #000;
-      font-family: "IBM Plex Mono", ui-monospace, monospace;
-      text-transform: uppercase; letter-spacing: 0.1em;
-    }
-    .lab-switcher a { color: #ede8dd; text-decoration: none; }
-    .lab-switcher a:hover { color: #fff; }
-    .lab-switcher__sep { width: 1px; height: 14px; background: #555; }
-    .lab-switcher__label { opacity: 0.55; }
-    .lab-switcher strong { color: #fff; letter-spacing: 0.1em; font-weight: 600; }
-    .lab-switcher__nav { margin-left: auto; display: flex; gap: 14px; }
-    .lab-switcher__nav .is-active { color: var(--paper); border-bottom: 1px solid var(--paper); }
 
     main { max-width: 1280px; margin: 0 auto; padding: 0 32px 120px; }
 

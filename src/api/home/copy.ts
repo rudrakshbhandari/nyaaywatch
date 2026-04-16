@@ -1,11 +1,11 @@
-import type { LabViewModel } from "./shared.js";
+import type { HomeViewModel } from "./view-model.js";
 
 /**
  * Plain-English glossary. Every technical term gets a short, reader-first explanation.
  * Attached to info icons (\u24D8) next to the term wherever it appears in the UI.
  *
- * The old definitions in src/api/render.ts were written for auditors. These are written
- * for a reader who may be encountering court data for the first time.
+ * Written for a reader who may be encountering court data for the first time,
+ * not for auditors.
  */
 export const GLOSSARY: Record<
   | "backlog"
@@ -78,17 +78,13 @@ export const GLOSSARY: Record<
 export type GlossaryKey = keyof typeof GLOSSARY;
 
 /**
- * Headlines & ledes per variant. Each variant gets its own voice, but all four follow
- * the same rules:
+ * Homepage copy. Rules:
  *   - Lead with what the data says, not how it was produced.
  *   - No "snapshot", "alpha", "evidence-first" jargon on the hero.
  *   - Numbers are rounded and framed in terms a non-expert reader recognizes.
  *   - Where technical terms appear, they get an info icon.
  */
-export function buildCopy(model: LabViewModel) {
-  const topName = model.topDistrict.districtName;
-  const topWaitMonths = Math.round(model.topDistrict.medianAgeDays / 30);
-
+export function buildCopy(model: HomeViewModel) {
   // Districts where the median pending case has been waiting substantially
   // longer than a year. These drive the "some have waited two years" line
   // that makes the statewide median feel dishonest.
@@ -99,128 +95,63 @@ export function buildCopy(model: LabViewModel) {
     longWaitDistricts.length > 0
       ? Math.round(longWaitDistricts[0].medianAgeDays / 30)
       : 0;
-  const longWaitSampleName = longWaitDistricts[0]?.districtName ?? topName;
+  const longWaitSampleName = longWaitDistricts[0]?.districtName ?? model.topDistrict.districtName;
 
   return {
     brand: "NyaayWatch",
     brandTag: "Court transparency, Himachal Pradesh",
 
-    editorial: {
-      // Small meta strip above the headline \u2014 quiet, informational.
-      ticker: `HIMACHAL PRADESH \u00b7 UPDATED ${model.sourceDateLabel}`,
-      // Small label above the headline. No "snapshot" / methodology jargon.
-      eyebrow: "THE WAIT",
-      // Ask the reader a question. The numbers answer it.
-      headline: "How long is the wait for justice in Himachal?",
-      // One-paragraph hero lede. Fact-first, adversarial framing in plain English.
-      lede: buildEditorialLede(model, longWaitDistricts.length, longWaitMonths),
+    // Small meta strip above the headline \u2014 quiet, informational.
+    ticker: `HIMACHAL PRADESH \u00b7 UPDATED ${model.sourceDateLabel}`,
+    // Small label above the headline. No "snapshot" / methodology jargon.
+    eyebrow: "THE WAIT",
+    // Ask the reader a question. The numbers answer it.
+    headline: "How long is the wait for justice in Himachal?",
+    // One-paragraph hero lede. Fact-first, adversarial framing in plain English.
+    lede: buildHeroLede(model, longWaitDistricts.length, longWaitMonths),
 
-      // Each of the four headline numbers gets a short human-consequence caption.
-      // No made-up comparisons \u2014 every line is defensible against the data.
-      bigNumbers: {
-        pending: {
-          label: "pending cases",
-          caption: "Every one of these is a person waiting for their day in court.",
-        },
-        wait: {
-          label: "typical wait",
-          caption: buildWaitCaption(longWaitDistricts.length, longWaitMonths, longWaitSampleName),
-        },
-        clearance: {
-          label: "cleared per 100 filed",
-          caption: buildClearanceCaption(model.clearanceRate),
-        },
-        flagged: {
-          label: "districts flagged",
-          caption: "Where the pile is heaviest, or the wait is longest, or the pace is slowest.",
-        },
+    // Each of the four headline numbers gets a short human-consequence caption.
+    // No made-up comparisons \u2014 every line is defensible against the data.
+    bigNumbers: {
+      pending: {
+        label: "pending cases",
+        caption: "Every one of these is a person waiting for their day in court.",
       },
-
-      ctaPrimary: "See the worst districts",
-      ctaSecondary: "How we got these numbers",
-
-      sectionWatchlist: "Three districts that need eyes on them",
-      sectionWatchlistLede:
-        "A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the state. Not villains \u2014 signals for closer inspection.",
-
-      sectionTrend: "How the statewide pile has moved",
-      sectionTrendLede:
-        "Every month we pull a fresh set of numbers from the public court dashboards. Here is what the statewide backlog has done, month by month.",
-
-      sectionWhat: "Why this site exists",
-      sectionWhatBody:
-        "NyaayWatch is an independent, reader-first view of publicly available court numbers. We do not speed anything up or slow anything down. We just make the numbers impossible to ignore \u2014 so citizens, reporters, and civic groups can ask sharper questions, and demand sharper answers.",
+      wait: {
+        label: "typical wait",
+        caption: buildWaitCaption(longWaitDistricts.length, longWaitMonths, longWaitSampleName),
+      },
+      clearance: {
+        label: "cleared per 100 filed",
+        caption: buildClearanceCaption(model.clearanceRate),
+      },
+      flagged: {
+        label: "districts flagged",
+        caption: "Where the pile is heaviest, or the wait is longest, or the pace is slowest.",
+      },
     },
 
-    terminal: {
-      systemLine: `NYAAYWATCH \u2022 HP \u2022 ${model.sourceDateLabel} \u2022 BACKLOG \u2191`,
-      statusHeadline: `${model.pendingLakh} cases pending statewide`,
-      statusSubline: `${model.flaggedCount} districts flagged \u00b7 typical wait ~${model.typicalWaitMonths} months \u00b7 clearance ${model.clearanceRate.toFixed(1)}%`,
-      actionsLabel: "Drill in",
-      ctaPrimary: "Open district table",
-      ctaSecondary: "Read methodology",
-    },
+    ctaPrimary: "See the worst districts",
+    ctaSecondary: "How we got these numbers",
 
-    product: {
-      kicker: "Himachal Pradesh \u00b7 updated monthly",
-      headline: "Watch how Himachal's courts are actually doing.",
-      subline:
-        `Over ${model.pendingLakh} cases are waiting in district courts. We pull the public numbers every month and show you where the pressure is building \u2014 so you can ask the right questions.`,
-      ctaPrimary: "See the district table",
-      ctaSecondary: "How it works",
-      featureTitle: "What you get",
-      features: [
-        {
-          title: "The districts falling behind",
-          body: "A ranked view of where the pile is growing fastest and where cases are waiting longest.",
-        },
-        {
-          title: "Plain-English metrics",
-          body: "Every technical term has a one-line explanation. Hover the \u24D8 for the long version.",
-        },
-        {
-          title: "Free data downloads",
-          body: "Every number on the site is downloadable as CSV, for reporters and researchers.",
-        },
-      ],
-    },
+    sectionWatchlist: "Three districts that need eyes on them",
+    sectionWatchlistLede:
+      "A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the state. Not villains \u2014 signals for closer inspection.",
 
-    civic: {
-      h1: "Court delays in Himachal Pradesh",
-      intro:
-        `This site tracks how many cases are waiting in Himachal's district courts, how quickly courts are clearing them, and how long a typical case has been waiting. ` +
-        `Right now, ${model.pendingLakh} cases are pending across the state. The typical pending case has been waiting about ${model.typicalWaitMonths} months.`,
-      start: "Start here",
-      startOptions: [
-        {
-          label: "See the district table",
-          href: "/districts",
-          description: "Sort and compare all 12 districts by backlog, clearance, or waiting time.",
-        },
-        {
-          label: `Look at ${topName}`,
-          href: `/districts/${model.topDistrict.districtId}`,
-          description: `${topName} has the biggest pile and the longest typical wait right now.`,
-        },
-        {
-          label: "Download the data",
-          href: "/data",
-          description: "Every number on the site is available as CSV.",
-        },
-        {
-          label: "Read how we got these numbers",
-          href: "/methodology",
-          description: "The sources, the rules, and the limits of what we can say.",
-        },
-      ],
-    },
+    sectionTrend: "How the statewide pile has moved",
+    sectionTrendLede:
+      "Every month we pull a fresh set of numbers from the public court dashboards. Here is what the statewide backlog has done, month by month.",
+
+    sectionWhat: "Why this site exists",
+    sectionWhatBody:
+      "NyaayWatch is an independent, reader-first view of publicly available court numbers. We do not speed anything up or slow anything down. We just make the numbers impossible to ignore \u2014 so citizens, reporters, and civic groups can ask sharper questions, and demand sharper answers.",
   } as const;
 }
 
-export type LabCopy = ReturnType<typeof buildCopy>;
+export type HomeCopy = ReturnType<typeof buildCopy>;
 
-function buildEditorialLede(
-  model: LabViewModel,
+function buildHeroLede(
+  model: HomeViewModel,
   longWaitCount: number,
   longWaitMonths: number,
 ): string {

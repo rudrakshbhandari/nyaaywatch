@@ -8,10 +8,9 @@ import {
   renderDistrictPage,
   renderDistrictsPage,
   renderEmptyState,
-  renderHomePage,
   renderMethodologyPage,
 } from "./render.js";
-import { attachLabRoutes } from "./lab/routes.js";
+import { renderHome } from "./home/home.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 
 export function createApp(config: AppConfig, service: PublishedSnapshotService) {
@@ -128,7 +127,7 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
         return;
       }
 
-      response.send(renderHomePage(snapshot.payload));
+      response.send(renderHome(snapshot.payload));
     }),
   );
 
@@ -184,8 +183,6 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get("/api", (_request, response) => {
     response.send(renderApiPage());
   });
-
-  attachLabRoutes(app, service);
 
   app.get(
     "/operator/runs",
