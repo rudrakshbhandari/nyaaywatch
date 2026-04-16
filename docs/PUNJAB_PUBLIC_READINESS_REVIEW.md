@@ -1,8 +1,8 @@
 # Punjab Public Readiness Review
 
-Review of what we can already validate for Punjab before the next spaced publish window.
+Review of what we can already validate for Punjab before public exposure.
 
-This is useful work that can happen before the second Punjab release window. It is not itself a public-launch approval.
+This review was written before the second spaced Punjab publish window and remains useful after it. The second window is now complete, so the remaining blockers are public-surface implementation and parity verification rather than operator repeatability.
 
 ## Review Basis
 
@@ -99,10 +99,10 @@ Punjab does not currently introduce a new exposure-boundary issue, but public la
 
 ## Recommendation
 
-Punjab looks viable for a soft public release path once two things are done:
+Punjab now looks viable for a soft public release path once two things are done:
 
-1. one additional Punjab publish window at least `1 hour` after the first window, with `2+ hours` preferred
-2. a concrete public-surface implementation and parity review
+1. a concrete public-surface implementation
+2. a public-surface parity review across UI, API, CSV, and trust metadata
 
 Until then, Punjab should remain internal-only.
 
@@ -113,6 +113,5 @@ This review closes part of the “meanwhile” work:
 - metadata-shape review: done
 - signal/copy posture review on the Punjab payload: done
 - launch blockers reduced to a smaller set:
-  - second independent Punjab release window
   - public-surface implementation
   - public-surface parity verification

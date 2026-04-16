@@ -13,7 +13,7 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - first successful capture date: 2026-04-16
 - latest successful validation date: 2026-04-16
 - reviewer: Codex
-- decision: `approved for internal trial only`
+- decision: `approved for narrow public rollout work`
 
 ### Trial Evidence
 
@@ -22,8 +22,15 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - replay run id: `run_ba5643f1-cfdb-4a13-8615-aaed8a4d4142`
 - replay publication id: `publication_8ed4484e-a3dd-4950-a1a5-88ecd46c5dd3`
 - rollback publication id: `publication_d7cc5d03-2ad4-4a14-a842-d54f10563fa7`
+- second window run id: `run_726b1bb9-04c8-43dc-9dfe-c977abf812e0`
+- second window publication id: `publication_91b7a54b-5262-4dfe-8e28-8c3e315c3c4c`
+- second window replay run id: `run_13854ef4-33c1-4204-bd66-37685148e7c4`
+- second window replay publication id: `publication_cb511366-8bfb-4467-9e5c-5a2db394d545`
+- second window rollback publication id: `publication_3512d69b-35e0-4a63-b3f1-35f738af7441`
 - raw artifact key: `raw/dev/pb/2026-04-16/run_e440dc29-3f34-42da-a5ad-36b3b67e2b3a-njdg-dashboard-html.json`
 - normalized artifact key: `normalize/dev/pb/2026-04-16/run_e440dc29-3f34-42da-a5ad-36b3b67e2b3a-snapshot-candidate.json`
+- second window raw artifact key: `raw/dev/pb/2026-04-16/run_726b1bb9-04c8-43dc-9dfe-c977abf812e0-njdg-dashboard-html.json`
+- second window normalized artifact key: `normalize/dev/pb/2026-04-16/run_726b1bb9-04c8-43dc-9dfe-c977abf812e0-snapshot-candidate.json`
 
 ### Observed Output
 
@@ -44,22 +51,23 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - Extract and normalize reliability: the capture normalized deterministically into a valid candidate with a `complete` quality state.
 - Publish safety and operations: `fetch -> inspect -> publish -> replay -> rollback` succeeded end to end against state-scoped `pb` artifacts.
 - Rollback clarity: rollback restored the original Punjab publication cleanly after the replay publication.
+- Operating evidence: a second independent Punjab window ran on 2026-04-16 at least 2 hours and 43 minutes after the first one, with the same statewide outputs and another successful replay plus rollback cycle.
+- Public-readiness review groundwork: `docs/PUNJAB_PUBLIC_READINESS_REVIEW.md` now covers metadata shape, copy posture, and exposure-boundary assumptions for a future narrow public rollout.
 
 ### What Did Not Yet Clear
 
-- Operating evidence: this review happened in one short operator session on 2026-04-16. It does not satisfy the accelerated-plan requirement for a second independent Punjab window at least `1 hour` later, with `2+ hours` preferred.
-- Public trust parity review: the internal operator flow worked, but Punjab has not yet gone through the public-surface parity review required before public exposure.
-- Methodology defensibility for public launch: Punjab currently reuses the same lower-court methodology version, but there is not yet a Punjab-specific written public review of caveats, parity assumptions, or any state-specific source quirks.
-- Product and IA discipline: no Punjab public UX has been added, which is correct for now, but that means Punjab has not yet cleared the public-exposure bar.
+- Public trust parity implementation: Punjab is still not exposed on the public site, so the actual public UI, API, CSV, and route-parity checks have not been exercised yet.
+- Product and IA discipline: no Punjab public UX has been added yet, so there is still no validated answer to how Punjab is exposed without implying nationwide parity.
+- Deployment readiness: the AWS runtime and live release flow still need an explicit Punjab rollout plan before any public exposure.
 
 ### Recommendation
 
-Punjab is the right first candidate state for the accelerated expansion track, and it has now cleared the first real internal trial.
+Punjab is still the right first candidate state for the accelerated expansion track, and it has now cleared the internal evidence bar.
 
 Do not expose Punjab publicly yet.
 
 Required next step:
 
-1. Run one more Punjab publish window at least `1 hour` after the 2026-04-16 publish window. Prefer `2+ hours` when practical.
-2. Record the second window plus the review outcome in this log.
-3. Re-check public trust parity before any public Punjab release.
+1. Implement the narrowest public Punjab exposure shape.
+2. Verify Punjab UI, API, CSV, and trust-metadata parity through the actual public routes.
+3. Deploy Punjab intentionally and record the rollout result in the release and expansion docs.

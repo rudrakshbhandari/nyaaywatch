@@ -8,7 +8,7 @@ This is narrower than a nationwide launch checklist. Punjab should clear this be
 
 - Candidate state: `Punjab`
 - State code: `PB`
-- Current decision: `approved for internal trial only`
+- Current decision: `internal evidence bar cleared; public rollout still blocked on surface implementation and parity verification`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Methodology version: `2026.04-alpha`
 
@@ -16,11 +16,11 @@ This is narrower than a nationwide launch checklist. Punjab should clear this be
 
 ### 1. Independent Publish Windows
 
-- [ ] At least two live Punjab publish windows exist.
-- [ ] The second publish window starts at least **1 hour** after the first one.
-- [ ] `2+ hours` spacing is preferred when practical.
-- [ ] At least one replay or rollback exercise has succeeded for Punjab.
-- [ ] The release history and expansion review log record the exact run ids and publication ids.
+- [x] At least two live Punjab publish windows exist.
+- [x] The second publish window starts at least **1 hour** after the first one.
+- [x] `2+ hours` spacing is preferred when practical.
+- [x] At least one replay or rollback exercise has succeeded for Punjab.
+- [x] The release history and expansion review log record the exact run ids and publication ids.
 
 Why this gate exists:
 
