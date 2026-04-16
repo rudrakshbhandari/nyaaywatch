@@ -42,18 +42,21 @@ Run prepublish verification for a completed run:
 
 ```bash
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
+npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
 ```
 
 Run postpublish verification and write a release evidence artifact:
 
 ```bash
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
+npm run release:postpublish -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in
 ```
 
 Record the publish in the tracked release ledger:
 
 ```bash
 npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
+npm run release:record -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 ```
 
 By default, postpublish evidence is written to:

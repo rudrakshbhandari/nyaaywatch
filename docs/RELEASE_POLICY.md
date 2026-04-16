@@ -84,6 +84,7 @@ Treat a release as blocked if any one of these is true:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
    ```
+   For an approved state-scoped rollout, add `--state-slug=<state-slug>` so the release summary verifies the matching public route family.
 
 ### During publish
 
@@ -104,7 +105,9 @@ For the next 15 minutes:
 - if rolling out an additional approved state, confirm its explicit state-scoped stats route reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
 - run `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in` and keep the generated markdown evidence file
+- run the same postpublish command with `--state-slug=<state-slug>` for any approved state-scoped rollout
 - run `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"` so `docs/RELEASE_HISTORY.md` stays current
+- run the same release-record command with `--state-slug=<state-slug>` for any approved state-scoped rollout
 
 ### Weekly review
 

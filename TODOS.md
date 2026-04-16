@@ -10,17 +10,17 @@ Use this file for:
 
 ## Review
 
-### State-Aware Live Release Tooling
+### Deploy State-Aware Release Flow
 
-**What:** Extend the live release helpers and operator exposure so non-default states can be published and recorded without manual one-off ECS task overrides.
+**What:** Deploy and verify the new state-aware operator and release-helper flow on the live stack.
 
-**Why:** Punjab is now live publicly, but the rollout used manual ECS task overrides because the deployed operator HTTP endpoints and release helper scripts remain Himachal-scoped.
+**Why:** The code and tests now support state-aware operator selection plus `release:prepublish`, `release:postpublish`, and `release:record` targeting by state slug. The remaining work is to roll that capability onto AWS and prove that Punjab no longer needs manual one-off ECS task overrides.
 
-**Context:** `docs/EXPANSION_REVIEW_LOG.md` and `docs/DEPLOYMENT_STATUS.md` now record the Punjab public rollout and the remaining tooling gap. `release:verify` already supports `--state-slug`; `release:prepublish`, `release:postpublish`, and `release:record` still need the same state-scoped path.
+**Context:** The implementation now lives in the app operator routes and release helper scripts, with regression coverage in `tests/api.test.ts`, `tests/release-ops.test.ts`, and `tests/release-verification.test.ts`. The live stack still reflects task definition `:26`, which predates this tooling improvement.
 
 **Effort:** M
 **Priority:** P1
-**Depends on:** agreement on whether state-scoped live publish should happen through HTTP operator routes, ECS task wrappers, or both
+**Depends on:** the next `main` deploy plus one verified live Punjab publish/release-record cycle through the updated tooling
 
 ## Completed
 
@@ -63,6 +63,11 @@ Use this file for:
 
 - completed on 2026-04-16 with live fetch `run_ff674e79-8752-4b4d-9b32-4c7a368d339c`, publication `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`, and public verification on `https://nyaaywatch.in/states/punjab`
 - release verification passed with `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab`, and the rollout evidence is now recorded in the deployment, release-history, and expansion-review docs
+
+### State-Aware Live Release Tooling
+
+- completed in the app operator routes and release helper scripts with explicit state selection by `stateCode` or `stateSlug`, plus release-evidence generation that now resolves the correct public URL for state-scoped rollouts
+- regression coverage now proves Punjab operator fetch/publish over HTTP, Punjab release-history recording, and state-scoped verification summaries without Himachal-only assumptions
 
 ### Internal Multi-Geography Pipeline Scaffolding
 

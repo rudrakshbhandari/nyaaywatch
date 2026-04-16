@@ -168,6 +168,39 @@ describe("HTTP routes", () => {
 
     expect(rollback.status).toBe(201);
     expect(rollback.body.action).toBe("rollback");
+
+    const fetchedPunjab = await request(app)
+      .post("/operator/runs/fetch")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Fetch Punjab via HTTP", stateCode: "PB" });
+
+    expect(fetchedPunjab.status).toBe(201);
+    expect(fetchedPunjab.body.run.stateCode).toBe("PB");
+    expect(fetchedPunjab.body.candidate.snapshot.stateCode).toBe("PB");
+
+    const emptyPunjabPublications = await request(app)
+      .get("/operator/publications?stateCode=PB")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(emptyPunjabPublications.status).toBe(200);
+    expect(emptyPunjabPublications.body.state.stateCode).toBe("PB");
+    expect(emptyPunjabPublications.body.publications).toEqual([]);
+
+    const publishedPunjab = await request(app)
+      .post(`/operator/runs/${fetchedPunjab.body.run.id}/publish`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Publish Punjab via HTTP" });
+
+    expect(publishedPunjab.status).toBe(201);
+    expect(publishedPunjab.body.snapshot.payload.snapshot.stateCode).toBe("PB");
+
+    const listedPunjabPublications = await request(app)
+      .get("/operator/publications?stateSlug=punjab")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(listedPunjabPublications.status).toBe(200);
+    expect(listedPunjabPublications.body.state.stateCode).toBe("PB");
+    expect(listedPunjabPublications.body.publications[0].publication.stateCode).toBe("PB");
   });
 
   it("serves Punjab through explicit state-scoped public routes once Punjab has a published snapshot", async () => {

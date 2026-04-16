@@ -137,7 +137,8 @@ Latest confirmed operator validation:
   - live Punjab snapshot `snapshot_09384231-203b-41ec-8fe7-a71e9c456b9d`
   - `/states/punjab` returned `200`
   - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passed with `districtCount=22`, `trendCount=1`, and CSV metadata parity confirmed
-  - Punjab publish was executed through a one-off ECS task with `STATE_CODE=PB` because the public operator HTTP endpoints remain Himachal-scoped
+  - Punjab publish was executed through a one-off ECS task with `STATE_CODE=PB` because task definition `:26` still exposed Himachal-scoped operator HTTP routes
+  - current `main` now includes state-aware operator routing plus state-scoped `release:prepublish`, `release:postpublish`, and `release:record`; the next live release cycle should verify that the manual ECS override is no longer needed after deploy
 
 ## Release Use
 

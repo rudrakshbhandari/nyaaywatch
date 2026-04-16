@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createTestApp, createTestContext, seedTestSnapshot } from "./helpers.js";
+import { buildPunjabTestSnapshot, createTestApp, createTestContext, insertPublishedSnapshot, seedTestSnapshot } from "./helpers.js";
 import { buildPostpublishSummary, buildPrepublishSummary, recordReleaseHistory } from "../src/dev/release-ops.js";
 
 describe("release ops helpers", () => {
@@ -118,5 +118,41 @@ describe("release ops helpers", () => {
     expect(historyContents).toContain(published.publication.id);
     expect(historyContents).toContain("Tracked publish");
     expect(jsonContents).toContain("\"publication\"");
+  });
+
+  it("records the state-scoped public URL for Punjab release history", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    await insertPublishedSnapshot(context.pool, {
+      publicationId: "publication_pb_release_record",
+      snapshotId: "snapshot_pb_release_record",
+      runId: "run_pb_release_record",
+      stateCode: "PB",
+      payload: buildPunjabTestSnapshot(),
+    });
+    const app = createTestApp(context.config, context.service, context.publicServices);
+    const server = createServer(app);
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    const outputDir = await mkdtemp(join(tmpdir(), "nyaaywatch-release-record-pb-"));
+    const historyPath = join(outputDir, "RELEASE_HISTORY.md");
+    const result = await recordReleaseHistory(context.publicServices.PB!, {
+      baseUrl: `http://127.0.0.1:${address.port}`,
+      publicationId: "publication_pb_release_record",
+      reviewer: "codex",
+      historyPath,
+      outputPath: join(outputDir, "publication_pb_release_record.md"),
+    });
+    const historyContents = await readFile(historyPath, "utf8");
+
+    expect(result.currentPublicRelease.target.stateCode).toBe("PB");
+    expect(historyContents).toContain(`Public URL: \`http://127.0.0.1:${address.port}/states/punjab\``);
   });
 });

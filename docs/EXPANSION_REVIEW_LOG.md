@@ -65,7 +65,8 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 
 - The live public runtime is now state-aware for read paths, but the public operator HTTP endpoints remain Himachal-scoped because the deployed app still binds operator routes to the single configured `STATE_CODE`.
 - Punjab live publishing was therefore executed through one-off ECS tasks with `STATE_CODE=PB` rather than through `https://nyaaywatch.in/operator/...`.
-- Follow-on release tooling should generalize state-scoped live publish helpers so future expansions do not require manual ECS task overrides.
+- That tooling gap is now closed in `main`: operator routes accept explicit state selection, run/publication ids are resolved across configured state services, and `release:prepublish`, `release:postpublish`, and `release:record` now support state-scoped rollouts.
+- The remaining operational step is to deploy that updated tooling and verify the next live Punjab release cycle without manual ECS task overrides.
 
 ### Recommendation
 
@@ -73,6 +74,6 @@ Punjab is now the first non-Himachal geography live on the public site, and the 
 
 The next expansion slice should not be more Punjab proof. It should be one of:
 
-1. state-aware live release tooling and operator-route cleanup
+1. deploy and verify the new state-aware live release tooling on AWS
 2. one additional state trial using the same evidence discipline
 3. a separate later track for High Courts rather than mixing court tiers now

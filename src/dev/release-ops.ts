@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 
 import type { PublishedSnapshotService, PublicationHistoryEntry, RunInspection } from "../services/published-snapshot-service.js";
+import { getStateProfileByCode } from "../geographies.js";
 import { verifyPublicRelease, type ReleaseVerificationSummary } from "./release-verification.js";
 
 export interface PrepublishSummary {
@@ -41,13 +42,11 @@ export async function buildPrepublishSummary(
   baseUrl: string,
   runId: string,
 ): Promise<PrepublishSummary> {
-  const [currentPublicRelease, inspection, publicationHistory] = await Promise.all([
-    verifyPublicRelease(baseUrl),
-    service.inspectRun(runId),
-    service.listPublicationHistory(),
-  ]);
+  const [inspection, publicationHistory] = await Promise.all([service.inspectRun(runId), service.listPublicationHistory()]);
 
   assertInspectableRun(runId, inspection);
+  const targetProfile = getRequiredReleaseStateProfile(inspection.run.stateCode);
+  const currentPublicRelease = await verifyPublicRelease(baseUrl, { stateSlug: targetProfile.stateSlug });
 
   return {
     checkedAt: new Date().toISOString(),
@@ -72,10 +71,7 @@ export async function buildPostpublishSummary(
   publicationId: string,
   outputPath?: string,
 ): Promise<PostpublishSummary> {
-  const [currentPublicRelease, publicationHistory] = await Promise.all([
-    verifyPublicRelease(baseUrl),
-    service.listPublicationHistory(),
-  ]);
+  const publicationHistory = await service.listPublicationHistory();
   const publication = publicationHistory.find((entry) => entry.publication.id === publicationId);
   if (!publication) {
     throw new Error(`Publication ${publicationId} was not found.`);
@@ -84,6 +80,9 @@ export async function buildPostpublishSummary(
   if (!publication.isActive) {
     throw new Error(`Publication ${publicationId} is not the active publication.`);
   }
+
+  const targetProfile = getRequiredReleaseStateProfile(publication.snapshot.stateCode);
+  const currentPublicRelease = await verifyPublicRelease(baseUrl, { stateSlug: targetProfile.stateSlug });
 
   const summaryBase = {
     checkedAt: new Date().toISOString(),
@@ -178,6 +177,7 @@ function renderReleaseEvidence(summary: Omit<PostpublishSummary, "evidencePath" 
     "",
     `- Checked at: \`${summary.checkedAt}\``,
     `- Base URL: \`${summary.baseUrl}\``,
+    `- Public URL: \`${buildPublicUrl(summary.baseUrl, summary.currentPublicRelease)}\``,
     `- Publication id: \`${summary.publication.publication.id}\``,
     `- Action: \`${summary.publication.publication.action}\``,
     `- Snapshot id: \`${summary.publication.snapshot.id}\``,
@@ -242,7 +242,7 @@ function renderReleaseHistoryEntry(summary: Omit<ReleaseRecordSummary, "historyP
     "",
     `- Reviewed at: \`${summary.checkedAt}\``,
     `- Reviewer: \`${summary.reviewer}\``,
-    `- Public URL: \`${summary.baseUrl}\``,
+    `- Public URL: \`${buildPublicUrl(summary.baseUrl, summary.currentPublicRelease)}\``,
     `- Action: \`${summary.publication.publication.action}\``,
     `- Source snapshot date: \`${summary.publication.snapshot.sourceSnapshotAt}\``,
     `- Published at: \`${summary.publication.snapshot.publishedAt}\``,
@@ -275,4 +275,16 @@ function changeExtension(path: string, extension: string) {
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getRequiredReleaseStateProfile(stateCode: string) {
+  const profile = getStateProfileByCode(stateCode);
+  if (!profile) {
+    throw new Error(`Unsupported release state code: ${stateCode}`);
+  }
+  return profile;
+}
+
+function buildPublicUrl(baseUrl: string, summary: ReleaseVerificationSummary) {
+  return summary.target.stateCode === "HP" ? baseUrl : `${baseUrl}/states/${summary.target.stateSlug}`;
 }

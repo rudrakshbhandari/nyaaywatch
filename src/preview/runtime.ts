@@ -5,7 +5,7 @@ import { createApp } from "../api/app.js";
 import { loadConfig, type AppConfig } from "../config/env.js";
 import { runMigrations } from "../db/migrate.js";
 import { createFixtureSourceClient } from "../dev/fixtures.js";
-import { getStateProfile, listPublicStateProfiles, type SupportedStateCode } from "../geographies.js";
+import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../geographies.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
@@ -45,7 +45,7 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
   const sourceClient = createFixtureSourceClient(config.STATE_CODE);
   const service = new PublishedSnapshotService(config, profile, store, artifactStore, sourceClient);
   const publicServices = Object.fromEntries(
-    listPublicStateProfiles().map((publicProfile) => {
+    listStateProfiles().map((publicProfile) => {
       const publicService =
         publicProfile.stateCode === config.STATE_CODE
           ? service
