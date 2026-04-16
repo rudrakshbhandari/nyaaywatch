@@ -9,7 +9,7 @@ import { loadConfig, type AppConfig } from "../src/config/env.js";
 import { runMigrations } from "../src/db/migrate.js";
 import { createFixtureSourceClient } from "../src/dev/fixtures.js";
 import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
-import { getStateProfile, listPublicStateProfiles, type SupportedStateCode } from "../src/geographies.js";
+import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../src/geographies.js";
 import { createApp } from "../src/api/app.js";
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../src/storage/artifact-store.js";
@@ -36,7 +36,7 @@ export async function createTestContext(options: { stateCode?: SupportedStateCod
   const sourceClient = createFixtureSourceClient(config.STATE_CODE);
   const service = new PublishedSnapshotService(config, profile, store, artifactStore, sourceClient);
   const publicServices = Object.fromEntries(
-    listPublicStateProfiles().map((publicProfile) => {
+    listStateProfiles().map((publicProfile) => {
       const publicService =
         publicProfile.stateCode === config.STATE_CODE
           ? service

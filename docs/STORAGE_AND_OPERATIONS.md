@@ -84,6 +84,8 @@ Approved additional public states use the same fetch / inspect / publish / repla
 
 All operator endpoints require `x-operator-token`.
 
+For multi-state operation, operator surfaces accept explicit state targeting through `stateCode` or `stateSlug` query params or JSON-body fields. If omitted, the runtime falls back to its configured default state.
+
 ## Local Development
 
 1. Copy `.env.example` to `.env`.
@@ -112,12 +114,15 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
    `npm run operator:publications`
 7. Run prepublish verification against the public hostname:
    `npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in`
+   For a state-scoped rollout, add `--state-slug=<state-slug>`.
 8. Publish the completed run:
    `npm run operator:publish -- <run-id> "Publish completed snapshot"`
 9. After publish, save a release evidence artifact:
    `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in`
+   For a state-scoped rollout, add `--state-slug=<state-slug>`.
 10. Record the release in the tracked ledger:
    `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
+    For a state-scoped rollout, add `--state-slug=<state-slug>`.
 
 The `--state` override targets the operator flow only. A state becomes publicly reachable only if the runtime includes that state's published snapshot service and the public app has been intentionally rolled out with the corresponding state-scoped routes.
 

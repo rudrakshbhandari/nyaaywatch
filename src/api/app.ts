@@ -2,7 +2,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 
 import type { AppConfig } from "../config/env.js";
 import type { SupportedStateCode, NjdgStateProfile } from "../geographies.js";
-import { getPublicStateProfileBySlug, getStateProfile, listPublicStateProfiles } from "../geographies.js";
+import { getPublicStateProfileBySlug, getStateProfile, getStateProfileByCodeOrSlug, listPublicStateProfiles } from "../geographies.js";
 import { logError, logInfo } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
 import { renderApiPage } from "./pages/api.js";
@@ -23,6 +23,7 @@ export function createApp(
   service: PublishedSnapshotService,
   publicServices: PublicServiceMap = { [config.STATE_CODE]: service },
 ) {
+  const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
   app.use(express.json());
   app.set("trust proxy", true);
@@ -474,16 +475,18 @@ export function createApp(
   app.get(
     "/operator/runs",
     operatorOnly(config),
-    asyncRoute(async (_request, response) => {
-      response.json({ runs: await service.listRuns() });
+    asyncRoute(async (request, response) => {
+      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+      response.json({ state: resolved.profile, runs: await resolved.service.listRuns() });
     }),
   );
 
   app.get(
     "/operator/publications",
     operatorOnly(config),
-    asyncRoute(async (_request, response) => {
-      response.json({ publications: await service.listPublicationHistory() });
+    asyncRoute(async (request, response) => {
+      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+      response.json({ state: resolved.profile, publications: await resolved.service.listPublicationHistory() });
     }),
   );
 
@@ -491,7 +494,7 @@ export function createApp(
     "/operator/runs/:runId",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const inspection = await service.inspectRun(readRouteParam(request.params.runId));
+      const inspection = await findRunInspectionAcrossServices(readRouteParam(request.params.runId), serviceMap);
       if (!inspection) {
         response.status(404).json({ error: "Run not found." });
         return;
@@ -505,7 +508,8 @@ export function createApp(
     "/operator/runs/fetch",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.captureRun(request.body?.note);
+      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+      const result = await resolved.service.captureRun(request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -514,7 +518,14 @@ export function createApp(
     "/operator/runs/:runId/publish",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.publishRun(readRouteParam(request.params.runId), request.body?.note);
+      const runId = readRouteParam(request.params.runId);
+      const resolved = await findRunServiceAcrossServices(runId, serviceMap);
+      if (!resolved) {
+        response.status(404).json({ error: "Run not found." });
+        return;
+      }
+
+      const result = await resolved.service.publishRun(runId, request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -523,7 +534,14 @@ export function createApp(
     "/operator/runs/:runId/replay",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.replayRun(readRouteParam(request.params.runId), request.body?.note);
+      const runId = readRouteParam(request.params.runId);
+      const resolved = await findRunServiceAcrossServices(runId, serviceMap);
+      if (!resolved) {
+        response.status(404).json({ error: "Run not found." });
+        return;
+      }
+
+      const result = await resolved.service.replayRun(runId, request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -532,10 +550,14 @@ export function createApp(
     "/operator/publications/:publicationId/rollback",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.rollbackPublication(
-        readRouteParam(request.params.publicationId),
-        request.body?.note,
-      );
+      const publicationId = readRouteParam(request.params.publicationId);
+      const resolved = await findPublicationServiceAcrossServices(publicationId, serviceMap);
+      if (!resolved) {
+        response.status(404).json({ error: "Publication not found." });
+        return;
+      }
+
+      const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -552,6 +574,17 @@ export function createApp(
   });
 
   return app;
+}
+
+function normalizeServiceMap(
+  config: AppConfig,
+  service: PublishedSnapshotService,
+  publicServices: PublicServiceMap,
+) {
+  return {
+    ...publicServices,
+    [config.STATE_CODE]: publicServices[config.STATE_CODE] ?? service,
+  } satisfies PublicServiceMap;
 }
 
 function getRequiredPublicService(stateCode: SupportedStateCode, publicServices: PublicServiceMap) {
@@ -595,6 +628,91 @@ async function listAvailablePublicProfiles(publicServices: PublicServiceMap, cur
   );
 
   return profiles.filter((profile): profile is NjdgStateProfile => profile !== null);
+}
+
+function resolveOperatorServiceRequest(
+  request: Request,
+  services: PublicServiceMap,
+  defaultStateCode: SupportedStateCode,
+) {
+  const requestedProfile = readOperatorRequestedProfile(request);
+  const profile = requestedProfile ?? getStateProfile(defaultStateCode);
+  const service = services[profile.stateCode];
+
+  if (!service) {
+    throw new Error(`Operator service for ${profile.stateCode} is not configured.`);
+  }
+
+  return { profile, service };
+}
+
+function readOperatorRequestedProfile(request: Request) {
+  const candidates = [
+    request.query.stateSlug,
+    request.query.stateCode,
+    request.query.state,
+    request.body?.stateSlug,
+    request.body?.stateCode,
+    request.body?.state,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string") {
+      continue;
+    }
+
+    const profile = getStateProfileByCodeOrSlug(candidate);
+    if (profile) {
+      return profile;
+    }
+  }
+
+  return null;
+}
+
+async function findRunInspectionAcrossServices(runId: string, services: PublicServiceMap) {
+  for (const service of Object.values(services)) {
+    if (!service) {
+      continue;
+    }
+
+    const inspection = await service.inspectRun(runId);
+    if (inspection) {
+      return inspection;
+    }
+  }
+
+  return null;
+}
+
+async function findRunServiceAcrossServices(runId: string, services: PublicServiceMap) {
+  for (const service of Object.values(services)) {
+    if (!service) {
+      continue;
+    }
+
+    const inspection = await service.inspectRun(runId);
+    if (inspection) {
+      return { service, inspection };
+    }
+  }
+
+  return null;
+}
+
+async function findPublicationServiceAcrossServices(publicationId: string, services: PublicServiceMap) {
+  for (const service of Object.values(services)) {
+    if (!service) {
+      continue;
+    }
+
+    const publication = (await service.listPublicationHistory()).find((entry) => entry.publication.id === publicationId);
+    if (publication) {
+      return { service, publication };
+    }
+  }
+
+  return null;
 }
 
 function readRequestHost(request: Request) {

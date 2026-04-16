@@ -109,8 +109,11 @@ npm run operator:publish -- <run-id> "Publish completed snapshot"
 npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
+npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
+npm run release:postpublish -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in
 npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
+npm run release:record -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 ```
 
 ## Public Surface
@@ -155,6 +158,8 @@ Operator endpoints require `x-operator-token`:
 - `POST /operator/runs/:runId/replay`
 - `GET /operator/publications`
 - `POST /operator/publications/:publicationId/rollback`
+
+Operator routes default to the runtime's configured state, but they also accept explicit `stateCode` or `stateSlug` selectors on query params or JSON bodies for multi-state operations.
 
 ## Testing
 
