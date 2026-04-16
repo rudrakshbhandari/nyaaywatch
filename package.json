@@ -25,6 +25,7 @@
     "operator:publish": "tsx src/dev/operator.ts publish",
     "operator:replay": "tsx src/dev/operator.ts replay",
     "operator:rollback": "tsx src/dev/operator.ts rollback",
+    "release:verify": "tsx src/dev/release-verify.ts",
     "docker:up": "docker compose up -d --wait postgres localstack",
     "docker:down": "docker compose down -v"
   },

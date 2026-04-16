@@ -1,0 +1,156 @@
+import { createServer, type Server } from "node:http";
+
+import { afterEach, describe, expect, it } from "vitest";
+
+import { createTestApp, createTestContext, seedTestSnapshot } from "./helpers.js";
+import { verifyPublicRelease } from "../src/dev/release-verification.js";
+
+describe("verifyPublicRelease", () => {
+  const pools: Array<{ end: () => Promise<void> }> = [];
+  const servers: Server[] = [];
+
+  afterEach(async () => {
+    while (servers.length > 0) {
+      await new Promise<void>((resolve, reject) => {
+        const server = servers.pop();
+        server?.close((error) => (error ? reject(error) : resolve()));
+      });
+    }
+
+    while (pools.length > 0) {
+      await pools.pop()?.end();
+    }
+  });
+
+  it("verifies the public hostname, metadata parity, and operator auth boundary", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service);
+    const server = createServer(app);
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    const result = await verifyPublicRelease(`http://127.0.0.1:${address.port}`);
+
+    expect(result.health.stateCode).toBe("HP");
+    expect(result.districtCount).toBe(12);
+    expect(result.trendCount).toBeGreaterThan(0);
+    expect(result.csvMetadataParity).toBe(true);
+    expect(result.operatorAuthProtected).toBe(true);
+    expect(result.snapshot.methodologyVersion).toBe("2026.04-alpha");
+  });
+
+  it("fails when release metadata drifts between public endpoints", async () => {
+    const server = createServer((_request, response) => {
+      const path = _request.url ?? "/";
+      if (path === "/health") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        return;
+      }
+
+      if (path === "/v1/stats/himachal") {
+        response.setHeader("content-type", "application/json");
+        response.end(
+          JSON.stringify({
+            snapshot: {
+              stateCode: "HP",
+              stateName: "Himachal Pradesh",
+              sourceName: "NJDG",
+              sourceSnapshotAt: "2026-04-10T00:00:00.000Z",
+              publishedAt: "2026-04-15T04:44:05.159Z",
+              methodologyVersion: "2026.04-alpha",
+              qualityState: "complete",
+              freshnessDays: 5,
+              sourceAttribution: "NJDG",
+            },
+            stats: {
+              pendingCases: 1,
+              disposalRate: 1,
+              medianCaseAgeDays: 1,
+              flaggedDistricts: 1,
+            },
+          }),
+        );
+        return;
+      }
+
+      if (path === "/v1/districts") {
+        response.setHeader("content-type", "application/json");
+        response.end(
+          JSON.stringify({
+            snapshot: {
+              stateCode: "HP",
+              stateName: "Himachal Pradesh",
+              sourceName: "NJDG",
+              sourceSnapshotAt: "2026-04-10T00:00:00.000Z",
+              publishedAt: "2026-04-15T04:44:05.159Z",
+              methodologyVersion: "2026.04-alpha",
+              qualityState: "complete",
+              freshnessDays: 5,
+              sourceAttribution: "NJDG",
+            },
+            districts: [{ districtId: "kangra", districtName: "Kangra", rank: 1 }],
+          }),
+        );
+        return;
+      }
+
+      if (path === "/v1/trends") {
+        response.setHeader("content-type", "application/json");
+        response.end(
+          JSON.stringify({
+            snapshot: {
+              stateCode: "HP",
+              stateName: "Himachal Pradesh",
+              sourceName: "NJDG",
+              sourceSnapshotAt: "2026-04-10T00:00:00.000Z",
+              publishedAt: "2026-04-16T04:44:05.159Z",
+              methodologyVersion: "2026.04-alpha",
+              qualityState: "complete",
+              freshnessDays: 6,
+              sourceAttribution: "NJDG",
+            },
+            trends: [{ snapshotDate: "2026-04-10T00:00:00.000Z", pendingCases: 1, disposalRate: 1 }],
+          }),
+        );
+        return;
+      }
+
+      if (path === "/operator/publications") {
+        response.statusCode = 401;
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({ error: "Operator token required." }));
+        return;
+      }
+
+      if (path === "/data/districts.csv") {
+        response.setHeader("content-type", "text/csv");
+        response.end(
+          "snapshot_date,published_at,methodology_version,district_id\n2026-04-10T00:00:00.000Z,2026-04-15T04:44:05.159Z,2026.04-alpha,kangra\n",
+        );
+        return;
+      }
+
+      response.statusCode = 404;
+      response.end("not found");
+    });
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    await expect(verifyPublicRelease(`http://127.0.0.1:${address.port}`)).rejects.toThrow(
+      "Snapshot metadata mismatch for trends.",
+    );
+  });
+});
