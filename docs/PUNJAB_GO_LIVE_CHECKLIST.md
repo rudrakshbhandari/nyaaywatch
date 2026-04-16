@@ -8,7 +8,7 @@ This is narrower than a nationwide launch checklist. Punjab should clear this be
 
 - Candidate state: `Punjab`
 - State code: `PB`
-- Current decision: `public surface implemented locally; live rollout still blocked on deployment verification`
+- Current decision: `live on the public site through explicit state-scoped routes`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Methodology version: `2026.04-alpha`
 
@@ -31,7 +31,9 @@ Why this gate exists:
 - [x] Punjab public routes read only from the active published snapshot in the state-scoped public runtime.
 - [x] No public Punjab route or download reads unpublished run state.
 - [x] Punjab CSV, API, and UI resolve to the same Punjab publication lineage in local verification.
-- [ ] Punjab rollback target is clear in publication history.
+- [x] Punjab rollback target is clear in publication history.
+
+Punjab's first live public publication is `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`, and there is no earlier Punjab public publication to roll back to yet. That absence is now explicit in `docs/RELEASE_HISTORY.md`.
 
 ### 3. Trust Metadata And Caveats
 
@@ -50,29 +52,31 @@ Why this gate exists:
 ### 5. Source And Export Boundary
 
 - [x] Punjab public downloads are limited to normalized published read-model fields.
-- [ ] Raw Punjab NJDG HTML bundles remain internal.
-- [ ] Replay copies and unpublished snapshot candidates remain internal.
+- [x] Raw Punjab NJDG HTML bundles remain internal.
+- [x] Replay copies and unpublished snapshot candidates remain internal.
 - [x] Public citation surfaces still include clear source attribution and dates.
 
 ### 6. Verification
 
 - [x] `npm run typecheck`
 - [x] targeted regression tests for Punjab-related pipeline or public-surface changes
-- [ ] public route/browser verification for the intended Punjab exposure shape
-- [ ] release verification passes against the public hostname after rollout, including `npm run release:verify -- --base-url=https://nyaaywatch.in --state-slug=punjab`
+- [x] public route/browser verification for the intended Punjab exposure shape
+- [x] release verification passes against the public hostname after rollout, including `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab`
 
 ### 7. Deployment
 
-- [ ] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
-- [ ] The deploy plan is explicit about whether Punjab is exposed via:
+- [x] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
+- [x] The deploy plan is explicit about whether Punjab is exposed via:
   - a minimal supported-state selector, or
   - a direct linked route, or
   - another concrete public entry point
-- [ ] `docs/DEPLOYMENT_STATUS.md` and `docs/EXPANSION_REVIEW_LOG.md` are updated with the actual rollout result.
+- [x] `docs/DEPLOYMENT_STATUS.md` and `docs/EXPANSION_REVIEW_LOG.md` are updated with the actual rollout result.
+
+Punjab is exposed through explicit state-scoped public routes, with Himachal remaining the default unscoped surface.
 
 ## Decision
 
-- [ ] Ready for soft public availability
+- [x] Ready for soft public availability
 - [ ] Keep internal only
 
 If blocked, record the blocker and the exact next action in `docs/EXPANSION_REVIEW_LOG.md`.
