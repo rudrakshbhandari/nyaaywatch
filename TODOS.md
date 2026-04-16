@@ -22,18 +22,6 @@ Use this file for:
 **Priority:** P1
 **Depends on:** None
 
-### Extract Alpha Design Foundation Into DESIGN.md
-
-**What:** Move the alpha design foundation, token rules, and component vocabulary from `docs/NYAAYWATCH_DESIGN.md` into a dedicated `DESIGN.md`.
-
-**Why:** The design review turned the plan into the current design-system source of truth. As implementation grows across more screens and eventually more states, contributors need one reusable foundation file instead of mining the product plan for typography, color, spacing, surface, and component rules.
-
-**Context:** The repo currently has no standalone `DESIGN.md`. The plan now contains explicit UI foundations for the public dossier visual language, trust strips, quality badges, responsive rules, and accessibility expectations. Extracting those rules after the first implementation slice lands will keep the plan strategic and make the design system easier to evolve.
-
-**Effort:** M
-**Priority:** P2
-**Depends on:** First implementation slice landing so the extracted design system reflects real component usage
-
 ## Completed
 
 ### Source Terms And Redistribution Review
@@ -55,6 +43,11 @@ Use this file for:
 
 - completed in `docs/RELEASE_HISTORY.md`, `docs/OPERATING_EVIDENCE.md`, and the `release:record` workflow
 - the alpha now writes markdown plus JSON evidence artifacts and keeps a tracked release ledger tied to publication ids, rollback targets, and reviewer notes
+
+### Extracted Design System Foundation
+
+- completed in `DESIGN.md` with follow-on source-of-truth updates in `README.md`, `AGENTS.md`, and `docs/NYAAYWATCH_DESIGN.md`
+- the repo now keeps reusable visual-system rules in one file while leaving route hierarchy and product-specific trust-surface rationale in the product design plan
 
 ### Internal Multi-Geography Pipeline Scaffolding
 

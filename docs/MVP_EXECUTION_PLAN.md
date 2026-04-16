@@ -4,7 +4,7 @@ Living execution plan for the Himachal Pradesh alpha MVP.
 
 This file is the canonical task sequence for building NyaayWatch to MVP from the current repository state. It is intended to be the single file a human or AI agent can read to determine the next highest-leverage task.
 
-If this file conflicts with `README.md`, `docs/NYAAYWATCH_DESIGN.md`, or `docs/ENG_REVIEW_TEST_PLAN.md`, update this plan so it matches those source docs or intentionally update those docs in the same change.
+If this file conflicts with `README.md`, `DESIGN.md`, `docs/NYAAYWATCH_DESIGN.md`, or `docs/ENG_REVIEW_TEST_PLAN.md`, update this plan so it matches those source docs or intentionally update those docs in the same change.
 
 ## Purpose
 
@@ -203,7 +203,6 @@ Blockers:
 These matter, but they are not required to reach the Himachal alpha MVP:
 
 - multi-state expansion readiness gates, now documented in `docs/MULTI_STATE_EXPANSION_GATES.md`
-- extracting a standalone `DESIGN.md`
 - release cadence and observability refinements, now partially documented in `docs/RELEASE_POLICY.md` and `docs/DEPLOYMENT_STATUS.md`
 - broader post-MVP operational maturity work that does not affect the first public alpha
 
@@ -228,3 +227,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-16: Added internal multi-geography pipeline scaffolding with a state-profile-driven NJDG capture path, state-scoped artifact prefixes, and a first internal candidate-state profile for Punjab while keeping the public app Himachal-only.
 - 2026-04-16: Completed the first real live Punjab internal trial with a successful `fetch -> inspect -> publish -> replay -> rollback` cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`; Punjab remains internal-only pending a second independent publish window at least 1 hour later, with 2+ hours preferred, and a public-trust parity review.
 - 2026-04-16: Added `docs/PUNJAB_GO_LIVE_CHECKLIST.md` and `docs/PUNJAB_PUBLIC_READINESS_REVIEW.md`, and revised the expansion-window rule to `>= 1 hour minimum` with `2+ hours` preferred so Punjab launch prep is tied to a defensible repeatability standard rather than an arbitrary fixed delay.
+- 2026-04-16: Extracted a reusable repo-level `DESIGN.md`, updated source-of-truth references, and tightened release/cutover docs so routine publishes now point at the release checklist and policy while the domain checklist reads as recorded cutover state plus future-change guidance.
