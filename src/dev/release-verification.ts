@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { SnapshotMetadataSchema, StateStatsSchema, TrendPointSchema, type QualityState } from "../domain/snapshot-schema.js";
+import { getPublicStateProfileBySlug } from "../geographies.js";
 
 const HealthResponseSchema = z.object({
   ok: z.literal(true),
@@ -38,6 +39,15 @@ type SnapshotMetadata = z.infer<typeof SnapshotMetadataSchema>;
 export interface ReleaseVerificationSummary {
   baseUrl: string;
   checkedAt: string;
+  target: {
+    stateCode: string;
+    stateName: string;
+    stateSlug: string;
+    statsPath: string;
+    districtsPath: string;
+    trendsPath: string;
+    districtsCsvPath: string;
+  };
   snapshot: {
     sourceSnapshotAt: string;
     publishedAt: string;
@@ -56,17 +66,24 @@ export interface ReleaseVerificationSummary {
   operatorAuthProtected: true;
 }
 
-export async function verifyPublicRelease(baseUrl: string): Promise<ReleaseVerificationSummary> {
+export async function verifyPublicRelease(
+  baseUrl: string,
+  options: {
+    stateSlug?: string;
+  } = {},
+): Promise<ReleaseVerificationSummary> {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
+  const target = resolveReleaseTarget(options.stateSlug);
   const [health, statsPayload, districtsPayload, trendsPayload, operatorAuthResult, districtsCsv] = await Promise.all([
     fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
-    fetchJson(`${normalizedBaseUrl}/v1/stats/himachal`, StatsResponseSchema),
-    fetchJson(`${normalizedBaseUrl}/v1/districts`, DistrictsResponseSchema),
-    fetchJson(`${normalizedBaseUrl}/v1/trends`, TrendsResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.statsPath}`, StatsResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.districtsPath}`, DistrictsResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.trendsPath}`, TrendsResponseSchema),
     fetchJson(`${normalizedBaseUrl}/operator/publications`, OperatorUnauthorizedSchema, 401),
-    fetchText(`${normalizedBaseUrl}/data/districts.csv`),
+    fetchText(`${normalizedBaseUrl}${target.districtsCsvPath}`),
   ]);
 
+  assertSnapshotState(statsPayload.snapshot, target.stateCode, target.stateName);
   assertMatchingSnapshot("districts", districtsPayload.snapshot, statsPayload.snapshot);
   assertMatchingSnapshot("trends", trendsPayload.snapshot, statsPayload.snapshot);
   assertCsvMetadataParity(districtsCsv, statsPayload.snapshot);
@@ -74,6 +91,7 @@ export async function verifyPublicRelease(baseUrl: string): Promise<ReleaseVerif
   return {
     baseUrl: normalizedBaseUrl,
     checkedAt: new Date().toISOString(),
+    target,
     snapshot: {
       sourceSnapshotAt: statsPayload.snapshot.sourceSnapshotAt,
       publishedAt: statsPayload.snapshot.publishedAt,
@@ -100,6 +118,37 @@ function normalizeBaseUrl(baseUrl: string) {
   }
 
   return trimmed.replace(/\/+$/, "");
+}
+
+function resolveReleaseTarget(stateSlug?: string) {
+  const defaultStateSlug = "himachal-pradesh";
+  const resolvedStateSlug = stateSlug?.trim() || defaultStateSlug;
+  const profile = getPublicStateProfileBySlug(resolvedStateSlug);
+  if (!profile) {
+    throw new Error(`Unsupported public state slug: ${resolvedStateSlug}`);
+  }
+
+  if (profile.stateCode === "HP") {
+    return {
+      stateCode: profile.stateCode,
+      stateName: profile.stateName,
+      stateSlug: profile.stateSlug,
+      statsPath: "/v1/stats/himachal",
+      districtsPath: "/v1/districts",
+      trendsPath: "/v1/trends",
+      districtsCsvPath: "/data/districts.csv",
+    };
+  }
+
+  return {
+    stateCode: profile.stateCode,
+    stateName: profile.stateName,
+    stateSlug: profile.stateSlug,
+    statsPath: `/v1/states/${profile.stateSlug}/stats`,
+    districtsPath: `/v1/states/${profile.stateSlug}/districts`,
+    trendsPath: `/v1/states/${profile.stateSlug}/trends`,
+    districtsCsvPath: `/states/${profile.stateSlug}/data/districts.csv`,
+  };
 }
 
 async function fetchJson<T extends z.ZodTypeAny>(url: string, schema: T, expectedStatus = 200): Promise<z.infer<T>> {
@@ -134,6 +183,14 @@ function assertMatchingSnapshot(label: string, actual: SnapshotMetadata, expecte
   const expectedJson = JSON.stringify(expected);
   if (actualJson !== expectedJson) {
     throw new Error(`Snapshot metadata mismatch for ${label}.`);
+  }
+}
+
+function assertSnapshotState(snapshot: SnapshotMetadata, expectedStateCode: string, expectedStateName: string) {
+  if (snapshot.stateCode !== expectedStateCode || snapshot.stateName !== expectedStateName) {
+    throw new Error(
+      `Snapshot state mismatch. Expected ${expectedStateCode}/${expectedStateName}, received ${snapshot.stateCode}/${snapshot.stateName}.`,
+    );
   }
 }
 

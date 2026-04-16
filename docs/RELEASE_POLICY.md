@@ -79,6 +79,7 @@ Treat a release as blocked if any one of these is true:
    ```bash
    npm run release:verify -- --base-url=https://nyaaywatch.in
    ```
+   For an approved state-scoped rollout, run the same command with `--state-slug=<state-slug>` as an additional check.
 5. Run prepublish verification for the candidate run and note the rollback target:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -100,6 +101,7 @@ For the next 15 minutes:
 - watch the dashboard
 - confirm the public hostname still passes `/health`
 - confirm `GET /v1/stats/himachal` reflects the intended active publication
+- if rolling out an additional approved state, confirm its explicit state-scoped stats route reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
 - run `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in` and keep the generated markdown evidence file
 - run `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"` so `docs/RELEASE_HISTORY.md` stays current

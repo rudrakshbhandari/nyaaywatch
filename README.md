@@ -1,10 +1,10 @@
 # NyaayWatch
 
-NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh.
+NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh and expanding state by state only after the same trust bar is met.
 
 ## What This Repo Is
 
-This repository contains the Himachal Pradesh public alpha implementation:
+This repository contains the public alpha implementation:
 
 - public scorecards and district evidence pages backed by a published snapshot
 - a narrow read-only public API for the same published snapshot
@@ -27,10 +27,11 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
+- explicit state-scoped public routing for approved expansion states, with Punjab implemented as the first additional state surface
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but the live public posture remains Himachal-first. Internal candidate-state work does not widen the public product unless the repo docs explicitly say it is ready.
+Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision.
 
 ## Product Guardrails
 
@@ -122,12 +123,28 @@ Public routes:
 - `/data`
 - `/methodology`
 - `/api`
+- `/states/:stateSlug`
+- `/states/:stateSlug/districts`
+- `/states/:stateSlug/districts/:id`
+- `/states/:stateSlug/data`
+- `/states/:stateSlug/methodology`
+- `/states/:stateSlug/api`
+
+Current route posture:
+
+- unscoped routes remain the default Himachal Pradesh public surface
+- additional approved states use explicit `/states/:stateSlug/...` routes
+- Punjab is the first implemented state-scoped public surface
+- deployment docs still decide whether a given state is live on `https://nyaaywatch.in`
 
 Public API:
 
 - `GET /v1/stats/himachal`
 - `GET /v1/districts`
 - `GET /v1/trends`
+- `GET /v1/states/:stateSlug/stats`
+- `GET /v1/states/:stateSlug/districts`
+- `GET /v1/states/:stateSlug/trends`
 
 Operator endpoints require `x-operator-token`:
 
@@ -167,6 +184,7 @@ Current regression coverage includes:
 - browser E2E for citizen, reporter, and developer-parity public flows
 - responsive and accessibility trust-surface checks
 - stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
+- stable API contract tests for state-scoped Punjab public endpoints
 - persistent-stack replay and rollback coverage through local PostgreSQL plus LocalStack S3
 - public API and HTML route behavior
 - operator token enforcement

@@ -2,8 +2,10 @@ import request from "supertest";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  buildPunjabTestSnapshot,
   createTestApp,
   createTestContext,
+  insertPublishedSnapshot,
   insertHistoricalPublishedSnapshot,
   seedTestSnapshot,
 } from "./helpers.js";
@@ -39,7 +41,7 @@ describe("HTTP routes", () => {
       },
     });
     await seedTestSnapshot(context.service);
-    const app = createTestApp(context.config, context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices);
 
     const statsResponse = await request(app).get("/v1/stats/himachal");
     expect(statsResponse.status).toBe(200);
@@ -47,7 +49,7 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
-    expect(homepage.text).toContain("How long is the wait for justice in Himachal?");
+    expect(homepage.text).toContain("How long is the wait for justice in Himachal Pradesh?");
     expect(homepage.text).toContain("pending cases");
     expect(homepage.text).toContain("Every one of these is a person waiting for their day in court.");
     expect(homepage.text).toContain("Three districts that need eyes on them");
@@ -91,7 +93,7 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
-    const app = createTestApp(context.config, context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices);
 
     const response = await request(app)
       .get("/districts?view=flagged")
@@ -106,7 +108,7 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
-    const app = createTestApp(context.config, context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices);
     const infoSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await request(app).get("/");
@@ -122,7 +124,7 @@ describe("HTTP routes", () => {
   it("protects operator endpoints and exposes fetch, publish, replay, and rollback flows", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
-    const app = createTestApp(context.config, context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices);
 
     const unauthorized = await request(app).get("/operator/publications");
     expect(unauthorized.status).toBe(401);
@@ -166,5 +168,57 @@ describe("HTTP routes", () => {
 
     expect(rollback.status).toBe(201);
     expect(rollback.body.action).toBe("rollback");
+  });
+
+  it("serves Punjab through explicit state-scoped public routes once Punjab has a published snapshot", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    await insertPublishedSnapshot(context.pool, {
+      runId: "run_pb_public",
+      snapshotId: "snapshot_pb_public",
+      publicationId: "publication_pb_public",
+      stateCode: "PB",
+      payload: buildPunjabTestSnapshot(),
+    });
+
+    const app = createTestApp(context.config, context.service, context.publicServices);
+
+    const homepage = await request(app).get("/");
+    expect(homepage.status).toBe(200);
+    expect(homepage.text).toContain("Punjab");
+
+    const punjabStats = await request(app).get("/v1/states/punjab/stats");
+    expect(punjabStats.status).toBe(200);
+    expect(punjabStats.body.snapshot.stateCode).toBe("PB");
+    expect(punjabStats.body.stats.pendingCases).toBe(961280);
+
+    const punjabDistricts = await request(app).get("/states/punjab/districts?view=flagged");
+    expect(punjabDistricts.status).toBe(200);
+    expect(punjabDistricts.text).toContain("Punjab");
+    expect(punjabDistricts.text).toContain("Ludhiana");
+    expect(punjabDistricts.text).toContain("/states/punjab/data/districts.csv");
+
+    const punjabDistrictPage = await request(app).get("/states/punjab/districts/ludhiana");
+    expect(punjabDistrictPage.status).toBe(200);
+    expect(punjabDistrictPage.text).toContain("/states/punjab/data/districts/ludhiana.csv");
+    expect(punjabDistrictPage.text).toContain("Punjab");
+
+    const punjabData = await request(app).get("/states/punjab/data");
+    expect(punjabData.status).toBe(200);
+    expect(punjabData.text).toContain("/v1/states/punjab/stats");
+
+    const punjabCsv = await request(app).get("/states/punjab/data/districts.csv");
+    expect(punjabCsv.status).toBe(200);
+    expect(punjabCsv.text).toContain("Punjab");
+    expect(punjabCsv.text).toContain("ludhiana");
+
+    const punjabMethodology = await request(app).get("/states/punjab/methodology");
+    expect(punjabMethodology.status).toBe(200);
+    expect(punjabMethodology.text).toContain("Punjab only on this page");
+
+    const punjabApiPage = await request(app).get("/states/punjab/api");
+    expect(punjabApiPage.status).toBe(200);
+    expect(punjabApiPage.text).toContain("/v1/states/punjab/districts");
   });
 });

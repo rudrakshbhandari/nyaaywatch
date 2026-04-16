@@ -1,6 +1,7 @@
 import type { DistrictSnapshot, PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
+import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 
@@ -35,6 +36,7 @@ const VIEW_LABELS: Record<DistrictView, string> = {
 export function renderDistrictsPage(
   snapshot: PublishedSnapshot,
   options: DistrictsPageOptions,
+  context: PublicPageContext,
 ): string {
   const districts = filterAndSortDistricts(
     snapshot.districts,
@@ -89,16 +91,20 @@ export function renderDistrictsPage(
       })}
     </section>
 
-    ${renderControls(options)}
+    ${renderControls(options, context)}
 
-    ${districts.length > 0 ? renderTable(districts) : renderNoResults(options)}
+    ${districts.length > 0 ? renderTable(districts, context) : renderNoResults(options, context)}
   `;
 
   return renderPageShell({
     title: "Districts — NyaayWatch",
     body,
     activeNav: "districts",
-    ticker: `HIMACHAL PRADESH · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.snapshot.methodologyVersion)}`,
+    brandHref: context.brandHref,
+    brandTag: context.brandTag,
+    navLinks: context.navLinks,
+    stateLinks: context.stateLinks,
+    ticker: `${escapeHtml(snapshot.snapshot.stateName.toUpperCase())} · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.snapshot.methodologyVersion)}`,
     pageCss: DISTRICTS_PAGE_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.snapshot.sourceSnapshotAt),
@@ -108,10 +114,10 @@ export function renderDistrictsPage(
   });
 }
 
-function renderControls(options: DistrictsPageOptions): string {
+function renderControls(options: DistrictsPageOptions, context: PublicPageContext): string {
   return `
     <section class="controls" aria-label="District filters">
-      <form class="controls__form" method="get" action="/districts">
+      <form class="controls__form" method="get" action="${context.routes.districts}">
         <label class="controls__field">
           <span class="controls__label">Search</span>
           <input
@@ -142,21 +148,21 @@ function renderControls(options: DistrictsPageOptions): string {
         <button type="submit" class="btn btn--primary btn--small">Apply</button>
       </form>
       <div class="controls__links">
-        <a href="/districts">Reset filters</a>
-        <a href="${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Watchlist only</a>
-        <a href="/data/districts.csv">Download statewide CSV</a>
+        <a href="${context.routes.districts}">Reset filters</a>
+        <a href="${context.routes.districts}${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Watchlist only</a>
+        <a href="${context.routes.districtsCsv}">Download statewide CSV</a>
       </div>
     </section>
   `;
 }
 
-function renderTable(districts: DistrictSnapshot[]): string {
+function renderTable(districts: DistrictSnapshot[], context: PublicPageContext): string {
   const rows = districts
     .map(
       (district) => `
         <tr>
           <td>
-            <a class="district-row__name" href="/districts/${escapeHtml(district.districtId)}">${escapeHtml(district.districtName)}</a>
+            <a class="district-row__name" href="${context.routes.district(district.districtId)}">${escapeHtml(district.districtName)}</a>
             <p class="district-row__summary">${escapeHtml(district.summary)}</p>
           </td>
           <td class="num accent">#${district.rank}</td>
@@ -192,12 +198,12 @@ function renderTable(districts: DistrictSnapshot[]): string {
   `;
 }
 
-function renderNoResults(options: DistrictsPageOptions): string {
+function renderNoResults(options: DistrictsPageOptions, context: PublicPageContext): string {
   return `
     <article class="card no-results">
       <h3>No districts match this view</h3>
       <p>Try clearing the search term or switching back from ${escapeHtml(VIEW_LABELS[options.view].toLowerCase())}.</p>
-      <p><a class="btn btn--ghost btn--small" href="/districts">Reset filters</a> ${renderBadge({ label: "Watchlist only", tone: "flag" })}</p>
+      <p><a class="btn btn--ghost btn--small" href="${context.routes.districts}">Reset filters</a> ${renderBadge({ label: "Watchlist only", tone: "flag" })}</p>
     </article>
   `;
 }
@@ -257,7 +263,7 @@ function buildDistrictsHref(options: DistrictsPageOptions): string {
     params.set("sort", options.sort);
   }
   const query = params.toString();
-  return query ? `/districts?${query}` : "/districts";
+  return query ? `?${query}` : "";
 }
 
 const DISTRICTS_PAGE_CSS = `

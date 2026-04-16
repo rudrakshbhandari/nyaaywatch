@@ -10,17 +10,17 @@ Use this file for:
 
 ## Review
 
-### Narrow Punjab Public Rollout
+### Punjab Live Rollout Verification
 
-**What:** Implement the narrowest credible public Punjab exposure now that two independent Punjab windows and repeatable replay / rollback evidence exist.
+**What:** Deploy and verify the already-implemented narrow Punjab public surface on the live stack.
 
-**Why:** The internal evidence blocker is cleared. The remaining work is no longer more ingestion proof. It is concrete public-surface implementation, UI/API/CSV parity, and live deploy verification without implying nationwide parity.
+**Why:** The implementation and local parity checks are done. The remaining work is rollout discipline: publish the Punjab snapshot intentionally, verify the public hostname, and record the live result without implying nationwide parity.
 
-**Context:** `docs/EXPANSION_REVIEW_LOG.md` now records two live Punjab windows on 2026-04-16, including a second window more than 2 hours after the first. `docs/PUNJAB_GO_LIVE_CHECKLIST.md` now shows the independent-window gate as cleared, while public-surface and deployment gates remain open.
+**Context:** `docs/EXPANSION_REVIEW_LOG.md` now records two live Punjab windows plus the completed narrow state-scoped public-surface implementation. `docs/PUNJAB_GO_LIVE_CHECKLIST.md` now shows the local implementation and parity gates as largely cleared, while live verification and deployment gates remain open.
 
 **Effort:** M
 **Priority:** P1
-**Depends on:** Concrete public-exposure shape selection
+**Depends on:** intentional AWS/runtime rollout plan for Punjab
 
 ## Completed
 
@@ -53,6 +53,11 @@ Use this file for:
 
 - completed in the second live Punjab window on 2026-04-16 with `run_726b1bb9-04c8-43dc-9dfe-c977abf812e0`, `publication_91b7a54b-5262-4dfe-8e28-8c3e315c3c4c`, replay `run_13854ef4-33c1-4204-bd66-37685148e7c4`, replay publication `publication_cb511366-8bfb-4467-9e5c-5a2db394d545`, and rollback `publication_3512d69b-35e0-4a63-b3f1-35f738af7441`
 - Punjab has now cleared the independent-window operating-evidence gate; the next backlog slice is public-surface implementation and parity verification
+
+### Narrow Punjab Public Surface
+
+- completed in the public app with explicit `/states/punjab/...` routes, state-scoped API endpoints, dynamic supported-state navigation, and route-parity coverage
+- Himachal remains the default unscoped surface, while Punjab is now available as the first approved explicit state-scoped public route family pending live deployment verification
 
 ### Internal Multi-Geography Pipeline Scaffolding
 

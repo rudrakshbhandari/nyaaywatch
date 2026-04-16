@@ -5,10 +5,15 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 ## Affected Pages / Routes
 
 - `/` — verify Himachal topline scorecard, freshness metadata, quality status, anomaly callouts, and trust metadata parity
+- `/states/:stateSlug` — verify the same topline and trust surface for any explicitly approved public state
 - `/districts/:id` — verify district evidence page, anomaly explanation, trust metadata, and shareability
+- `/states/:stateSlug/districts/:id` — verify state-scoped district evidence parity without cross-state leakage
 - `/v1/stats/himachal` — verify stable observability payload and parity with homepage toplines
 - `/v1/districts` — verify district payload, quality flags, and stable schema
 - `/v1/trends` — verify trend payload, snapshot metadata, and schema stability
+- `/v1/states/:stateSlug/stats` — verify state-scoped observability payload, schema stability, and parity with the matching state page
+- `/v1/states/:stateSlug/districts` — verify state-scoped district payload and quality flags
+- `/v1/states/:stateSlug/trends` — verify state-scoped trend payload and snapshot metadata
 - operator/admin run controls — verify publish gating, replay, rollback, and safe operator-only access
 
 ## Key Interactions To Verify
@@ -16,6 +21,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - homepage loads only the latest published snapshot, never partial run data
 - district page explains why a district was flagged and shows matching snapshot / methodology metadata
 - citation surface / CSV export matches the same published snapshot the UI shows
+- state-scoped routes only expose states with an active published snapshot in the current runtime
 - operator can inspect a failed run, replay it safely, and block unsafe publish
 - API responses match the same published snapshot numbers shown in the public UI
 - API schema remains stable across snapshot updates and methodology version changes
@@ -30,6 +36,8 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - replay attempted twice and remains idempotent
 - methodology / formula version changes between snapshots
 - API field or metadata drift across releases
+- a second public state appears in code or data before deployment is ready
+- state switcher or state-scoped routes leak unpublished or wrong-state data
 
 ## Critical Paths
 
@@ -38,6 +46,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - citizen flow: homepage -> district page -> citation surface / CSV download
 - reporter flow: district trend -> methodology -> export
 - developer flow: `/v1/stats/himachal` reproduces homepage toplines with stable schema
+- approved additional-state flow: `/states/:stateSlug` -> `/states/:stateSlug/districts/:id` -> `/states/:stateSlug/data` -> `/v1/states/:stateSlug/stats`
 
 ## Required Test Types
 
@@ -47,6 +56,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - API contract tests with stable schema snapshots
 - operator replay / rollback tests
 - public-copy guardrail tests for published-snapshot framing
+- route-parity tests for any additional approved public state
 
 ## Current Implemented Coverage
 
@@ -54,10 +64,10 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - service tests covering real-source fixture capture, publish gating, publish, replay, rollback, latest-publication reads, district history derivation, and CSV export parity
 - HTTP tests covering public API parity plus the district workspace, district history/export surfaces, data downloads, methodology content, and operator fetch, inspect, publish, replay, rollback, and token enforcement
 - browser E2E covering the citizen flow, reporter flow, and developer parity flow against a deterministic fixture-backed app server
-- API contract tests enforcing stable schemas for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
+- API contract tests enforcing stable schemas for `/v1/stats/himachal`, `/v1/districts`, `/v1/trends`, and the state-scoped Punjab public endpoints
 - Playwright responsive/accessibility QA covering mobile trust surfaces, keyboard navigation, and axe smoke checks across the public routes
 - persistent-stack integration coverage for fetch, publish, replay, and rollback using local Docker PostgreSQL plus LocalStack S3 with the real `pg` and AWS SDK code paths
-- route-level copy guardrail tests enforcing published-snapshot, non-verdict, non-continuous-refresh public wording
+- route-level copy guardrail tests enforcing published-snapshot, non-verdict, non-continuous-refresh public wording across both default Himachal and state-scoped Punjab public routes
 
 Staging validation completed on 2026-04-15 with a live AWS `ap-south-1` stack covering `/health`, operator `fetch`, `inspect`, `publish`, `replay`, `rollback`, and confirmation that the public stats endpoint reflects the active publication after rollback.
 

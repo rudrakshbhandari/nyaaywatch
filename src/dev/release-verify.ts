@@ -2,7 +2,8 @@ import { verifyPublicRelease } from "./release-verification.js";
 
 async function main() {
   const baseUrl = readBaseUrl();
-  const summary = await verifyPublicRelease(baseUrl);
+  const stateSlug = readStateSlug();
+  const summary = await verifyPublicRelease(baseUrl, stateSlug ? { stateSlug } : undefined);
   console.log(JSON.stringify(summary, null, 2));
 }
 
@@ -26,6 +27,23 @@ function readBaseUrl() {
   }
 
   throw new Error("Usage: tsx src/dev/release-verify.ts --base-url <https://nyaaywatch.in>");
+}
+
+function readStateSlug() {
+  const args = process.argv.slice(2);
+  const flagIndex = args.findIndex((value) => value === "--state-slug");
+  if (flagIndex >= 0) {
+    const value = args[flagIndex + 1];
+    if (value) {
+      return value;
+    }
+  }
+
+  if (process.env.STATE_SLUG) {
+    return process.env.STATE_SLUG;
+  }
+
+  return undefined;
 }
 
 await main();

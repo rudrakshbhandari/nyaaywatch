@@ -59,7 +59,7 @@ export const GLOSSARY: Record<
     term: "data quality",
     short: "Whether we got a clean, complete pull this time.",
     long:
-      "\u201CComplete\u201D means we captured all 12 Himachal districts on the latest pull. \u201CPartial\u201D means some districts were missing, in which case we do not publish. \u201CStale\u201D means the last clean pull is older than our freshness threshold.",
+      "\u201CComplete\u201D means we captured every expected district for the state on the latest pull. \u201CPartial\u201D means some districts were missing, in which case we do not publish. \u201CStale\u201D means the last clean pull is older than our freshness threshold.",
   },
   source: {
     term: "where the numbers come from",
@@ -84,7 +84,7 @@ export type GlossaryKey = keyof typeof GLOSSARY;
  *   - Numbers are rounded and framed in terms a non-expert reader recognizes.
  *   - Where technical terms appear, they get an info icon.
  */
-export function buildCopy(model: HomeViewModel) {
+export function buildCopy(model: HomeViewModel, supportedStatesLabel: string) {
   // Districts where the median pending case has been waiting substantially
   // longer than a year. These drive the "some have waited two years" line
   // that makes the statewide median feel dishonest.
@@ -99,14 +99,14 @@ export function buildCopy(model: HomeViewModel) {
 
   return {
     brand: "NyaayWatch",
-    brandTag: "Court transparency, Himachal Pradesh",
+    brandTag: `Court transparency, ${model.snapshot.snapshot.stateName}`,
 
     // Small meta strip above the headline \u2014 quiet, informational.
-    ticker: `HIMACHAL PRADESH \u00b7 UPDATED ${model.sourceDateLabel}`,
+    ticker: `${model.snapshot.snapshot.stateName.toUpperCase()} \u00b7 UPDATED ${model.sourceDateLabel}`,
     // Small label above the headline. No "snapshot" / methodology jargon.
     eyebrow: "THE WAIT",
     // Ask the reader a question. The numbers answer it.
-    headline: "How long is the wait for justice in Himachal?",
+    headline: `How long is the wait for justice in ${model.snapshot.snapshot.stateName}?`,
     // One-paragraph hero lede. Fact-first, adversarial framing in plain English.
     lede: buildHeroLede(model, longWaitDistricts.length, longWaitMonths),
 
@@ -144,7 +144,7 @@ export function buildCopy(model: HomeViewModel) {
 
     sectionWhat: "Why this site exists",
     sectionWhatBody:
-      "NyaayWatch is an independent, reader-first view of publicly available court numbers. We do not speed anything up or slow anything down. We just make the numbers impossible to ignore \u2014 so citizens, reporters, and civic groups can ask sharper questions, and demand sharper answers.",
+      `NyaayWatch is an independent, reader-first view of publicly available court numbers. Today it publishes reviewed snapshots for ${supportedStatesLabel}. We do not speed anything up or slow anything down. We just make the numbers impossible to ignore \u2014 so citizens, reporters, and civic groups can ask sharper questions, and demand sharper answers.`,
   } as const;
 }
 
@@ -155,7 +155,7 @@ function buildHeroLede(
   longWaitCount: number,
   longWaitMonths: number,
 ): string {
-  const base = `${model.pendingLakh} cases are waiting in Himachal's district courts. The middle of the pile has already been waiting about ${model.typicalWaitMonths} months.`;
+  const base = `${model.pendingLakh} cases are waiting in ${model.snapshot.snapshot.stateName}'s district courts. The middle of the pile has already been waiting about ${model.typicalWaitMonths} months.`;
   if (longWaitCount > 0 && longWaitMonths > model.typicalWaitMonths) {
     return (
       `${base} In ${longWaitCount} district${longWaitCount === 1 ? "" : "s"}, the middle is closer to ${longWaitMonths} months. ` +

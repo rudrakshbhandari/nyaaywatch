@@ -104,10 +104,11 @@ The repository now ships a narrow alpha reference implementation of this archite
 - one Node/TypeScript service with an operator boundary and public boundary
 - server-rendered public pages for `/`, `/districts`, `/districts/:id`, `/data`, `/methodology`, and `/api`
 - public JSON for `GET /v1/stats/himachal`, `GET /v1/districts`, and `GET /v1/trends`
+- explicit state-scoped public routes for additional approved states via `/states/:stateSlug/...` and `/v1/states/:stateSlug/...`
 - PostgreSQL-backed run, publication, and published-snapshot state plus S3-backed raw evidence artifacts
 - published district-history and CSV export surfaces that stay inside the active public snapshot lineage
 
-This does not change the intended production direction. It proves the public trust boundary first while keeping the Himachal alpha legible, reproducible, and explicitly snapshot-based.
+This does not change the intended production direction. It proves the public trust boundary first while keeping Himachal as the default unscoped alpha surface and forcing any additional state to use explicit state-scoped routes rather than empty national scaffolding.
 
 ## Credit-Aware Infrastructure Direction
 
@@ -198,8 +199,10 @@ Homepage
 The alpha information architecture should separate overview from browsing so the product can scale beyond one state without turning the homepage into a dense control panel.
 
 - `/` is the statewide front page for the latest published snapshot, toplines, trend, flagged signals, and trust context
-- `/districts` is the main district-browsing workspace for ranking, scanning, filtering, and opening district permalinks
-- `/districts/:id` is the durable evidence page for a specific district
+- `/districts` is the main district-browsing workspace for ranking, scanning, filtering, and opening district permalinks for the default state
+- `/districts/:id` is the durable evidence page for a specific district in the default state
+- `/states/:stateSlug` is the explicit state-scoped overview page for any additional approved state
+- `/states/:stateSlug/districts` and `/states/:stateSlug/districts/:id` are the equivalent state-scoped district browsing and district evidence surfaces
 - `/methodology` explains formulas, caveats, snapshot semantics, and change history
 - `/data` or an equivalent download surface handles CSV exports and public data access
 - `/api` or equivalent docs surface explains the developer-facing read model
@@ -268,9 +271,12 @@ Methodology, download, and API docs are trust-supporting surfaces. They must be 
 
 Initial public endpoints:
 
-- `GET /stats/himachal`
-- `GET /districts`
-- `GET /trends`
+- `GET /v1/stats/himachal`
+- `GET /v1/districts`
+- `GET /v1/trends`
+- `GET /v1/states/:stateSlug/stats`
+- `GET /v1/states/:stateSlug/districts`
+- `GET /v1/states/:stateSlug/trends`
 
 The API should expose the same evidence model the public page uses. No hidden richer truth than the public trust surface supports.
 

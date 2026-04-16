@@ -56,18 +56,17 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 
 ### What Did Not Yet Clear
 
-- Public trust parity implementation: Punjab is still not exposed on the public site, so the actual public UI, API, CSV, and route-parity checks have not been exercised yet.
-- Product and IA discipline: no Punjab public UX has been added yet, so there is still no validated answer to how Punjab is exposed without implying nationwide parity.
-- Deployment readiness: the AWS runtime and live release flow still need an explicit Punjab rollout plan before any public exposure.
+- Deployment readiness: the AWS runtime and live release flow still need an explicit Punjab rollout plan before public exposure on `https://nyaaywatch.in`.
+- Live public verification: the state-scoped Punjab routes, CSV, and API still need browser and release verification against the real public hostname after deploy.
 
 ### Recommendation
 
 Punjab is still the right first candidate state for the accelerated expansion track, and it has now cleared the internal evidence bar.
 
-Do not expose Punjab publicly yet.
+Punjab is ready for a narrow public deployment PR and rollout review.
 
 Required next step:
 
-1. Implement the narrowest public Punjab exposure shape.
-2. Verify Punjab UI, API, CSV, and trust-metadata parity through the actual public routes.
-3. Deploy Punjab intentionally and record the rollout result in the release and expansion docs.
+1. Deploy the explicit Punjab state-scoped public surface intentionally.
+2. Verify Punjab UI, API, CSV, and trust-metadata parity through the real public hostname.
+3. Record the rollout result in the release and expansion docs.

@@ -2,7 +2,13 @@ import { createServer, type Server } from "node:http";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { createTestApp, createTestContext, seedTestSnapshot } from "./helpers.js";
+import {
+  buildPunjabTestSnapshot,
+  createTestApp,
+  createTestContext,
+  insertPublishedSnapshot,
+  seedTestSnapshot,
+} from "./helpers.js";
 import { verifyPublicRelease } from "../src/dev/release-verification.js";
 
 describe("verifyPublicRelease", () => {
@@ -39,11 +45,44 @@ describe("verifyPublicRelease", () => {
     const result = await verifyPublicRelease(`http://127.0.0.1:${address.port}`);
 
     expect(result.health.stateCode).toBe("HP");
+    expect(result.target.stateCode).toBe("HP");
     expect(result.districtCount).toBe(12);
     expect(result.trendCount).toBeGreaterThan(0);
     expect(result.csvMetadataParity).toBe(true);
     expect(result.operatorAuthProtected).toBe(true);
     expect(result.snapshot.methodologyVersion).toBe("2026.04-alpha");
+  });
+
+  it("verifies state-scoped Punjab public routes once Punjab is published", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    await insertPublishedSnapshot(context.pool, {
+      publicationId: "publication_pb_release_verify",
+      snapshotId: "snapshot_pb_release_verify",
+      runId: "run_pb_release_verify",
+      stateCode: "PB",
+      payload: buildPunjabTestSnapshot(),
+    });
+
+    const app = createTestApp(context.config, context.service, context.publicServices);
+    const server = createServer(app);
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    const result = await verifyPublicRelease(`http://127.0.0.1:${address.port}`, { stateSlug: "punjab" });
+
+    expect(result.target.stateCode).toBe("PB");
+    expect(result.target.stateSlug).toBe("punjab");
+    expect(result.snapshot.methodologyVersion).toBe("2026.04-alpha");
+    expect(result.districtCount).toBe(3);
+    expect(result.trendCount).toBeGreaterThan(0);
+    expect(result.csvMetadataParity).toBe(true);
   });
 
   it("fails when release metadata drifts between public endpoints", async () => {
