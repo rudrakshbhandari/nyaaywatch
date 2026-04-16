@@ -447,7 +447,7 @@ This plan should align with the existing repo context:
 - `docs/ENG_REVIEW_TEST_PLAN.md` already defines the core public routes and trust-critical interactions that the UI must support
 - `TODOS.md` already captures non-visual strategic follow-ups around redistribution rules and multi-state readiness
 
-There is no standalone `DESIGN.md` yet, so the alpha design foundation in this document is currently the source of truth for visual and interaction decisions.
+`DESIGN.md` now holds the reusable design-system rules for typography, color, spacing, component vocabulary, responsive behavior, and accessibility. This document remains the product-specific design plan for IA, trust surfaces, and route behavior.
 
 ## NOT In Scope
 
@@ -507,159 +507,25 @@ NyaayWatch copy and layout should move from calm to investigative without crossi
 
 Urgency should come from the evidence, not from visual drama or activist slogans.
 
-## Visual Direction And AI Slop Guardrails
+## Design System Handoff
 
-NyaayWatch alpha should look like an investigative public dossier, not a startup dashboard and not a glossy activism campaign.
+The reusable visual-system rules now live in `DESIGN.md`.
 
-### Core Visual Stance
+Use `DESIGN.md` for:
 
-- typography-led rather than decoration-led
-- restrained, serious, and editorial
-- tables, charts, metadata, and source context are the primary visual surfaces
-- minimal card usage; cards must earn their existence through interaction or grouping value
-- calm color system with one restrained accent, not a rainbow status palette
-- dense enough to feel useful, but never cramped or bureaucratic
+- visual stance and AI-slop guardrails
+- typography, color, spacing, and surface rules
+- shared component vocabulary
+- responsive layout rules
+- accessibility baseline
 
-The specific target is a public dossier visual language:
+Keep this document focused on the product-specific design decisions that are harder to express in a generic design system:
 
-- document-like hierarchy over app-like chrome
-- strong metadata treatment and evidence labeling
-- restrained serif/sans pairing rather than default startup typography
-- citation-ready footnotes, caveats, and trust annotations as first-class UI elements
-- enough warmth to feel maintained by people, but not enough ornament to feel like a campaign site
-
-### Visual Hierarchy Rules
-
-- first viewport behaves like a public-interest front page, not a widget board
-- brand, headline, trust strip, and toplines form one composition
-- district table and trend chart should read as the main evidence surfaces, not supporting decoration
-- caveats and quality signals should be visible without overpowering the primary evidence
-- methodology, download, and API links should feel like trust-supporting utilities, not competing calls to action
-
-### AI Slop Blacklist For NyaayWatch
-
-Do not ship:
-
-- purple, violet, or blue-to-purple gradient brand treatments
-- three-column feature grids with icon circles and short SaaS blurbs
-- centered-everything marketing layouts
-- decorative blob backgrounds, wavy section dividers, or ornamental floating shapes
-- oversized rounded cards wrapping every metric, chart, and table by default
-- generic hero copy such as "unlock judicial insights" or "all-in-one transparency platform"
-- dashboard-card mosaics where every insight is trapped in a separate panel
-
-### Preferred UI Primitives
-
-- strong headlines with editorial rhythm
-- compact trust strips and metadata rows
-- full-width tables or near-full-width tables for district comparison
-- charts with restrained annotation, not decorative illustration
-- inline badges for freshness and quality status
-- footnotes, caveat blocks, and methodology links that feel citation-ready
-
-### Visual Density Rule
-
-NyaayWatch should prefer fewer, stronger surfaces over many equal surfaces. If a layout can delete 30 percent of its chrome and still communicate better, it should. The design should feel cared for, not merely populated.
-
-## Alpha Design Foundation
-
-No standalone `DESIGN.md` exists yet, so this section acts as the design-system foundation for alpha implementation.
-
-### Typography
-
-- use a restrained serif for major editorial headings and a clear sans-serif for interface text
-- avoid default stacks such as Inter, Arial, Roboto, or generic system-first typography
-- headlines should feel investigative and public-interest oriented, not startup-promotional
-- body text and metadata must optimize for long reading sessions, scanability, and evidence comprehension
-- tables, badges, and trust strips should use disciplined typographic contrast rather than heavy borders or bright fills
-
-### Color Tokens
-
-Define CSS variables before implementation:
-
-- `--color-bg`
-- `--color-surface`
-- `--color-surface-muted`
-- `--color-text`
-- `--color-text-muted`
-- `--color-border`
-- `--color-accent`
-- `--color-warning`
-- `--color-danger`
-- `--color-success`
-
-Rules:
-
-- background colors stay light, calm, and document-like
-- accent color should be restrained and used sparingly for links, active states, and data emphasis
-- warning and quality colors should signal clearly without turning the interface into a traffic-light dashboard
-- no purple-forward palette and no blue-to-purple gradients
-
-### Spacing And Layout
-
-- use a consistent spacing scale rather than one-off values
-- prioritize generous vertical rhythm around headline, trust, and evidence sections
-- tables and charts should have enough surrounding whitespace to read clearly, but should still occupy meaningful width
-- mobile layouts should preserve hierarchy through reflow, not by shrinking everything into cramped cards
-
-### Surface Rules
-
-- cards are not the default container
-- tables, charts, text blocks, and metadata rows should often sit directly on the page or within minimal surfaces
-- if a card is used, it must have a specific grouping or interaction purpose
-- shadows should be minimal; separation should come primarily from spacing, typography, and subtle borders
-
-### Core Component Vocabulary
-
-Alpha should standardize at least these primitives:
-
-- trust strip
-- topline metric block
-- district ranking table
-- quality badge
-- freshness warning banner
-- anomaly callout
-- caveat block
-- methodology link cluster
-- export action group
-
-Every new user-facing screen in alpha should be assembled from this vocabulary before introducing new primitives.
-
-## Responsive And Accessibility Requirements
-
-NyaayWatch must be intentionally designed for desktop, tablet, and mobile. Responsive behavior is not a visual afterthought; it determines whether the public evidence model remains legible on real devices.
-
-### Responsive Layout Rules
-
-- desktop should prioritize side-by-side comparison where it improves evidence reading
-- tablet should preserve the public dossier rhythm while reducing simultaneous density
-- mobile should preserve trust hierarchy and tap-through clarity rather than forcing desktop tables into cramped horizontal scroll patterns
-
-### District Browsing On Mobile
-
-The district index should use different primary patterns by viewport:
-
-- desktop: full ranking table with meaningful comparison columns
-- tablet: reduced-column comparison table with clear tap targets
-- mobile: ranked stacked list where each item shows district name, status, 1 to 2 key metrics, and a direct link into the district evidence page
-
-Mobile should not rely on a wide table with horizontal scrolling as the primary exploration pattern. Comparison can still exist, but the primary experience should be a scan-and-open list that respects small screens and thumb navigation.
-
-### Accessibility Baseline
-
-Alpha implementation must meet an explicit accessibility floor:
-
-- keyboard navigation across all primary routes, filters, links, exports, and evidence-page actions
-- semantic landmarks for header, main content, navigation, table/list regions, and footer
-- visible focus states that do not rely on browser defaults disappearing into the visual system
-- minimum touch targets of 44px for interactive controls
-- text and status colors must meet accessible contrast requirements against their backgrounds
-- charts must provide text summaries or data tables so their meaning is not color-only or pointer-only
-- quality badges and freshness states must not rely on color alone; pair color with text labels
-- district ranking and evidence pages should use heading structure that screen readers can traverse logically
-- loading, empty, partial, and error states must be announced or represented in ways assistive technology can understand
-
-Accessibility should be treated as part of public trust. If a surface cannot explain itself to keyboard users, screen-reader users, or low-vision users, it is not ready to claim civic usefulness.
+- route hierarchy
+- homepage and district-page composition
+- trust-surface behavior
+- tone progression
+- Himachal-first public IA discipline
 
 ## Distribution Plan
 
@@ -690,7 +556,7 @@ Accessibility should be treated as part of public trust. If a surface cannot exp
 +====================================================================+
 |         DESIGN PLAN REVIEW — COMPLETION SUMMARY                    |
 +====================================================================+
-| System Audit         | UI scope confirmed; no DESIGN.md            |
+| System Audit         | UI scope confirmed; DESIGN.md extracted     |
 | Step 0               | 5/10 initial rating; full 7-pass review     |
 | Pass 1  (Info Arch)  | 4/10 -> 10/10                               |
 | Pass 2  (States)     | 3/10 -> 10/10                               |

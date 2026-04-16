@@ -1,8 +1,10 @@
 # Alpha Release Checklist
 
-Operator and reviewer checklist for deciding whether the Himachal Pradesh alpha is ready to stay public.
+Canonical go/no-go checklist for deciding whether the Himachal Pradesh alpha is ready to stay public.
 
 Run this checklist before the first public launch and before any materially different release of public copy, methodology, or publish workflow behavior.
+
+Use `docs/RELEASE_POLICY.md` for cadence and blocking rules, `docs/DEPLOYMENT_STATUS.md` for the live environment map, and `docs/DOMAIN_CUTOVER_CHECKLIST.md` only when a release also changes hostname, certificate, or DNS state.
 
 ## Release Metadata
 
