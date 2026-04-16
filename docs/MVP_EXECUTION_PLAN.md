@@ -226,3 +226,4 @@ Track those in `TODOS.md`, not here.
 - 2026-04-15: Added fixture-backed App Runner preview deployments for pull requests so design and copy review no longer depend on the live AWS stack.
 - 2026-04-16: Added a tracked release ledger in `docs/RELEASE_HISTORY.md` plus `release:record` so postpublish evidence is preserved as markdown, JSON, and reviewer-attributed history entries.
 - 2026-04-16: Added internal multi-geography pipeline scaffolding with a state-profile-driven NJDG capture path, state-scoped artifact prefixes, and a first internal candidate-state profile for Punjab while keeping the public app Himachal-only.
+- 2026-04-16: Completed the first real live Punjab internal trial with a successful `fetch -> inspect -> publish -> replay -> rollback` cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`; Punjab remains internal-only pending a second publish window spaced by at least 2 hours and a public-trust parity review.
