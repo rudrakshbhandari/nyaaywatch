@@ -196,7 +196,7 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/operator/publications",
     operatorOnly(config),
     asyncRoute(async (_request, response) => {
-      response.json({ publications: await service.listPublications() });
+      response.json({ publications: await service.listPublicationHistory() });
     }),
   );
 
