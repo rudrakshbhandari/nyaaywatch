@@ -1,5 +1,6 @@
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import { renderPageShell } from "../design/shell.js";
+import type { PublicPageContext } from "../public-state.js";
 import { infoIcon } from "../design/ui.js";
 import { buildCopy } from "./copy.js";
 import {
@@ -9,9 +10,9 @@ import {
   type HomeViewModel,
 } from "./view-model.js";
 
-export function renderHome(snapshot: PublishedSnapshot): string {
+export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
-  const copy = buildCopy(model);
+  const copy = buildCopy(model, context.supportedStatesLabel);
   const n = copy.bigNumbers;
 
   const trendBars = renderTrendChart(model);
@@ -20,7 +21,7 @@ export function renderHome(snapshot: PublishedSnapshot): string {
       const waitMonths = Math.round(district.medianAgeDays / 30);
       return `<article class="watch-card">
         <div class="watch-card__rank">No. ${index + 1}</div>
-        <h3 class="watch-card__name"><a href="/districts/${escapeHtml(district.districtId)}">${escapeHtml(district.districtName)}</a></h3>
+        <h3 class="watch-card__name"><a href="${context.routes.district(district.districtId)}">${escapeHtml(district.districtName)}</a></h3>
         <p class="watch-card__lede">${escapeHtml(district.summary)}</p>
         <dl class="watch-card__stats">
           <div>
@@ -47,8 +48,8 @@ export function renderHome(snapshot: PublishedSnapshot): string {
       <h1 class="hero__hed">${escapeHtml(copy.headline)}</h1>
       <p class="hero__lede">${escapeHtml(copy.lede)}</p>
       <div class="hero__cta">
-        <a class="btn btn--primary" href="/districts">${escapeHtml(copy.ctaPrimary)} \u2192</a>
-        <a class="btn btn--ghost" href="/methodology">${escapeHtml(copy.ctaSecondary)}</a>
+        <a class="btn btn--primary" href="${context.routes.districts}">${escapeHtml(copy.ctaPrimary)} \u2192</a>
+        <a class="btn btn--ghost" href="${context.routes.methodology}">${escapeHtml(copy.ctaSecondary)}</a>
       </div>
     </section>
 
@@ -105,6 +106,10 @@ export function renderHome(snapshot: PublishedSnapshot): string {
     title: `${copy.brand} \u2014 ${copy.headline}`,
     body,
     activeNav: "home",
+    brandHref: context.brandHref,
+    brandTag: context.brandTag,
+    navLinks: context.navLinks,
+    stateLinks: context.stateLinks,
     ticker: copy.ticker,
     pageCss: HOME_PAGE_CSS,
     footer: {

@@ -4,7 +4,7 @@ import { formatLakh } from "../../src/api/home/view-model.js";
 test("citizen flow loads the homepage, district workspace, and district permalink", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "How long is the wait for justice in Himachal?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How long is the wait for justice in Himachal Pradesh?" })).toBeVisible();
   await expect(page.getByText(/Numbers published/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /See the worst districts/i })).toBeVisible();
 

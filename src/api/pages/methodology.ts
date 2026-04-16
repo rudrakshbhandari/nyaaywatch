@@ -2,6 +2,7 @@ import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import type { SnapshotHistoryEntry } from "../../services/published-snapshot-service.js";
 import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
+import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 
@@ -13,10 +14,11 @@ import { formatDate } from "../home/view-model.js";
 export function renderMethodologyPage(
   snapshot: PublishedSnapshot["snapshot"] | null,
   history: SnapshotHistoryEntry[],
+  context: PublicPageContext,
 ): string {
   const ticker = snapshot
-    ? `HIMACHAL PRADESH · METHODOLOGY ${escapeHtml(snapshot.methodologyVersion)}`
-    : "HIMACHAL PRADESH · METHODOLOGY";
+    ? `${escapeHtml(snapshot.stateName.toUpperCase())} · METHODOLOGY ${escapeHtml(snapshot.methodologyVersion)}`
+    : `${escapeHtml(context.profile.stateName.toUpperCase())} · METHODOLOGY`;
 
   const body = `
     ${renderSectionHead({
@@ -32,7 +34,7 @@ export function renderMethodologyPage(
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Alpha scope</h3>
-          <p>Himachal Pradesh only. NyaayWatch is snapshot-based and evidence-first: it publishes dated aggregates after operator review and keeps unpublished run state private.</p>
+          <p>${escapeHtml(context.profile.stateName)} only on this page. NyaayWatch is snapshot-based and evidence-first: it publishes dated aggregates after operator review and keeps unpublished run state private.</p>
           <p>Historical context is built from prior published snapshots, not from raw captured pages shown directly to the public.</p>
         </article>
         <article class="card">
@@ -70,7 +72,7 @@ export function renderMethodologyPage(
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>Complete</h3>
-          <p>All expected Himachal districts were captured and normalized for the source snapshot.</p>
+          <p>All expected districts for this state were captured and normalized for the source snapshot.</p>
         </article>
         <article class="card">
           <h3>Stale</h3>
@@ -96,6 +98,10 @@ export function renderMethodologyPage(
     title: "Methodology — NyaayWatch",
     body,
     activeNav: "methodology",
+    brandHref: context.brandHref,
+    brandTag: context.brandTag,
+    navLinks: context.navLinks,
+    stateLinks: context.stateLinks,
     ticker,
     pageCss: METHODOLOGY_PAGE_CSS,
     footer: {

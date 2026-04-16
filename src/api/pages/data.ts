@@ -1,6 +1,7 @@
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
+import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 
@@ -10,7 +11,7 @@ import { formatDate } from "../home/view-model.js";
  * This is where reporters, researchers, and civic orgs land when they want
  * the rows behind the homepage.
  */
-export function renderDataPage(snapshot: PublishedSnapshot): string {
+export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const body = `
     ${renderSectionHead({
       eyebrow: "CSV AND API",
@@ -24,7 +25,7 @@ export function renderDataPage(snapshot: PublishedSnapshot): string {
       ${renderStatTile({
         label: "District rows",
         value: snapshot.districts.length.toString(),
-        note: "One row per district in the active Himachal publication.",
+        note: `One row per district in the active ${snapshot.snapshot.stateName} publication.`,
       })}
       ${renderStatTile({
         label: "CSV/API parity",
@@ -54,20 +55,20 @@ export function renderDataPage(snapshot: PublishedSnapshot): string {
         <article class="card download">
           <div class="download__meta">
             <span class="download__kind">CSV</span>
-            <code class="download__path">/data/districts.csv</code>
+            <code class="download__path">${escapeHtml(context.routes.districtsCsv)}</code>
           </div>
           <h3>Statewide district table</h3>
           <p>One row per district with rank, pending cases, cases cleared per 100 filed, typical wait, file-clear gap, and flag reason. Includes the source snapshot date, methodology version, freshness, and source attribution as columns so the download is self-describing.</p>
-          <p class="download__cta"><a class="btn btn--primary btn--small" href="/data/districts.csv">Download CSV</a></p>
+          <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.districtsCsv}">Download CSV</a></p>
         </article>
         <article class="card download">
           <div class="download__meta">
             <span class="download__kind">JSON</span>
-            <code class="download__path">/v1/...</code>
+            <code class="download__path">${escapeHtml(context.routes.statsApi)}</code>
           </div>
           <h3>Public JSON endpoints</h3>
           <p>Three endpoints cover statewide stats, district rows, and the statewide trend series. Same fields as the CSV, fetched as machine-readable JSON for dashboards, notebooks, or downstream tooling.</p>
-          <p class="download__cta"><a class="btn btn--ghost btn--small" href="/api">See API reference</a></p>
+          <p class="download__cta"><a class="btn btn--ghost btn--small" href="${context.routes.api}">See API reference</a></p>
         </article>
       </div>
     </section>
@@ -93,7 +94,11 @@ export function renderDataPage(snapshot: PublishedSnapshot): string {
     title: "Data — NyaayWatch",
     body,
     activeNav: "data",
-    ticker: `HIMACHAL PRADESH · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))}`,
+    brandHref: context.brandHref,
+    brandTag: context.brandTag,
+    navLinks: context.navLinks,
+    stateLinks: context.stateLinks,
+    ticker: `${escapeHtml(snapshot.snapshot.stateName.toUpperCase())} · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))}`,
     pageCss: DATA_PAGE_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.snapshot.sourceSnapshotAt),

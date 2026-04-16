@@ -1,6 +1,7 @@
 export interface NjdgStateProfile {
   stateCode: SupportedStateCode;
   stateName: string;
+  stateSlug: string;
   njdgStateValue: string;
   publicAlpha: boolean;
 }
@@ -13,14 +14,16 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
   HP: {
     stateCode: "HP",
     stateName: "Himachal Pradesh",
+    stateSlug: "himachal-pradesh",
     njdgStateValue: "2~5",
     publicAlpha: true,
   },
   PB: {
     stateCode: "PB",
     stateName: "Punjab",
+    stateSlug: "punjab",
     njdgStateValue: "3~22",
-    publicAlpha: false,
+    publicAlpha: true,
   },
 };
 
@@ -30,4 +33,13 @@ export function getStateProfile(stateCode: SupportedStateCode): NjdgStateProfile
 
 export function listStateProfiles(): NjdgStateProfile[] {
   return [...SUPPORTED_STATE_CODES].map((stateCode) => STATE_PROFILES[stateCode]);
+}
+
+export function listPublicStateProfiles(): NjdgStateProfile[] {
+  return listStateProfiles().filter((profile) => profile.publicAlpha);
+}
+
+export function getPublicStateProfileBySlug(stateSlug: string): NjdgStateProfile | null {
+  const normalized = stateSlug.trim().toLowerCase();
+  return listPublicStateProfiles().find((profile) => profile.stateSlug === normalized) ?? null;
 }

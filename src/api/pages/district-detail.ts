@@ -2,6 +2,7 @@ import type { DistrictSnapshot, PublishedSnapshot } from "../../domain/snapshot-
 import type { DistrictHistoryPoint } from "../../services/published-snapshot-service.js";
 import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
+import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 
@@ -15,6 +16,7 @@ export function renderDistrictPage(
   snapshot: PublishedSnapshot["snapshot"],
   district: DistrictSnapshot,
   history: DistrictHistoryPoint[],
+  context: PublicPageContext,
 ): string {
   const currentIndex = history.findIndex(
     (point) =>
@@ -37,7 +39,7 @@ export function renderDistrictPage(
   const body = `
     <section class="district-hero">
       <div class="district-hero__crumb">
-        <a href="/districts">\u2190 All districts</a>
+        <a href="${context.routes.districts}">\u2190 All districts</a>
         ${renderBadge({ label: `Watch rank #${district.rank}`, tone: "accent" })}
       </div>
       <p class="district-hero__eyebrow">DISTRICT EVIDENCE</p>
@@ -103,14 +105,14 @@ export function renderDistrictPage(
             <h3>Durable citation surface</h3>
           </header>
           <dl class="citation-list">
-            <div><dt>Permalink</dt><dd><code>/districts/${escapeHtml(district.districtId)}</code></dd></div>
+            <div><dt>Permalink</dt><dd><code>${escapeHtml(context.routes.district(district.districtId))}</code></dd></div>
             <div><dt>Source snapshot</dt><dd>${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}</dd></div>
             <div><dt>Methodology</dt><dd><code>${escapeHtml(snapshot.methodologyVersion)}</code></dd></div>
             <div><dt>Source</dt><dd>${escapeHtml(snapshot.sourceAttribution)}</dd></div>
           </dl>
           <div class="district-col__cta">
-            <a class="btn btn--primary btn--small" href="/data/districts/${escapeHtml(district.districtId)}.csv">Download district history CSV</a>
-            <a class="btn btn--ghost btn--small" href="/data/districts.csv">Statewide CSV</a>
+            <a class="btn btn--primary btn--small" href="${context.routes.districtCsv(district.districtId)}">Download district history CSV</a>
+            <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">Statewide CSV</a>
           </div>
         </article>
 
@@ -130,7 +132,11 @@ export function renderDistrictPage(
     title: `${district.districtName} — NyaayWatch`,
     body,
     activeNav: "districts",
-    ticker: `HIMACHAL PRADESH · ${escapeHtml(district.districtName.toUpperCase())} · ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}`,
+    brandHref: context.brandHref,
+    brandTag: context.brandTag,
+    navLinks: context.navLinks,
+    stateLinks: context.stateLinks,
+    ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · ${escapeHtml(district.districtName.toUpperCase())} · ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}`,
     pageCss: DISTRICT_PAGE_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),

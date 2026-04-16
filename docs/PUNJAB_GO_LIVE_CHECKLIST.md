@@ -8,7 +8,7 @@ This is narrower than a nationwide launch checklist. Punjab should clear this be
 
 - Candidate state: `Punjab`
 - State code: `PB`
-- Current decision: `internal evidence bar cleared; public rollout still blocked on surface implementation and parity verification`
+- Current decision: `public surface implemented locally; live rollout still blocked on deployment verification`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Methodology version: `2026.04-alpha`
 
@@ -28,38 +28,38 @@ Why this gate exists:
 
 ### 2. Snapshot Integrity
 
-- [ ] Punjab public routes would read only from the active published snapshot.
-- [ ] No public Punjab route or download reads unpublished run state.
-- [ ] Punjab CSV, API, and UI would all resolve to the same Punjab publication lineage.
+- [x] Punjab public routes read only from the active published snapshot in the state-scoped public runtime.
+- [x] No public Punjab route or download reads unpublished run state.
+- [x] Punjab CSV, API, and UI resolve to the same Punjab publication lineage in local verification.
 - [ ] Punjab rollback target is clear in publication history.
 
 ### 3. Trust Metadata And Caveats
 
-- [ ] Punjab homepage or state entry surface would show source snapshot date, publication date, freshness, methodology version, and source attribution.
-- [ ] Punjab district index and district detail surfaces would show the same trust metadata.
-- [ ] Punjab copy would use `published snapshot`, `flagged signal`, and `operator-published` semantics.
-- [ ] Punjab copy would avoid live, predictive, or verdict-like framing.
+- [x] Punjab homepage or state entry surface shows source snapshot date, publication date, freshness, methodology version, and source attribution.
+- [x] Punjab district index and district detail surfaces show the same trust metadata.
+- [x] Punjab copy uses `published snapshot`, `flagged signal`, and `operator-published` semantics.
+- [x] Punjab copy avoids live, predictive, or verdict-like framing.
 
 ### 4. Product And IA Discipline
 
-- [ ] Punjab exposure is concrete, not placeholder scaffolding.
-- [ ] The website remains explicit about what is covered now.
-- [ ] Himachal-first trust language is updated carefully rather than silently removed.
-- [ ] No UI implies nationwide parity or cross-state coverage breadth that does not exist.
+- [x] Punjab exposure is concrete, not placeholder scaffolding.
+- [x] The website remains explicit about what is covered now.
+- [x] Himachal-first trust language is updated carefully rather than silently removed.
+- [x] No UI implies nationwide parity or cross-state coverage breadth that does not exist.
 
 ### 5. Source And Export Boundary
 
-- [ ] Punjab public downloads are limited to normalized published read-model fields.
+- [x] Punjab public downloads are limited to normalized published read-model fields.
 - [ ] Raw Punjab NJDG HTML bundles remain internal.
 - [ ] Replay copies and unpublished snapshot candidates remain internal.
-- [ ] Public citation surfaces still include clear source attribution and dates.
+- [x] Public citation surfaces still include clear source attribution and dates.
 
 ### 6. Verification
 
-- [ ] `npm run typecheck`
-- [ ] targeted regression tests for Punjab-related pipeline or public-surface changes
+- [x] `npm run typecheck`
+- [x] targeted regression tests for Punjab-related pipeline or public-surface changes
 - [ ] public route/browser verification for the intended Punjab exposure shape
-- [ ] release verification passes against the public hostname after rollout
+- [ ] release verification passes against the public hostname after rollout, including `npm run release:verify -- --base-url=https://nyaaywatch.in --state-slug=punjab`
 
 ### 7. Deployment
 

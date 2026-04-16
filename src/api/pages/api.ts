@@ -1,4 +1,5 @@
 import { renderPageShell } from "../design/shell.js";
+import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead } from "../design/ui.js";
 
 /**
@@ -6,7 +7,7 @@ import { renderSectionHead } from "../design/ui.js";
  * required; the page is static narrative + route documentation. The CSV
  * downloads are linked from /data rather than duplicated here.
  */
-export function renderApiPage(): string {
+export function renderApiPage(context: PublicPageContext): string {
   const body = `
     ${renderSectionHead({
       eyebrow: "DEVELOPER ACCESS",
@@ -21,17 +22,17 @@ export function renderApiPage(): string {
       <div class="card-grid card-grid--1">
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
-          <code class="endpoint__path">/v1/stats/himachal</code>
+          <code class="endpoint__path">${context.routes.statsApi}</code>
           <p>Statewide backlog, disposal pace, wait estimate, and watchlist count for the active publication.</p>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
-          <code class="endpoint__path">/v1/districts</code>
+          <code class="endpoint__path">${context.routes.districtsApi}</code>
           <p>District-level rows with rankings, queue size, disposal pace, wait estimate, and flag explanations.</p>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
-          <code class="endpoint__path">/v1/trends</code>
+          <code class="endpoint__path">${context.routes.trendsApi}</code>
           <p>Published snapshot history for the statewide trend surface.</p>
         </article>
       </div>
@@ -56,6 +57,10 @@ export function renderApiPage(): string {
     title: "API — NyaayWatch",
     body,
     activeNav: "api",
+    brandHref: context.brandHref,
+    brandTag: context.brandTag,
+    navLinks: context.navLinks,
+    stateLinks: context.stateLinks,
     pageCss: API_PAGE_CSS,
     footer: {
       sourceDateLabel: null,

@@ -7,6 +7,14 @@ export interface PageShellOptions {
   body: string;
   /** Which top-nav link should render as active. */
   activeNav?: "home" | "districts" | "data" | "methodology" | "api";
+  /** Brand link for the current page scope. */
+  brandHref?: string;
+  /** Small brand tag shown in the footer. */
+  brandTag?: string;
+  /** State-aware nav links for the current public scope. */
+  navLinks?: Array<{ id: NonNullable<PageShellOptions["activeNav"]>; href: string; label: string }>;
+  /** Supported public states that currently have published snapshots. */
+  stateLinks?: Array<{ label: string; href: string; active: boolean }>;
   /** Small meta strip directly under the masthead. Optional. */
   ticker?: string;
   /** Page-specific CSS appended after the base stylesheet. */
@@ -29,9 +37,11 @@ export interface FooterMeta {
  * because we ship HTML straight from the server with no asset pipeline.
  */
 export function renderPageShell(options: PageShellOptions): string {
-  const nav = renderNav(options.activeNav ?? null);
+  const brandHref = options.brandHref ?? "/";
+  const nav = renderNav(options.activeNav ?? null, options.navLinks);
+  const stateSwitcher = renderStateSwitcher(options.stateLinks ?? []);
   const ticker = options.ticker ? `<div class="ticker">${escapeHtml(options.ticker)}</div>` : "";
-  const footer = renderColophon(options.footer);
+  const footer = renderColophon(options.footer, options.brandTag ?? "Court transparency, Himachal Pradesh", options.navLinks);
 
   return `<!doctype html>
 <html lang="en">
@@ -44,12 +54,13 @@ export function renderPageShell(options: PageShellOptions): string {
 </head>
 <body>
   <header class="masthead">
-    <a href="/" class="masthead__brand">
+    <a href="${brandHref}" class="masthead__brand">
       <span class="masthead__mark">NW</span>
       <span class="masthead__wordmark">NyaayWatch</span>
     </a>
     ${nav}
   </header>
+  ${stateSwitcher}
   ${ticker}
   <main>${options.body}</main>
   ${footer}
@@ -57,8 +68,11 @@ export function renderPageShell(options: PageShellOptions): string {
 </html>`;
 }
 
-function renderNav(active: PageShellOptions["activeNav"] | null): string {
-  const links: Array<{ id: NonNullable<PageShellOptions["activeNav"]>; href: string; label: string }> = [
+function renderNav(
+  active: PageShellOptions["activeNav"] | null,
+  navLinks: PageShellOptions["navLinks"],
+): string {
+  const links: Array<{ id: NonNullable<PageShellOptions["activeNav"]>; href: string; label: string }> = navLinks ?? [
     { id: "districts", href: "/districts", label: "Districts" },
     { id: "data", href: "/data", label: "Data" },
     { id: "methodology", href: "/methodology", label: "Method" },
@@ -72,7 +86,24 @@ function renderNav(active: PageShellOptions["activeNav"] | null): string {
     .join("")}</nav>`;
 }
 
-function renderColophon(footer: FooterMeta): string {
+function renderStateSwitcher(stateLinks: Array<{ label: string; href: string; active: boolean }>) {
+  if (stateLinks.length <= 1) {
+    return "";
+  }
+
+  return `<div class="state-switcher" aria-label="Supported states">${stateLinks
+    .map(
+      (link) =>
+        `<a href="${link.href}"${link.active ? ` class="is-active"` : ""}>${escapeHtml(link.label)}</a>`,
+    )
+    .join("")}</div>`;
+}
+
+function renderColophon(
+  footer: FooterMeta,
+  brandTag: string,
+  navLinks: PageShellOptions["navLinks"],
+): string {
   const publishedLine = footer.sourceDateLabel
     ? `<p>Numbers published ${escapeHtml(footer.sourceDateLabel)}</p>`
     : "";
@@ -85,10 +116,17 @@ function renderColophon(footer: FooterMeta): string {
   const methodLine = footer.methodologyVersion
     ? `<p>Method ${escapeHtml(footer.methodologyVersion)} ${infoIcon("methodology")}</p>`
     : "";
+  const links = navLinks ?? [
+    { href: "/districts", label: "Districts" },
+    { href: "/data", label: "Data downloads" },
+    { href: "/methodology", label: "Methodology" },
+    { href: "/api", label: "API" },
+  ];
+
   return `<footer class="colophon">
     <div class="colophon__col">
       <p class="colophon__brand">NyaayWatch</p>
-      <p>Court transparency, Himachal Pradesh</p>
+      <p>${escapeHtml(brandTag)}</p>
     </div>
     <div class="colophon__col">
       ${publishedLine}
@@ -96,10 +134,9 @@ function renderColophon(footer: FooterMeta): string {
       ${methodLine}
     </div>
     <div class="colophon__col">
-      <a href="/districts">Districts</a>
-      <a href="/data">Data downloads</a>
-      <a href="/methodology">Methodology</a>
-      <a href="/api">API</a>
+      ${links
+        .map((link) => `<a href="${link.href}">${escapeHtml(link.label === "Data" ? "Data downloads" : link.label)}</a>`)
+        .join("")}
     </div>
   </footer>`;
 }

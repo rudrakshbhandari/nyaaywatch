@@ -19,6 +19,11 @@ describe("preview runtime", () => {
       const districts = await request(runtime.app).get("/v1/districts");
       expect(districts.status).toBe(200);
       expect(districts.body.snapshot.stateCode).toBe("HP");
+
+      expect(home.text).not.toContain("/states/punjab");
+
+      const punjab = await request(runtime.app).get("/states/punjab");
+      expect(punjab.status).toBe(503);
     } finally {
       await runtime.close();
     }
