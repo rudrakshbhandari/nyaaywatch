@@ -27,8 +27,11 @@ describe("public copy guardrails", () => {
     const app = createTestApp(context.config, context.service);
     const routes = [
       {
+        // Citation posture on the homepage is carried by the colophon + the
+        // "source" info popover, not a hero sentence. The info-popover body is
+        // always in the HTML so this phrase is load-bearing for the guardrail.
         path: "/",
-        requiredText: "Every figure on this page is tied to a published snapshot and stored source evidence.",
+        requiredText: "All numbers on this site come from the NJDG public district dashboards",
       },
       {
         path: "/districts",

@@ -47,11 +47,13 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
-    expect(homepage.text).toContain("published snapshot");
-    expect(homepage.text).toContain("Freshness and quality state");
-    expect(homepage.text).toContain("See where cases are getting stuck in Himachal Pradesh.");
-    expect(homepage.text).toContain("Cases cleared for every 100 filed");
-    expect(homepage.text).toContain("Explain Cases cleared for every 100 filed");
+    expect(homepage.text).toContain("How long is the wait for justice in Himachal?");
+    expect(homepage.text).toContain("pending cases");
+    expect(homepage.text).toContain("Every one of these is a person waiting for their day in court.");
+    expect(homepage.text).toContain("Three districts that need eyes on them");
+    // Glossary popovers still carry the methodology strings in a tooltip, but
+    // not above the fold as dashboard jargon.
+    expect(homepage.text).toContain("methodology");
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);

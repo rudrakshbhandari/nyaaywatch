@@ -1,0 +1,105 @@
+import { escapeHtml } from "../../lib/html.js";
+import { BASE_CSS, FONTS_LINK } from "./styles.js";
+import { infoIcon } from "./ui.js";
+
+export interface PageShellOptions {
+  title: string;
+  body: string;
+  /** Which top-nav link should render as active. */
+  activeNav?: "home" | "districts" | "data" | "methodology" | "api";
+  /** Small meta strip directly under the masthead. Optional. */
+  ticker?: string;
+  /** Page-specific CSS appended after the base stylesheet. */
+  pageCss?: string;
+  /** Footer metadata (dates, source, methodology version). */
+  footer: FooterMeta;
+}
+
+export interface FooterMeta {
+  sourceDateLabel: string | null;
+  methodologyVersion: string | null;
+  sourceAttribution: string | null;
+}
+
+/**
+ * Canonical page shell. Every public HTML route should render through this —
+ * it guarantees the masthead, ticker, colophon, font stack, and design tokens
+ * are identical across the site. The page itself fills `body`; page-specific
+ * CSS is passed in via `pageCss` rather than living as a separate stylesheet
+ * because we ship HTML straight from the server with no asset pipeline.
+ */
+export function renderPageShell(options: PageShellOptions): string {
+  const nav = renderNav(options.activeNav ?? null);
+  const ticker = options.ticker ? `<div class="ticker">${escapeHtml(options.ticker)}</div>` : "";
+  const footer = renderColophon(options.footer);
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeHtml(options.title)}</title>
+  ${FONTS_LINK}
+  <style>${BASE_CSS}${options.pageCss ?? ""}</style>
+</head>
+<body>
+  <header class="masthead">
+    <a href="/" class="masthead__brand">
+      <span class="masthead__mark">NW</span>
+      <span class="masthead__wordmark">NyaayWatch</span>
+    </a>
+    ${nav}
+  </header>
+  ${ticker}
+  <main>${options.body}</main>
+  ${footer}
+</body>
+</html>`;
+}
+
+function renderNav(active: PageShellOptions["activeNav"] | null): string {
+  const links: Array<{ id: NonNullable<PageShellOptions["activeNav"]>; href: string; label: string }> = [
+    { id: "districts", href: "/districts", label: "Districts" },
+    { id: "data", href: "/data", label: "Data" },
+    { id: "methodology", href: "/methodology", label: "Method" },
+    { id: "api", href: "/api", label: "API" },
+  ];
+  return `<nav class="masthead__nav">${links
+    .map(
+      (link) =>
+        `<a href="${link.href}"${active === link.id ? ` class="is-active"` : ""}>${escapeHtml(link.label)}</a>`,
+    )
+    .join("")}</nav>`;
+}
+
+function renderColophon(footer: FooterMeta): string {
+  const publishedLine = footer.sourceDateLabel
+    ? `<p>Numbers published ${escapeHtml(footer.sourceDateLabel)}</p>`
+    : "";
+  // The info icons carry the plain-English source + methodology explanations
+  // from the glossary. Keeping them in every page's colophon means the site
+  // never shows a number without a click-reachable citation.
+  const sourceLine = footer.sourceAttribution
+    ? `<p>Source: ${escapeHtml(footer.sourceAttribution)} ${infoIcon("source")}</p>`
+    : "";
+  const methodLine = footer.methodologyVersion
+    ? `<p>Method ${escapeHtml(footer.methodologyVersion)} ${infoIcon("methodology")}</p>`
+    : "";
+  return `<footer class="colophon">
+    <div class="colophon__col">
+      <p class="colophon__brand">NyaayWatch</p>
+      <p>Court transparency, Himachal Pradesh</p>
+    </div>
+    <div class="colophon__col">
+      ${publishedLine}
+      ${sourceLine}
+      ${methodLine}
+    </div>
+    <div class="colophon__col">
+      <a href="/districts">Districts</a>
+      <a href="/data">Data downloads</a>
+      <a href="/methodology">Methodology</a>
+      <a href="/api">API</a>
+    </div>
+  </footer>`;
+}
