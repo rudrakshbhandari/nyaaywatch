@@ -40,6 +40,13 @@ export interface SnapshotHistoryEntry {
   stats: PublishedSnapshot["stats"];
 }
 
+export interface PublicationHistoryEntry {
+  publication: PublicationRecord;
+  snapshot: PublishedSnapshot["snapshot"] & { id: string };
+  run: Pick<RunRecord, "id" | "status" | "replayOfRunId" | "sourceSnapshotAt" | "methodologyVersion" | "qualityState">;
+  isActive: boolean;
+}
+
 export interface DistrictHistoryPoint {
   districtId: string;
   districtName: string;
@@ -135,6 +142,42 @@ export class PublishedSnapshotService {
 
   async listPublications(): Promise<PublicationRecord[]> {
     return this.store.listPublications(this.config.STATE_CODE);
+  }
+
+  async listPublicationHistory(): Promise<PublicationHistoryEntry[]> {
+    const publications = await this.store.listPublications(this.config.STATE_CODE);
+    const entries = await Promise.all(
+      publications.map(async (publication, index) => {
+        const snapshot = await this.store.getPublishedSnapshotById(publication.publishedSnapshotId);
+        if (!snapshot) {
+          throw new Error(`Published snapshot ${publication.publishedSnapshotId} was not found.`);
+        }
+
+        const run = await this.store.getRunById(snapshot.runId);
+        if (!run) {
+          throw new Error(`Run ${snapshot.runId} was not found for published snapshot ${snapshot.id}.`);
+        }
+
+        return {
+          publication,
+          snapshot: {
+            id: snapshot.id,
+            ...snapshot.payload.snapshot,
+          },
+          run: {
+            id: run.id,
+            status: run.status,
+            replayOfRunId: run.replayOfRunId,
+            sourceSnapshotAt: run.sourceSnapshotAt,
+            methodologyVersion: run.methodologyVersion,
+            qualityState: run.qualityState,
+          },
+          isActive: index === 0,
+        } satisfies PublicationHistoryEntry;
+      }),
+    );
+
+    return entries;
   }
 
   async inspectRun(runId: string): Promise<RunInspection | null> {

@@ -99,8 +99,14 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
    `npm run operator:fetch -- "Manual Himachal fetch"`
 4. Inspect the stored candidate:
    `npm run operator:inspect -- <run-id>`
-5. Publish the completed run:
+5. Review publication history and the current rollback target:
+   `npm run operator:publications`
+6. Run prepublish verification against the public hostname:
+   `npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in`
+7. Publish the completed run:
    `npm run operator:publish -- <run-id> "Publish latest Himachal snapshot"`
+8. After publish, save a release evidence artifact:
+   `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in`
 
 ### Replay -> Rollback
 

@@ -10,7 +10,7 @@ async function main(): Promise<void> {
   const [command, targetId, ...rest] = process.argv.slice(2);
   if (!command) {
     throw new Error(
-      "Usage: operator fetch [note] | inspect <run-id> | publish <run-id> [note] | replay <run-id> [note] | rollback <publication-id> [note]",
+      "Usage: operator fetch [note] | inspect <run-id> | publications | publish <run-id> [note] | replay <run-id> [note] | rollback <publication-id> [note]",
     );
   }
 
@@ -26,6 +26,11 @@ async function main(): Promise<void> {
     if (command === "fetch") {
       const note = [targetId, ...rest].join(" ").trim() || undefined;
       console.log(JSON.stringify(await service.captureRun(note), null, 2));
+      return;
+    }
+
+    if (command === "publications") {
+      console.log(JSON.stringify(await service.listPublicationHistory(), null, 2));
       return;
     }
 

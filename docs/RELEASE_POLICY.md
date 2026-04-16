@@ -77,6 +77,10 @@ Treat a release as blocked if any one of these is true:
    ```bash
    npm run release:verify -- --base-url=https://nyaaywatch.in
    ```
+5. Run prepublish verification for the candidate run and note the rollback target:
+   ```bash
+   npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
+   ```
 
 ### During publish
 
@@ -95,6 +99,7 @@ For the next 15 minutes:
 - confirm the public hostname still passes `/health`
 - confirm `GET /v1/stats/himachal` reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
+- run `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in` and keep the generated markdown evidence file
 
 ### Weekly review
 
