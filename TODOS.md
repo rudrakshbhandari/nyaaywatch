@@ -10,17 +10,17 @@ Use this file for:
 
 ## Review
 
-### Punjab Spaced Follow-Up Window
+### Narrow Punjab Public Rollout
 
-**What:** Run one additional live Punjab publish window at least 1 hour after the first 2026-04-16 internal trial window, with 2+ hours preferred, then re-evaluate whether Punjab can move from internal trial to narrow public expansion.
+**What:** Implement the narrowest credible public Punjab exposure now that two independent Punjab windows and repeatable replay / rollback evidence exist.
 
-**Why:** The first real Punjab trial cleared source viability and operator safety, but it did not yet prove an independent second release window. That remaining gap is the main reason Punjab is still internal-only.
+**Why:** The internal evidence blocker is cleared. The remaining work is no longer more ingestion proof. It is concrete public-surface implementation, UI/API/CSV parity, and live deploy verification without implying nationwide parity.
 
-**Context:** `docs/EXPANSION_REVIEW_LOG.md` now records a successful live Punjab `fetch -> inspect -> publish -> replay -> rollback` session on 2026-04-16. The next check is not more scaffolding. It is a second evidence-backed Punjab window run later in time.
+**Context:** `docs/EXPANSION_REVIEW_LOG.md` now records two live Punjab windows on 2026-04-16, including a second window more than 2 hours after the first. `docs/PUNJAB_GO_LIVE_CHECKLIST.md` now shows the independent-window gate as cleared, while public-surface and deployment gates remain open.
 
-**Effort:** S
+**Effort:** M
 **Priority:** P1
-**Depends on:** None
+**Depends on:** Concrete public-exposure shape selection
 
 ## Completed
 
@@ -48,6 +48,11 @@ Use this file for:
 
 - completed in `DESIGN.md` with follow-on source-of-truth updates in `README.md`, `AGENTS.md`, and `docs/NYAAYWATCH_DESIGN.md`
 - the repo now keeps reusable visual-system rules in one file while leaving route hierarchy and product-specific trust-surface rationale in the product design plan
+
+### Punjab Spaced Follow-Up Window
+
+- completed in the second live Punjab window on 2026-04-16 with `run_726b1bb9-04c8-43dc-9dfe-c977abf812e0`, `publication_91b7a54b-5262-4dfe-8e28-8c3e315c3c4c`, replay `run_13854ef4-33c1-4204-bd66-37685148e7c4`, replay publication `publication_cb511366-8bfb-4467-9e5c-5a2db394d545`, and rollback `publication_3512d69b-35e0-4a63-b3f1-35f738af7441`
+- Punjab has now cleared the independent-window operating-evidence gate; the next backlog slice is public-surface implementation and parity verification
 
 ### Internal Multi-Geography Pipeline Scaffolding
 

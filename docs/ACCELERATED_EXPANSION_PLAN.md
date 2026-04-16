@@ -143,7 +143,7 @@ Output:
 
 - chosen next state: Punjab (`PB`) as the first internal subordinate-court candidate
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
-- first real Punjab internal trial executed on 2026-04-16 and recorded in `docs/EXPANSION_REVIEW_LOG.md` as `approved for internal trial only`
+- first and second real Punjab windows executed on 2026-04-16 and recorded in `docs/EXPANSION_REVIEW_LOG.md` as having cleared the internal evidence bar for narrow public rollout work
 
 ### Day 1
 
