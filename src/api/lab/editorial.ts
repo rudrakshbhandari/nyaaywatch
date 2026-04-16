@@ -3,7 +3,6 @@ import { buildCopy, GLOSSARY, type GlossaryKey } from "./copy.js";
 import {
   buildViewModel,
   escapeHtml,
-  formatDate,
   formatMonth,
   type LabViewModel,
 } from "./shared.js";
@@ -11,7 +10,7 @@ import {
 const FONTS_LINK = `
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />`;
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />`;
 
 function infoIcon(key: GlossaryKey): string {
   const entry = GLOSSARY[key];
@@ -44,6 +43,7 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
   const model = buildViewModel(snapshot);
   const copy = buildCopy(model);
   const e = copy.editorial;
+  const n = e.bigNumbers;
 
   const trendBars = renderTrendChart(model);
   const watchlistCards = model.topThree
@@ -60,11 +60,11 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
           </div>
           <div>
             <dt>Typical wait ${infoIcon("typicalWait")}</dt>
-            <dd>~${waitMonths} months</dd>
+            <dd>~${waitMonths} mo</dd>
           </div>
           <div>
-            <dt>Cleared per 100 filed ${infoIcon("clearance")}</dt>
-            <dd>${district.disposalRate.toFixed(1)}</dd>
+            <dt>Cleared per 100 ${infoIcon("clearance")}</dt>
+            <dd>${district.disposalRate.toFixed(0)}</dd>
           </div>
         </dl>
         <p class="watch-card__reason"><span class="watch-card__reason-label">Why it is flagged</span>${escapeHtml(district.flagReason)}</p>
@@ -83,6 +83,7 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
 </head>
 <body>
   ${renderVariantSwitcher("editorial")}
+
   <header class="masthead">
     <a href="/lab/editorial" class="masthead__brand">
       <span class="masthead__mark">NW</span>
@@ -96,41 +97,43 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
     </nav>
   </header>
 
+  <div class="ticker">${escapeHtml(e.ticker)}</div>
+
   <main>
-    <article class="lead-story">
-      <p class="lead-story__eyebrow">${escapeHtml(e.eyebrow)}</p>
-      <h1 class="lead-story__hed">${escapeHtml(e.headline)}</h1>
-      <p class="lead-story__lede">${escapeHtml(e.lede)}</p>
-      <div class="lead-story__cta">
+    <section class="hero">
+      <p class="hero__eyebrow">${escapeHtml(e.eyebrow)}</p>
+      <h1 class="hero__hed">${escapeHtml(e.headline)}</h1>
+      <p class="hero__lede">${escapeHtml(e.lede)}</p>
+      <div class="hero__cta">
         <a class="btn btn--primary" href="/districts">${escapeHtml(e.ctaPrimary)} \u2192</a>
         <a class="btn btn--ghost" href="/methodology">${escapeHtml(e.ctaSecondary)}</a>
       </div>
-    </article>
-
-    <section class="big-numbers" aria-label="Headline numbers">
-      <div class="big-numbers__row">
-        <div class="big-numbers__item">
-          <div class="big-numbers__value">${escapeHtml(model.pendingLakh)}</div>
-          <div class="big-numbers__label">cases waiting ${infoIcon("backlog")}</div>
-        </div>
-        <div class="big-numbers__item">
-          <div class="big-numbers__value">~${model.typicalWaitMonths}<span class="big-numbers__unit">mo</span></div>
-          <div class="big-numbers__label">typical wait ${infoIcon("typicalWait")}</div>
-        </div>
-        <div class="big-numbers__item">
-          <div class="big-numbers__value">${model.clearanceRate.toFixed(0)}<span class="big-numbers__unit">/ 100</span></div>
-          <div class="big-numbers__label">cleared per 100 filed ${infoIcon("clearance")}</div>
-        </div>
-        <div class="big-numbers__item">
-          <div class="big-numbers__value">${model.flaggedCount}</div>
-          <div class="big-numbers__label">districts on watchlist ${infoIcon("watchlist")}</div>
-        </div>
-      </div>
     </section>
 
-    <blockquote class="pull-quote">
-      <p>${escapeHtml(e.pullQuote)}</p>
-    </blockquote>
+    <section class="numbers" aria-label="Headline numbers">
+      <div class="numbers__grid">
+        <article class="numbers__cell">
+          <div class="numbers__value">${escapeHtml(extractLakhDigits(model.pendingLakh))}<span class="numbers__unit">${escapeHtml(extractLakhUnit(model.pendingLakh))}</span></div>
+          <div class="numbers__label">${escapeHtml(n.pending.label)} ${infoIcon("backlog")}</div>
+          <p class="numbers__caption">${escapeHtml(n.pending.caption)}</p>
+        </article>
+        <article class="numbers__cell">
+          <div class="numbers__value">~${model.typicalWaitMonths}<span class="numbers__unit">mo</span></div>
+          <div class="numbers__label">${escapeHtml(n.wait.label)} ${infoIcon("typicalWait")}</div>
+          <p class="numbers__caption">${escapeHtml(n.wait.caption)}</p>
+        </article>
+        <article class="numbers__cell">
+          <div class="numbers__value">${model.clearanceRate.toFixed(0)}<span class="numbers__unit">/ 100</span></div>
+          <div class="numbers__label">${escapeHtml(n.clearance.label)} ${infoIcon("clearance")}</div>
+          <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
+        </article>
+        <article class="numbers__cell">
+          <div class="numbers__value">${model.flaggedCount}</div>
+          <div class="numbers__label">${escapeHtml(n.flagged.label)} ${infoIcon("watchlist")}</div>
+          <p class="numbers__caption">${escapeHtml(n.flagged.caption)}</p>
+        </article>
+      </div>
+    </section>
 
     <section class="watchlist">
       <header class="section-head">
@@ -177,6 +180,24 @@ export function renderEditorialHome(snapshot: PublishedSnapshot): string {
 </html>`;
 }
 
+// formatLakh returns strings like "6.17 lakh" or "2.5 crore" or "12,345".
+// For display we want the digit portion huge and the unit small, so we split.
+function extractLakhDigits(formatted: string): string {
+  const match = formatted.match(/^([\d.,]+)\s*(lakh|crore)?$/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return formatted;
+}
+
+function extractLakhUnit(formatted: string): string {
+  const match = formatted.match(/^[\d.,]+\s*(lakh|crore)$/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return "";
+}
+
 function renderTrendChart(model: LabViewModel): string {
   const max = Math.max(...model.trendsOldestFirst.map((point) => point.pendingCases));
   const rows = model.trendsOldestFirst
@@ -195,140 +216,222 @@ function renderTrendChart(model: LabViewModel): string {
 function editorialCss(): string {
   return `
     :root {
-      --ink: #131211;
-      --ink-soft: #3b3a36;
-      --ink-muted: #7a7771;
-      --rule: #dedad2;
-      --rule-soft: #eae6dd;
-      --paper: #f6f1e8;
-      --paper-bright: #fbf7ef;
-      --accent: #b3301a;
-      --accent-dark: #7a1f0f;
-      --flag: #ba8b00;
+      --ink: #0c0a08;
+      --ink-soft: #2f2b26;
+      --ink-mid: #56514a;
+      --ink-muted: #7a756d;
+      --rule: #d9d3c8;
+      --rule-soft: #e7e1d4;
+      --paper: #f4efe3;
+      --paper-bright: #fbf7ea;
+      --accent: #bd2716;
+      --accent-dark: #8a1408;
+      --flag: #a0720a;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: "Inter", system-ui, sans-serif;
+      font-family: "Inter Tight", "Inter", system-ui, -apple-system, sans-serif;
       background: var(--paper);
       color: var(--ink);
       font-size: 17px;
-      line-height: 1.58;
+      line-height: 1.55;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
+      font-feature-settings: "ss01", "cv11";
     }
     a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
     a:hover { color: var(--accent-dark); }
-    h1, h2, h3 { font-family: "Fraunces", "Times New Roman", serif; font-weight: 600; letter-spacing: -0.02em; }
+    h1, h2, h3 {
+      font-family: "Inter Tight", "Inter", system-ui, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
 
     .lab-switcher {
       display: flex; align-items: center; gap: 14px;
-      padding: 10px 28px; font-size: 12px;
+      padding: 10px 28px; font-size: 11px;
       background: var(--ink); color: #ede8dd;
       border-bottom: 1px solid #000;
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      text-transform: uppercase; letter-spacing: 0.08em;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      text-transform: uppercase; letter-spacing: 0.1em;
     }
     .lab-switcher a { color: #ede8dd; text-decoration: none; }
     .lab-switcher a:hover { color: #fff; }
     .lab-switcher__sep { width: 1px; height: 14px; background: #555; }
-    .lab-switcher__label { opacity: 0.6; }
-    .lab-switcher strong { color: #fff; letter-spacing: 0.08em; }
+    .lab-switcher__label { opacity: 0.55; }
+    .lab-switcher strong { color: #fff; letter-spacing: 0.1em; font-weight: 600; }
     .lab-switcher__nav { margin-left: auto; display: flex; gap: 14px; }
     .lab-switcher__nav .is-active { color: var(--paper); border-bottom: 1px solid var(--paper); }
 
-    main { max-width: 1120px; margin: 0 auto; padding: 0 28px 120px; }
+    main { max-width: 1280px; margin: 0 auto; padding: 0 32px 120px; }
 
     .masthead {
-      max-width: 1120px; margin: 0 auto; padding: 36px 28px 28px;
+      max-width: 1280px; margin: 0 auto; padding: 32px 32px 22px;
       display: flex; align-items: center; justify-content: space-between;
       border-bottom: 2px solid var(--ink);
     }
     .masthead__brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--ink); }
     .masthead__mark {
       display: inline-flex; align-items: center; justify-content: center;
-      width: 44px; height: 44px; background: var(--ink); color: var(--paper);
-      font-family: "Fraunces", serif; font-weight: 900; font-size: 20px;
+      width: 42px; height: 42px; background: var(--ink); color: var(--paper);
+      font-family: "Inter Tight", sans-serif; font-weight: 900; font-size: 18px;
+      letter-spacing: -0.03em;
       border-radius: 2px;
     }
-    .masthead__wordmark { font-family: "Fraunces", serif; font-weight: 700; font-size: 28px; letter-spacing: -0.02em; }
-    .masthead__nav { display: flex; gap: 22px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .masthead__wordmark { font-family: "Inter Tight", sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.035em; }
+    .masthead__nav { display: flex; gap: 22px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
     .masthead__nav a { color: var(--ink-soft); text-decoration: none; }
     .masthead__nav a:hover { color: var(--accent); }
 
-    .lead-story { padding: 72px 0 56px; max-width: 900px; }
-    .lead-story__eyebrow {
-      margin: 0 0 18px;
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em;
+    .ticker {
+      max-width: 1280px; margin: 0 auto; padding: 14px 32px 0;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--ink-muted);
+    }
+
+    .hero { padding: 40px 0 48px; max-width: 900px; }
+    .hero__eyebrow {
+      margin: 0 0 14px;
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.18em;
       color: var(--accent);
     }
-    .lead-story__hed {
-      margin: 0 0 24px;
-      font-size: clamp(44px, 7vw, 88px);
+    .hero__hed {
+      margin: 0 0 22px;
+      font-size: clamp(36px, 5.6vw, 68px);
       line-height: 0.98;
+      letter-spacing: -0.035em;
       text-wrap: balance;
     }
-    .lead-story__lede {
-      margin: 0 0 32px;
-      font-family: "Fraunces", serif; font-weight: 400;
-      font-size: clamp(19px, 2vw, 23px);
-      line-height: 1.5;
+    .hero__lede {
+      margin: 0 0 30px;
+      font-size: clamp(17px, 1.7vw, 20px);
+      line-height: 1.52;
       color: var(--ink-soft);
-      max-width: 64ch;
+      max-width: 56ch;
+      font-weight: 500;
     }
-    .lead-story__cta { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero__cta { display: flex; gap: 12px; flex-wrap: wrap; }
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 14px 22px; border-radius: 2px;
-      font-weight: 600; font-size: 15px; text-decoration: none;
-      border: 1px solid var(--ink);
-      transition: transform 120ms ease, background 120ms ease, color 120ms ease;
+      font-weight: 600; font-size: 14px; text-decoration: none;
+      letter-spacing: 0.01em;
+      border: 1.5px solid var(--ink);
+      transition: background 120ms ease, color 120ms ease;
     }
     .btn--primary { background: var(--ink); color: var(--paper); }
     .btn--primary:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
     .btn--ghost { background: transparent; color: var(--ink); }
     .btn--ghost:hover { background: var(--ink); color: var(--paper); }
 
-    .big-numbers { border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); padding: 36px 0; margin: 0 0 72px; }
-    .big-numbers__row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
-    .big-numbers__item { border-left: 1px solid var(--rule); padding-left: 20px; }
-    .big-numbers__item:first-child { border-left: none; padding-left: 0; }
-    .big-numbers__value {
-      font-family: "Fraunces", serif; font-weight: 700;
-      font-size: clamp(38px, 4.5vw, 64px); line-height: 1;
+    /* --- THE CENTERPIECE --- */
+    .numbers {
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      padding: 52px 0 60px;
+      margin: 16px 0 104px;
+      position: relative;
+    }
+    .numbers::before {
+      content: "STATEWIDE";
+      position: absolute; top: -10px; left: 0;
+      background: var(--paper);
+      padding: 0 14px 0 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--ink-muted);
+    }
+    .numbers::after {
+      content: "";
+      position: absolute; top: -10px; right: 0;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 999px;
+      box-shadow: 0 0 0 4px var(--paper);
+    }
+    .numbers__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+    .numbers__cell {
+      position: relative;
+      padding: 0 24px 0 28px;
+      border-left: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 280px;
+    }
+    .numbers__cell:first-child { border-left: none; padding-left: 0; }
+    .numbers__cell:last-child { padding-right: 0; }
+    .numbers__value {
+      font-family: "Inter Tight", sans-serif;
+      font-weight: 900;
+      font-size: clamp(74px, 10vw, 148px);
+      line-height: 0.88;
+      letter-spacing: -0.048em;
       font-variant-numeric: lining-nums tabular-nums;
       color: var(--ink);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-top: -8px;
     }
-    .big-numbers__unit { font-size: 0.5em; margin-left: 4px; color: var(--ink-muted); }
-    .big-numbers__label {
-      margin-top: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em;
+    .numbers__unit {
+      font-size: 0.26em;
+      font-weight: 700;
+      letter-spacing: -0.01em;
       color: var(--ink-muted);
-      display: inline-flex; align-items: center; gap: 6px;
+      text-transform: lowercase;
     }
-
-    .pull-quote {
-      margin: 0 0 80px; padding: 48px 56px;
-      background: transparent;
-      border-left: 4px solid var(--accent);
-      max-width: 820px;
+    .numbers__label {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--ink-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 4px;
+      border-top: 1px solid var(--rule);
+      align-self: flex-start;
+      padding-right: 12px;
     }
-    .pull-quote p {
+    .numbers__caption {
       margin: 0;
-      font-family: "Fraunces", serif; font-weight: 500; font-style: italic;
-      font-size: clamp(26px, 3vw, 34px); line-height: 1.25;
-      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.48;
+      color: var(--ink-soft);
+      max-width: 32ch;
+      font-weight: 500;
     }
+    /* first cell gets an accent rule under the label to draw the eye */
+    .numbers__cell:first-child .numbers__label {
+      border-top: 2px solid var(--accent);
+      color: var(--accent-dark);
+    }
+    .numbers__cell:first-child .numbers__value { color: var(--ink); }
 
     .section-head { margin: 0 0 32px; max-width: 720px; }
     .section-head h2 {
       margin: 0 0 12px;
-      font-size: clamp(30px, 3.5vw, 44px); line-height: 1.05;
+      font-size: clamp(28px, 3.2vw, 40px); line-height: 1.05;
+      letter-spacing: -0.028em;
     }
     .section-head__lede {
       margin: 0;
-      color: var(--ink-soft); font-size: 17px; line-height: 1.55;
+      color: var(--ink-soft); font-size: 16px; line-height: 1.55;
+      font-weight: 500;
     }
 
     .watchlist { margin-bottom: 96px; }
@@ -341,52 +444,55 @@ function editorialCss(): string {
       display: flex; flex-direction: column; gap: 18px;
     }
     .watch-card__rank {
-      font-family: "JetBrains Mono", monospace; font-size: 12px;
-      text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent);
+      font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent);
     }
-    .watch-card__name { margin: 0; font-size: 32px; line-height: 1; }
+    .watch-card__name { margin: 0; font-size: 30px; line-height: 1; letter-spacing: -0.03em; }
     .watch-card__name a { color: var(--ink); text-decoration: none; }
     .watch-card__name a:hover { color: var(--accent); }
-    .watch-card__lede { margin: 0; color: var(--ink-soft); font-size: 15px; line-height: 1.5; }
+    .watch-card__lede { margin: 0; color: var(--ink-soft); font-size: 14px; line-height: 1.5; }
     .watch-card__stats {
       margin: 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
       display: grid; grid-template-columns: 1fr; gap: 12px;
     }
     .watch-card__stats div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
     .watch-card__stats dt {
-      margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em;
+      margin: 0; font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.12em;
       color: var(--ink-muted); display: inline-flex; align-items: center; gap: 6px;
     }
     .watch-card__stats dd {
-      margin: 0; font-family: "Fraunces", serif; font-weight: 600; font-size: 20px;
+      margin: 0; font-family: "Inter Tight", sans-serif; font-weight: 800; font-size: 22px;
       font-variant-numeric: lining-nums tabular-nums; color: var(--ink);
+      letter-spacing: -0.025em;
     }
-    .watch-card__reason { margin: 0; font-size: 14px; color: var(--ink-soft); line-height: 1.5; border-top: 1px dashed var(--rule); padding-top: 14px; }
+    .watch-card__reason { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.5; border-top: 1px dashed var(--rule); padding-top: 14px; }
     .watch-card__reason-label {
       display: block; margin-bottom: 4px;
-      font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--flag);
-      font-family: "JetBrains Mono", monospace;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.14em; color: var(--flag);
     }
 
     .trend { margin-bottom: 96px; }
     .trend-list { margin: 0; padding: 24px 0; list-style: none; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
-    .trend-row { display: grid; grid-template-columns: 90px 1fr 120px; gap: 16px; align-items: center; padding: 10px 0; font-family: "JetBrains Mono", monospace; font-size: 14px; }
-    .trend-row__label { color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .trend-row { display: grid; grid-template-columns: 90px 1fr 120px; gap: 16px; align-items: center; padding: 10px 0; font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 500; }
+    .trend-row__label { color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
     .trend-row__bar { display: block; height: 14px; background: var(--rule-soft); position: relative; }
     .trend-row__bar > span { display: block; height: 100%; background: var(--accent); }
-    .trend-row__value { text-align: right; font-variant-numeric: lining-nums tabular-nums; color: var(--ink); }
+    .trend-row__value { text-align: right; font-variant-numeric: lining-nums tabular-nums; color: var(--ink); font-weight: 600; }
 
     .about { max-width: 720px; margin-bottom: 80px; }
-    .about__body { margin: 0; font-family: "Fraunces", serif; font-size: 19px; line-height: 1.55; color: var(--ink-soft); }
+    .about__body { margin: 0; font-size: 18px; line-height: 1.55; color: var(--ink-soft); font-weight: 500; }
 
     .colophon {
-      max-width: 1120px; margin: 0 auto; padding: 48px 28px;
+      max-width: 1280px; margin: 0 auto; padding: 48px 32px;
       border-top: 2px solid var(--ink);
       display: grid; grid-template-columns: 1.4fr 1.2fr 1fr; gap: 32px;
-      font-size: 14px; color: var(--ink-soft);
+      font-size: 13px; color: var(--ink-soft);
     }
     .colophon p { margin: 0 0 6px; }
-    .colophon__brand { font-family: "Fraunces", serif; font-weight: 700; font-size: 20px; color: var(--ink); }
+    .colophon__brand { font-family: "Inter Tight", sans-serif; font-weight: 800; font-size: 20px; color: var(--ink); letter-spacing: -0.03em; }
     .colophon__col a { display: block; color: var(--ink); }
     .colophon__col a + a { margin-top: 6px; }
 
@@ -395,9 +501,9 @@ function editorialCss(): string {
     .info summary {
       list-style: none; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center;
-      width: 18px; height: 18px; border-radius: 999px;
+      width: 16px; height: 16px; border-radius: 999px;
       border: 1px solid currentColor; color: var(--ink-muted);
-      font-family: "Fraunces", serif; font-weight: 700; font-size: 12px;
+      font-family: "Inter Tight", sans-serif; font-weight: 700; font-size: 10px;
       line-height: 1; background: transparent;
       transition: background 120ms ease, color 120ms ease;
     }
@@ -410,39 +516,43 @@ function editorialCss(): string {
     .info-popover {
       position: absolute; z-index: 20; top: calc(100% + 10px); left: 50%;
       transform: translateX(-50%);
-      min-width: 280px; max-width: 320px;
+      min-width: 260px; max-width: 320px;
       padding: 16px 18px;
       background: var(--paper-bright); color: var(--ink);
       border: 1px solid var(--ink); border-radius: 2px;
       box-shadow: 4px 4px 0 var(--ink);
-      font-family: "Inter", sans-serif;
+      font-family: "Inter Tight", sans-serif;
       text-transform: none; letter-spacing: 0;
     }
     .info:hover .info-popover, .info[open] .info-popover, .info:focus-within .info-popover {
       display: block;
     }
     .info .info-popover { display: none; }
-    .info-popover strong { display: block; margin-bottom: 6px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
-    .info-popover p { margin: 0 0 8px; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
+    .info-popover strong { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); }
+    .info-popover p { margin: 0 0 8px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); font-weight: 500; }
     .info-popover p:last-child { margin-bottom: 0; }
-    .info-short { font-weight: 600; color: var(--ink) !important; }
+    .info-short { color: var(--ink) !important; font-weight: 600 !important; }
 
+    @media (max-width: 1100px) {
+      .numbers__grid { grid-template-columns: repeat(2, 1fr); row-gap: 56px; }
+      .numbers__cell { min-height: 240px; }
+      .numbers__cell:nth-child(3) { border-left: none; padding-left: 0; }
+    }
     @media (max-width: 960px) {
-      .big-numbers__row { grid-template-columns: repeat(2, 1fr); gap: 28px 24px; }
-      .big-numbers__item:nth-child(3) { border-left: none; padding-left: 0; }
       .watchlist__grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 720px) {
-      .masthead { padding: 24px 18px 18px; flex-wrap: wrap; gap: 18px; }
+      .masthead { padding: 22px 18px 16px; flex-wrap: wrap; gap: 18px; }
       .masthead__nav { width: 100%; gap: 14px; overflow-x: auto; }
+      .ticker { padding: 12px 18px 0; }
       main { padding: 0 18px 80px; }
-      .lead-story { padding: 48px 0 40px; }
-      .colophon { grid-template-columns: 1fr; }
-      .pull-quote { padding: 32px 24px; margin-bottom: 56px; }
-      .big-numbers { padding: 24px 0; margin-bottom: 56px; }
-      .big-numbers__row { grid-template-columns: 1fr 1fr; gap: 24px; }
-      .big-numbers__item { border-left: none; padding-left: 0; }
-      .trend-row { grid-template-columns: 70px 1fr 90px; gap: 12px; font-size: 12px; }
+      .hero { padding: 32px 0 36px; }
+      .colophon { grid-template-columns: 1fr; padding: 36px 18px; }
+      .numbers { padding: 36px 0 40px; margin-bottom: 72px; }
+      .numbers__grid { grid-template-columns: 1fr; row-gap: 48px; }
+      .numbers__cell { border-left: none; padding-left: 0; padding-right: 0; min-height: auto; }
+      .numbers__value { font-size: clamp(88px, 22vw, 140px); }
+      .trend-row { grid-template-columns: 64px 1fr 88px; gap: 12px; font-size: 11px; }
     }
   `;
 }

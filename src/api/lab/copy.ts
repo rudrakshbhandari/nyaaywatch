@@ -88,34 +88,68 @@ export type GlossaryKey = keyof typeof GLOSSARY;
 export function buildCopy(model: LabViewModel) {
   const topName = model.topDistrict.districtName;
   const topWaitMonths = Math.round(model.topDistrict.medianAgeDays / 30);
-  const backlogDirection = model.backlogDelta > 0 ? "grown" : "shrunk";
-  const backlogTrendLine =
-    model.backlogDelta > 0
-      ? `The pile has ${backlogDirection} by roughly ${Math.round(model.backlogDeltaPct)}% since December.`
-      : `The pile has ${backlogDirection} slightly since December.`;
+
+  // Districts where the median pending case has been waiting substantially
+  // longer than a year. These drive the "some have waited two years" line
+  // that makes the statewide median feel dishonest.
+  const longWaitDistricts = model.allDistricts.filter(
+    (district) => district.medianAgeDays >= 365 && district.backlogCases > 0,
+  );
+  const longWaitMonths =
+    longWaitDistricts.length > 0
+      ? Math.round(longWaitDistricts[0].medianAgeDays / 30)
+      : 0;
+  const longWaitSampleName = longWaitDistricts[0]?.districtName ?? topName;
 
   return {
     brand: "NyaayWatch",
     brandTag: "Court transparency, Himachal Pradesh",
 
     editorial: {
-      eyebrow: `Himachal Pradesh \u00b7 ${model.sourceDateLabel}`,
-      headline: `In Himachal, the wait for justice is getting longer.`,
-      lede:
-        `More than ${model.pendingLakh} court cases are waiting to be heard across Himachal's district courts. ` +
-        `${backlogTrendLine} In ${topName}, the district carrying the heaviest load, a typical pending case has already been waiting more than ${topWaitMonths} months.`,
-      pullQuote: `Courts in Himachal closed only ${model.clearanceRate.toFixed(0)} cases for every 100 new ones filed last month. The pile grew.`,
-      ctaPrimary: "See which districts are the worst",
+      // Small meta strip above the headline \u2014 quiet, informational.
+      ticker: `HIMACHAL PRADESH \u00b7 UPDATED ${model.sourceDateLabel}`,
+      // Small label above the headline. No "snapshot" / methodology jargon.
+      eyebrow: "THE WAIT",
+      // Ask the reader a question. The numbers answer it.
+      headline: "How long is the wait for justice in Himachal?",
+      // One-paragraph hero lede. Fact-first, adversarial framing in plain English.
+      lede: buildEditorialLede(model, longWaitDistricts.length, longWaitMonths),
+
+      // Each of the four headline numbers gets a short human-consequence caption.
+      // No made-up comparisons \u2014 every line is defensible against the data.
+      bigNumbers: {
+        pending: {
+          label: "pending cases",
+          caption: "Every one of these is a person waiting for their day in court.",
+        },
+        wait: {
+          label: "typical wait",
+          caption: buildWaitCaption(longWaitDistricts.length, longWaitMonths, longWaitSampleName),
+        },
+        clearance: {
+          label: "cleared per 100 filed",
+          caption: buildClearanceCaption(model.clearanceRate),
+        },
+        flagged: {
+          label: "districts flagged",
+          caption: "Where the pile is heaviest, or the wait is longest, or the pace is slowest.",
+        },
+      },
+
+      ctaPrimary: "See the worst districts",
       ctaSecondary: "How we got these numbers",
-      sectionWatchlist: "The three districts to watch",
+
+      sectionWatchlist: "Three districts that need eyes on them",
       sectionWatchlistLede:
-        "These are the districts where the load is heaviest and the pace of work is slowest. They are not villains \u2014 they are signals for a closer look.",
-      sectionTrend: "How the pile has changed",
+        "A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the state. Not villains \u2014 signals for closer inspection.",
+
+      sectionTrend: "How the statewide pile has moved",
       sectionTrendLede:
-        "Every month we pull a fresh set of numbers from the public court dashboards. Here is how the statewide backlog has moved.",
-      sectionWhat: "What this site is",
+        "Every month we pull a fresh set of numbers from the public court dashboards. Here is what the statewide backlog has done, month by month.",
+
+      sectionWhat: "Why this site exists",
       sectionWhatBody:
-        "NyaayWatch is an independent, reader-first view of publicly available court numbers. We do not speed anything up or slow anything down. We just make the numbers easier to read so citizens, journalists, and civic groups can ask better questions.",
+        "NyaayWatch is an independent, reader-first view of publicly available court numbers. We do not speed anything up or slow anything down. We just make the numbers impossible to ignore \u2014 so citizens, reporters, and civic groups can ask sharper questions, and demand sharper answers.",
     },
 
     terminal: {
@@ -184,3 +218,42 @@ export function buildCopy(model: LabViewModel) {
 }
 
 export type LabCopy = ReturnType<typeof buildCopy>;
+
+function buildEditorialLede(
+  model: LabViewModel,
+  longWaitCount: number,
+  longWaitMonths: number,
+): string {
+  const base = `${model.pendingLakh} cases are waiting in Himachal's district courts. The middle of the pile has already been waiting about ${model.typicalWaitMonths} months.`;
+  if (longWaitCount > 0 && longWaitMonths > model.typicalWaitMonths) {
+    return (
+      `${base} In ${longWaitCount} district${longWaitCount === 1 ? "" : "s"}, the middle is closer to ${longWaitMonths} months. ` +
+      `A backlog this big is not going to move on its own.`
+    );
+  }
+  return `${base} A backlog this big is not going to move on its own.`;
+}
+
+function buildWaitCaption(
+  longWaitCount: number,
+  longWaitMonths: number,
+  sampleName: string,
+): string {
+  if (longWaitCount === 0) {
+    return "Middle of the pile. Half the cases have been waiting longer than this.";
+  }
+  if (longWaitCount === 1) {
+    return `Middle of the statewide pile. In ${sampleName}, the middle is closer to ${longWaitMonths} months.`;
+  }
+  return `Middle of the statewide pile. In ${longWaitCount} districts, the middle is closer to ${longWaitMonths} months.`;
+}
+
+function buildClearanceCaption(rate: number): string {
+  if (rate >= 100) {
+    return "Courts are finally clearing faster than new cases come in. The backlog built up over years is another story.";
+  }
+  if (rate >= 90) {
+    return "Courts are nearly keeping pace with new filings. The backlog is still growing.";
+  }
+  return "For every 100 new cases, only " + Math.round(rate) + " are being cleared. The pile keeps growing.";
+}

@@ -12,7 +12,7 @@ const disallowedPublicPhrases = [
 
 const variantRoutes = [
   { path: "/lab", marker: "NyaayWatch design lab" },
-  { path: "/lab/editorial", marker: "In Himachal, the wait for justice is getting longer." },
+  { path: "/lab/editorial", marker: "How long is the wait for justice in Himachal?" },
   { path: "/lab/terminal", marker: "NYAAYWATCH" },
   { path: "/lab/product", marker: "Watch how Himachal" },
   { path: "/lab/civic", marker: "Court delays in Himachal Pradesh" },
