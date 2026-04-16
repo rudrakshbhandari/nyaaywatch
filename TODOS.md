@@ -10,17 +10,17 @@ Use this file for:
 
 ## Review
 
-### Deploy State-Aware Release Flow
+### Publish-Time Cache Invalidation For Public Data
 
-**What:** Deploy and verify the new state-aware operator and release-helper flow on the live stack.
+**What:** Ensure public CSV and other cacheable published artifacts invalidate or bypass stale CDN cache immediately after a publish.
 
-**Why:** The code and tests now support state-aware operator selection plus `release:prepublish`, `release:postpublish`, and `release:record` targeting by state slug. The remaining work is to roll that capability onto AWS and prove that Punjab no longer needs manual one-off ECS task overrides.
+**Why:** The state-aware live release flow is now working on AWS, but the latest Punjab verification showed a real parity break at the edge: the API moved to the new publication immediately while the CSV download still served a cached older publication until a cache-busting request forced a `MISS`.
 
-**Context:** The implementation now lives in the app operator routes and release helper scripts, with regression coverage in `tests/api.test.ts`, `tests/release-ops.test.ts`, and `tests/release-verification.test.ts`. The live stack still reflects task definition `:26`, which predates this tooling improvement.
+**Context:** `docs/DEPLOYMENT_STATUS.md` and `docs/EXPANSION_REVIEW_LOG.md` now record the live state-aware Punjab verification on task definition `:28`, including the stale Cloudflare CSV `HIT` versus current API snapshot mismatch.
 
 **Effort:** M
 **Priority:** P1
-**Depends on:** the next `main` deploy plus one verified live Punjab publish/release-record cycle through the updated tooling
+**Depends on:** a decision on whether to solve this with cache-control changes, cache-busting asset URLs, or explicit publish-time purge logic
 
 ## Completed
 
@@ -68,6 +68,7 @@ Use this file for:
 
 - completed in the app operator routes and release helper scripts with explicit state selection by `stateCode` or `stateSlug`, plus release-evidence generation that now resolves the correct public URL for state-scoped rollouts
 - regression coverage now proves Punjab operator fetch/publish over HTTP, Punjab release-history recording, and state-scoped verification summaries without Himachal-only assumptions
+- completed live on 2026-04-16 with Punjab fetch/publish through the public operator routes on task definition `:28`, plus successful ECS-executed `release:prepublish`, `release:postpublish`, and `release:record`
 
 ### Internal Multi-Geography Pipeline Scaffolding
 

@@ -6,6 +6,25 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_8a5ddc6e-f520-4344-8161-76dc4dead033:start -->
+## publication_8a5ddc6e-f520-4344-8161-76dc4dead033
+
+- Reviewed at: `2026-04-16T23:33:21.182Z`
+- Reviewer: `Codex state-aware live flow verification`
+- Public URL: `https://nyaaywatch.in/states/punjab`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-16T23:32:07.721Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_2e5ea2e1-ba95-4d62-9ea9-be14123b39cf`
+- Rollback target: `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Verified the post-`#41` state-aware live release flow on task definition `:28`. Punjab fetch and publish succeeded through the public HTTP operator routes, and state-scoped `release:prepublish`, `release:postpublish`, and `release:record` succeeded from one-off ECS tasks inside the AWS VPC. Public API parity updated immediately; the state-scoped CSV path required a cache-busting request to bypass a stale Cloudflare edge response.
+
+<!-- release:publication_8a5ddc6e-f520-4344-8161-76dc4dead033:end -->
+
 <!-- release:publication_7db9a015-68d0-4182-8c77-f221797c7c2c:start -->
 ## publication_7db9a015-68d0-4182-8c77-f221797c7c2c
 
