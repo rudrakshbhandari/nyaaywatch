@@ -93,6 +93,7 @@ npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
+npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 npm test
 ```
 

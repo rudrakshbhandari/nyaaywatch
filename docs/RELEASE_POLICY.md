@@ -100,6 +100,7 @@ For the next 15 minutes:
 - confirm `GET /v1/stats/himachal` reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
 - run `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in` and keep the generated markdown evidence file
+- run `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"` so `docs/RELEASE_HISTORY.md` stays current
 
 ### Weekly review
 
