@@ -22,6 +22,9 @@ export interface ExtractedNjdgDistrict extends ExtractedNjdgMetrics {
 
 export interface ExtractedNjdgSnapshot {
   capturedAt: string;
+  stateCode: string;
+  stateName: string;
+  expectedDistrictCount: number;
   sourceName: string;
   sourceAttribution: string;
   sourceSnapshotAt: string;
@@ -53,6 +56,9 @@ export function extractCaptureBundle(bundle: NjdgCaptureBundle): ExtractedNjdgSn
   const parsedBundle = NjdgCaptureBundleSchema.parse(bundle);
   return {
     capturedAt: parsedBundle.capturedAt,
+    stateCode: parsedBundle.stateCode,
+    stateName: parsedBundle.stateName,
+    expectedDistrictCount: parsedBundle.expectedDistrictCount,
     sourceName: parsedBundle.sourceName,
     sourceAttribution: parsedBundle.sourceAttribution,
     sourceSnapshotAt: extractSourceSnapshotAt(parsedBundle.statePage.html),

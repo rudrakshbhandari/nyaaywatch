@@ -12,7 +12,9 @@ export const NjdgDistrictPageCaptureSchema = NjdgPageCaptureSchema.extend({
 
 export const NjdgCaptureBundleSchema = z.object({
   capturedAt: z.string().datetime(),
-  stateCode: z.literal("HP"),
+  stateCode: z.string().min(1),
+  stateName: z.string().min(1),
+  expectedDistrictCount: z.number().int().positive(),
   sourceName: z.string().min(1),
   sourceAttribution: z.string().min(1),
   statePage: NjdgPageCaptureSchema,

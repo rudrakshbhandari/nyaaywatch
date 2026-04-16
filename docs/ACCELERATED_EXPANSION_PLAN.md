@@ -136,7 +136,7 @@ Actions:
 
 Output:
 
-- chosen next state
+- chosen next state: Punjab (`PB`) as the first internal subordinate-court candidate
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
 
 ### Day 1
