@@ -269,7 +269,17 @@ const HOME_PAGE_CSS = `
   .watch-card {
     background: var(--paper-bright); padding: 32px 28px;
     display: flex; flex-direction: column; gap: 18px;
+    position: relative;
+    transition: transform 160ms ease;
   }
+  .watch-card::before {
+    content: "";
+    position: absolute; inset: 0 0 auto 0;
+    height: 3px; background: transparent;
+    transition: background 160ms ease;
+  }
+  .watch-card:hover, .watch-card:focus-within { transform: translateY(-2px); }
+  .watch-card:hover::before, .watch-card:focus-within::before { background: var(--accent); }
   .watch-card__rank {
     font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent);
@@ -306,8 +316,22 @@ const HOME_PAGE_CSS = `
   .trend-list { margin: 0; padding: 24px 0; list-style: none; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
   .trend-row { display: grid; grid-template-columns: 90px 1fr 120px; gap: 16px; align-items: center; padding: 10px 0; font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 500; }
   .trend-row__label { color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.1em; }
-  .trend-row__bar { display: block; height: 14px; background: var(--rule-soft); position: relative; }
-  .trend-row__bar > span { display: block; height: 100%; background: var(--accent); }
+  .trend-row__bar { display: block; height: 14px; background: var(--rule-soft); position: relative; overflow: hidden; }
+  .trend-row__bar > span {
+    display: block; height: 100%; background: var(--accent);
+    transform-origin: left center;
+    animation: trendBarGrow 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .trend-row:nth-child(2) .trend-row__bar > span { animation-delay: 40ms; }
+  .trend-row:nth-child(3) .trend-row__bar > span { animation-delay: 80ms; }
+  .trend-row:nth-child(4) .trend-row__bar > span { animation-delay: 120ms; }
+  .trend-row:nth-child(5) .trend-row__bar > span { animation-delay: 160ms; }
+  .trend-row:nth-child(6) .trend-row__bar > span { animation-delay: 200ms; }
+  .trend-row:nth-child(n+7) .trend-row__bar > span { animation-delay: 240ms; }
+  @keyframes trendBarGrow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
   .trend-row__value { text-align: right; font-variant-numeric: lining-nums tabular-nums; color: var(--ink); font-weight: 600; }
 
   .about { max-width: 720px; margin-bottom: 80px; }

@@ -316,6 +316,16 @@ export const BASE_CSS = `
   .badge--accent { color: var(--accent); border-color: var(--accent); }
   .badge--complete { color: #2f6a3a; border-color: #8fb89a; }
 
+  /* --- accessibility: focus rings that match the editorial palette --- */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .btn:focus-visible { outline-offset: 4px; }
+  .masthead__brand:focus-visible, .masthead__nav a:focus-visible { outline-offset: 6px; }
+  .info summary:focus-visible { outline: none; }
+
   /* --- responsive --- */
   @media (max-width: 1100px) {
     .stat-grid { grid-template-columns: repeat(2, 1fr); row-gap: 32px; }
@@ -332,8 +342,23 @@ export const BASE_CSS = `
     main { padding: 0 18px 80px; }
     .page-hero { padding: 28px 0 32px; }
     .colophon { grid-template-columns: 1fr; padding: 36px 18px; }
-    .stat-grid { grid-template-columns: 1fr; padding: 20px 0 24px; }
+    .stat-grid { grid-template-columns: 1fr; padding: 20px 0 24px; row-gap: 28px; }
     .stat-tile { border-left: none; padding: 0; }
     .data-table th, .data-table td { padding: 10px 12px; font-size: 13px; }
+    .info-popover {
+      left: 0; transform: none;
+      min-width: 0; max-width: calc(100vw - 36px);
+      width: max-content;
+    }
+  }
+
+  /* --- honor reader motion preferences --- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 `;
