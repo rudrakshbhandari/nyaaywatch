@@ -2,15 +2,13 @@ import express, { type NextFunction, type Request, type Response } from "express
 
 import type { AppConfig } from "../config/env.js";
 import { logError, logInfo } from "../lib/logger.js";
-import {
-  renderApiPage,
-  renderDataPage,
-  renderDistrictPage,
-  renderDistrictsPage,
-  renderEmptyState,
-  renderMethodologyPage,
-} from "./render.js";
 import { renderHome } from "./home/home.js";
+import { renderApiPage } from "./pages/api.js";
+import { renderDataPage } from "./pages/data.js";
+import { renderDistrictPage } from "./pages/district-detail.js";
+import { renderDistrictsPage } from "./pages/districts.js";
+import { renderEmptyState } from "./pages/empty.js";
+import { renderMethodologyPage } from "./pages/methodology.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 
 export function createApp(config: AppConfig, service: PublishedSnapshotService) {
