@@ -33,6 +33,8 @@ retry_scheduler_command() {
   local region="$3"
   local attempt=1
 
+  scheduler_command_output=""
+
   while true; do
     local output
     if output="$(
@@ -41,11 +43,12 @@ retry_scheduler_command() {
         --cli-input-json "file://$request_path" \
         2>&1
     )"; then
+      scheduler_command_output="$output"
       return 0
     fi
 
     if [[ "$output" != *"must allow AWS EventBridge Scheduler to assume the role"* || "$attempt" -ge 12 ]]; then
-      echo "$output" >&2
+      scheduler_command_output="$output"
       return 1
     fi
 
@@ -113,13 +116,15 @@ aws ecs describe-task-definition \
   > "$tmpdir/task-definition.json"
 
 schedule_exists="false"
-if aws scheduler get-schedule \
-  --region "$region" \
-  --group-name "$schedule_group_name" \
-  --name "$schedule_name" \
-  --output json \
-  > "$tmpdir/existing-schedule.json" 2>/dev/null; then
-  schedule_exists="true"
+if [[ -z "$role_arn_override" ]]; then
+  if aws scheduler get-schedule \
+    --region "$region" \
+    --group-name "$schedule_group_name" \
+    --name "$schedule_name" \
+    --output json \
+    > "$tmpdir/existing-schedule.json" 2>/dev/null; then
+    schedule_exists="true"
+  fi
 fi
 
 role_exists="false"
@@ -348,12 +353,17 @@ with open(target_path, "w", encoding="utf-8") as handle:
     json.dump(request, handle)
 PY
 
-if aws scheduler get-schedule --region "$region" --group-name "$schedule_group_name" --name "$schedule_name" >/dev/null 2>&1; then
-  retry_scheduler_command update-schedule "$tmpdir/create-schedule.json" "$region"
+if retry_scheduler_command update-schedule "$tmpdir/create-schedule.json" "$region"; then
   action="updated"
-else
-  retry_scheduler_command create-schedule "$tmpdir/create-schedule.json" "$region"
+elif [[ "$scheduler_command_output" == *"ResourceNotFoundException"* ]]; then
+  if ! retry_scheduler_command create-schedule "$tmpdir/create-schedule.json" "$region"; then
+    echo "$scheduler_command_output" >&2
+    exit 1
+  fi
   action="created"
+else
+  echo "$scheduler_command_output" >&2
+  exit 1
 fi
 
 aws scheduler get-schedule \
