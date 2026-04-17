@@ -69,7 +69,7 @@ Use this file for:
 
 - completed on 2026-04-17 with a live source viability review against the NJDG Tamil Nadu page
 - internal-only `TN` state support and the selector value `33~10` are now in the repo without widening the public site
-- Tamil Nadu then cleared the full live internal proof cycle and is now the next public candidate
+- Tamil Nadu then cleared the full live internal proof cycle and has since completed the public rollout
 
 ### Assam Internal Trial Candidate Preparation
 
@@ -80,9 +80,8 @@ Use this file for:
 ### Tamil Nadu Public Readiness Review
 
 - completed in `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` and `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
-- Tamil Nadu is now the next narrow public rollout candidate after Haryana
-- local public-route parity is now implemented in repo config and preflight coverage
-- the remaining Tamil Nadu work is live rollout verification and release-history recording
+- Tamil Nadu is now publicly live
+- the rollout evidence now lives in `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, and `docs/RELEASE_HISTORY.md`
 
 ### Kerala And Meghalaya Internal Trial Candidate Preparation
 

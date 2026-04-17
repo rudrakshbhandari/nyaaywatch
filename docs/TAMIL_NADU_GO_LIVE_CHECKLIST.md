@@ -1,14 +1,14 @@
 # Tamil Nadu Go-Live Checklist
 
-Checklist for deciding whether Tamil Nadu can move from internal trial to soft public availability.
+Checklist that was used to decide whether Tamil Nadu could move from internal trial to soft public availability.
 
-This is narrower than a nationwide launch checklist. Tamil Nadu should clear this before any public website exposure, even if traffic is expected to be low.
+This is narrower than a nationwide launch checklist. Tamil Nadu cleared this before public website exposure on `2026-04-17`.
 
 ## Release Metadata
 
 - Candidate state: `Tamil Nadu`
 - State code: `TN`
-- Current decision: `next narrow public rollout candidate`
+- Current decision: `publicly live`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Readiness review: `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md`
 - Methodology version: `2026.04-alpha`
