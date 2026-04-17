@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:26`
+- ECS task definition: `nyaaywatch-staging:35`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -63,8 +63,8 @@ Operational notes:
 - Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal source snapshot date: `2026-04-10`
-- Current active Punjab publication: `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`
-- Current active Punjab published snapshot: `snapshot_09384231-203b-41ec-8fe7-a71e9c456b9d`
+- Current active Punjab publication: `publication_8a5ddc6e-f520-4344-8161-76dc4dead033`
+- Current active Punjab published snapshot: `snapshot_35226b6d-2fac-49d6-9d53-7aa24b9387e5`
 - Current Punjab source snapshot date: `2026-04-16`
 - Public methodology version: `2026.04-alpha`
 
@@ -152,6 +152,13 @@ Latest confirmed operator validation:
   - the repo secret had to be corrected once because the initial `CLOUDFLARE_API_TOKEN` value was accidentally set to the whole shell command instead of the token string
   - stable Punjab CSV headers now return `Cache-Control: no-store, max-age=0, must-revalidate`, `CDN-Cache-Control: no-store`, and `cf-cache-status: BYPASS`
   - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` now passes without cache-busting, with `csvMetadataParity=true` and `publicDataCacheProtected=true`
+- Haryana internal live trial completed on 2026-04-17 after PR `#46` merged to `main`:
+  - GitHub deploy run `24546133140` rolled the live service to task definition `:35`
+  - live Haryana fetch run `run_171cccad-9fef-47cb-9cc1-c1ae4449fe4e` succeeded through `POST /operator/runs/fetch` with `stateCode=HR`
+  - live Haryana publication `publication_0d8a736d-1c27-4ae3-8cba-c0593057e3d2` activated `snapshot_5f5af9cb-e6d9-4a09-9947-025244e21035`
+  - replay from stored evidence produced `run_76e23910-ffd8-4dcc-a3be-3eda0b130356` and replay publication `publication_cc7b1068-b97e-470a-a079-570cad23061f`
+  - rollback publication `publication_09613d9d-ae89-4543-9028-8f5d971df587` restored the original Haryana snapshot as the active internal publication
+  - `GET /operator/publications?stateCode=HR` now shows the rollback publication active, while `https://nyaaywatch.in/states/haryana` and `https://nyaaywatch.in/v1/states/haryana/stats` both still return `404`
 
 ## Release Use
 
