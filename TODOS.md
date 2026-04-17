@@ -36,8 +36,26 @@ Use this file for:
 ### Haryana Public Readiness Review
 
 - completed in `docs/HARYANA_PUBLIC_READINESS_REVIEW.md`
-- the review concludes Haryana should be the next narrow public rollout candidate, but not an immediate go-live
-- Haryana remains internal-only until one more internal state clears the live proof cycle and Haryana public-route parity is verified
+- the review concludes Haryana should be the next narrow public rollout candidate
+- the earlier "one more internal state" gate is now satisfied by the later Uttarakhand, Rajasthan, and Uttar Pradesh proof cycles
+- the remaining Haryana work is public-route parity, live rollout verification, and release-history recording
+
+### Haryana Public Preflight
+
+- completed in `docs/HARYANA_GO_LIVE_CHECKLIST.md` and `tests/haryana-public-rollout.test.ts`
+- Haryana now has a dedicated preflight checklist and regression coverage for explicit `/states/haryana/...` routes, state-scoped API parity, trust/copy guardrails, and `release:verify`-style metadata/cache checks
+
+### Tamil Nadu Internal Trial Candidate Preparation
+
+- completed on 2026-04-17 with a live source viability review against the NJDG Tamil Nadu page
+- internal-only `TN` state support and the selector value `33~10` are now in the repo without widening the public site
+- Tamil Nadu is the current southern internal proof candidate with a 38-district live source surface and the expected metric families
+
+### Assam Internal Trial Candidate Preparation
+
+- completed on 2026-04-17 with a live source viability review against the NJDG Assam page
+- internal-only `AS` state support and the selector value `18~6` are now in the repo without widening the public site
+- Assam is the current north-east internal proof candidate with a 34-district live source surface and the expected metric families
 
 ### Uttarakhand Internal Trial Candidate Preparation
 

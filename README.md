@@ -231,6 +231,9 @@ Internal or post-MVP planning:
 - [Punjab go-live checklist](docs/PUNJAB_GO_LIVE_CHECKLIST.md)
 - [Punjab public readiness review](docs/PUNJAB_PUBLIC_READINESS_REVIEW.md)
 - [Haryana public readiness review](docs/HARYANA_PUBLIC_READINESS_REVIEW.md)
+- [Haryana go-live checklist](docs/HARYANA_GO_LIVE_CHECKLIST.md)
+- [Tamil Nadu internal readiness review](docs/TAMIL_NADU_INTERNAL_READINESS_REVIEW.md)
+- [Assam internal readiness review](docs/ASSAM_INTERNAL_READINESS_REVIEW.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
 - [AWS dev resources](infra/aws/dev/README.md)
 
