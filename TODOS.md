@@ -8,20 +8,15 @@ Use this file for:
 - post-MVP follow-up work
 - important items that are not yet part of the ordered execution path
 
-## Review
+## Completed
 
 ### Live Verification Of The ECS Heavy-State Operator Lane
 
-**What:** Run one heavy-state internal proof cycle through `npm run operator:staging` on the live stack and record the evidence.
-
-**Why:** The repo now has an ECS-backed operator lane for heavier states, but it still needs one live evidence-backed cycle to prove the new path is actually the routine operational default rather than just a coded tool.
-
-**Context:** The repo now has both a direct-origin remote client (`npm run operator:remote`) and an ECS-backed heavy-state lane (`npm run operator:staging`). The docs now treat the ECS path as the default heavy-state workflow because it avoids Cloudflare edge timeouts entirely. The next operational step is to rerun a heavier state such as Uttar Pradesh through that ECS path and record the proof cycle in the release and expansion docs.
-
-**Effort:** S
-**Priority:** P1
-
-## Completed
+- completed live on 2026-04-17 after PR `#54` merged and deploy run `24554574390` rolled the live stack to task definition `:43`
+- `npm run operator:staging -- --state UP fetch "UP ECS heavy-state proof cycle fetch"` succeeded as `run_a16bb291-e3fb-4238-8695-bc60e4d63a64`
+- the ECS-backed helper stored raw artifact `raw/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-njdg-dashboard-html.json` plus normalized artifact `normalize/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-snapshot-candidate.json`
+- the live follow-up reproduced the observed `74`-district Uttar Pradesh source surface with `qualityState=complete` and `pendingCases=11911564`
+- public Uttar Pradesh routes still returned `404`, so the heavier-state proof remained internal-only while confirming the ECS lane is now the routine durable operator default
 
 ### ECS Heavy-State Operator Lane
 
