@@ -10,8 +10,8 @@ test.describe("responsive trust surfaces", () => {
     await page.goto("/districts?view=flagged");
 
     await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
-    await expect(page.getByText("Published trust metadata")).toBeVisible();
-    await expect(page.getByLabel("Search districts")).toBeVisible();
+    await expect(page.getByText(/Numbers published/i)).toBeVisible();
+    await expect(page.getByLabel("Search")).toBeVisible();
     await expect(page.getByRole("link", { name: "Kangra" }).first()).toBeVisible();
 
     const fitsViewport = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
@@ -28,11 +28,11 @@ test.describe("accessibility smoke", () => {
     await expect(page.getByRole("link", { name: "Download district history CSV" })).toBeVisible();
 
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "Overview" })).toBeFocused();
+    await expect(page.getByRole("link", { name: "NyaayWatch" })).toBeFocused();
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "Districts" })).toBeFocused();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Districts" })).toBeFocused();
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "Data" })).toBeFocused();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Data" })).toBeFocused();
   });
 
   for (const route of TRUST_ROUTES) {

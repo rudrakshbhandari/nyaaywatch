@@ -5,6 +5,7 @@ import { createApp } from "../api/app.js";
 import { loadConfig, type AppConfig } from "../config/env.js";
 import { runMigrations } from "../db/migrate.js";
 import { createFixtureSourceClient } from "../dev/fixtures.js";
+import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../geographies.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
@@ -37,11 +38,27 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
     OPERATOR_API_TOKEN: rawEnv.OPERATOR_API_TOKEN ?? "preview-operator-token",
     STATE_CODE: rawEnv.STATE_CODE ?? "HP",
   });
+  const profile = getStateProfile(config.STATE_CODE);
 
   const store = PgWarehouseStore.fromPool(pool);
   const artifactStore = new InMemoryArtifactStore();
-  const sourceClient = createFixtureSourceClient();
-  const service = new PublishedSnapshotService(config, store, artifactStore, sourceClient);
+  const sourceClient = createFixtureSourceClient(config.STATE_CODE);
+  const service = new PublishedSnapshotService(config, profile, store, artifactStore, sourceClient);
+  const publicServices = Object.fromEntries(
+    listStateProfiles().map((publicProfile) => {
+      const publicService =
+        publicProfile.stateCode === config.STATE_CODE
+          ? service
+          : new PublishedSnapshotService(
+              { ...config, STATE_CODE: publicProfile.stateCode } satisfies AppConfig,
+              publicProfile,
+              store,
+              artifactStore,
+              createFixtureSourceClient(publicProfile.stateCode),
+            );
+      return [publicProfile.stateCode, publicService];
+    }),
+  ) as Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
   const existing = await service.getPublishedSnapshot();
 
   if (!existing) {
@@ -50,7 +67,7 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
   }
 
   return {
-    app: createApp(config, service),
+    app: createApp(config, service, publicServices),
     config,
     async close() {
       await pool.end();

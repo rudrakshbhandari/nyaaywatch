@@ -1,63 +1,60 @@
 # NyaayWatch
 
-NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh.
+NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh and expanding state by state only after the same trust bar is met.
+
+## What This Repo Is
+
+This repository contains the public alpha implementation:
+
+- public scorecards and district evidence pages backed by a published snapshot
+- a narrow read-only public API for the same published snapshot
+- operator workflows for fetch, inspect, publish, replay, and rollback
+- reproducible raw-evidence storage and deterministic normalization
+
+The public product is intentionally:
+
+- Himachal-first, not nationwide on day one
+- snapshot-based, not live
+- transparency-first, not AI-forward
+- open source, but source-aware about raw upstream redistribution
 
 ## Current Status
 
-This repo is now implementing the approved design and engineering review for a Himachal Pradesh public alpha focused on:
+The Himachal alpha MVP path is complete and its launch gates are satisfied.
 
-- transparent public scorecards
-- flagged district-level signals
-- reproducible public evidence
-- a narrow developer-friendly API
+What is shipped now:
 
-The product is intentionally:
-
-- Himachal-first, not nationwide on day one
-- snapshot-based, not "live"
-- transparency-first, not AI-forward
-- open source, but source-aware about raw data redistribution
-
-The current repository now includes the Phase 3 public trust surfaces on top of the real-run pipeline:
-
-- PostgreSQL-backed canonical run, candidate, and publish state
+- PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
-- operator fetch, inspect, publish, replay, and rollback controls
-- homepage, district workspace, district evidence, data download, methodology, and API surfaces backed by the latest published snapshot
-- regression tests for migration safety, real-source fixture capture, publish gating, replay and rollback behavior, district history/export behavior, and public/operator route behavior
-- Phase 5 launch policy docs for public exposure, release readiness, and public-copy guardrails
+- public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
+- explicit state-scoped public routing for approved expansion states, with Punjab implemented as the first additional state surface
+- operator replay and rollback controls
+- regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-## Core Direction
+Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision.
 
-The approved implementation direction is:
+## Product Guardrails
+
+- Build for Himachal Pradesh first.
+- Treat public data as snapshot-based, not live.
+- Do not make predictive, AI-forward, or legal-analysis claims.
+- Every public metric must have reproducible provenance from stored evidence.
+- Describe anomalies as flagged signals, not verdicts.
+- Do not assume raw upstream artifacts are safe to expose publicly.
+
+## Architecture
+
+Default architecture direction:
 
 - one AWS-hosted containerized app
 - PostgreSQL as the canonical store
 - S3 for raw scrape artifacts
-- persisted ingestion run state machine
-- published snapshot read model for all public surfaces
-- operator-only admin surface for publish / replay control
+- explicit ingestion run state and operator-controlled publish / replay flow
+- published snapshot read models for public surfaces
 
-## Key Files
+## Repository Map
 
-- [Design doc](docs/NYAAYWATCH_DESIGN.md)
-- [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
-- [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
-- [Public data exposure policy](docs/PUBLIC_DATA_EXPOSURE_POLICY.md)
-- [Alpha release checklist](docs/ALPHA_RELEASE_CHECKLIST.md)
-- [Alpha release policy](docs/RELEASE_POLICY.md)
-- [Deployment status](docs/DEPLOYMENT_STATUS.md)
-- [Domain cutover checklist](docs/DOMAIN_CUTOVER_CHECKLIST.md)
-- [Multi-state expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md)
-- [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
-- [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
-- [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
-- [AWS dev resources](infra/aws/dev/README.md)
-- [TODOs](TODOS.md)
-
-## Planned Repository Shape
-
-The implementation is expected to evolve into these boundaries inside one repo:
+The long-term repository shape is:
 
 - `ingest/`
 - `extract/`
@@ -67,15 +64,166 @@ The implementation is expected to evolve into these boundaries inside one repo:
 - `web/`
 - `docs/`
 
-The current code uses those boundaries in a pragmatic way:
+The current codebase maps those boundaries pragmatically:
 
-- `src/api/` holds the Express server, public routes, operator routes, and HTML rendering
-- `src/services/` holds published snapshot orchestration and the run pipeline
+- `src/api/` holds the Express app, public routes, operator routes, and HTML rendering
+- `src/services/` holds published snapshot orchestration and run-pipeline logic
 - `src/storage/` holds PostgreSQL and S3 adapters
-- `src/db/` holds migrations and migration runner code
-- `fixtures/` holds reproducible captured Himachal NJDG HTML inputs for local development and tests
+- `src/db/` holds migrations and migration tooling
+- `src/ingest/`, `src/extract/`, and `src/normalize/` hold the pipeline stages
+- `fixtures/` holds reproducible captured Himachal NJDG inputs for local development and tests
 
-## Local Development
+## Quickstart
+
+Prerequisites:
+
+- Node `>=22`
+- Docker with Compose
+- npm
+
+Local development:
+
+```bash
+cp .env.example .env
+npm install
+npm run docker:up
+npm run dev:bootstrap
+npm run dev
+```
+
+The app defaults to `http://127.0.0.1:3000`.
+
+If `5432` or `4566` are already in use, override `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env` before `npm run docker:up`, then keep `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` aligned with those host ports.
+
+Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` even locally so the code path matches the AWS deployment target.
+
+## Useful Commands
+
+```bash
+npm run db:migrate
+npm run db:seed
+npm run operator:fetch -- "Manual Himachal fetch"
+npm run operator:inspect -- <run-id>
+npm run operator:publications
+npm run operator:publish -- <run-id> "Publish completed snapshot"
+npm run operator:replay -- <run-id>
+npm run operator:rollback -- <publication-id>
+npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
+npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
+npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
+npm run release:postpublish -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in
+npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
+npm run release:record -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
+```
+
+## Public Surface
+
+Public routes:
+
+- `/`
+- `/districts`
+- `/districts/:id`
+- `/data`
+- `/methodology`
+- `/api`
+- `/states/:stateSlug`
+- `/states/:stateSlug/districts`
+- `/states/:stateSlug/districts/:id`
+- `/states/:stateSlug/data`
+- `/states/:stateSlug/methodology`
+- `/states/:stateSlug/api`
+
+Current route posture:
+
+- unscoped routes remain the default Himachal Pradesh public surface
+- additional approved states use explicit `/states/:stateSlug/...` routes
+- Punjab is the first implemented state-scoped public surface
+- deployment docs still decide whether a given state is live on `https://nyaaywatch.in`
+
+Public API:
+
+- `GET /v1/stats/himachal`
+- `GET /v1/districts`
+- `GET /v1/trends`
+- `GET /v1/states/:stateSlug/stats`
+- `GET /v1/states/:stateSlug/districts`
+- `GET /v1/states/:stateSlug/trends`
+
+Operator endpoints require `x-operator-token`:
+
+- `GET /operator/runs`
+- `GET /operator/runs/:runId`
+- `POST /operator/runs/fetch`
+- `POST /operator/runs/:runId/publish`
+- `POST /operator/runs/:runId/replay`
+- `GET /operator/publications`
+- `POST /operator/publications/:publicationId/rollback`
+
+Operator routes default to the runtime's configured state, but they also accept explicit `stateCode` or `stateSlug` selectors on query params or JSON bodies for multi-state operations.
+
+## Testing
+
+Core checks:
+
+```bash
+npm run typecheck
+npm test
+npm run test:e2e
+RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
+```
+
+If Playwright browsers are not installed yet, run:
+
+```bash
+npx playwright install
+```
+
+Current regression coverage includes:
+
+- migration safety and idempotence
+- golden-fixture capture using stored Himachal NJDG HTML pages
+- publish gating on run status and candidate presence
+- latest published snapshot reads
+- replay and rollback behavior
+- district history and CSV export parity for published snapshots
+- browser E2E for citizen, reporter, and developer-parity public flows
+- responsive and accessibility trust-surface checks
+- stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
+- stable API contract tests for state-scoped Punjab public endpoints
+- persistent-stack replay and rollback coverage through local PostgreSQL plus LocalStack S3
+- public API and HTML route behavior
+- operator token enforcement
+
+## Key Docs
+
+Start here:
+
+- [Design system](DESIGN.md)
+- [Design doc](docs/NYAAYWATCH_DESIGN.md)
+- [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
+- [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
+- [TODO backlog](TODOS.md)
+- [Contributing guide](CONTRIBUTING.md)
+
+Developer and operator workflow:
+
+- [Development workflow](docs/DEVELOPMENT_WORKFLOW.md)
+- [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md)
+- [Public data exposure policy](docs/PUBLIC_DATA_EXPOSURE_POLICY.md)
+- [Alpha release checklist](docs/ALPHA_RELEASE_CHECKLIST.md)
+- [Release policy](docs/RELEASE_POLICY.md)
+- [Deployment status](docs/DEPLOYMENT_STATUS.md)
+- [Release history](docs/RELEASE_HISTORY.md)
+
+Internal or post-MVP planning:
+
+- [Multi-state expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md)
+- [Accelerated expansion plan](docs/ACCELERATED_EXPANSION_PLAN.md)
+- [Expansion review log](docs/EXPANSION_REVIEW_LOG.md)
+- [Punjab go-live checklist](docs/PUNJAB_GO_LIVE_CHECKLIST.md)
+- [Punjab public readiness review](docs/PUNJAB_PUBLIC_READINESS_REVIEW.md)
+- [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
+- [AWS dev resources](infra/aws/dev/README.md)
 
 ## Non-Goals For Alpha
 
@@ -90,76 +238,3 @@ The current code uses those boundaries in a pragmatic way:
 ## Product Voice
 
 NyaayWatch should feel investigative, public-interest, calm, exact, and evidence-first.
-
-## Development Workflow
-
-This project is intended to be developed in a highly AI-native workflow using ChatGPT Pro and Codex, but product claims still need explicit human judgment and evidence discipline.
-
-## Local Storage Stack
-
-The repository now includes a runnable real-run storage implementation:
-
-- PostgreSQL is the canonical store for runs, publications, immutable published snapshot payloads, and run artifact metadata
-- S3 is the raw evidence store for replayable NJDG HTML captures and normalized snapshot candidates
-- the public API and UI read only the latest published snapshot
-
-Quickstart:
-
-```bash
-cp .env.example .env
-npm install
-npm run docker:up
-npm run dev:bootstrap
-npm run dev
-```
-
-Public routes:
-
-- `/`
-- `/districts`
-- `/districts/:id`
-- `/data`
-- `/methodology`
-- `/api`
-
-Public API:
-
-- `GET /v1/stats/himachal`
-- `GET /v1/districts`
-- `GET /v1/trends`
-
-Operator endpoints require `x-operator-token`:
-
-- `POST /operator/runs/fetch`
-- `GET /operator/runs/:runId`
-- `POST /operator/runs/:runId/publish`
-- `POST /operator/runs/:runId/replay`
-- `POST /operator/publications/:publicationId/rollback`
-
-## Testing
-
-```bash
-npm run typecheck
-npm test
-npm run test:e2e
-RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
-```
-
-Current regression coverage includes:
-
-- migration safety and idempotence
-- golden-fixture capture using stored Himachal NJDG HTML pages
-- publish gating on run status and candidate presence
-- latest published snapshot reads
-- replay and rollback behavior
-- district history and CSV export parity for published snapshots
-- browser E2E for citizen, reporter, and developer-parity public flows
-- browser E2E for responsive mobile trust surfaces and accessibility smoke checks
-- stable API contract tests for `/v1/stats/himachal`, `/v1/districts`, and `/v1/trends`
-- persistent-stack replay and rollback coverage through local PostgreSQL plus LocalStack S3
-- public API and HTML route behavior
-- operator token enforcement
-
-GitHub Actions now runs `npm run typecheck`, `npm test`, `RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent`, and `npm run test:e2e` on pushes and pull requests. Pull requests from branches in this repo also get fixture-backed App Runner preview deployments for the public web surface, and pushes to `main` auto-build a `linux/amd64` image, publish it to ECR, and roll the live ECS service after verification passes.
-
-If `5432` or `4566` are already in use locally, override `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env` before running `npm run docker:up`, then point `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` at the same host ports.

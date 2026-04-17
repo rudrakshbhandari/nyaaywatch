@@ -4,6 +4,8 @@ Operational source of truth for where NyaayWatch is currently running and how to
 
 Keep this file updated whenever the staging stack changes, a public alpha URL is assigned, or a domain cutover is completed.
 
+Use this document as the live environment map. For routine release go/no-go decisions, use `docs/ALPHA_RELEASE_CHECKLIST.md` plus `docs/RELEASE_POLICY.md`. Use `docs/DOMAIN_CUTOVER_CHECKLIST.md` only for future hostname, certificate, or DNS changes.
+
 ## Current Environments
 
 ### Local Development
@@ -26,7 +28,7 @@ Keep this file updated whenever the staging stack changes, a public alpha URL is
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:9`
+- ECS task definition: `nyaaywatch-staging:26`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -44,7 +46,8 @@ Keep this file updated whenever the staging stack changes, a public alpha URL is
 Operational notes:
 
 - Port `80` on the ALB redirects to `443`.
-- Canonical `.com -> .in` routing requires the ACM certificate to cover `nyaaywatch.com` and `www.nyaaywatch.com` in addition to the `.in` hostnames.
+- The app itself redirects legacy `.com` host headers to the canonical `.in` hostname.
+- Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 
@@ -54,10 +57,16 @@ Operational notes:
 - Backing stack: `nyaaywatch-staging`
 - Status: `live`
 - Release path: verified `main` merges auto-roll the live ECS service through GitHub Actions
-- Current active publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
-- Current active published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
-- Public stats source snapshot date: `2026-04-10`
-- Public stats methodology version: `2026.04-alpha`
+- Current public coverage:
+  - unscoped default routes for Himachal Pradesh
+  - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
+- Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
+- Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
+- Current Himachal source snapshot date: `2026-04-10`
+- Current active Punjab publication: `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`
+- Current active Punjab published snapshot: `snapshot_09384231-203b-41ec-8fe7-a71e9c456b9d`
+- Current Punjab source snapshot date: `2026-04-16`
+- Public methodology version: `2026.04-alpha`
 
 ## How To Retrieve The AWS Staging URL
 
@@ -88,6 +97,9 @@ curl -fsSL <base-url>/health
 curl -fsSL <base-url>/v1/stats/himachal
 curl -fsSL <base-url>/v1/districts
 curl -fsSL <base-url>/v1/trends
+curl -fsSL <base-url>/v1/states/punjab/stats
+curl -fsSL <base-url>/v1/states/punjab/districts
+curl -fsSL <base-url>/v1/states/punjab/trends
 ```
 
 Expected:
@@ -118,6 +130,23 @@ Latest confirmed operator validation:
   - replay run `run_bac1bec6-b4cc-467c-9f77-31e2832cf64c`
   - rollback `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
   - public stats returned to `publishedFromRunId=run_5d8880eb-ed95-4e08-b3aa-96437d5f45d9`
+- Punjab public rollout completed on 2026-04-16 after task definition `:26` rolled out:
+  - GitHub deploy run `24537940704` completed successfully on `main`
+  - live Punjab fetch run `run_ff674e79-8752-4b4d-9b32-4c7a368d339c`
+  - live Punjab publication `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`
+  - live Punjab snapshot `snapshot_09384231-203b-41ec-8fe7-a71e9c456b9d`
+  - `/states/punjab` returned `200`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passed with `districtCount=22`, `trendCount=1`, and CSV metadata parity confirmed
+  - Punjab publish was executed through a one-off ECS task with `STATE_CODE=PB` because task definition `:26` still exposed Himachal-scoped operator HTTP routes
+  - current `main` now includes state-aware operator routing plus state-scoped `release:prepublish`, `release:postpublish`, and `release:record`; the next live release cycle should verify that the manual ECS override is no longer needed after deploy
+- State-aware live release verification completed on 2026-04-16 after task definition `:28` rolled out:
+  - GitHub deploy run `24539107621` completed successfully on `main`
+  - live Punjab fetch run `run_2e5ea2e1-ba95-4d62-9ea9-be14123b39cf` succeeded through `POST /operator/runs/fetch` with `stateCode=PB`
+  - live Punjab publication `publication_8a5ddc6e-f520-4344-8161-76dc4dead033` succeeded through `POST /operator/runs/:runId/publish`
+  - `GET /operator/publications?stateSlug=punjab` returned the Punjab publication history with the new publication active
+  - state-scoped `release:prepublish`, `release:postpublish`, and `release:record` all succeeded when executed inside one-off ECS tasks on task definition `:28`
+  - `GET /v1/states/punjab/stats` reflected `publishedAt=2026-04-16T23:32:07.721Z` and `publishedFromRunId=run_2e5ea2e1-ba95-4d62-9ea9-be14123b39cf`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` now exposes a cache-invalidity edge case: the public API moved to the new publication immediately, but `/states/punjab/data/districts.csv` initially returned a stale Cloudflare `HIT` response with the earlier `published_at` until a cache-busting request forced a `MISS`
 
 ## Release Use
 

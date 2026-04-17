@@ -4,9 +4,7 @@ import type { ExtractedNjdgSnapshot } from "../extract/njdg-html.js";
 import { freshnessDays } from "../lib/time.js";
 
 const DISTRICT_FLAG_LIMIT = 3;
-const EXPECTED_HP_DISTRICT_COUNT = 12;
 const METHODOLOGY_VERSION = "2026.04-alpha";
-const STATE_NAME = "Himachal Pradesh";
 
 const AGE_BUCKET_MEDIAN_DAYS = {
   lessThanOneYear: 183,
@@ -24,9 +22,9 @@ export function buildSnapshotCandidate(
   const stateMedianAgeDays = inferMedianAgeDays(extracted.state.ageBuckets);
   const stateFreshnessDays = freshnessDays(extracted.sourceSnapshotAt, new Date(extracted.capturedAt));
   const qualityState =
-    extracted.districts.length === EXPECTED_HP_DISTRICT_COUNT && stateFreshnessDays > 14
+    extracted.districts.length === extracted.expectedDistrictCount && stateFreshnessDays > 14
       ? "stale"
-      : extracted.districts.length === EXPECTED_HP_DISTRICT_COUNT
+      : extracted.districts.length === extracted.expectedDistrictCount
         ? "complete"
         : "partial";
 
@@ -49,6 +47,7 @@ export function buildSnapshotCandidate(
         rank: index + 1,
         flagReason: buildFlagReason(district, {
           isFlagged,
+          stateName: extracted.stateName,
           stateDisposalRate,
           stateMedianAgeDays,
         }),
@@ -58,8 +57,8 @@ export function buildSnapshotCandidate(
 
   return SnapshotCandidateSchema.parse({
     snapshot: {
-      stateCode: "HP",
-      stateName: STATE_NAME,
+      stateCode: extracted.stateCode,
+      stateName: extracted.stateName,
       sourceName: extracted.sourceName,
       sourceSnapshotAt: extracted.sourceSnapshotAt,
       methodologyVersion: METHODOLOGY_VERSION,
@@ -116,6 +115,7 @@ function buildFlagReason(
   },
   context: {
     isFlagged: boolean;
+    stateName: string;
     stateDisposalRate: number;
     stateMedianAgeDays: number;
   },
@@ -125,11 +125,11 @@ function buildFlagReason(
   }
 
   if (district.medianAgeDays > context.stateMedianAgeDays && context.isFlagged) {
-    return "People appear to be waiting longer here than in much of Himachal, based on the latest published snapshot.";
+    return `People appear to be waiting longer here than in much of ${context.stateName}, based on the latest published snapshot.`;
   }
 
   if (district.disposalRate < context.stateDisposalRate) {
-    return "This district is clearing cases more slowly than the Himachal average in the latest published snapshot.";
+    return `This district is clearing cases more slowly than the ${context.stateName} average in the latest published snapshot.`;
   }
 
   return "This district is not among the clearest pressure signals in the current published snapshot.";

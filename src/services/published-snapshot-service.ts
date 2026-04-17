@@ -10,7 +10,7 @@ import {
 } from "../domain/snapshot-schema.js";
 import { SnapshotCandidateSchema, type SnapshotCandidate } from "../domain/snapshot-candidate-schema.js";
 import { extractCaptureBundle } from "../extract/njdg-html.js";
-import type { HimachalSourceClient } from "../ingest/himachal-source-client.js";
+import type { NjdgSourceClient } from "../ingest/himachal-source-client.js";
 import { createId } from "../lib/ids.js";
 import { logError, logInfo } from "../lib/logger.js";
 import { freshnessDays } from "../lib/time.js";
@@ -24,6 +24,7 @@ import {
   type RunRecord,
 } from "../storage/postgres.js";
 import { sha256 } from "../lib/hash.js";
+import type { NjdgStateProfile } from "../geographies.js";
 
 const RAW_CAPTURE_ARTIFACT_TYPE = "raw-njdg-html-bundle";
 const SNAPSHOT_CANDIDATE_ARTIFACT_TYPE = "snapshot-candidate-json";
@@ -38,6 +39,13 @@ export interface RunInspection {
 export interface SnapshotHistoryEntry {
   snapshot: PublishedSnapshot["snapshot"];
   stats: PublishedSnapshot["stats"];
+}
+
+export interface PublicationHistoryEntry {
+  publication: PublicationRecord;
+  snapshot: PublishedSnapshot["snapshot"] & { id: string };
+  run: Pick<RunRecord, "id" | "status" | "replayOfRunId" | "sourceSnapshotAt" | "methodologyVersion" | "qualityState">;
+  isActive: boolean;
 }
 
 export interface DistrictHistoryPoint {
@@ -66,13 +74,14 @@ export interface DistrictDetail {
 export class PublishedSnapshotService {
   constructor(
     private readonly config: AppConfig,
+    private readonly profile: NjdgStateProfile,
     private readonly store: PgWarehouseStore,
     private readonly artifactStore: ArtifactStore,
-    private readonly sourceClient: HimachalSourceClient,
+    private readonly sourceClient: NjdgSourceClient,
   ) {}
 
   async getPublishedSnapshot(): Promise<PublishedSnapshotRecord | null> {
-    return this.store.getLatestPublishedSnapshot(this.config.STATE_CODE);
+    return this.store.getLatestPublishedSnapshot(this.profile.stateCode);
   }
 
   async getStats(): Promise<{ snapshot: PublishedSnapshot["snapshot"]; stats: PublishedSnapshot["stats"] } | null> {
@@ -130,16 +139,52 @@ export class PublishedSnapshotService {
   }
 
   async listRuns(): Promise<RunRecord[]> {
-    return this.store.listRuns(this.config.STATE_CODE);
+    return this.store.listRuns(this.profile.stateCode);
   }
 
   async listPublications(): Promise<PublicationRecord[]> {
-    return this.store.listPublications(this.config.STATE_CODE);
+    return this.store.listPublications(this.profile.stateCode);
+  }
+
+  async listPublicationHistory(): Promise<PublicationHistoryEntry[]> {
+    const publications = await this.store.listPublications(this.profile.stateCode);
+    const entries = await Promise.all(
+      publications.map(async (publication, index) => {
+        const snapshot = await this.store.getPublishedSnapshotById(publication.publishedSnapshotId);
+        if (!snapshot) {
+          throw new Error(`Published snapshot ${publication.publishedSnapshotId} was not found.`);
+        }
+
+        const run = await this.store.getRunById(snapshot.runId);
+        if (!run) {
+          throw new Error(`Run ${snapshot.runId} was not found for published snapshot ${snapshot.id}.`);
+        }
+
+        return {
+          publication,
+          snapshot: {
+            id: snapshot.id,
+            ...snapshot.payload.snapshot,
+          },
+          run: {
+            id: run.id,
+            status: run.status,
+            replayOfRunId: run.replayOfRunId,
+            sourceSnapshotAt: run.sourceSnapshotAt,
+            methodologyVersion: run.methodologyVersion,
+            qualityState: run.qualityState,
+          },
+          isActive: index === 0,
+        } satisfies PublicationHistoryEntry;
+      }),
+    );
+
+    return entries;
   }
 
   async inspectRun(runId: string): Promise<RunInspection | null> {
     const run = await this.store.getRunById(runId);
-    if (!run) {
+    if (!run || run.stateCode !== this.profile.stateCode) {
       return null;
     }
 
@@ -160,7 +205,7 @@ export class PublishedSnapshotService {
   async captureRun(note?: string): Promise<RunInspection> {
     await this.artifactStore.ensureBucket();
     logInfo("operator_fetch_started", {
-      stateCode: this.config.STATE_CODE,
+      stateCode: this.profile.stateCode,
       note: note ?? null,
     });
 
@@ -168,21 +213,25 @@ export class PublishedSnapshotService {
     const extracted = extractCaptureBundle(bundle);
     const run = await this.store.insertRun({
       id: createId("run"),
-      stateCode: this.config.STATE_CODE,
+      stateCode: this.profile.stateCode,
       sourceLabel: extracted.sourceName,
       sourceSnapshotAt: extracted.sourceSnapshotAt,
       methodologyVersion: "2026.04-alpha",
       status: "pending",
       qualityState: "partial",
-      note: note ?? "Captured the latest NJDG Himachal dashboard pages.",
+      note: note ?? `Captured the latest NJDG ${this.profile.stateName} dashboard pages.`,
     });
 
     try {
-      const rawArtifact = await this.artifactStore.uploadJson(buildRawArtifactKey(this.config, run.id, extracted.sourceSnapshotAt), bundle, {
+      const rawArtifact = await this.artifactStore.uploadJson(
+        buildRawArtifactKey(this.config.DEPLOY_ENV, this.profile.stateCode, run.id, extracted.sourceSnapshotAt),
+        bundle,
+        {
         source: "njdg",
         capturedat: bundle.capturedAt,
         districtcount: String(bundle.districtPages.length),
-      });
+        },
+      );
 
       await this.store.insertArtifact({
         id: createId("artifact"),
@@ -247,16 +296,16 @@ export class PublishedSnapshotService {
       const snapshot = await tx.insertPublishedSnapshot({
         id: createId("snapshot"),
         runId,
-        stateCode: this.config.STATE_CODE,
+        stateCode: this.profile.stateCode,
         payloadVersion: 1,
         payload,
         checksumSha256: sha256(JSON.stringify(payload)),
       });
 
-      const previousPublication = await tx.getLatestPublication(this.config.STATE_CODE);
+      const previousPublication = await tx.getLatestPublication(this.profile.stateCode);
       const publication = await tx.insertPublication({
         id: createId("publication"),
-        stateCode: this.config.STATE_CODE,
+        stateCode: this.profile.stateCode,
         publishedSnapshotId: snapshot.id,
         action: "publish",
         note: note ?? defaultPublishNote(inspection.run),
@@ -308,7 +357,7 @@ export class PublishedSnapshotService {
     try {
       const copiedArtifact = await this.artifactStore.copyObject(
         rawArtifact.s3Key,
-        buildReplayRawArtifactKey(this.config, replayRun.id, rawArtifact.s3Key),
+        buildReplayRawArtifactKey(this.config.DEPLOY_ENV, this.profile.stateCode, replayRun.id, rawArtifact.s3Key),
         {
           checksumsha256: rawArtifact.checksumSha256,
           replayofrunid: sourceInspection.run.id,
@@ -361,15 +410,18 @@ export class PublishedSnapshotService {
     if (!target) {
       throw new Error(`Publication ${publicationId} was not found.`);
     }
+    if (target.stateCode !== this.profile.stateCode) {
+      throw new Error(`Publication ${publicationId} does not belong to ${this.profile.stateCode}.`);
+    }
 
-    const latest = await this.store.getLatestPublication(this.config.STATE_CODE);
+    const latest = await this.store.getLatestPublication(this.profile.stateCode);
     if (!latest) {
       throw new Error("Rollback requires an existing publication history.");
     }
 
     const rollback = await this.store.insertPublication({
       id: createId("publication"),
-      stateCode: this.config.STATE_CODE,
+      stateCode: this.profile.stateCode,
       publishedSnapshotId: target.publishedSnapshotId,
       action: "rollback",
       note: note ?? `Rollback to publication ${target.id}`,
@@ -487,7 +539,7 @@ export class PublishedSnapshotService {
     const candidate = buildSnapshotCandidate(extractCaptureBundle(bundle), previousSnapshots);
 
     const storedCandidate = await this.artifactStore.uploadJson(
-      buildCandidateArtifactKey(this.config, runId, candidate.snapshot.sourceSnapshotAt),
+      buildCandidateArtifactKey(this.config.DEPLOY_ENV, this.profile.stateCode, runId, candidate.snapshot.sourceSnapshotAt),
       candidate,
       {
         source: "normalized",
@@ -520,7 +572,7 @@ export class PublishedSnapshotService {
   }
 
   private async loadHistoricalSnapshots(): Promise<PublishedSnapshot[]> {
-    const publications = await this.store.listPublications(this.config.STATE_CODE);
+    const publications = await this.store.listPublications(this.profile.stateCode);
     const snapshots: PublishedSnapshot[] = [];
     const seenSnapshotIds = new Set<string>();
 
@@ -591,28 +643,38 @@ function requireArtifact(artifacts: ArtifactRecord[], artifactType: string): Art
   return artifact;
 }
 
-function buildRawArtifactKey(config: AppConfig, runId: string, sourceSnapshotAt: string): string {
+function buildRawArtifactKey(deployEnv: AppConfig["DEPLOY_ENV"], stateCode: string, runId: string, sourceSnapshotAt: string): string {
   return [
     "raw",
-    config.DEPLOY_ENV,
-    config.STATE_CODE.toLowerCase(),
+    deployEnv,
+    stateCode.toLowerCase(),
     sourceSnapshotAt.slice(0, 10),
     `${runId}-njdg-dashboard-html.json`,
   ].join("/");
 }
 
-function buildCandidateArtifactKey(config: AppConfig, runId: string, sourceSnapshotAt: string): string {
+function buildCandidateArtifactKey(
+  deployEnv: AppConfig["DEPLOY_ENV"],
+  stateCode: string,
+  runId: string,
+  sourceSnapshotAt: string,
+): string {
   return [
     "normalize",
-    config.DEPLOY_ENV,
-    config.STATE_CODE.toLowerCase(),
+    deployEnv,
+    stateCode.toLowerCase(),
     sourceSnapshotAt.slice(0, 10),
     `${runId}-snapshot-candidate.json`,
   ].join("/");
 }
 
-function buildReplayRawArtifactKey(config: AppConfig, runId: string, sourceKey: string): string {
-  return ["raw", config.DEPLOY_ENV, config.STATE_CODE.toLowerCase(), "replays", runId, basename(sourceKey)].join("/");
+function buildReplayRawArtifactKey(
+  deployEnv: AppConfig["DEPLOY_ENV"],
+  stateCode: string,
+  runId: string,
+  sourceKey: string,
+): string {
+  return ["raw", deployEnv, stateCode.toLowerCase(), "replays", runId, basename(sourceKey)].join("/");
 }
 
 function defaultPublishNote(run: RunRecord): string {

@@ -1,6 +1,8 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 
 import type { AppConfig } from "../config/env.js";
+import type { SupportedStateCode, NjdgStateProfile } from "../geographies.js";
+import { getPublicStateProfileBySlug, getStateProfile, getStateProfileByCodeOrSlug, listPublicStateProfiles } from "../geographies.js";
 import { logError, logInfo } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
 import { renderApiPage } from "./pages/api.js";
@@ -10,8 +12,18 @@ import { renderDistrictsPage } from "./pages/districts.js";
 import { renderEmptyState } from "./pages/empty.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
+import { buildPublicPageContext } from "./public-state.js";
 
-export function createApp(config: AppConfig, service: PublishedSnapshotService) {
+type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
+
+const DEFAULT_PUBLIC_STATE_CODE: SupportedStateCode = "HP";
+
+export function createApp(
+  config: AppConfig,
+  service: PublishedSnapshotService,
+  publicServices: PublicServiceMap = { [config.STATE_CODE]: service },
+) {
+  const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
   app.use(express.json());
   app.set("trust proxy", true);
@@ -57,7 +69,7 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get(
     "/v1/stats/himachal",
     asyncRoute(async (_request, response) => {
-      const payload = await service.getStats();
+      const payload = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).getStats();
       if (!payload) {
         response.status(404).json({ error: "No published snapshot available." });
         return;
@@ -69,7 +81,7 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get(
     "/v1/districts",
     asyncRoute(async (_request, response) => {
-      const payload = await service.listDistricts();
+      const payload = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).listDistricts();
       if (!payload) {
         response.status(404).json({ error: "No published snapshot available." });
         return;
@@ -81,7 +93,61 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get(
     "/v1/trends",
     asyncRoute(async (_request, response) => {
-      const payload = await service.getTrends();
+      const payload = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).getTrends();
+      if (!payload) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/states/:stateSlug/stats",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: "State not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getStats();
+      if (!payload) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/states/:stateSlug/districts",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: "State not found." });
+        return;
+      }
+
+      const payload = await resolved.service.listDistricts();
+      if (!payload) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/states/:stateSlug/trends",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: "State not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getTrends();
       if (!payload) {
         response.status(404).json({ error: "No published snapshot available." });
         return;
@@ -93,7 +159,7 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get(
     "/data/districts.csv",
     asyncRoute(async (_request, response) => {
-      const csv = await service.renderDistrictCsv();
+      const csv = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).renderDistrictCsv();
       if (!csv) {
         response.status(404).type("text/plain").send("No published snapshot available.");
         return;
@@ -106,7 +172,9 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get(
     "/data/districts/:districtId.csv",
     asyncRoute(async (request, response) => {
-      const csv = await service.renderDistrictHistoryCsv(readRouteParam(request.params.districtId));
+      const csv = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).renderDistrictHistoryCsv(
+        readRouteParam(request.params.districtId),
+      );
       if (!csv) {
         response.status(404).type("text/plain").send("District export not available.");
         return;
@@ -119,26 +187,41 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   app.get(
     "/",
     asyncRoute(async (_request, response) => {
-      const snapshot = await service.getPublishedSnapshot();
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
       if (!snapshot) {
         response.status(503).send(renderEmptyState("NyaayWatch", "No published snapshot is available yet."));
         return;
       }
 
-      response.send(renderHome(snapshot.payload));
+      response.send(
+        renderHome(
+          snapshot.payload,
+          buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+        ),
+      );
     }),
   );
 
   app.get(
     "/districts",
     asyncRoute(async (_request, response) => {
-      const snapshot = await service.getPublishedSnapshot();
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
       if (!snapshot) {
         response.status(503).send(renderEmptyState("Districts", "No published snapshot is available yet."));
         return;
       }
 
-      response.send(renderDistrictsPage(snapshot.payload, parseDistrictsQuery(_request.query)));
+      response.send(
+        renderDistrictsPage(
+          snapshot.payload,
+          parseDistrictsQuery(_request.query),
+          buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+        ),
+      );
     }),
   );
 
@@ -146,55 +229,264 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/districts/:districtId",
     asyncRoute(async (request, response) => {
       const districtId = readRouteParam(request.params.districtId);
-      const payload = await service.getDistrictDetail(districtId);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const payload = await currentService.getDistrictDetail(districtId);
       if (!payload) {
         response.status(404).send(renderEmptyState("District Not Found", "This district was not found in the latest published snapshot."));
         return;
       }
 
-      response.send(renderDistrictPage(payload.snapshot, payload.district, payload.history));
+      response.send(
+        renderDistrictPage(
+          payload.snapshot,
+          payload.district,
+          payload.history,
+          buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+        ),
+      );
     }),
   );
 
   app.get(
     "/data",
     asyncRoute(async (_request, response) => {
-      const snapshot = await service.getPublishedSnapshot();
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
       if (!snapshot) {
         response.status(503).send(renderEmptyState("Data Downloads", "No published snapshot is available yet."));
         return;
       }
 
-      response.send(renderDataPage(snapshot.payload));
+      response.send(
+        renderDataPage(
+          snapshot.payload,
+          buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+        ),
+      );
     }),
   );
 
   app.get(
     "/methodology",
     asyncRoute(async (_request, response) => {
-      const snapshot = await service.getPublishedSnapshot();
-      const history = await service.listSnapshotHistory();
-      response.send(renderMethodologyPage(snapshot?.payload.snapshot ?? null, history));
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
+      const history = await currentService.listSnapshotHistory();
+      response.send(
+        renderMethodologyPage(
+          snapshot?.payload.snapshot ?? null,
+          history,
+          buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+        ),
+      );
     }),
   );
 
-  app.get("/api", (_request, response) => {
-    response.send(renderApiPage());
-  });
+  app.get(
+    "/api",
+    asyncRoute(async (_request, response) => {
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      response.send(
+        renderApiPage(
+          buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("State Not Available Yet", "No published snapshot is available for this state yet."));
+        return;
+      }
+
+      response.send(
+        renderHome(
+          snapshot.payload,
+          buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/districts",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Districts", "No published snapshot is available yet."));
+        return;
+      }
+
+      response.send(
+        renderDistrictsPage(
+          snapshot.payload,
+          parseDistrictsQuery(request.query),
+          buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/districts/:districtId",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+
+      const payload = await resolved.service.getDistrictDetail(readRouteParam(request.params.districtId));
+      if (!payload) {
+        response.status(404).send(renderEmptyState("District Not Found", "This district was not found in the latest published snapshot."));
+        return;
+      }
+
+      response.send(
+        renderDistrictPage(
+          payload.snapshot,
+          payload.district,
+          payload.history,
+          buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Data Downloads", "No published snapshot is available yet."));
+        return;
+      }
+
+      response.send(
+        renderDataPage(
+          snapshot.payload,
+          buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/districts.csv",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).type("text/plain").send("State not found.");
+        return;
+      }
+
+      const csv = await resolved.service.renderDistrictCsv();
+      if (!csv) {
+        response.status(404).type("text/plain").send("No published snapshot available.");
+        return;
+      }
+
+      response.type("text/csv").send(csv);
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/districts/:districtId.csv",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).type("text/plain").send("State not found.");
+        return;
+      }
+
+      const csv = await resolved.service.renderDistrictHistoryCsv(readRouteParam(request.params.districtId));
+      if (!csv) {
+        response.status(404).type("text/plain").send("District export not available.");
+        return;
+      }
+
+      response.type("text/csv").send(csv);
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/methodology",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      const history = await resolved.service.listSnapshotHistory();
+      response.send(
+        renderMethodologyPage(
+          snapshot?.payload.snapshot ?? null,
+          history,
+          buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/api",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+
+      response.send(
+        renderApiPage(
+          buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
 
   app.get(
     "/operator/runs",
     operatorOnly(config),
-    asyncRoute(async (_request, response) => {
-      response.json({ runs: await service.listRuns() });
+    asyncRoute(async (request, response) => {
+      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+      response.json({ state: resolved.profile, runs: await resolved.service.listRuns() });
     }),
   );
 
   app.get(
     "/operator/publications",
     operatorOnly(config),
-    asyncRoute(async (_request, response) => {
-      response.json({ publications: await service.listPublications() });
+    asyncRoute(async (request, response) => {
+      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+      response.json({ state: resolved.profile, publications: await resolved.service.listPublicationHistory() });
     }),
   );
 
@@ -202,7 +494,7 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/operator/runs/:runId",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const inspection = await service.inspectRun(readRouteParam(request.params.runId));
+      const inspection = await findRunInspectionAcrossServices(readRouteParam(request.params.runId), serviceMap);
       if (!inspection) {
         response.status(404).json({ error: "Run not found." });
         return;
@@ -216,7 +508,8 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/operator/runs/fetch",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.captureRun(request.body?.note);
+      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+      const result = await resolved.service.captureRun(request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -225,7 +518,14 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/operator/runs/:runId/publish",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.publishRun(readRouteParam(request.params.runId), request.body?.note);
+      const runId = readRouteParam(request.params.runId);
+      const resolved = await findRunServiceAcrossServices(runId, serviceMap);
+      if (!resolved) {
+        response.status(404).json({ error: "Run not found." });
+        return;
+      }
+
+      const result = await resolved.service.publishRun(runId, request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -234,7 +534,14 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/operator/runs/:runId/replay",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.replayRun(readRouteParam(request.params.runId), request.body?.note);
+      const runId = readRouteParam(request.params.runId);
+      const resolved = await findRunServiceAcrossServices(runId, serviceMap);
+      if (!resolved) {
+        response.status(404).json({ error: "Run not found." });
+        return;
+      }
+
+      const result = await resolved.service.replayRun(runId, request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -243,10 +550,14 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
     "/operator/publications/:publicationId/rollback",
     operatorOnly(config),
     asyncRoute(async (request, response) => {
-      const result = await service.rollbackPublication(
-        readRouteParam(request.params.publicationId),
-        request.body?.note,
-      );
+      const publicationId = readRouteParam(request.params.publicationId);
+      const resolved = await findPublicationServiceAcrossServices(publicationId, serviceMap);
+      if (!resolved) {
+        response.status(404).json({ error: "Publication not found." });
+        return;
+      }
+
+      const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
       response.status(201).json(result);
     }),
   );
@@ -263,6 +574,145 @@ export function createApp(config: AppConfig, service: PublishedSnapshotService) 
   });
 
   return app;
+}
+
+function normalizeServiceMap(
+  config: AppConfig,
+  service: PublishedSnapshotService,
+  publicServices: PublicServiceMap,
+) {
+  return {
+    ...publicServices,
+    [config.STATE_CODE]: publicServices[config.STATE_CODE] ?? service,
+  } satisfies PublicServiceMap;
+}
+
+function getRequiredPublicService(stateCode: SupportedStateCode, publicServices: PublicServiceMap) {
+  const service = publicServices[stateCode];
+  if (!service) {
+    throw new Error(`Public service for ${stateCode} is not configured.`);
+  }
+  return service;
+}
+
+function resolvePublicStateRequest(request: Request, publicServices: PublicServiceMap) {
+  const stateSlug = readRouteParam(request.params.stateSlug);
+  const profile = getPublicStateProfileBySlug(stateSlug);
+  if (!profile) {
+    return null;
+  }
+
+  const service = publicServices[profile.stateCode];
+  if (!service) {
+    return null;
+  }
+
+  return { profile, service };
+}
+
+async function listAvailablePublicProfiles(publicServices: PublicServiceMap, currentProfile: NjdgStateProfile) {
+  const profiles = await Promise.all(
+    listPublicStateProfiles().map(async (profile) => {
+      const service = publicServices[profile.stateCode];
+      if (!service) {
+        return null;
+      }
+
+      if (profile.stateCode === currentProfile.stateCode) {
+        return profile;
+      }
+
+      const snapshot = await service.getPublishedSnapshot();
+      return snapshot ? profile : null;
+    }),
+  );
+
+  return profiles.filter((profile): profile is NjdgStateProfile => profile !== null);
+}
+
+function resolveOperatorServiceRequest(
+  request: Request,
+  services: PublicServiceMap,
+  defaultStateCode: SupportedStateCode,
+) {
+  const requestedProfile = readOperatorRequestedProfile(request);
+  const profile = requestedProfile ?? getStateProfile(defaultStateCode);
+  const service = services[profile.stateCode];
+
+  if (!service) {
+    throw new Error(`Operator service for ${profile.stateCode} is not configured.`);
+  }
+
+  return { profile, service };
+}
+
+function readOperatorRequestedProfile(request: Request) {
+  const candidates = [
+    request.query.stateSlug,
+    request.query.stateCode,
+    request.query.state,
+    request.body?.stateSlug,
+    request.body?.stateCode,
+    request.body?.state,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string") {
+      continue;
+    }
+
+    const profile = getStateProfileByCodeOrSlug(candidate);
+    if (profile) {
+      return profile;
+    }
+  }
+
+  return null;
+}
+
+async function findRunInspectionAcrossServices(runId: string, services: PublicServiceMap) {
+  for (const service of Object.values(services)) {
+    if (!service) {
+      continue;
+    }
+
+    const inspection = await service.inspectRun(runId);
+    if (inspection) {
+      return inspection;
+    }
+  }
+
+  return null;
+}
+
+async function findRunServiceAcrossServices(runId: string, services: PublicServiceMap) {
+  for (const service of Object.values(services)) {
+    if (!service) {
+      continue;
+    }
+
+    const inspection = await service.inspectRun(runId);
+    if (inspection) {
+      return { service, inspection };
+    }
+  }
+
+  return null;
+}
+
+async function findPublicationServiceAcrossServices(publicationId: string, services: PublicServiceMap) {
+  for (const service of Object.values(services)) {
+    if (!service) {
+      continue;
+    }
+
+    const publication = (await service.listPublicationHistory()).find((entry) => entry.publication.id === publicationId);
+    if (publication) {
+      return { service, publication };
+    }
+  }
+
+  return null;
 }
 
 function readRequestHost(request: Request) {

@@ -1,7 +1,8 @@
 import { createApp } from "./api/app.js";
-import { loadConfig } from "./config/env.js";
+import { loadConfig, type AppConfig } from "./config/env.js";
 import { runMigrations } from "./db/migrate.js";
-import { NjdgHimachalSourceClient } from "./ingest/himachal-source-client.js";
+import { getStateProfile, listStateProfiles, type SupportedStateCode } from "./geographies.js";
+import { NjdgStateSourceClient } from "./ingest/himachal-source-client.js";
 import { logError, logInfo } from "./lib/logger.js";
 import { createPreviewRuntime, type AppRuntime } from "./preview/runtime.js";
 import { PublishedSnapshotService } from "./services/published-snapshot-service.js";
@@ -42,16 +43,32 @@ process.on("unhandledRejection", (reason) => {
 async function createRuntime(): Promise<AppRuntime> {
   const config = loadConfig();
   const pool = new Pool({ connectionString: config.DATABASE_URL });
+  const profile = getStateProfile(config.STATE_CODE);
 
   await runMigrations(pool);
 
   const store = PgWarehouseStore.fromPool(pool);
   const artifactStore = new S3ArtifactStore(config);
-  const sourceClient = new NjdgHimachalSourceClient();
-  const service = new PublishedSnapshotService(config, store, artifactStore, sourceClient);
+  const sourceClient = new NjdgStateSourceClient(profile);
+  const service = new PublishedSnapshotService(config, profile, store, artifactStore, sourceClient);
+  const publicServices = Object.fromEntries(
+    listStateProfiles().map((publicProfile) => {
+      const publicService =
+        publicProfile.stateCode === config.STATE_CODE
+          ? service
+          : new PublishedSnapshotService(
+              { ...config, STATE_CODE: publicProfile.stateCode } satisfies AppConfig,
+              publicProfile,
+              store,
+              artifactStore,
+              new NjdgStateSourceClient(publicProfile),
+            );
+      return [publicProfile.stateCode, publicService];
+    }),
+  ) as Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
 
   return {
-    app: createApp(config, service),
+    app: createApp(config, service, publicServices),
     config,
     async close() {
       await pool.end();

@@ -19,14 +19,14 @@ export const BASE_CSS = `
     --ink: #0c0a08;
     --ink-soft: #2f2b26;
     --ink-mid: #56514a;
-    --ink-muted: #7a756d;
+    --ink-muted: #5f5a53;
     --rule: #d9d3c8;
     --rule-soft: #e7e1d4;
     --paper: #f4efe3;
     --paper-bright: #fbf7ea;
     --accent: #bd2716;
     --accent-dark: #8a1408;
-    --flag: #a0720a;
+    --flag: #6f4b00;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -70,6 +70,36 @@ export const BASE_CSS = `
   .masthead__nav a { color: var(--ink-soft); text-decoration: none; }
   .masthead__nav a:hover { color: var(--accent); }
   .masthead__nav a.is-active { color: var(--accent); }
+
+  .state-switcher {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 32px 0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .state-switcher a {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px 8px;
+    border: 1px solid var(--rule);
+    background: var(--paper-bright);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 999px;
+  }
+  .state-switcher a:hover { border-color: var(--ink); color: var(--ink); }
+  .state-switcher a.is-active {
+    border-color: var(--accent);
+    color: var(--accent-dark);
+    background: #f6e2df;
+  }
 
   /* --- ticker --- */
   .ticker {
@@ -323,7 +353,7 @@ export const BASE_CSS = `
     border-radius: 2px;
   }
   .btn:focus-visible { outline-offset: 4px; }
-  .masthead__brand:focus-visible, .masthead__nav a:focus-visible { outline-offset: 6px; }
+  .masthead__brand:focus-visible, .masthead__nav a:focus-visible, .state-switcher a:focus-visible { outline-offset: 6px; }
   .info summary:focus-visible { outline: none; }
 
   /* --- responsive --- */
@@ -338,6 +368,7 @@ export const BASE_CSS = `
   @media (max-width: 720px) {
     .masthead { padding: 22px 18px 16px; flex-wrap: wrap; gap: 18px; }
     .masthead__nav { width: 100%; gap: 14px; overflow-x: auto; }
+    .state-switcher { padding: 12px 18px 0; }
     .ticker { padding: 12px 18px 0; }
     main { padding: 0 18px 80px; }
     .page-hero { padding: 28px 0 32px; }

@@ -1,12 +1,15 @@
 # Storage And Operator Flow
 
-This repository now ships the real Himachal run pipeline for NyaayWatch's published snapshot boundary.
+This repository now ships the real Himachal run pipeline for NyaayWatch's published snapshot boundary, plus the first approved state-scoped public expansion path for Punjab.
 
 ## What Lives Where
 
 - PostgreSQL stores canonical run state, run artifact metadata, published snapshot payloads, and publication history.
 - S3 stores the raw captured NJDG HTML bundles and normalized snapshot-candidate artifacts that back a run.
-- The public API and UI read only the latest publication event for Himachal Pradesh.
+- The public API and UI read only the latest publication event for each explicitly exposed public state.
+- Unscoped public routes remain the Himachal Pradesh default surface.
+- Additional approved public states use explicit `/states/:stateSlug/...` routes and state-scoped API endpoints.
+- Operator flows can target supported candidate states without requiring a separate code fork.
 
 ## Storage Model
 
@@ -27,6 +30,10 @@ This repository now ships the real Himachal run pipeline for NyaayWatch's publis
 - All buckets are tagged with `project=nyaaywatch` and `env=dev` or `env=staging`.
 
 ## Operator Flow
+
+The live public product remains state-by-state and deployment-controlled.
+
+Approved additional public states use the same fetch / inspect / publish / replay / rollback machinery plus the same published-snapshot read boundary. The current first additional state is Punjab (`PB`), exposed only through explicit state-scoped routes when a Punjab published snapshot is present in the current runtime.
 
 ### Fetch
 
@@ -77,6 +84,8 @@ This repository now ships the real Himachal run pipeline for NyaayWatch's publis
 
 All operator endpoints require `x-operator-token`.
 
+For multi-state operation, operator surfaces accept explicit state targeting through `stateCode` or `stateSlug` query params or JSON-body fields. If omitted, the runtime falls back to its configured default state.
+
 ## Local Development
 
 1. Copy `.env.example` to `.env`.
@@ -97,10 +106,25 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
 2. Bootstrap or run the app with `npm run dev`.
 3. Create a run:
    `npm run operator:fetch -- "Manual Himachal fetch"`
-4. Inspect the stored candidate:
+4. For an internal candidate state trial, override the operator target explicitly:
+   `npm run operator:fetch -- --state PB "Internal Punjab fetch"`
+5. Inspect the stored candidate:
    `npm run operator:inspect -- <run-id>`
-5. Publish the completed run:
-   `npm run operator:publish -- <run-id> "Publish latest Himachal snapshot"`
+6. Review publication history and the current rollback target:
+   `npm run operator:publications`
+7. Run prepublish verification against the public hostname:
+   `npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in`
+   For a state-scoped rollout, add `--state-slug=<state-slug>`.
+8. Publish the completed run:
+   `npm run operator:publish -- <run-id> "Publish completed snapshot"`
+9. After publish, save a release evidence artifact:
+   `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in`
+   For a state-scoped rollout, add `--state-slug=<state-slug>`.
+10. Record the release in the tracked ledger:
+   `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
+    For a state-scoped rollout, add `--state-slug=<state-slug>`.
+
+The `--state` override targets the operator flow only. A state becomes publicly reachable only if the runtime includes that state's published snapshot service and the public app has been intentionally rolled out with the corresponding state-scoped routes.
 
 ### Replay -> Rollback
 
