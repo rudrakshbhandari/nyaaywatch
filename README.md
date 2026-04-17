@@ -111,6 +111,7 @@ npm run operator:rollback -- <publication-id>
 npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --connect-host=<alb-dns> --state=UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:reconcile-fetch-schedule
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
@@ -120,6 +121,8 @@ npm run release:record -- --state-slug=<state-slug> --publication-id=<publicatio
 ```
 
 Use `npm run operator:remote` for live remote operator access from a local terminal. Use `npm run operator:staging` as the default heavy-state lane on the live AWS stack when long-running fetches should execute inside a one-off ECS task instead of through the Cloudflare-fronted public operator path.
+
+The live stack also supports a weekday internal raw-fetch schedule. Reconcile it against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`. Public publishes remain operator-reviewed and manual.
 
 ## Public Surface
 

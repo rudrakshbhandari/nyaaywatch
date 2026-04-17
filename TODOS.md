@@ -107,8 +107,8 @@ Use this file for:
 
 ### Release Cadence And Observability Baseline
 
-- completed in `docs/RELEASE_POLICY.md`, `docs/DEPLOYMENT_STATUS.md`, and `infra/aws/staging/stack.yaml`
-- the alpha now has a fixed twice-weekly publish recommendation, a tight publisher allowlist, blocked-release rules, CloudWatch alarms for health and app errors, a release-review dashboard, and a documented log-review routine
+- completed in `docs/RELEASE_POLICY.md`, `docs/DEPLOYMENT_STATUS.md`, `infra/aws/staging/README.md`, `.github/workflows/ci.yml`, and `infra/aws/staging/reconcile-internal-fetch-schedule.sh`
+- the alpha now separates `weekday 8:00 AM Asia/Kolkata internal raw fetches` from `twice-weekly public publishes`, keeps the publisher allowlist tight, and documents the log-review routine plus blocked-release rules
 
 ### Release History And Operating Evidence Tracking
 

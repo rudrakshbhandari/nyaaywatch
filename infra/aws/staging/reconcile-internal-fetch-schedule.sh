@@ -1,0 +1,292 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -gt 1 ]]; then
+  echo "Usage: $0 [stack-name]" >&2
+  echo "Env overrides: INTERNAL_FETCH_STATE_CODE, INTERNAL_FETCH_SCHEDULE_EXPRESSION, INTERNAL_FETCH_SCHEDULE_TIMEZONE, INTERNAL_FETCH_SCHEDULE_STATE" >&2
+  exit 1
+fi
+
+stack_name="${1:-nyaaywatch-staging}"
+region="${AWS_REGION:-ap-south-1}"
+state_code="${INTERNAL_FETCH_STATE_CODE:-HP}"
+schedule_expression="${INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(0 8 ? * MON-FRI *)}"
+schedule_timezone="${INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
+schedule_state="${INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
+schedule_name="${INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-weekday-internal-fetch}"
+role_name="${INTERNAL_FETCH_SCHEDULER_ROLE_NAME:-${stack_name}-internal-fetch-scheduler}"
+role_policy_name="${INTERNAL_FETCH_SCHEDULER_POLICY_NAME:-${stack_name}-internal-fetch-scheduler}"
+schedule_group_name="${INTERNAL_FETCH_SCHEDULE_GROUP_NAME:-default}"
+note_prefix="${INTERNAL_FETCH_NOTE_PREFIX:-Scheduled weekday internal raw fetch}"
+
+tmpdir="$(mktemp -d)"
+cleanup() {
+  rm -rf "$tmpdir"
+}
+trap cleanup EXIT
+
+retry_scheduler_command() {
+  local operation="$1"
+  local request_path="$2"
+  local region="$3"
+  local attempt=1
+
+  while true; do
+    local output
+    if output="$(
+      aws scheduler "$operation" \
+        --region "$region" \
+        --cli-input-json "file://$request_path" \
+        2>&1
+    )"; then
+      return 0
+    fi
+
+    if [[ "$output" != *"must allow AWS EventBridge Scheduler to assume the role"* || "$attempt" -ge 12 ]]; then
+      echo "$output" >&2
+      return 1
+    fi
+
+    sleep 5
+    attempt=$((attempt + 1))
+  done
+}
+
+cluster_name="$(
+  aws cloudformation describe-stacks \
+    --region "$region" \
+    --stack-name "$stack_name" \
+    --query "Stacks[0].Outputs[?OutputKey=='ClusterName'].OutputValue" \
+    --output text
+)"
+
+service_arn="$(
+  aws cloudformation describe-stack-resources \
+    --region "$region" \
+    --stack-name "$stack_name" \
+    --logical-resource-id Service \
+    --query "StackResources[0].PhysicalResourceId" \
+    --output text
+)"
+
+if [[ -z "$cluster_name" || "$cluster_name" == "None" ]]; then
+  echo "ClusterName output not found for stack $stack_name" >&2
+  exit 1
+fi
+
+if [[ -z "$service_arn" || "$service_arn" == "None" ]]; then
+  echo "Service resource not found for stack $stack_name" >&2
+  exit 1
+fi
+
+aws ecs describe-services \
+  --region "$region" \
+  --cluster "$cluster_name" \
+  --services "$service_arn" \
+  --query "services[0]" \
+  --output json \
+  > "$tmpdir/service.json"
+
+task_definition_arn="$(
+  python3 - "$tmpdir/service.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    service = json.load(handle)
+
+print(service.get("taskDefinition", ""))
+PY
+)"
+
+if [[ -z "$task_definition_arn" ]]; then
+  echo "Task definition not found for service $service_arn" >&2
+  exit 1
+fi
+
+aws ecs describe-task-definition \
+  --region "$region" \
+  --task-definition "$task_definition_arn" \
+  --output json \
+  > "$tmpdir/task-definition.json"
+
+role_exists="false"
+if aws iam get-role --role-name "$role_name" >/dev/null 2>&1; then
+  role_exists="true"
+fi
+
+cat > "$tmpdir/trust-policy.json" <<'EOF'
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "scheduler.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+
+if [[ "$role_exists" != "true" ]]; then
+  aws iam create-role \
+    --role-name "$role_name" \
+    --assume-role-policy-document "file://$tmpdir/trust-policy.json" \
+    >/dev/null
+else
+  aws iam update-assume-role-policy \
+    --role-name "$role_name" \
+    --policy-document "file://$tmpdir/trust-policy.json" \
+    >/dev/null
+fi
+
+python3 - "$tmpdir/task-definition.json" "$tmpdir/role-policy.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    task_definition = json.load(handle)["taskDefinition"]
+
+resources = [task_definition["taskRoleArn"]]
+execution_role = task_definition.get("executionRoleArn")
+if execution_role:
+    resources.append(execution_role)
+
+policy = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": ["ecs:RunTask"],
+            "Resource": task_definition["taskDefinitionArn"],
+        },
+        {
+            "Effect": "Allow",
+            "Action": ["iam:PassRole"],
+            "Resource": resources,
+        },
+    ],
+}
+
+with open(sys.argv[2], "w", encoding="utf-8") as handle:
+    json.dump(policy, handle)
+PY
+
+aws iam put-role-policy \
+  --role-name "$role_name" \
+  --policy-name "$role_policy_name" \
+  --policy-document "file://$tmpdir/role-policy.json" \
+  >/dev/null
+
+role_arn="$(
+  aws iam get-role \
+    --role-name "$role_name" \
+    --query "Role.Arn" \
+    --output text
+)"
+
+python3 - \
+  "$tmpdir/service.json" \
+  "$tmpdir/task-definition.json" \
+  "$tmpdir/create-schedule.json" \
+  "$schedule_name" \
+  "$schedule_group_name" \
+  "$schedule_expression" \
+  "$schedule_timezone" \
+  "$schedule_state" \
+  "$state_code" \
+  "$note_prefix" \
+  "$role_arn" <<'PY'
+import json
+import sys
+
+(
+    service_path,
+    task_definition_path,
+    target_path,
+    schedule_name,
+    schedule_group_name,
+    schedule_expression,
+    schedule_timezone,
+    schedule_state,
+    state_code,
+    note_prefix,
+    role_arn,
+) = sys.argv[1:]
+
+with open(service_path, "r", encoding="utf-8") as handle:
+    service = json.load(handle)
+
+with open(task_definition_path, "r", encoding="utf-8") as handle:
+    task_definition = json.load(handle)["taskDefinition"]
+
+container_name = task_definition["containerDefinitions"][0]["name"]
+network = service["networkConfiguration"]["awsvpcConfiguration"]
+
+command = ["node", "dist/src/dev/ecs-operator-entrypoint.js"]
+if state_code:
+    command.extend(["--state", state_code])
+command.extend(["fetch", f"{note_prefix} (<aws.scheduler.scheduled-time>)"])
+
+request = {
+    "Name": schedule_name,
+    "GroupName": schedule_group_name,
+    "Description": "Weekday internal raw fetch only. This schedule does not publish public snapshots.",
+    "FlexibleTimeWindow": {"Mode": "OFF"},
+    "ScheduleExpression": schedule_expression,
+    "ScheduleExpressionTimezone": schedule_timezone,
+    "State": schedule_state,
+    "Target": {
+        "Arn": service["clusterArn"],
+        "RoleArn": role_arn,
+        "RetryPolicy": {
+            "MaximumEventAgeInSeconds": 3600,
+            "MaximumRetryAttempts": 2,
+        },
+        "EcsParameters": {
+            "LaunchType": "FARGATE",
+            "TaskCount": 1,
+            "TaskDefinitionArn": task_definition["taskDefinitionArn"],
+            "EnableECSManagedTags": False,
+            "EnableExecuteCommand": False,
+            "NetworkConfiguration": {
+                "awsvpcConfiguration": {
+                    "Subnets": network["subnets"],
+                    "SecurityGroups": network["securityGroups"],
+                    "AssignPublicIp": network.get("assignPublicIp", "ENABLED"),
+                }
+            },
+        },
+        "Input": json.dumps(
+            {
+                "containerOverrides": [
+                    {
+                        "name": container_name,
+                        "command": command,
+                    }
+                ]
+            }
+        ),
+    },
+}
+
+with open(target_path, "w", encoding="utf-8") as handle:
+    json.dump(request, handle)
+PY
+
+if aws scheduler get-schedule --region "$region" --group-name "$schedule_group_name" --name "$schedule_name" >/dev/null 2>&1; then
+  retry_scheduler_command update-schedule "$tmpdir/create-schedule.json" "$region"
+  action="updated"
+else
+  retry_scheduler_command create-schedule "$tmpdir/create-schedule.json" "$region"
+  action="created"
+fi
+
+aws scheduler get-schedule \
+  --region "$region" \
+  --group-name "$schedule_group_name" \
+  --name "$schedule_name" \
+  --query "{action:'$action',name:Name,state:State,scheduleExpression:ScheduleExpression,scheduleExpressionTimezone:ScheduleExpressionTimezone,targetArn:Target.Arn,targetTaskDefinition:Target.EcsParameters.TaskDefinitionArn}" \
+  --output json

@@ -6,26 +6,34 @@ This policy sets cadence, publisher rules, and blocking criteria. Use `docs/ALPH
 
 This document answers four practical questions:
 
-1. How often should NyaayWatch publish?
+1. How often should NyaayWatch fetch and publish?
 2. Who is allowed to publish?
 3. What blocks a release?
 4. What is the minimum log and alarm review routine?
 
-## Default Publish Cadence
+## Default Alpha Cadence
 
 Use a calm, predictable cadence for alpha:
 
-- Target snapshot publishes: **twice per week**
-- Recommended window: **Tuesday and Friday, 11:00 AM Asia/Kolkata**
+- Internal raw fetches: **every weekday at 8:00 AM Asia/Kolkata**
+- Public snapshot publishes: **twice per week**
+- Recommended publish window: **Tuesday and Friday, 11:00 AM Asia/Kolkata**
 - Allowed exception: a same-day hotfix for broken public copy, methodology wording, or platform issues that do not weaken the trust boundary
 
 Why this cadence:
 
-- it keeps freshness visible without pretending the product is live
-- it leaves room for operator inspection before publish
+- it separates collection freshness from public-claim changes
+- it catches upstream breakage on weekdays without making the site feel live
+- it leaves room for operator inspection before public publish
 - it is frequent enough for a public alpha but slow enough to keep every release deliberate
 
 Do not publish just because a newer run exists. Publish only after the release checklist is green.
+
+Treat the weekday fetches as internal evidence collection only:
+
+- they may create completed candidate runs
+- they must not change the public snapshot without an explicit operator publish
+- a failed weekday fetch is an operational signal, not a reason to auto-publish or auto-rollback
 
 ## Publish Authority
 
