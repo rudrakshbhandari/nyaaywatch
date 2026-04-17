@@ -79,6 +79,7 @@ aws ecs describe-task-definition \
 
 python3 - "$tmpdir/current-task-definition.json" "$tmpdir/register-task-definition.json" "$container_image" <<'PY'
 import json
+import os
 import sys
 
 source_path, target_path, image_uri = sys.argv[1:]
@@ -99,6 +100,18 @@ for key in (
     task_definition.pop(key, None)
 
 task_definition["containerDefinitions"][0]["image"] = image_uri
+
+environment = task_definition["containerDefinitions"][0].setdefault("environment", [])
+environment_map = {entry["name"]: entry.get("value", "") for entry in environment}
+
+for env_name in ("CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ZONE_ID", "CLOUDFLARE_ZONE_NAME", "PUBLIC_BASE_URL"):
+    env_value = os.environ.get(env_name)
+    if env_value:
+        environment_map[env_name] = env_value
+
+task_definition["containerDefinitions"][0]["environment"] = [
+    {"name": name, "value": value} for name, value in sorted(environment_map.items())
+]
 
 with open(target_path, "w", encoding="utf-8") as target_file:
     json.dump(task_definition, target_file)

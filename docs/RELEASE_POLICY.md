@@ -104,6 +104,7 @@ For the next 15 minutes:
 - confirm `GET /v1/stats/himachal` reflects the intended active publication
 - if rolling out an additional approved state, confirm its explicit state-scoped stats route reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
+- if `CLOUDFLARE_API_TOKEN` is configured for the live runtime, confirm the public data page and CSV verification no longer require manual cache-busting and that `release:verify` passes on the stable URL alone
 - run `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in` and keep the generated markdown evidence file
 - run the same postpublish command with `--state-slug=<state-slug>` for any approved state-scoped rollout
 - run `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"` so `docs/RELEASE_HISTORY.md` stays current
