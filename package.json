@@ -28,6 +28,7 @@
     "operator:rollback": "tsx src/dev/operator.ts rollback",
     "operator:remote": "tsx src/dev/operator-remote.ts",
     "operator:staging": "tsx src/dev/staging-operator.ts",
+    "operator:reconcile-fetch-schedule": "bash infra/aws/staging/reconcile-internal-fetch-schedule.sh",
     "release:prepublish": "tsx src/dev/release-prepublish.ts",
     "release:postpublish": "tsx src/dev/release-postpublish.ts",
     "release:record": "tsx src/dev/release-record.ts",

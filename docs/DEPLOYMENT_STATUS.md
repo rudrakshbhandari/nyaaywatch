@@ -28,7 +28,10 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:47`
+- ECS task definition: `nyaaywatch-staging:48`
+- Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
+- Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
+- Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -41,7 +44,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
-- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image and rolling the ECS service in place
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the weekday internal fetch schedule against the live task definition while reusing the existing scheduler role
 
 Operational notes:
 
@@ -51,6 +54,8 @@ Operational notes:
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 - For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
+- The live weekday internal fetch schedule currently targets `STATE_CODE=HP` and runs `fetch` only. It does not publish or change the public snapshot.
+- Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
 
 ### Public Alpha
@@ -178,6 +183,11 @@ Latest confirmed operator validation:
 - ECS-backed heavy-state follow-up completed on 2026-04-17 after PR `#54` merged to `main`:
   - GitHub deploy run `24554574390` rolled the live service to task definition `:43`
   - `npm run operator:staging -- --state UP fetch "UP ECS heavy-state proof cycle fetch"` succeeded as fetch run `run_a16bb291-e3fb-4238-8695-bc60e4d63a64`
+- Weekday internal fetch scheduler enabled and smoke-tested on 2026-04-17:
+  - recurring schedule `nyaaywatch-staging-weekday-internal-fetch` is enabled in EventBridge Scheduler with `cron(0 8 ? * MON-FRI *)` plus `Asia/Kolkata`
+  - scheduler target role is `arn:aws:iam::723951822728:role/nyaaywatch-staging-internal-fetch-scheduler`
+  - one-time smoke schedule `nyaaywatch-staging-internal-fetch-smoke-1776456368` launched ECS task `bb223b4991934e2ebc554cb9d2e933cb` with `startedBy=chronos-schedule/...`
+  - the smoke task exited `0` and CloudWatch logs recorded completed fetch run `run_337a80ae-4980-415a-8585-d670e413dfed` with `qualityState=complete`
   - the live ECS helper completed with `sourceSnapshotAt=2026-04-16T00:00:00.000Z`, `qualityState=complete`, `districtCount=74`, and `pendingCases=11911564`
   - raw artifact `raw/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-njdg-dashboard-html.json` and normalized artifact `normalize/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-snapshot-candidate.json` were stored successfully
   - `https://nyaaywatch.in/states/uttar-pradesh` and `https://nyaaywatch.in/v1/states/uttar-pradesh/stats` both still returned `404`, so the heavier-state proof stayed internal-only

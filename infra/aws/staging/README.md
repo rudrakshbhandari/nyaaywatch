@@ -140,9 +140,39 @@ The deploy job:
 - discovers the live ECS service from the `nyaaywatch-staging` CloudFormation stack
 - registers a fresh task definition revision pinned to the commit-SHA image
 - updates the ECS service and waits for steady state
+- reconciles the weekday internal raw-fetch schedule against the new live task definition
 - confirms the raw ALB `ServiceUrl` still answers `/health`
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
+
+## Weekday Internal Fetch Schedule
+
+The live stack can keep an internal raw-fetch cadence without auto-publishing public data.
+
+Default schedule:
+
+- state: `HP`
+- cadence: weekdays at `8:00 AM Asia/Kolkata`
+- behavior: runs `fetch` only inside a one-off ECS task and leaves public publication unchanged
+
+Manual reconcile command:
+
+```bash
+npm run operator:reconcile-fetch-schedule
+```
+
+What it does:
+
+- discovers the current live ECS service, task definition, and awsvpc network settings
+- creates or updates the scheduler IAM role
+- creates or updates the EventBridge Scheduler schedule
+- keeps the schedule pointed at the current ECS task definition after each deploy
+
+Bootstrap note:
+
+- the GitHub Actions deploy role can update the schedule target, but it cannot create or rewrite IAM roles
+- first-time schedule bootstrap or scheduler-role policy changes still require an IAM-capable operator run
+- once the role exists, CI reconciles the schedule against the latest ECS task definition on every `main` deploy
 
 ## Heavy-State Operator Lane
 
