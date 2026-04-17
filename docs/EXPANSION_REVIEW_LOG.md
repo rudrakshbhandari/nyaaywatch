@@ -357,9 +357,20 @@ Those next-slice decisions are now made:
 - operator validation: `GET /operator/publications?stateCode=TN` showed the rollback publication active after replay plus rollback
 - public-surface validation: `https://nyaaywatch.in/states/tamil-nadu` and `https://nyaaywatch.in/v1/states/tamil-nadu/stats` both returned `404`, so Tamil Nadu remained internal-only throughout the trial
 
+### Public Rollout Evidence
+
+- public rollout deploy run: `24588602379`
+- public rollout deployed task definition: `nyaaywatch-staging:54`
+- public rollout fetch run: `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`
+- public rollout publication: `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
+- public rollout snapshot: `snapshot_7307527d-f5d1-4449-bba0-a3f21beafc97`
+- operator validation: `GET /operator/publications?stateCode=TN` showed the Tamil Nadu public publication active with rollback target `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tamil-nadu` passed with `districtCount=38`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- browser validation: `https://nyaaywatch.in/states/tamil-nadu` loaded with explicit Tamil Nadu navigation, published-snapshot trust text, and supported-state navigation for Himachal Pradesh, Punjab, Haryana, and Tamil Nadu
+
 ### Next Required Work
 
-- complete the Tamil Nadu public-route parity and checklist work, then use Tamil Nadu as the next public rollout
+- treat Tamil Nadu as live and keep the next public-state decision separate from the internal-only qualification track
 - keep Kerala internal-only after its proof cycle unless a later public-readiness review says otherwise
 
 ## Assam (`AS`) Internal Trial

@@ -10,6 +10,13 @@ Use this file for:
 
 ## Completed
 
+### Tamil Nadu Public Rollout
+
+- completed live on 2026-04-17 after PR `#64` merged and deploy run `24588602379` rolled the live stack to task definition `:54`
+- Tamil Nadu fetch `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa` published as `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tamil-nadu` passed with `districtCount=38`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live browser verification loaded `https://nyaaywatch.in/states/tamil-nadu` with explicit Tamil Nadu navigation, published-snapshot trust text, and supported-state navigation for Himachal Pradesh, Punjab, Haryana, and Tamil Nadu
+
 ### Haryana Public Rollout
 
 - completed live on 2026-04-17 after PR `#56` merged and deploy run `24582480598` rolled the live stack to task definition `:45`

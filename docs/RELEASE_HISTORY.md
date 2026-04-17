@@ -6,6 +6,25 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04:start -->
+## publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04
+
+- Reviewed at: `2026-04-17T22:16:31.579Z`
+- Reviewer: `Codex Tamil Nadu public rollout`
+- Public URL: `https://nyaaywatch.in/states/tamil-nadu`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-17T22:15:32.219Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`
+- Rollback target: `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Tamil Nadu became the third additional public state after task definition `:54` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/tamil-nadu`, and the live browser check confirmed the expected trust metadata plus supported-state navigation.
+
+<!-- release:publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04:end -->
+
 <!-- release:publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c:start -->
 ## publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c
 
