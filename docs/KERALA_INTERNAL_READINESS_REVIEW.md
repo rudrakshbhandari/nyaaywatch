@@ -4,6 +4,12 @@ Initial source-viability and internal-readiness review for Kerala before any liv
 
 Kerala is a strong internal-only candidate for the next southern expansion track after Tamil Nadu. This document records live source evidence only. It does not approve public exposure.
 
+Historical note:
+
+- repo wiring for `KL` is now complete
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
+
 ## Review Basis
 
 Source checks run against the live NJDG Kerala district dashboard on `2026-04-17`.
@@ -52,7 +58,7 @@ Kerala is now wired into the repo as an internal-only state profile with tests t
 
 ### 2. Operating Evidence
 
-Kerala has not yet cleared:
+Kerala has now cleared:
 
 - live `fetch`
 - live `inspect`
@@ -60,18 +66,17 @@ Kerala has not yet cleared:
 - live `replay`
 - live `rollback`
 
-Until those are complete, Kerala remains only a source-viability candidate.
+That closes the internal proof bar. Kerala is no longer only a source-viability candidate.
 
 ### 3. Public Trust Review
 
-No Kerala-specific public-route parity, copy, or methodology review has been done yet. Public exposure should not be considered until the internal proof cycle succeeds first.
+No Kerala-specific public-route parity, copy, or methodology review has been done yet. Public exposure should still lag the internal proof cycle.
 
 ## Recommendation
 
-Kerala should now be treated as the next southern internal proof state behind Tamil Nadu.
+Kerala should now be treated as the validated southern follow-on internal baseline behind Tamil Nadu.
 
 It should remain internal-only until:
 
-1. the first live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-2. the resulting publication lineage is recorded in the deployment and expansion docs
-3. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+2. a deliberate public rollout slot is chosen after Tamil Nadu
