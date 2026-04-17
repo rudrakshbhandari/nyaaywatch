@@ -54,7 +54,7 @@ The live state page exposes district drilldowns, and a sample district page requ
 
 ### 1. Repo Wiring
 
-Tamil Nadu is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site until a deliberate public decision is made.
+Tamil Nadu is now wired into the repo as a supported state with public-route parity coverage. The deliberate public decision is complete, but the live hostname rollout still remains separate evidence work.
 
 ### 2. Operating Evidence
 
@@ -70,7 +70,7 @@ That closes the internal proof bar. Tamil Nadu is no longer only a source-viabil
 
 ### 3. Public Trust Review
 
-Tamil Nadu-specific public-route parity and live hostname verification still remain. Public exposure should now be considered through the narrower go-live artifacts rather than through this initial source-viability note.
+Tamil Nadu-specific live hostname verification still remains. Public exposure should now be completed through the narrower go-live artifacts rather than through this initial source-viability note.
 
 ## Recommendation
 

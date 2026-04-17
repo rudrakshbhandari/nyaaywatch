@@ -375,3 +375,74 @@ export function buildHaryanaTestSnapshot(): PublishedSnapshot {
     ],
   };
 }
+
+export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "TN",
+      stateName: "Tamil Nadu",
+      sourceName: "NJDG Tamil Nadu district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-17T22:18:09.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Tamil Nadu",
+      publishedFromRunId: "run_329a8b74-2b9d-4c33-ba2f-46b19186935c",
+    },
+    stats: {
+      pendingCases: 1746162,
+      disposalRate: 101.6,
+      medianCaseAgeDays: 183,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "chennai",
+        districtName: "Chennai",
+        rank: 1,
+        backlogCases: 284613,
+        disposalRate: 88.9,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 11.1,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Tamil Nadu's biggest.",
+        summary:
+          "Chennai has 2,84,613 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.9% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "coimbatore",
+        districtName: "Coimbatore",
+        rank: 2,
+        backlogCases: 132904,
+        disposalRate: 107.8,
+        medianAgeDays: 730,
+        filingVsDisposalGap: -7.8,
+        flagReason:
+          "People appear to be waiting longer here than in much of Tamil Nadu, based on the latest published snapshot.",
+        summary:
+          "Coimbatore has 1,32,904 cases waiting. A typical pending case falls around 730 days old, and the district cleared 107.8% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "madurai",
+        districtName: "Madurai",
+        rank: 3,
+        backlogCases: 118772,
+        disposalRate: 79.5,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 20.5,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
+        summary:
+          "Madurai has 1,18,772 cases waiting. A typical pending case falls around 365 days old, and the district cleared 79.5% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 1746162,
+        disposalRate: 101.6,
+      },
+    ],
+  };
+}

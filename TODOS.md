@@ -74,7 +74,8 @@ Use this file for:
 
 - completed in `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` and `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
 - Tamil Nadu is now the next narrow public rollout candidate after Haryana
-- the remaining Tamil Nadu work is public-route parity, live rollout verification, and release-history recording
+- local public-route parity is now implemented in repo config and preflight coverage
+- the remaining Tamil Nadu work is live rollout verification and release-history recording
 
 ### Kerala And Meghalaya Internal Trial Candidate Preparation
 

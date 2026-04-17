@@ -24,7 +24,7 @@ describe("state profiles", () => {
       stateName: "Tamil Nadu",
       stateSlug: "tamil-nadu",
       njdgStateValue: "33~10",
-      publicAlpha: false,
+      publicAlpha: true,
     });
 
     expect(getStateProfile("AS")).toMatchObject({
@@ -76,7 +76,7 @@ describe("state profiles", () => {
     });
 
     expect(listStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN", "AS", "KL", "ML", "UK", "RJ", "UP"]);
-    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR"]);
+    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN"]);
     expect(getStateProfileByCode("hr")?.stateName).toBe("Haryana");
     expect(getStateProfileByCode("tn")?.stateName).toBe("Tamil Nadu");
     expect(getStateProfileByCode("as")?.stateName).toBe("Assam");
@@ -94,7 +94,7 @@ describe("state profiles", () => {
     expect(getStateProfileByCodeOrSlug("rajasthan")?.stateCode).toBe("RJ");
     expect(getStateProfileByCodeOrSlug("uttar-pradesh")?.stateCode).toBe("UP");
     expect(getPublicStateProfileBySlug("haryana")?.stateCode).toBe("HR");
-    expect(getPublicStateProfileBySlug("tamil-nadu")).toBeNull();
+    expect(getPublicStateProfileBySlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getPublicStateProfileBySlug("assam")).toBeNull();
     expect(getPublicStateProfileBySlug("kerala")).toBeNull();
     expect(getPublicStateProfileBySlug("meghalaya")).toBeNull();
