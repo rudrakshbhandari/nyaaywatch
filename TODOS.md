@@ -10,15 +10,15 @@ Use this file for:
 
 ## Review
 
-### Haryana Internal Trial
+### Haryana Public Readiness Review
 
-**What:** Run Haryana as the next internal subordinate-court trial using the same `fetch -> inspect -> publish -> verify -> replay/rollback` discipline Punjab cleared.
+**What:** Decide whether Haryana should become the next narrow public state rollout or remain internal-only while another state trial runs.
 
-**Why:** Punjab is now live and the cache-invalidity gap is closed, so the next credible expansion step is another state under the same trust bar instead of more Punjab-specific proof.
+**Why:** Haryana has now cleared the internal fetch/publish/replay/rollback bar on the live stack, so the remaining question is public trust posture rather than extraction viability.
 
-**Context:** On 2026-04-17 the live NJDG Haryana page (`state_code=6~14`) exposed the same metric family as Himachal and Punjab, with `22` districts, `15,09,969` pending cases, source date `2026-04-16`, and stable district labels (`Karnal`, `Sirsa`, `Ambala`, `Bhiwani`, `Faridabad`). Haryana is now added as an internal-only supported state profile and should be trialed without widening the public route family.
+**Context:** The live Haryana trial completed on 2026-04-17 with fetch run `run_171cccad-9fef-47cb-9cc1-c1ae4449fe4e`, publication `publication_0d8a736d-1c27-4ae3-8cba-c0593057e3d2`, replay run `run_76e23910-ffd8-4dcc-a3be-3eda0b130356`, replay publication `publication_cc7b1068-b97e-470a-a079-570cad23061f`, and rollback `publication_09613d9d-ae89-4543-9028-8f5d971df587`. Public Haryana routes still return `404`, so the next move is a deliberate go/no-go review, not more hidden plumbing work.
 
-**Effort:** M
+**Effort:** S
 **Priority:** P1
 
 ## Completed
@@ -28,6 +28,13 @@ Use this file for:
 - partial code fix completed in PR #44 by marking `/data` and CSV export endpoints as `no-store` for browsers and CDNs, including the explicit Punjab state-scoped routes
 - `npm run release:verify` now fails if the public data page or district CSV is still cacheable, which exposed that a cached pre-fix Cloudflare object still survives until an explicit purge runs
 - completed live on 2026-04-17 after PR #45 merged, the Cloudflare token wiring was corrected, task definition `:34` rolled out with purge credentials, and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passed without cache-busting
+
+### Haryana Internal Trial
+
+- completed live on 2026-04-17 after PR #46 merged and task definition `:35` rolled out with Haryana internal-only support
+- first live Haryana fetch run `run_171cccad-9fef-47cb-9cc1-c1ae4449fe4e` published as `publication_0d8a736d-1c27-4ae3-8cba-c0593057e3d2`
+- replay from stored evidence succeeded as `run_76e23910-ffd8-4dcc-a3be-3eda0b130356` with replay publication `publication_cc7b1068-b97e-470a-a079-570cad23061f`
+- rollback `publication_09613d9d-ae89-4543-9028-8f5d971df587` restored the original Haryana publication, and public Haryana routes still returned `404`
 
 ### Source Terms And Redistribution Review
 

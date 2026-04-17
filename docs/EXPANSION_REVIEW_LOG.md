@@ -73,21 +73,24 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 
 Punjab is now the first non-Himachal geography live on the public site, and the rollout cleared the narrow public expansion path without adding nationwide scaffolding.
 
-The next expansion slice should not be more Punjab proof. It should be one of:
+Haryana has now also cleared the internal-only operating evidence bar without widening the public surface.
 
-1. one additional state trial using the same evidence discipline
-2. a separate later track for High Courts rather than mixing court tiers now
+The next expansion slice should not be more hidden Haryana plumbing. It should be one of:
 
-## Haryana (`HR`) Internal Trial Candidate
+1. an explicit Haryana public-readiness review with trust-surface scrutiny
+2. one additional internal state trial using the same evidence discipline
+3. a separate later track for High Courts rather than mixing court tiers now
+
+## Haryana (`HR`) Internal Trial
 
 - candidate geography: Haryana
 - review date: 2026-04-17
 - source boundary: NJDG Haryana district dashboard aggregate pages
 - methodology version: `2026.04-alpha`
-- first successful capture date: not yet run
-- latest successful validation date: 2026-04-17 source viability review
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
 - reviewer: Codex
-- decision: `internal trial pending`
+- decision: `internal trial completed`
 
 ### Source Viability Notes
 
@@ -104,8 +107,20 @@ The next expansion slice should not be more Punjab proof. It should be one of:
 - Haryana is large enough to test another real 22-district state without Rajasthan's much broader 44-district blast radius.
 - The state page labels looked stable on first review, which lowers the risk that the next trial turns into source archaeology instead of pipeline proof.
 
+### Live Trial Evidence
+
+- deploy run: `24546133140`
+- deployed task definition: `nyaaywatch-staging:35`
+- first live fetch run: `run_171cccad-9fef-47cb-9cc1-c1ae4449fe4e`
+- first live publication: `publication_0d8a736d-1c27-4ae3-8cba-c0593057e3d2`
+- first live snapshot: `snapshot_5f5af9cb-e6d9-4a09-9947-025244e21035`
+- replay run from stored evidence: `run_76e23910-ffd8-4dcc-a3be-3eda0b130356`
+- replay publication: `publication_cc7b1068-b97e-470a-a079-570cad23061f`
+- rollback publication restoring the first live Haryana snapshot: `publication_09613d9d-ae89-4543-9028-8f5d971df587`
+- operator validation: `GET /operator/publications?stateCode=HR` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/haryana` and `https://nyaaywatch.in/v1/states/haryana/stats` both returned `404`, so Haryana remained internal-only throughout the trial
+
 ### Next Required Work
 
-- add Haryana as an internal-only supported state profile with no public route exposure
-- run the first Haryana `fetch -> inspect -> publish -> verify` cycle and record the resulting run / publication ids here
-- run a second independent window or replay plus rollback before any public-exposure discussion
+- run an explicit Haryana public-readiness review before exposing any `/states/haryana/...` surface
+- decide whether Haryana is the next narrow public rollout or whether the next slice should instead be a third internal state trial
