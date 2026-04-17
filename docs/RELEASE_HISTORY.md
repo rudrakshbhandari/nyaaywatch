@@ -6,6 +6,25 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_111cc225-f1a6-455d-8d7e-fd6af06ed597:start -->
+## publication_111cc225-f1a6-455d-8d7e-fd6af06ed597
+
+- Reviewed at: `2026-04-17T23:04:30.000Z`
+- Reviewer: `Codex Assam public rollout`
+- Public URL: `https://nyaaywatch.in/states/assam`
+- Action: `publish`
+- Source snapshot date: `2026-04-17T00:00:00.000Z`
+- Published at: `2026-04-17T22:53:49.614Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_e0f10a98-5e60-445a-b080-b9dafc962f61`
+- Rollback target: `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Assam became the fourth additional public state after task definition `:56` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/assam`, and the live browser check confirmed the expected trust metadata plus supported-state navigation.
+
+<!-- release:publication_111cc225-f1a6-455d-8d7e-fd6af06ed597:end -->
+
 <!-- release:publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04:start -->
 ## publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04
 

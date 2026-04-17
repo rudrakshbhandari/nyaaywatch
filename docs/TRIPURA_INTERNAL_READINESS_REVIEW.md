@@ -7,8 +7,8 @@ Tripura is a strong internal-only candidate for the next north-east expansion tr
 Historical note:
 
 - repo wiring for `TR` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle has not run yet
-- use `docs/EXPANSION_REVIEW_LOG.md` once the actual live proof lineage exists
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
 
 ## Review Basis
 
@@ -58,15 +58,15 @@ Tripura is now wired into the repo as an internal-only state profile with tests 
 
 ### 2. Operating Evidence
 
-Tripura still needs:
+Tripura has now cleared:
 
-- live `fetch`
+- live `fetch` as `run_6b5e6751-0835-42b1-a89a-f3da080f5287`
 - live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+- live `publish` as `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`
+- live `replay` as `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`
+- live `rollback` as `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
 
-That operating evidence should land before any public-readiness discussion.
+That closes the internal proof bar. Tripura is no longer only a source-viability candidate.
 
 ### 3. Public Trust Review
 
@@ -74,9 +74,9 @@ No Tripura-specific public-route parity, copy, or methodology review has been do
 
 ## Recommendation
 
-Tripura should now be treated as the next lighter north-east internal-only candidate after Meghalaya.
+Tripura should now be treated as the validated lighter north-east internal-only candidate after Meghalaya.
 
 It should remain internal-only until:
 
-1. the first live proof cycle concludes cleanly
-2. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+2. the product makes an explicit post-Assam public-state decision

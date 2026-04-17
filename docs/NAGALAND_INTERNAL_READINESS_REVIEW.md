@@ -7,8 +7,8 @@ Nagaland is a strong internal-only candidate for the next north-east expansion t
 Historical note:
 
 - repo wiring for `NL` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle has not run yet
-- use `docs/EXPANSION_REVIEW_LOG.md` once the actual live proof lineage exists
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
 
 ## Review Basis
 
@@ -44,7 +44,7 @@ That means Nagaland is not blocked on a missing metric class or a clearly differ
 
 ### 2. North-East Continuity Value
 
-Nagaland keeps the north-east track from depending on only one large baseline and one follow-on state. Its 11-district footprint is manageable enough to make it a sensible additional internal-only proof candidate while Assam moves into the next public slot.
+Nagaland keeps the north-east track from depending on only one large baseline and one follow-on state. Its 11-district footprint is manageable enough to make it a sensible additional internal-only proof candidate while Assam is live publicly.
 
 ### 3. Drilldown Reachability
 
@@ -58,15 +58,15 @@ Nagaland is now wired into the repo as an internal-only state profile with tests
 
 ### 2. Operating Evidence
 
-Nagaland still needs:
+Nagaland has now cleared:
 
-- live `fetch`
+- live `fetch` as `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`
 - live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+- live `publish` as `publication_abc433b9-1db4-4661-902e-ffd8861e35af`
+- live `replay` as `run_d3d5a492-1515-4e77-ab25-27135054b787`
+- live `rollback` as `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
 
-That operating evidence should land before any public-readiness discussion.
+That closes the internal proof bar. Nagaland is no longer only a source-viability candidate.
 
 ### 3. Public Trust Review
 
@@ -74,9 +74,9 @@ No Nagaland-specific public-route parity, copy, or methodology review has been d
 
 ## Recommendation
 
-Nagaland should now be treated as an additional north-east internal-only candidate behind Assam, Meghalaya, and Tripura.
+Nagaland should now be treated as validated additional north-east operating evidence behind Assam, Meghalaya, and Tripura.
 
 It should remain internal-only until:
 
-1. the first live proof cycle concludes cleanly
-2. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+2. the product makes an explicit post-Assam public-state decision

@@ -2,13 +2,13 @@
 
 Checklist for moving Assam from internal trial to soft public availability.
 
-This is narrower than a nationwide launch checklist. Assam clears the repo-level gates in this branch; the live rollout checks remain the final step.
+This is narrower than a nationwide launch checklist. Assam cleared the repo-level gates first, and the live rollout checks are now complete.
 
 ## Release Metadata
 
 - Candidate state: `Assam`
 - State code: `AS`
-- Current decision: `approved for live rollout`
+- Current decision: `live on the public site`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Readiness review: `docs/ASSAM_PUBLIC_READINESS_REVIEW.md`
 - Methodology version: `2026.04-alpha`
@@ -30,14 +30,14 @@ Why this gate exists:
 - [x] Assam public routes can be wired to read only from the active published snapshot in the state-scoped runtime.
 - [x] No public Assam route or download reads unpublished run state in local verification.
 - [x] Assam CSV, API, and UI can resolve to the same publication lineage once promoted in verification.
-- [ ] Assam rollback target is recorded in live public release history after the first public publication.
+- [x] Assam rollback target is recorded in live public release history after the first public publication.
 
 ### 3. Trust Metadata And Caveats
 
 - [x] Assam entry, district index, and district detail surfaces can show source snapshot date, publication date, freshness, methodology version, and source attribution in local verification.
 - [x] Assam copy can use `published snapshot`, `flagged signal`, and `operator-published` semantics in local verification.
 - [x] Assam copy can avoid live, predictive, or verdict-like framing in local verification.
-- [ ] Live hostname/browser checks confirm the same trust posture after rollout.
+- [x] Live hostname/browser checks confirm the same trust posture after rollout.
 
 ### 4. Product And IA Discipline
 
@@ -55,20 +55,21 @@ Why this gate exists:
 
 ### 6. Verification
 
-- [ ] `npm run typecheck`
-- [ ] targeted regression tests for Assam-related pipeline or public-surface changes
-- [ ] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug assam`
-- [ ] Browser verification on `https://nyaaywatch.in/states/assam`
+- [x] `npm run typecheck`
+- [x] targeted regression tests for Assam-related pipeline or public-surface changes
+- [x] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug assam`
+- [x] Browser verification on `https://nyaaywatch.in/states/assam`
 
 ### 7. Deployment
 
-- [ ] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
-- [ ] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
-- [ ] The first Assam public publication id and rollback posture are recorded explicitly.
+- [x] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
+- [x] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
+- [x] The first Assam public publication id and rollback posture are recorded explicitly.
 
 ## Decision
 
 - [x] Ready for live rollout once verification and deployment steps complete
+- [x] Live on the public site
 - [ ] Keep internal only
 
 If blocked, record the blocker and exact next action in `docs/EXPANSION_REVIEW_LOG.md`.

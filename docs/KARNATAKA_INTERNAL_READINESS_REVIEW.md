@@ -7,8 +7,8 @@ Karnataka is a strong internal-only candidate for the next southern expansion tr
 Historical note:
 
 - repo wiring for `KA` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle has not run yet
-- use `docs/EXPANSION_REVIEW_LOG.md` once the actual live proof lineage exists
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
 
 ## Review Basis
 
@@ -58,15 +58,15 @@ Karnataka is now wired into the repo as an internal-only state profile with test
 
 ### 2. Operating Evidence
 
-Karnataka still needs:
+Karnataka has now cleared:
 
-- live `fetch`
+- live `fetch` as `run_c57e88aa-c6bf-40d8-a3fb-9343bd819174`
 - live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+- live `publish` as `publication_54748fe1-5f7c-41d4-bc40-3c976d157f56`
+- live `replay` as `run_18f4c2a3-d811-496e-a277-d0d4574906c9`
+- live `rollback` as `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
 
-That operating evidence should land before any public-readiness discussion.
+That closes the internal proof bar. Karnataka is no longer only a source-viability candidate.
 
 ### 3. Public Trust Review
 
@@ -74,9 +74,9 @@ No Karnataka-specific public-route parity, copy, or methodology review has been 
 
 ## Recommendation
 
-Karnataka should now be treated as the next southern internal-only candidate after Kerala.
+Karnataka should now be treated as the validated next southern internal-only candidate after Kerala.
 
 It should remain internal-only until:
 
-1. the first live proof cycle concludes cleanly
-2. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+2. the product makes an explicit post-Assam public-state decision

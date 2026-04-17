@@ -1,18 +1,21 @@
 # Assam Public Readiness Review
 
-Review of what we can already validate for Assam before exposing any public Assam route family.
+Review of what Assam required before exposing the public Assam route family, now updated with the completed live rollout evidence.
 
-This review closes the Assam go / no-go question at the trust-surface level. The remaining work after this review is the actual live hostname rollout and stable-URL verification, not more repo-level public-surface design.
+This review closed the Assam go / no-go question at the trust-surface level before launch. The remaining work at that point was the actual live hostname rollout and stable-URL verification, which are now complete.
 
 ## Review Basis
 
-Based on the live Assam internal proof cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`:
+Based on the live Assam internal proof cycle and later public rollout recorded in `docs/EXPANSION_REVIEW_LOG.md`:
 
 - first live fetch run id: `run_32e2194a-027d-4ec2-8d50-b3c282446b90`
 - first live publication id: `publication_688f053e-53a4-4662-9367-a4ffba4973ce`
 - replay run id: `run_c28d9a91-0543-40b2-adac-1ca5e0c2e85d`
 - replay publication id: `publication_c8e143f6-61f4-4c1b-9423-b49e53b17399`
 - rollback publication id: `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f`
+- public rollout fetch run id: `run_e0f10a98-5e60-445a-b080-b9dafc962f61`
+- public rollout publication id: `publication_111cc225-f1a6-455d-8d7e-fd6af06ed597`
+- public rollout snapshot id: `snapshot_f296e9bb-fc95-476e-9f79-1bcd3ff1f1c7`
 
 Observed Assam source notes:
 
@@ -60,18 +63,18 @@ The Assam pipeline inherits the same trust-critical metadata shape used for Hima
 
 Nothing observed in the Assam candidate suggests we need a looser trust standard or a different copy posture to expose it narrowly.
 
-## What This Review Requires Before Launch
+## What This Review Required Before Launch
 
 ### 1. Stable-URL Public Verification
 
-Assam is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still need to verify:
+Assam is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we needed to verify:
 
 - `/states/assam`
 - `/v1/states/assam/...`
 - `/states/assam/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Tamil Nadu provides the immediate pattern. Assam does not need invention or repo-level public-surface work beyond that parity pass, but it still needs the actual live-host verification before launch.
+Tamil Nadu provided the immediate pattern. Assam did not need invention or repo-level public-surface work beyond that parity pass; it only needed the actual live-host verification before launch.
 
 The verification artifacts for that pass now live in:
 
@@ -90,23 +93,23 @@ The product is no longer Himachal-only, but it is still intentionally not nation
 
 The operational system is now good enough to qualify internal states in parallel. Public exposure should still lag internal qualification.
 
-That gate is satisfied for Assam because Uttarakhand, Rajasthan, Uttar Pradesh, Kerala, and Meghalaya now provide surrounding operating evidence while Tamil Nadu has already completed the previous public slot.
+That gate is satisfied for Assam because Uttarakhand, Rajasthan, Uttar Pradesh, Kerala, Meghalaya, Karnataka, Tripura, and Nagaland now provide surrounding operating evidence while Tamil Nadu already completed the previous public slot.
 
 ## Outcome
 
-Assam should now be treated as the next approved narrow public rollout candidate.
+Assam completed the next approved narrow public rollout on 2026-04-17.
 
-The conditions below still need to be satisfied on the live hostname before launch:
+The live conditions that this review required are now satisfied:
 
-1. Assam passes stable-URL UI/API/CSV verification on the live hostname
-2. the preflight artifacts in `docs/ASSAM_GO_LIVE_CHECKLIST.md` are green on the integrated branch
+1. Assam passed stable-URL UI/API/CSV verification on the live hostname
+2. the preflight artifacts in `docs/ASSAM_GO_LIVE_CHECKLIST.md` are green
 3. public copy remains explicit about which states are live, without implying nationwide coverage
 
 ## Useful Work Completed By This Review
 
-This review closes the open Assam trust question in `TODOS.md`:
+This review closed the open Assam trust question in `TODOS.md`:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: approved as the next public rollout candidate pending live execution
-- remaining blockers moved off Assam design itself and onto the actual rollout window plus verification
+- public recommendation: executed and live
+- remaining blockers were cleared by the actual rollout window plus verification

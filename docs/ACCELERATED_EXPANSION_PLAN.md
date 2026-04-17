@@ -73,14 +73,14 @@ As of `2026-04-17`:
 - Punjab is publicly live through explicit state-scoped routes after clearing the narrow expansion path
 - Haryana is publicly live through the same explicit state-scoped route pattern after passing public parity and live rollout verification
 - Tamil Nadu is now publicly live after Haryana
+- Assam is now publicly live after Tamil Nadu
 - AWS staging/public stack is live at `https://nyaaywatch.in`
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
 - Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all completed internal-only live proof cycles
-- Tamil Nadu (`TN`) and Assam (`AS`) have now both completed internal-only live proof cycles for the south and north-east expansion tracks
+- Tamil Nadu (`TN`) has completed both an internal-only proof cycle and a later public rollout
 - Kerala (`KL`) and Meghalaya (`ML`) have now both completed internal-only live proof cycles for the south and north-east follow-on tracks
-- Assam is now the next approved public rollout candidate after Tamil Nadu, pending the actual live publication window and stable-URL verification
-- Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) are now the next internal-only candidate trio after live NJDG source checks confirmed contract-compatible state pages
+- Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have now all completed internal-only live proof cycles after live NJDG source checks confirmed contract-compatible state pages
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
 
@@ -150,12 +150,12 @@ Actions:
 Output:
 
 - Haryana (`HR`) has completed the next narrow public rollout after Punjab and is now live on the public site
-- most recently launched public state: Tamil Nadu (`TN`)
+- most recently launched public state: Assam (`AS`)
 - Kerala (`KL`) and Meghalaya (`ML`) have both completed their internal-only proof cycles for the south and north-east follow-on tracks
-- next approved public state: Assam (`AS`)
-- next internal-only trio after the Kerala plus Meghalaya wave: Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`)
+- Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have also completed their internal-only proof cycles after the Kerala plus Meghalaya wave
+- next public state now requires a deliberate post-Assam decision rather than another pre-approved slot
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
-- Punjab, Haryana, and Tamil Nadu have all completed their public rollout evidence, and the updated south-plus-north-east sequencing is now recorded in the repo docs
+- Punjab, Haryana, Tamil Nadu, and Assam have all completed their public rollout evidence, and the updated south-plus-north-east sequencing is now recorded in the repo docs
 
 ### Day 1
 
