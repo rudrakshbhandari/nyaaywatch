@@ -26,6 +26,7 @@
     "operator:publish": "tsx src/dev/operator.ts publish",
     "operator:replay": "tsx src/dev/operator.ts replay",
     "operator:rollback": "tsx src/dev/operator.ts rollback",
+    "operator:remote": "tsx src/dev/operator-remote.ts",
     "release:prepublish": "tsx src/dev/release-prepublish.ts",
     "release:postpublish": "tsx src/dev/release-postpublish.ts",
     "release:record": "tsx src/dev/release-record.ts",

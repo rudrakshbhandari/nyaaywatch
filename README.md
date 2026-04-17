@@ -108,6 +108,8 @@ npm run operator:publications
 npm run operator:publish -- <run-id> "Publish completed snapshot"
 npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
+npm run operator:remote -- --base-url=https://nyaaywatch.in publications
+npm run operator:remote -- --base-url=https://nyaaywatch.in --connect-host=<alb-dns> --state=UP fetch "Internal Uttar Pradesh fetch"
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
@@ -160,6 +162,8 @@ Operator endpoints require `x-operator-token`:
 - `POST /operator/publications/:publicationId/rollback`
 
 Operator routes default to the runtime's configured state, but they also accept explicit `stateCode` or `stateSlug` selectors on query params or JSON bodies for multi-state operations.
+
+For live remote operation from a local terminal, use `npm run operator:remote`. Add `--connect-host=<alb-dns>` for heavier internal states when you need to bypass Cloudflare but still preserve `nyaaywatch.in` as the HTTP and TLS host.
 
 ## Testing
 

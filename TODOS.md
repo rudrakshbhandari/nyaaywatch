@@ -12,11 +12,11 @@ Use this file for:
 
 ### Long-Running Operator Requests For Large States
 
-**What:** Decide and implement the operator lane for heavier internal states so long-running fetches do not fail at the Cloudflare edge even when the origin succeeds.
+**What:** Deploy and live-validate the new direct-origin remote operator lane for heavier internal states, then decide whether to standardize on that path or move those runs into one-off ECS tasks.
 
-**Why:** Uttar Pradesh proved that the data pipeline itself can complete a heavy-state run, but the current public-domain operator path is not durable enough for those longer requests. That is the real bottleneck if we want faster multi-state internal expansion.
+**Why:** The repo now includes `npm run operator:remote` with an explicit `--connect-host` origin override, but that lane still needs live rollout confirmation before we treat it as the standard operating path for heavier states.
 
-**Context:** On 2026-04-17, the first live Uttar Pradesh fetch attempt through `https://nyaaywatch.in/operator/runs/fetch` returned a Cloudflare `504`, but the origin still completed and persisted `run_0b2ea65b-4d28-4d7b-a72c-308187a4e096`. The rest of the UP proof cycle succeeded only after bypassing Cloudflare and connecting to the ALB while preserving the `nyaaywatch.in` host. The choice now is whether heavier-state operator work should use a direct origin path, a one-off ECS task path, or another explicit internal-only execution lane.
+**Context:** On 2026-04-17, the first live Uttar Pradesh fetch attempt through `https://nyaaywatch.in/operator/runs/fetch` returned a Cloudflare `504`, but the origin still completed and persisted `run_0b2ea65b-4d28-4d7b-a72c-308187a4e096`. This branch adds a first-class remote operator client that can target `https://nyaaywatch.in` normally or bypass Cloudflare with `--connect-host=<alb-dns>` while preserving the canonical host. The remaining question is whether that direct-origin lane is good enough in live operation or whether the long-running path should move to one-off ECS tasks instead.
 
 **Effort:** M
 **Priority:** P1
