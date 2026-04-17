@@ -147,6 +147,11 @@ Latest confirmed operator validation:
   - state-scoped `release:prepublish`, `release:postpublish`, and `release:record` all succeeded when executed inside one-off ECS tasks on task definition `:28`
   - `GET /v1/states/punjab/stats` reflected `publishedAt=2026-04-16T23:32:07.721Z` and `publishedFromRunId=run_2e5ea2e1-ba95-4d62-9ea9-be14123b39cf`
   - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` now exposes a cache-invalidity edge case: the public API moved to the new publication immediately, but `/states/punjab/data/districts.csv` initially returned a stale Cloudflare `HIT` response with the earlier `published_at` until a cache-busting request forced a `MISS`
+- Cache-invalidity follow-up completed on 2026-04-17 after PR `#45` merged to `main`:
+  - GitHub deploy run `24542633809` rolled the live service to task definition `:34` with Cloudflare purge credentials plus explicit public base URL wiring
+  - the repo secret had to be corrected once because the initial `CLOUDFLARE_API_TOKEN` value was accidentally set to the whole shell command instead of the token string
+  - stable Punjab CSV headers now return `Cache-Control: no-store, max-age=0, must-revalidate`, `CDN-Cache-Control: no-store`, and `cf-cache-status: BYPASS`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` now passes without cache-busting, with `csvMetadataParity=true` and `publicDataCacheProtected=true`
 
 ## Release Use
 

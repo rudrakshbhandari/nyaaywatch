@@ -67,7 +67,7 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - Punjab live publishing was therefore executed through one-off ECS tasks with `STATE_CODE=PB` rather than through `https://nyaaywatch.in/operator/...`.
 - That tooling gap is now closed in `main`: operator routes accept explicit state selection, run/publication ids are resolved across configured state services, and `release:prepublish`, `release:postpublish`, and `release:record` now support state-scoped rollouts.
 - That updated tooling is now verified live after task definition `:28` rolled out: Punjab fetch and publish succeeded through the public HTTP operator routes, and the state-scoped release helper scripts succeeded inside one-off ECS tasks without any Punjab-specific environment override.
-- The remaining operational gap is cache invalidation on state-scoped CSV exports: immediately after the verified Punjab publication, the API moved to the new snapshot while Cloudflare still served a cached older CSV response until a cache-busting request forced a `MISS`.
+- The state-scoped CSV cache-invalidity gap is now closed after the 2026-04-17 Cloudflare purge rollout: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passes on the stable URL family, and the live CSV `published_at` now matches the API `publishedAt` without cache-busting.
 
 ### Recommendation
 
@@ -75,6 +75,37 @@ Punjab is now the first non-Himachal geography live on the public site, and the 
 
 The next expansion slice should not be more Punjab proof. It should be one of:
 
-1. fix published CSV cache invalidation so API and download parity holds immediately after publish
-2. one additional state trial using the same evidence discipline
-3. a separate later track for High Courts rather than mixing court tiers now
+1. one additional state trial using the same evidence discipline
+2. a separate later track for High Courts rather than mixing court tiers now
+
+## Haryana (`HR`) Internal Trial Candidate
+
+- candidate geography: Haryana
+- review date: 2026-04-17
+- source boundary: NJDG Haryana district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: not yet run
+- latest successful validation date: 2026-04-17 source viability review
+- reviewer: Codex
+- decision: `internal trial pending`
+
+### Source Viability Notes
+
+- NJDG state code value: `6~14`
+- source snapshot date observed on the live state page: `2026-04-16`
+- district count exposed on the live state page: `22`
+- statewide pending cases shown on the live state page: `15,09,969`
+- first visible district labels: `Karnal`, `Sirsa`, `Ambala`, `Bhiwani`, `Faridabad`
+- instituted-last-month, disposed-last-month, and all five age-bucket widgets were present on the live state page
+
+### Why Haryana Is Next
+
+- The aggregate source shape matches the current Himachal and Punjab extraction contract without new metric exceptions.
+- Haryana is large enough to test another real 22-district state without Rajasthan's much broader 44-district blast radius.
+- The state page labels looked stable on first review, which lowers the risk that the next trial turns into source archaeology instead of pipeline proof.
+
+### Next Required Work
+
+- add Haryana as an internal-only supported state profile with no public route exposure
+- run the first Haryana `fetch -> inspect -> publish -> verify` cycle and record the resulting run / publication ids here
+- run a second independent window or replay plus rollback before any public-exposure discussion

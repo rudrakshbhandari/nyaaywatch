@@ -27,7 +27,7 @@ Why:
 
 - the product, storage, publish, replay, rollback, verification, and release-tracking model now exist
 - the repo has live public-alpha evidence and release controls
-- but the documented operating evidence is still thin relative to the multi-state gate bar, and no second geography or higher court tier has yet cleared the required gates
+- but the documented operating evidence is still thin relative to the multi-state gate bar, and no higher court tier has yet cleared the required gates
 
 ## Decision Rule For Fast Expansion
 
@@ -67,13 +67,14 @@ Do not run three back-to-back publishes 5 minutes apart and call that operating 
 
 ## Current State
 
-As of `2026-04-16`:
+As of `2026-04-17`:
 
 - Himachal subordinate-court observability is publicly live
+- Punjab is publicly live through explicit state-scoped routes after clearing the narrow expansion path
 - AWS staging/public stack is live at `https://nyaaywatch.in`
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
-- no additional state has cleared internal-trial gates
+- Haryana (`HR`) is the newly chosen next internal subordinate-court candidate
 - no High Court or Supreme Court tier has cleared source or methodology review
 
 ## End Goal
@@ -141,9 +142,9 @@ Actions:
 
 Output:
 
-- chosen next state: Punjab (`PB`) as the first internal subordinate-court candidate
+- chosen next state: Haryana (`HR`) as the next internal subordinate-court candidate after Punjab
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
-- first and second real Punjab windows executed on 2026-04-16 and recorded in `docs/EXPANSION_REVIEW_LOG.md` as having cleared the internal evidence bar for narrow public rollout work
+- Punjab has already completed its internal and narrow public rollout evidence, and the next state-selection note is now recorded in `docs/EXPANSION_REVIEW_LOG.md`
 
 ### Day 1
 
