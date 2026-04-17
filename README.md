@@ -110,6 +110,7 @@ npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --connect-host=<alb-dns> --state=UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
@@ -117,6 +118,8 @@ npm run release:postpublish -- --state-slug=<state-slug> --publication-id=<publi
 npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 npm run release:record -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 ```
+
+Use `npm run operator:remote` for live remote operator access from a local terminal. Use `npm run operator:staging` as the default heavy-state lane on the live AWS stack when long-running fetches should execute inside a one-off ECS task instead of through the Cloudflare-fronted public operator path.
 
 ## Public Surface
 

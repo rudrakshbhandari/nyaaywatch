@@ -10,18 +10,24 @@ Use this file for:
 
 ## Review
 
-### Long-Running Operator Requests For Large States
+### Live Verification Of The ECS Heavy-State Operator Lane
 
-**What:** Deploy and live-validate the new direct-origin remote operator lane for heavier internal states, then decide whether to standardize on that path or move those runs into one-off ECS tasks.
+**What:** Run one heavy-state internal proof cycle through `npm run operator:staging` on the live stack and record the evidence.
 
-**Why:** The repo now includes `npm run operator:remote` with an explicit `--connect-host` origin override, but that lane still needs live rollout confirmation before we treat it as the standard operating path for heavier states.
+**Why:** The repo now has an ECS-backed operator lane for heavier states, but it still needs one live evidence-backed cycle to prove the new path is actually the routine operational default rather than just a coded tool.
 
-**Context:** On 2026-04-17, the first live Uttar Pradesh fetch attempt through `https://nyaaywatch.in/operator/runs/fetch` returned a Cloudflare `504`, but the origin still completed and persisted `run_0b2ea65b-4d28-4d7b-a72c-308187a4e096`. This branch adds a first-class remote operator client that can target `https://nyaaywatch.in` normally or bypass Cloudflare with `--connect-host=<alb-dns>` while preserving the canonical host. The remaining question is whether that direct-origin lane is good enough in live operation or whether the long-running path should move to one-off ECS tasks instead.
+**Context:** The repo now has both a direct-origin remote client (`npm run operator:remote`) and an ECS-backed heavy-state lane (`npm run operator:staging`). The docs now treat the ECS path as the default heavy-state workflow because it avoids Cloudflare edge timeouts entirely. The next operational step is to rerun a heavier state such as Uttar Pradesh through that ECS path and record the proof cycle in the release and expansion docs.
 
-**Effort:** M
+**Effort:** S
 **Priority:** P1
 
 ## Completed
+
+### ECS Heavy-State Operator Lane
+
+- completed in repo tooling on 2026-04-17 with `npm run operator:staging`
+- the helper now discovers the live `nyaaywatch-staging` ECS service from CloudFormation, reuses the current task definition plus network configuration, runs the requested operator command inside a one-off task, waits for completion, and prints the operator JSON result from CloudWatch logs
+- `docs/STORAGE_AND_OPERATIONS.md`, `docs/DEVELOPMENT_WORKFLOW.md`, `README.md`, `infra/aws/staging/README.md`, and `docs/DEPLOYMENT_STATUS.md` now document the ECS path as the default heavy-state lane while leaving ALB plus `curl --connect-to` as fallback recovery only
 
 ### Parallel Internal State Trials
 

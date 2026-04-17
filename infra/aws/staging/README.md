@@ -144,6 +144,26 @@ The deploy job:
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
 
+## Heavy-State Operator Lane
+
+Long-running internal-state fetches should use the ECS-backed operator lane instead of the Cloudflare-fronted public hostname.
+
+Default command:
+
+```bash
+npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
+```
+
+What it does:
+
+- discovers the live `nyaaywatch-staging` ECS service from CloudFormation
+- reuses the current service task definition and network configuration
+- starts a one-off ECS task that runs the ECS operator entrypoint inside the live runtime
+- waits for the task to stop
+- reads the CloudWatch log stream and prints the operator JSON result locally
+
+Use the same helper for `inspect`, `publish`, `replay`, and `rollback` when a heavier state should stay off the public HTTP operator path.
+
 ## Operator Validation Flow
 
 Run the staging validation only after the ECS service is healthy and the ALB URL responds on `/health`.

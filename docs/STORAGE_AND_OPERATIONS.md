@@ -152,12 +152,44 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
    `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in`
    For a state-scoped rollout, add `--state-slug=<state-slug>`.
 10. Record the release in the tracked ledger:
-   `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
+    `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
     For a state-scoped rollout, add `--state-slug=<state-slug>`.
 
 If `CLOUDFLARE_API_TOKEN` is configured in the runtime, publish and rollback also purge the public data page plus CSV export URLs for that state so the stable download paths do not keep serving a stale cached snapshot after a release change.
 
 The `--state` override targets the operator flow only. A state becomes publicly reachable only if the runtime includes that state's published snapshot service and the public app has been intentionally rolled out with the corresponding state-scoped routes.
+
+### Heavy-State Live AWS Runbook
+
+For heavier internal-only states on the live stack, do not rely on `https://nyaaywatch.in/operator/...` as the default fetch lane. Use the ECS-backed helper instead:
+
+```bash
+npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
+```
+
+Why this is the default heavy-state lane:
+
+- it runs the operator command inside a one-off ECS task with the live service's current task definition
+- it reuses the live service network configuration and task environment
+- it avoids Cloudflare edge timeouts on long-running fetch requests
+- it still returns the operator JSON payload locally after the task finishes
+
+Additional examples:
+
+```bash
+npm run operator:staging -- --state UP inspect <run-id>
+npm run operator:staging -- --state UP publish <run-id> "Publish Uttar Pradesh proof cycle"
+npm run operator:staging -- --state UP replay <run-id> "Replay Uttar Pradesh proof cycle"
+npm run operator:staging -- --state UP rollback <publication-id> "Rollback Uttar Pradesh proof cycle"
+```
+
+Requirements:
+
+- AWS CLI configured with access to the staging stack
+- access to run ECS and CloudWatch Logs commands in `ap-south-1`
+- the local machine does not need direct database or operator-token access because the command runs inside ECS
+
+The older ALB plus `curl --connect-to` path remains a recovery fallback only. It is no longer the default documented operator lane for heavier states.
 
 ### Replay -> Rollback
 
