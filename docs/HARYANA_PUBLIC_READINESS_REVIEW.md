@@ -97,7 +97,7 @@ Haryana should now be treated as a completed narrow public rollout, not a candid
 The next discipline point is:
 
 1. keep Haryana as the newest live public state rather than widening again immediately
-2. keep Tamil Nadu and Assam internal-only until they clear separate public-readiness reviews
+2. treat Tamil Nadu as live and keep Assam internal-only until it clears a separate public-readiness review
 3. preserve the explicit state-scoped IA and trust posture instead of implying national parity
 
 ## Useful Work Completed By This Review

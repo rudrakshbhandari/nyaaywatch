@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:52`
+- ECS task definition: `nyaaywatch-staging:54`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
@@ -68,6 +68,7 @@ Operational notes:
   - unscoped default routes for Himachal Pradesh
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
+  - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
 - Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal source snapshot date: `2026-04-10`
@@ -77,6 +78,9 @@ Operational notes:
 - Current active Haryana publication: `publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c`
 - Current active Haryana published snapshot: `snapshot_68b8cf79-ee86-4644-a876-8222e2bce71a`
 - Current Haryana source snapshot date: `2026-04-16`
+- Current active Tamil Nadu publication: `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
+- Current active Tamil Nadu published snapshot: `snapshot_7307527d-f5d1-4449-bba0-a3f21beafc97`
+- Current Tamil Nadu source snapshot date: `2026-04-16`
 - Public methodology version: `2026.04-alpha`
 
 ## How To Retrieve The AWS Staging URL
@@ -114,6 +118,9 @@ curl -fsSL <base-url>/v1/states/punjab/trends
 curl -fsSL <base-url>/v1/states/haryana/stats
 curl -fsSL <base-url>/v1/states/haryana/districts
 curl -fsSL <base-url>/v1/states/haryana/trends
+curl -fsSL <base-url>/v1/states/tamil-nadu/stats
+curl -fsSL <base-url>/v1/states/tamil-nadu/districts
+curl -fsSL <base-url>/v1/states/tamil-nadu/trends
 ```
 
 Expected:
@@ -210,6 +217,14 @@ Latest confirmed operator validation:
   - Meghalaya fetch `run_3dd14fff-0791-45b4-9bd7-27ce798cc850`, publish `publication_b1b1d691-d8bf-4e79-8d2d-119dff5b024c`, replay `run_5fda86c5-aefe-4e33-ae39-e25dac3f4830`, replay publication `publication_503248fe-3cc6-4b24-96e9-1317a4ba6001`, and rollback `publication_7337df86-24c6-4290-8ee4-2b740e5110af` all succeeded
   - `GET /operator/publications?stateCode=KL` and `GET /operator/publications?stateCode=ML` show the rollback publications active
   - `https://nyaaywatch.in/states/kerala`, `https://nyaaywatch.in/v1/states/kerala/stats`, `https://nyaaywatch.in/states/meghalaya`, and `https://nyaaywatch.in/v1/states/meghalaya/stats` all returned `404`, so both states remained internal-only throughout
+- Tamil Nadu public rollout completed on 2026-04-17 after PR `#64` merged to `main`:
+  - GitHub deploy run `24588602379` rolled the live service to task definition `:54`
+  - live Tamil Nadu fetch run `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`
+  - live Tamil Nadu publication `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
+  - live Tamil Nadu snapshot `snapshot_7307527d-f5d1-4449-bba0-a3f21beafc97`
+  - `GET /operator/publications?stateCode=TN` now shows the Tamil Nadu public publication active with rollback target `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tamil-nadu` passed with `districtCount=38`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - live browser verification loaded `https://nyaaywatch.in/states/tamil-nadu` with the explicit Tamil Nadu route family, published-snapshot trust text, and supported-state navigation showing Himachal Pradesh, Punjab, Haryana, and Tamil Nadu
 - Weekday internal fetch deploy reconciliation hardened on 2026-04-17 after PRs `#60` and `#62` plus a deploy-role IAM update:
   - GitHub deploy run `24585688516` completed successfully on rerun after granting `scheduler:GetSchedule`, `scheduler:CreateSchedule`, `scheduler:UpdateSchedule`, and scheduler-role `iam:PassRole` to `nyaaywatch-github-deploy-role`
   - the live ECS service rolled to task definition `:52`

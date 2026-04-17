@@ -10,6 +10,13 @@ Use this file for:
 
 ## Completed
 
+### Tamil Nadu Public Rollout
+
+- completed live on 2026-04-17 after PR `#64` merged and deploy run `24588602379` rolled the live stack to task definition `:54`
+- Tamil Nadu fetch `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa` published as `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tamil-nadu` passed with `districtCount=38`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live browser verification loaded `https://nyaaywatch.in/states/tamil-nadu` with explicit Tamil Nadu navigation, published-snapshot trust text, and supported-state navigation for Himachal Pradesh, Punjab, Haryana, and Tamil Nadu
+
 ### Haryana Public Rollout
 
 - completed live on 2026-04-17 after PR `#56` merged and deploy run `24582480598` rolled the live stack to task definition `:45`
@@ -62,7 +69,7 @@ Use this file for:
 
 - completed on 2026-04-17 with a live source viability review against the NJDG Tamil Nadu page
 - internal-only `TN` state support and the selector value `33~10` are now in the repo without widening the public site
-- Tamil Nadu then cleared the full live internal proof cycle and is now the next public candidate
+- Tamil Nadu then cleared the full live internal proof cycle and has since completed the public rollout
 
 ### Assam Internal Trial Candidate Preparation
 
@@ -73,9 +80,8 @@ Use this file for:
 ### Tamil Nadu Public Readiness Review
 
 - completed in `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` and `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
-- Tamil Nadu is now the next narrow public rollout candidate after Haryana
-- local public-route parity is now implemented in repo config and preflight coverage
-- the remaining Tamil Nadu work is live rollout verification and release-history recording
+- Tamil Nadu is now publicly live
+- the rollout evidence now lives in `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, and `docs/RELEASE_HISTORY.md`
 
 ### Kerala And Meghalaya Internal Trial Candidate Preparation
 

@@ -54,7 +54,7 @@ The live state page exposes district drilldowns, and a sample district page requ
 
 ### 1. Repo Wiring
 
-Tamil Nadu is now wired into the repo as a supported state with public-route parity coverage. The deliberate public decision is complete, but the live hostname rollout still remains separate evidence work.
+Tamil Nadu is now wired into the repo as a supported public state, and the live hostname rollout has completed.
 
 ### 2. Operating Evidence
 
@@ -70,14 +70,14 @@ That closes the internal proof bar. Tamil Nadu is no longer only a source-viabil
 
 ### 3. Public Trust Review
 
-Tamil Nadu-specific live hostname verification still remains. Public exposure should now be completed through the narrower go-live artifacts rather than through this initial source-viability note.
+Tamil Nadu-specific live hostname verification is complete. Public exposure is now evidenced in the narrower go-live artifacts rather than in this initial source-viability note.
 
 ## Recommendation
 
-Tamil Nadu should now be treated as the validated southern baseline and the next public candidate.
+Tamil Nadu should now be treated as the validated southern baseline and a completed public rollout.
 
-Its next step is:
+Its follow-on step is:
 
-1. complete the public-route parity and checklist work in `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` and `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
-2. run the live Tamil Nadu public rollout on the stable hostname
-3. keep later internal expansion narrower than nationwide theater while that public work is underway
+1. keep later internal expansion narrower than nationwide theater even though Tamil Nadu is now live
+2. treat Kerala as an internal-only southern follow-on unless a later public-readiness review says otherwise
+3. keep the next public-state decision explicit instead of widening by implication

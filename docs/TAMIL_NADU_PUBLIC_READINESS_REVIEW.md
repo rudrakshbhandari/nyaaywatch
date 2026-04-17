@@ -2,7 +2,7 @@
 
 Review of what we can already validate for Tamil Nadu before exposing any public Tamil Nadu route family.
 
-This review closes the Tamil Nadu go / no-go question at the trust-surface level. Tamil Nadu is now viable as the next narrow public rollout candidate after Haryana, and the remaining work is stable-URL verification plus the live rollout itself.
+This review closed the Tamil Nadu go / no-go question at the trust-surface level. Tamil Nadu then completed stable-URL verification plus the live rollout itself on `2026-04-17`.
 
 ## Review Basis
 
@@ -60,18 +60,18 @@ The Tamil Nadu pipeline inherits the same trust-critical metadata shape used for
 
 Nothing observed in the Tamil Nadu candidate suggests we need a looser trust standard or a different copy posture to expose it narrowly.
 
-## What Still Needs Explicit Public Work
+## What This Review Required Before Launch
 
 ### 1. Stable-URL Public Verification
 
-Tamil Nadu is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still need to verify:
+Tamil Nadu was wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still needed to verify:
 
 - `/states/tamil-nadu`
 - `/v1/states/tamil-nadu/...`
 - `/states/tamil-nadu/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Haryana provided the pattern. Tamil Nadu no longer needs invention or repo-level public-surface work here, but it still needs the actual live-host verification pass.
+Haryana provided the pattern. Tamil Nadu did not need invention or repo-level public-surface work here, but it still needed the actual live-host verification pass before launch.
 
 The verification artifacts for that pass now live in:
 
@@ -92,11 +92,11 @@ The operational system is now good enough to qualify internal states in parallel
 
 That gate is satisfied for Tamil Nadu because Assam, Uttarakhand, Rajasthan, Uttar Pradesh, and now Haryana public all provide the surrounding operating evidence. Tamil Nadu no longer needs more internal debate before public-route work can proceed.
 
-## Recommendation
+## Outcome
 
-Tamil Nadu should be treated as the next narrow public rollout candidate.
+Tamil Nadu should now be treated as a completed narrow public rollout.
 
-It should move forward once the conditions below are true:
+The conditions below were satisfied before launch:
 
 1. Tamil Nadu passes stable-URL UI/API/CSV verification on the live hostname
 2. the preflight artifacts in `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md` are green on the integrated branch
@@ -108,7 +108,5 @@ This review closes the open Tamil Nadu trust question in `TODOS.md`:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: Tamil Nadu is the next public candidate
-- remaining blockers reduced to:
-  - live stable-URL verification
-  - live release evidence on the public hostname
+- public recommendation: completed as a live Tamil Nadu rollout on `2026-04-17`
+- remaining blockers moved off Tamil Nadu itself and onto the next public-state sequencing decision
