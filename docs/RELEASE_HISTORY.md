@@ -6,6 +6,25 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c:start -->
+## publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c
+
+- Reviewed at: `2026-04-17T19:35:38.010Z`
+- Reviewer: `Codex Haryana public rollout`
+- Public URL: `https://nyaaywatch.in/states/haryana`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-17T19:28:44.594Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_bf1fd888-173c-4a58-9dde-f797b92f7c30`
+- Rollback target: `publication_09613d9d-ae89-4543-9028-8f5d971df587`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Haryana became the second additional public state after task definition `:45` rolled out. State-scoped API, CSV, and HTML verification passed on the stable `https://nyaaywatch.in/states/haryana` URL family, and the live browser check confirmed the expected trust metadata plus explicit supported-state navigation.
+
+<!-- release:publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c:end -->
+
 <!-- release:publication_8a5ddc6e-f520-4344-8161-76dc4dead033:start -->
 ## publication_8a5ddc6e-f520-4344-8161-76dc4dead033
 

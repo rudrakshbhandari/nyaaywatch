@@ -1,18 +1,21 @@
 # Haryana Public Readiness Review
 
-Review of what we can already validate for Haryana before exposing any public Haryana route family.
+Review of the Haryana public go / no-go question and the resulting live rollout.
 
-This review closes the Haryana go / no-go question at the trust-surface level. Haryana is viable as the next narrow public rollout candidate, and the earlier "wait for one more internal state" gate is now satisfied by the completed Uttarakhand, Rajasthan, and Uttar Pradesh internal proof cycles. The remaining work is Haryana public-route parity, stable-URL verification, and the live rollout itself.
+This review is now closed in favor of the live result. Haryana cleared the trust-surface gates, passed public-route parity, and went live on `https://nyaaywatch.in/states/haryana` on `2026-04-17`. The current remaining work is no longer Haryana readiness; it is keeping later public expansion narrower than the larger internal-only state set.
 
 ## Review Basis
 
-Based on the live Haryana internal proof cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`:
+Based on the live Haryana internal proof cycle plus the public rollout recorded in `docs/EXPANSION_REVIEW_LOG.md`:
 
 - first live fetch run id: `run_171cccad-9fef-47cb-9cc1-c1ae4449fe4e`
 - first live publication id: `publication_0d8a736d-1c27-4ae3-8cba-c0593057e3d2`
 - replay run id: `run_76e23910-ffd8-4dcc-a3be-3eda0b130356`
 - replay publication id: `publication_cc7b1068-b97e-470a-a079-570cad23061f`
 - rollback publication id: `publication_09613d9d-ae89-4543-9028-8f5d971df587`
+- public rollout fetch run id: `run_bf1fd888-173c-4a58-9dde-f797b92f7c30`
+- public rollout publication id: `publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c`
+- public rollout snapshot id: `snapshot_68b8cf79-ee86-4644-a876-8222e2bce71a`
 
 Observed Haryana source notes:
 
@@ -60,55 +63,48 @@ The Haryana pipeline inherits the same trust-critical metadata shape used for Hi
 
 Nothing observed in the Haryana candidate suggests we need a looser trust standard or a different copy posture to expose it narrowly.
 
-## What Still Needs Explicit Public Work
+## What Moved In The Live Rollout
 
-### 1. Public Surface Implementation And Parity
+### 1. Public Surface Implementation And Parity Cleared
 
-Haryana is still dark on the public site. Before any launch we still need to verify:
+Haryana is no longer dark on the public site. The explicit Haryana route family is now live and verified:
 
 - `/states/haryana`
 - `/v1/states/haryana/...`
 - `/states/haryana/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Punjab now provides the pattern. Haryana does not need invention here, but it still needs the actual public verification pass.
+`npm run release:verify -- --base-url https://nyaaywatch.in --state-slug haryana` passed on `2026-04-17` with `districtCount=22`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`. The live browser check also confirmed the expected trust metadata and explicit Haryana navigation on the stable hostname.
 
-The verification artifacts for that pass should now live in:
+### 2. Information Architecture Discipline Held
 
-- `docs/HARYANA_GO_LIVE_CHECKLIST.md`
-- targeted Haryana public-route parity tests that exercise the intended `/states/haryana/...` and `/v1/states/haryana/...` surfaces under a test-only public-state promotion
-
-### 2. Information Architecture Discipline
-
-The product is no longer Himachal-only, but it is still intentionally not nationwide. Haryana public exposure should keep that narrow explicit posture:
+The product is no longer Himachal-only, but it is still intentionally not nationwide. Haryana stayed within the narrow explicit posture:
 
 - explicit state-scoped navigation
 - no generic national coverage language
 - no silent widening of claims beyond the states actually live
 
-### 3. Expansion Risk Management
+### 3. Expansion Risk Management Still Matters
 
-The operational system is now good enough to qualify internal states in parallel. Public exposure should still lag internal qualification.
+The operational system is now good enough to qualify internal states in parallel, and this rollout did not require widening the public IA to match that larger internal set.
 
-That earlier expansion-risk gate is now cleared. Uttarakhand, Rajasthan, and Uttar Pradesh have all since completed the same internal-only `fetch -> inspect -> publish -> replay -> rollback` bar, so Haryana no longer needs to wait on an additional internal proof state before public-route work can proceed.
+That earlier expansion-risk gate was cleared before go-live by the Uttarakhand, Rajasthan, and Uttar Pradesh proof cycles. After Haryana went live, Tamil Nadu and Assam also completed the same internal-only `fetch -> inspect -> publish -> replay -> rollback` bar, which means public expansion should keep lagging internal qualification rather than trying to match it one-for-one.
 
 ## Recommendation
 
-Haryana should be treated as the next narrow public rollout candidate.
+Haryana should now be treated as a completed narrow public rollout, not a candidate.
 
-It should move forward once the conditions below are true:
+The next discipline point is:
 
-1. Haryana public routes are implemented and pass stable-URL UI/API/CSV parity verification
-2. the preflight artifacts in `docs/HARYANA_GO_LIVE_CHECKLIST.md` and `tests/haryana-public-rollout.test.ts` are green on the integrated branch
-3. public copy remains explicit about which states are live, without implying nationwide coverage
+1. keep Haryana as the newest live public state rather than widening again immediately
+2. keep Tamil Nadu and Assam internal-only until they clear separate public-readiness reviews
+3. preserve the explicit state-scoped IA and trust posture instead of implying national parity
 
 ## Useful Work Completed By This Review
 
-This review closes the open Haryana trust question in `TODOS.md`:
+This review now closes the Haryana trust and rollout question in `TODOS.md`:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: Haryana is the next public candidate, and the next slice is rollout execution rather than further readiness debate
-- remaining blockers reduced to:
-  - Haryana public-route implementation and parity verification
-  - live release evidence on the public hostname
+- public recommendation: completed as a live Haryana rollout on `2026-04-17`
+- remaining blockers moved off Haryana itself and onto future public-state sequencing discipline

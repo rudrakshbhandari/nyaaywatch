@@ -73,24 +73,24 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 
 Punjab is now the first non-Himachal geography live on the public site, and the rollout cleared the narrow public expansion path without adding nationwide scaffolding.
 
-Haryana has now also cleared the internal-only operating evidence bar without widening the public surface.
+Haryana has now moved past the internal-only bar and is also live on the public site without widening the information architecture beyond explicit state-scoped routes.
 
 Those next-slice decisions are now made:
 
-1. `docs/HARYANA_PUBLIC_READINESS_REVIEW.md` concludes Haryana should be the next narrow public rollout candidate, but not an immediate go-live
-2. Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all cleared live internal-only proof cycles on 2026-04-17, and the heavier-state Uttar Pradesh follow-up now verifies the ECS-backed operator lane as the routine durable path
+1. Haryana is now live on the public site at `/states/haryana` with verified API, CSV, and browser parity on 2026-04-17
+2. Tamil Nadu (`TN`) and Assam (`AS`) have now joined Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) as internal-only states that cleared live proof cycles without widening the public surface
 3. High Courts remain a separate later track rather than being mixed into subordinate-court expansion now
 
-## Haryana (`HR`) Internal Trial
+## Haryana (`HR`) Internal Trial And Public Rollout
 
 - candidate geography: Haryana
 - review date: 2026-04-17
 - source boundary: NJDG Haryana district dashboard aggregate pages
 - methodology version: `2026.04-alpha`
 - first successful capture date: 2026-04-17
-- latest successful validation date: 2026-04-17 live replay and rollback validation
+- latest successful validation date: 2026-04-17 live public rollout verification
 - reviewer: Codex
-- decision: `internal trial completed`
+- decision: `public rollout completed`
 
 ### Source Viability Notes
 
@@ -120,11 +120,22 @@ Those next-slice decisions are now made:
 - operator validation: `GET /operator/publications?stateCode=HR` showed the rollback publication active after replay plus rollback
 - public-surface validation: `https://nyaaywatch.in/states/haryana` and `https://nyaaywatch.in/v1/states/haryana/stats` both returned `404`, so Haryana remained internal-only throughout the trial
 
+### Public Rollout Evidence
+
+- follow-up deploy run: `24582480598`
+- follow-up deployed task definition: `nyaaywatch-staging:45`
+- public rollout fetch run: `run_bf1fd888-173c-4a58-9dde-f797b92f7c30`
+- public rollout publication: `publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c`
+- public rollout snapshot: `snapshot_68b8cf79-ee86-4644-a876-8222e2bce71a`
+- operator validation: `GET /operator/publications?stateCode=HR` showed the Haryana public publication active with rollback target `publication_09613d9d-ae89-4543-9028-8f5d971df587`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug haryana` passed with `districtCount=22`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- browser validation: `https://nyaaywatch.in/states/haryana` loaded with explicit Haryana navigation, public trust metadata, and supported-state navigation for Himachal Pradesh, Punjab, and Haryana
+
 ### Next Required Work
 
-- keep Haryana internal-only until the conditions in `docs/HARYANA_PUBLIC_READINESS_REVIEW.md` are satisfied
-- resolve the large-state operator-path timeout exposed by the Uttar Pradesh trial before treating heavier internal-state expansion as routine
-- keep public expansion narrower than internal expansion until Haryana public-route parity is verified
+- keep public expansion narrower than internal qualification even though Haryana is now live
+- use Haryana as the public baseline while Tamil Nadu and Assam stay internal-only until separate public-readiness decisions exist
+- keep the ECS-backed operator lane as the default path for heavier future internal-state fetches
 
 ## Uttarakhand (`UK`) Internal Trial
 
@@ -300,3 +311,101 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - keep Uttar Pradesh internal-only until a deliberate public-readiness review exists, even though the ECS-backed heavy-state operator lane is now verified live
+
+## Tamil Nadu (`TN`) Internal Trial
+
+- candidate geography: Tamil Nadu
+- review date: 2026-04-17
+- source boundary: NJDG Tamil Nadu district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `33~10`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `38`
+- statewide pending cases shown on the live state page: `17,46,162`
+- instituted in last month: `1,20,781`
+- disposed in last month: `1,44,236`
+- first visible district labels: `Dharmapuri`, `Pudukkottai`, `Tirunelveli`, `Theni`, `Namakkal`
+- all five age-bucket widgets were present on the live state page
+
+### Why Tamil Nadu Was The Right Southern Proof State
+
+- Tamil Nadu gives the internal expansion track a serious southern state instead of extending the current north-heavy footprint again.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 38-district surface is large enough to prove meaningful scale in the south without jumping immediately to a public rollout.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:45`
+- first live fetch run: `run_329a8b74-2b9d-4c33-ba2f-46b19186935c`
+- source snapshot date: `2026-04-17`
+- candidate quality state: `complete`
+- district count captured: `38`
+- statewide pending cases captured: `1746162`
+- first live publication: `publication_34aa96eb-f212-4cad-9412-086bfe3c41a6`
+- first live snapshot: `snapshot_f8e31acc-2710-40ce-8e45-ca968b6e02d0`
+- replay run from stored evidence: `run_c69af2d5-b2dd-455e-82aa-3a7125122d71`
+- replay publication: `publication_4965e74e-97de-47b2-b16e-eb2a2ccca25a`
+- rollback publication restoring the first Tamil Nadu snapshot: `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
+- operator validation: `GET /operator/publications?stateCode=TN` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/tamil-nadu` and `https://nyaaywatch.in/v1/states/tamil-nadu/stats` both returned `404`, so Tamil Nadu remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Tamil Nadu internal-only until a separate public-readiness review exists
+- use Tamil Nadu as the southern benchmark for future internal expansion decisions
+
+## Assam (`AS`) Internal Trial
+
+- candidate geography: Assam
+- review date: 2026-04-17
+- source boundary: NJDG Assam district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `18~6`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `34`
+- statewide pending cases shown on the live state page: `5,81,244`
+- instituted in last month: `14,498`
+- disposed in last month: `15,074`
+- first visible district labels: `Kamrup Metro`, `Tinsukia`, `Sivasagar`, `Morigaon`, `Lakhimpur`
+- all five age-bucket widgets were present on the live state page
+
+### Why Assam Was The Right North-East Proof State
+
+- Assam gives the internal expansion track an explicit north-east proof state instead of implying a narrow north-west expansion story.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 34-district footprint is large enough to matter operationally while still staying safely internal-only.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:45`
+- first live fetch run: `run_32e2194a-027d-4ec2-8d50-b3c282446b90`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `34`
+- statewide pending cases captured: `581244`
+- first live publication: `publication_688f053e-53a4-4662-9367-a4ffba4973ce`
+- first live snapshot: `snapshot_ccfe55eb-9d1f-45b9-b083-099ad8f1ceb2`
+- replay run from stored evidence: `run_c28d9a91-0543-40b2-adac-1ca5e0c2e85d`
+- replay publication: `publication_c8e143f6-61f4-4c1b-9423-b49e53b17399`
+- rollback publication restoring the first Assam snapshot: `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f`
+- operator validation: `GET /operator/publications?stateCode=AS` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/assam` and `https://nyaaywatch.in/v1/states/assam/stats` both returned `404`, so Assam remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Assam internal-only until a separate public-readiness review exists
+- use Assam as the north-east benchmark for future internal expansion decisions

@@ -10,6 +10,20 @@ Use this file for:
 
 ## Completed
 
+### Haryana Public Rollout
+
+- completed live on 2026-04-17 after PR `#56` merged and deploy run `24582480598` rolled the live stack to task definition `:45`
+- ECS-backed fetch `run_bf1fd888-173c-4a58-9dde-f797b92f7c30` published Haryana as `publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug haryana` passed with `districtCount=22`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- the live browser check loaded `https://nyaaywatch.in/states/haryana` with the expected Haryana trust metadata and explicit supported-state navigation
+
+### Tamil Nadu And Assam Internal Proof Cycles
+
+- completed live on 2026-04-17 on task definition `:45` after PR `#56` merged
+- Tamil Nadu completed fetch `run_329a8b74-2b9d-4c33-ba2f-46b19186935c`, publication `publication_34aa96eb-f212-4cad-9412-086bfe3c41a6`, replay `run_c69af2d5-b2dd-455e-82aa-3a7125122d71`, and rollback `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
+- Assam completed fetch `run_32e2194a-027d-4ec2-8d50-b3c282446b90`, publication `publication_688f053e-53a4-4662-9367-a4ffba4973ce`, replay `run_c28d9a91-0543-40b2-adac-1ca5e0c2e85d`, and rollback `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f`
+- public routes for Tamil Nadu and Assam both remained dark with `404` responses throughout
+
 ### Live Verification Of The ECS Heavy-State Operator Lane
 
 - completed live on 2026-04-17 after PR `#54` merged and deploy run `24554574390` rolled the live stack to task definition `:43`
