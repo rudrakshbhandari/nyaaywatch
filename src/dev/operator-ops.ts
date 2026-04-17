@@ -81,17 +81,17 @@ export async function runOperatorInvocation(
 
     switch (invocation.command) {
       case "fetch":
-        return service.captureRun(invocation.note);
+        return await service.captureRun(invocation.note);
       case "publications":
-        return service.listPublicationHistory();
+        return await service.listPublicationHistory();
       case "inspect":
-        return service.inspectRun(invocation.targetId!);
+        return await service.inspectRun(invocation.targetId!);
       case "publish":
-        return service.publishRun(invocation.targetId!, invocation.note);
+        return await service.publishRun(invocation.targetId!, invocation.note);
       case "replay":
-        return service.replayRun(invocation.targetId!, invocation.note);
+        return await service.replayRun(invocation.targetId!, invocation.note);
       case "rollback":
-        return service.rollbackPublication(invocation.targetId!, invocation.note);
+        return await service.rollbackPublication(invocation.targetId!, invocation.note);
     }
   } finally {
     await pool.end();
