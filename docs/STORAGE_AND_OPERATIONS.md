@@ -86,6 +86,30 @@ All operator endpoints require `x-operator-token`.
 
 For multi-state operation, operator surfaces accept explicit state targeting through `stateCode` or `stateSlug` query params or JSON-body fields. If omitted, the runtime falls back to its configured default state.
 
+### Remote Operator Lane
+
+For live remote operation from a local terminal, use:
+
+```bash
+npm run operator:remote -- --base-url=https://nyaaywatch.in publications
+```
+
+For heavier internal states that may exceed Cloudflare's edge timeout, bypass Cloudflare while preserving `nyaaywatch.in` as the HTTP and TLS host:
+
+```bash
+npm run operator:remote -- \
+  --base-url=https://nyaaywatch.in \
+  --connect-host=<alb-dns> \
+  --state=UP \
+  fetch "Internal Uttar Pradesh fetch"
+```
+
+Notes:
+
+- `OPERATOR_API_TOKEN` must be set in the shell that runs `operator:remote`.
+- `--connect-host` changes only the network target. The request still carries the canonical host, so the app and certificate path behave like production origin traffic.
+- Use the direct-origin lane for long-running internal operator requests only. Public verification should still run against `https://nyaaywatch.in`.
+
 ## Local Development
 
 1. Copy `.env.example` to `.env`.
@@ -108,10 +132,17 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
    `npm run operator:fetch -- "Manual Himachal fetch"`
 4. For an internal candidate state trial, override the operator target explicitly:
    `npm run operator:fetch -- --state PB "Internal Punjab fetch"`
+   For a live remote internal-state flow from a local terminal:
+   `npm run operator:remote -- --base-url=https://nyaaywatch.in --state=PB fetch "Internal Punjab fetch"`
+   For heavier states, add `--connect-host=<alb-dns>` to bypass Cloudflare.
 5. Inspect the stored candidate:
    `npm run operator:inspect -- <run-id>`
+   For a live remote flow:
+   `npm run operator:remote -- --base-url=https://nyaaywatch.in inspect <run-id>`
 6. Review publication history and the current rollback target:
    `npm run operator:publications`
+   For a live remote flow:
+   `npm run operator:remote -- --base-url=https://nyaaywatch.in publications`
 7. Run prepublish verification against the public hostname:
    `npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in`
    For a state-scoped rollout, add `--state-slug=<state-slug>`.
