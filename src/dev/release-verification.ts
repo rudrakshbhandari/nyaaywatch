@@ -46,6 +46,7 @@ export interface ReleaseVerificationSummary {
     statsPath: string;
     districtsPath: string;
     trendsPath: string;
+    dataPagePath: string;
     districtsCsvPath: string;
   };
   snapshot: {
@@ -63,6 +64,7 @@ export interface ReleaseVerificationSummary {
   districtCount: number;
   trendCount: number;
   csvMetadataParity: true;
+  publicDataCacheProtected: true;
   operatorAuthProtected: true;
 }
 
@@ -74,19 +76,23 @@ export async function verifyPublicRelease(
 ): Promise<ReleaseVerificationSummary> {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
   const target = resolveReleaseTarget(options.stateSlug);
-  const [health, statsPayload, districtsPayload, trendsPayload, operatorAuthResult, districtsCsv] = await Promise.all([
-    fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
-    fetchJson(`${normalizedBaseUrl}${target.statsPath}`, StatsResponseSchema),
-    fetchJson(`${normalizedBaseUrl}${target.districtsPath}`, DistrictsResponseSchema),
-    fetchJson(`${normalizedBaseUrl}${target.trendsPath}`, TrendsResponseSchema),
-    fetchJson(`${normalizedBaseUrl}/operator/publications`, OperatorUnauthorizedSchema, 401),
-    fetchText(`${normalizedBaseUrl}${target.districtsCsvPath}`),
-  ]);
+  const [health, statsPayload, districtsPayload, trendsPayload, operatorAuthResult, dataPage, districtsCsv] =
+    await Promise.all([
+      fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
+      fetchJson(`${normalizedBaseUrl}${target.statsPath}`, StatsResponseSchema),
+      fetchJson(`${normalizedBaseUrl}${target.districtsPath}`, DistrictsResponseSchema),
+      fetchJson(`${normalizedBaseUrl}${target.trendsPath}`, TrendsResponseSchema),
+      fetchJson(`${normalizedBaseUrl}/operator/publications`, OperatorUnauthorizedSchema, 401),
+      fetchTextResponse(`${normalizedBaseUrl}${target.dataPagePath}`),
+      fetchTextResponse(`${normalizedBaseUrl}${target.districtsCsvPath}`),
+    ]);
 
   assertSnapshotState(statsPayload.snapshot, target.stateCode, target.stateName);
   assertMatchingSnapshot("districts", districtsPayload.snapshot, statsPayload.snapshot);
   assertMatchingSnapshot("trends", trendsPayload.snapshot, statsPayload.snapshot);
-  assertCsvMetadataParity(districtsCsv, statsPayload.snapshot);
+  assertCacheProtection("public data page", dataPage.response);
+  assertCacheProtection("district CSV", districtsCsv.response);
+  assertCsvMetadataParity(districtsCsv.body, statsPayload.snapshot);
 
   return {
     baseUrl: normalizedBaseUrl,
@@ -107,6 +113,7 @@ export async function verifyPublicRelease(
     districtCount: districtsPayload.districts.length,
     trendCount: trendsPayload.trends.length,
     csvMetadataParity: true,
+    publicDataCacheProtected: true,
     operatorAuthProtected: true,
   };
 }
@@ -136,6 +143,7 @@ function resolveReleaseTarget(stateSlug?: string) {
       statsPath: "/v1/stats/himachal",
       districtsPath: "/v1/districts",
       trendsPath: "/v1/trends",
+      dataPagePath: "/data",
       districtsCsvPath: "/data/districts.csv",
     };
   }
@@ -147,6 +155,7 @@ function resolveReleaseTarget(stateSlug?: string) {
     statsPath: `/v1/states/${profile.stateSlug}/stats`,
     districtsPath: `/v1/states/${profile.stateSlug}/districts`,
     trendsPath: `/v1/states/${profile.stateSlug}/trends`,
+    dataPagePath: `/states/${profile.stateSlug}/data`,
     districtsCsvPath: `/states/${profile.stateSlug}/data/districts.csv`,
   };
 }
@@ -157,12 +166,16 @@ async function fetchJson<T extends z.ZodTypeAny>(url: string, schema: T, expecte
 }
 
 async function fetchText(url: string, expectedStatus = 200): Promise<string> {
+  return (await fetchTextResponse(url, expectedStatus)).body;
+}
+
+async function fetchTextResponse(url: string, expectedStatus = 200): Promise<{ body: string; response: Response }> {
   const response = await fetch(url);
   const body = await readResponse(url, response, expectedStatus);
   if (typeof body !== "string") {
     throw new Error(`Expected text response from ${url}.`);
   }
-  return body;
+  return { body, response };
 }
 
 async function readResponse(url: string, response: Response, expectedStatus: number): Promise<unknown> {
@@ -217,6 +230,27 @@ function assertCsvMetadataParity(csv: string, snapshot: SnapshotMetadata) {
   ) {
     throw new Error("District CSV publication metadata does not match the public API snapshot.");
   }
+}
+
+function assertCacheProtection(label: string, response: Response) {
+  const cacheControl = response.headers.get("cache-control") ?? "";
+  const cdnCacheControl =
+    response.headers.get("cloudflare-cdn-cache-control") ?? response.headers.get("cdn-cache-control") ?? "";
+
+  if (!hasNoStoreDirective(cacheControl)) {
+    throw new Error(`${label} is missing a no-store Cache-Control header.`);
+  }
+
+  if (cdnCacheControl.length > 0 && !hasNoStoreDirective(cdnCacheControl)) {
+    throw new Error(`${label} is missing a no-store CDN cache header.`);
+  }
+}
+
+function hasNoStoreDirective(value: string) {
+  return value
+    .split(",")
+    .map((directive) => directive.trim().toLowerCase())
+    .includes("no-store");
 }
 
 function readCsvCell(value: string | undefined) {

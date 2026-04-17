@@ -70,16 +70,22 @@ describe("HTTP routes", () => {
 
     const dataPage = await request(app).get("/data");
     expect(dataPage.status).toBe(200);
+    expect(dataPage.headers["cache-control"]).toContain("no-store");
+    expect(dataPage.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(dataPage.text).toContain("Download exactly what the public site is showing.");
     expect(dataPage.text).toContain("CSV/API parity");
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);
+    expect(districtCsv.headers["cache-control"]).toContain("no-store");
+    expect(districtCsv.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(districtCsv.text).toContain("snapshot_date,published_at,methodology_version");
     expect(districtCsv.text).toContain("National Judicial Data Grid public district dashboard for Himachal Pradesh");
 
     const districtHistoryCsv = await request(app).get("/data/districts/kangra.csv");
     expect(districtHistoryCsv.status).toBe(200);
+    expect(districtHistoryCsv.headers["cache-control"]).toContain("no-store");
+    expect(districtHistoryCsv.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(districtHistoryCsv.text).toContain("2026-03-31T00:00:00.000Z");
     expect(districtHistoryCsv.text).toContain("2026-04-10T00:00:00.000Z");
 
@@ -239,10 +245,14 @@ describe("HTTP routes", () => {
 
     const punjabData = await request(app).get("/states/punjab/data");
     expect(punjabData.status).toBe(200);
+    expect(punjabData.headers["cache-control"]).toContain("no-store");
+    expect(punjabData.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(punjabData.text).toContain("/v1/states/punjab/stats");
 
     const punjabCsv = await request(app).get("/states/punjab/data/districts.csv");
     expect(punjabCsv.status).toBe(200);
+    expect(punjabCsv.headers["cache-control"]).toContain("no-store");
+    expect(punjabCsv.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(punjabCsv.text).toContain("Punjab");
     expect(punjabCsv.text).toContain("ludhiana");
 
