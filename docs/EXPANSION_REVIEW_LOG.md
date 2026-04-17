@@ -78,7 +78,7 @@ Haryana has now also cleared the internal-only operating evidence bar without wi
 Those next-slice decisions are now made:
 
 1. `docs/HARYANA_PUBLIC_READINESS_REVIEW.md` concludes Haryana should be the next narrow public rollout candidate, but not an immediate go-live
-2. Uttarakhand (`UK`) is now prepared as the next internal-only trial candidate after a live source viability review on 2026-04-17
+2. Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) are now prepared as the next internal-only trial candidates after live source viability reviews on 2026-04-17
 3. High Courts remain a separate later track rather than being mixed into subordinate-court expansion now
 
 ## Haryana (`HR`) Internal Trial
@@ -123,7 +123,7 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - keep Haryana internal-only until the conditions in `docs/HARYANA_PUBLIC_READINESS_REVIEW.md` are satisfied
-- run the first live Uttarakhand internal `fetch -> inspect -> publish -> replay -> rollback` cycle
+- run the first live internal proof cycles for Uttarakhand, Rajasthan, and Uttar Pradesh in a deliberate order rather than widening the public surface immediately
 
 ## Uttarakhand (`UK`) Internal Trial Candidate
 
@@ -154,4 +154,72 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - run the first live Uttarakhand internal proof cycle on the deployed stack
+- record the resulting run, publication, replay, and rollback ids in this log
+
+## Rajasthan (`RJ`) Internal Trial Candidate
+
+- candidate geography: Rajasthan
+- review date: 2026-04-17
+- source boundary: NJDG Rajasthan district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- reviewer: Codex
+- decision: `internal trial candidate prepared`
+
+### Source Viability Notes
+
+- NJDG state code value: `8~9`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `44`
+- statewide pending cases shown on the live state page: `26,35,615`
+- instituted in last month: `1,82,144`
+- disposed in last month: `2,26,246`
+- first visible district labels: `Rajsamand`, `Alwar`, `Dausa`, `Jaipur Metro I`, `Tonk`
+- all five age-bucket widgets were present on the live state page
+
+### Why Rajasthan Is Next
+
+- Rajasthan gives us another large real state beyond Punjab and Haryana without jumping straight to the heaviest source surface in the current shortlist.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 44-district footprint is large enough to pressure-test scaling assumptions before a much bigger Uttar Pradesh run.
+
+### Next Required Work
+
+- run the first live Rajasthan internal proof cycle on the deployed stack
+- record the resulting run, publication, replay, and rollback ids in this log
+
+## Uttar Pradesh (`UP`) Internal Trial Candidate
+
+- candidate geography: Uttar Pradesh
+- review date: 2026-04-17
+- source boundary: NJDG Uttar Pradesh district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- reviewer: Codex
+- decision: `internal trial candidate prepared with a source-shape caveat`
+
+### Source Viability Notes
+
+- NJDG state code value: `9~13`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `74`
+- statewide pending cases shown on the live state page: `1,19,09,807`
+- instituted in last month: `7,41,638`
+- disposed in last month: `7,38,719`
+- first visible district labels: `Prayagraj`, `Bareilly`, `Gorakhpur`, `Hardoi`, `Chitrakoot`
+- all five age-bucket widgets were present on the live state page
+
+### Why Uttar Pradesh Is Still Worth Preparing
+
+- Uttar Pradesh is the real high-stress subordinate-court candidate in the current shortlist, so it is the right state to prepare once the pipeline is stable enough to handle larger volumes.
+- The source still matches the current metric contract, including instituted, disposed, and age-bucket breakdowns.
+- Preparing it now lets us plan a heavy internal-only run without conflating that work with Haryana public exposure.
+
+### Source Caveat
+
+- The live NJDG page exposed only `74` district options during this review, which is lower than the administrative district count one would normally expect for Uttar Pradesh.
+- That does not block internal candidate preparation, but it does mean the first live UP proof cycle should explicitly confirm whether the source surface is complete or whether NJDG is omitting one district from the aggregate selector.
+
+### Next Required Work
+
+- run the first live Uttar Pradesh internal proof cycle on the deployed stack
+- explicitly confirm whether the observed 74-district selector is the stable intended source shape or a source completeness issue
 - record the resulting run, publication, replay, and rollback ids in this log

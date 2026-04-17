@@ -6,7 +6,7 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "UK"] as const;
+export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "UK", "RJ", "UP"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -37,6 +37,20 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Uttarakhand",
     stateSlug: "uttarakhand",
     njdgStateValue: "5~15",
+    publicAlpha: false,
+  },
+  RJ: {
+    stateCode: "RJ",
+    stateName: "Rajasthan",
+    stateSlug: "rajasthan",
+    njdgStateValue: "8~9",
+    publicAlpha: false,
+  },
+  UP: {
+    stateCode: "UP",
+    stateName: "Uttar Pradesh",
+    stateSlug: "uttar-pradesh",
+    njdgStateValue: "9~13",
     publicAlpha: false,
   },
 };

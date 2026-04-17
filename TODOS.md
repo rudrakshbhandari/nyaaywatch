@@ -10,15 +10,15 @@ Use this file for:
 
 ## Review
 
-### Uttarakhand Internal Trial
+### Parallel Internal State Trials
 
-**What:** Run the first live Uttarakhand internal `fetch -> inspect -> publish -> replay -> rollback` cycle and record the evidence.
+**What:** Run the first live internal `fetch -> inspect -> publish -> replay -> rollback` cycles for Uttarakhand, Rajasthan, and Uttar Pradesh, and record the evidence for each.
 
-**Why:** Haryana is now the next public-rollout candidate, so the fastest safe acceleration path is qualifying another internal-only state in parallel rather than widening the public surface immediately.
+**Why:** Haryana is now the next public-rollout candidate, so the fastest safe acceleration path is qualifying multiple internal-only states in parallel rather than widening the public surface immediately.
 
-**Context:** The live Uttarakhand source viability review completed on 2026-04-17 with NJDG state value `5~15`, 13 districts visible on the state page, total pending cases `3,05,801`, instituted last month `15,352`, disposed last month `23,841`, and footer freshness dated `2026-04-16`. The repo now carries internal-only `UK` support, so the next work is the live operator proof cycle rather than more source archaeology.
+**Context:** Live source viability reviews completed on 2026-04-17 for Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`). Uttarakhand exposed 13 districts with total pending `3,05,801`; Rajasthan exposed 44 districts with total pending `26,35,615`; Uttar Pradesh exposed 74 district options with total pending `1,19,09,807`. The repo now carries internal-only support for all three, so the next work is live operator proof rather than more source archaeology. Uttar Pradesh should be treated as the heaviest and riskiest of the three because of both scale and the 74-district source-shape caveat.
 
-**Effort:** M
+**Effort:** L
 **Priority:** P1
 
 ## Completed
@@ -33,6 +33,12 @@ Use this file for:
 
 - completed on 2026-04-17 with a live source viability review against the NJDG Uttarakhand page
 - internal-only `UK` state support and regression coverage are now in the repo without widening the public site
+
+### Rajasthan And Uttar Pradesh Internal Trial Candidate Preparation
+
+- completed on 2026-04-17 with live source viability reviews against the NJDG Rajasthan and Uttar Pradesh pages
+- internal-only `RJ` and `UP` state support and regression coverage are now in the repo without widening the public site
+- the Uttar Pradesh preparation explicitly records the 74-district selector caveat so the first live internal run validates source completeness rather than assuming it
 
 ### Publish-Time Cache Invalidation For Public Data
 

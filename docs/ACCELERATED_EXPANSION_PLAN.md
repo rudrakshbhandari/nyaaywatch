@@ -75,7 +75,7 @@ As of `2026-04-17`:
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
 - Haryana (`HR`) is now the reviewed next narrow public rollout candidate, but remains internal-only for now
-- Uttarakhand (`UK`) is now the newly prepared next internal subordinate-court candidate
+- Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) are now prepared internal subordinate-court candidates
 - no High Court or Supreme Court tier has cleared source or methodology review
 
 ## End Goal
@@ -144,9 +144,9 @@ Actions:
 Output:
 
 - Haryana (`HR`) is the next narrow public rollout candidate after Punjab, but not an immediate go-live
-- chosen next internal state: Uttarakhand (`UK`) as the next subordinate-court candidate after Haryana
+- chosen next internal states: Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) as the next subordinate-court candidates after Haryana
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
-- Punjab has already completed its internal and narrow public rollout evidence, and the updated Haryana-plus-Uttarakhand sequencing is now recorded in `docs/EXPANSION_REVIEW_LOG.md`
+- Punjab has already completed its internal and narrow public rollout evidence, and the updated Haryana-plus-multi-state internal sequencing is now recorded in `docs/EXPANSION_REVIEW_LOG.md`
 
 ### Day 1
 
