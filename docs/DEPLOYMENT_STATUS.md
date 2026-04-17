@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:54`
+- ECS task definition: `nyaaywatch-staging:56`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
@@ -69,6 +69,7 @@ Operational notes:
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
   - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
+  - explicit Assam public routes at `/states/assam` and `/v1/states/assam/...`
 - Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal source snapshot date: `2026-04-10`
@@ -81,6 +82,9 @@ Operational notes:
 - Current active Tamil Nadu publication: `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
 - Current active Tamil Nadu published snapshot: `snapshot_7307527d-f5d1-4449-bba0-a3f21beafc97`
 - Current Tamil Nadu source snapshot date: `2026-04-16`
+- Current active Assam publication: `publication_111cc225-f1a6-455d-8d7e-fd6af06ed597`
+- Current active Assam published snapshot: `snapshot_f296e9bb-fc95-476e-9f79-1bcd3ff1f1c7`
+- Current Assam source snapshot date: `2026-04-17`
 - Public methodology version: `2026.04-alpha`
 
 ## How To Retrieve The AWS Staging URL
@@ -225,6 +229,20 @@ Latest confirmed operator validation:
   - `GET /operator/publications?stateCode=TN` now shows the Tamil Nadu public publication active with rollback target `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
   - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tamil-nadu` passed with `districtCount=38`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
   - live browser verification loaded `https://nyaaywatch.in/states/tamil-nadu` with the explicit Tamil Nadu route family, published-snapshot trust text, and supported-state navigation showing Himachal Pradesh, Punjab, Haryana, and Tamil Nadu
+- Assam public rollout completed on 2026-04-17 after PR `#66` merged to `main`:
+  - GitHub deploy run `24589991106` rolled the live service to task definition `:56`
+  - live Assam fetch run `run_e0f10a98-5e60-445a-b080-b9dafc962f61`
+  - live Assam publication `publication_111cc225-f1a6-455d-8d7e-fd6af06ed597`
+  - live Assam snapshot `snapshot_f296e9bb-fc95-476e-9f79-1bcd3ff1f1c7`
+  - `GET /operator/publications?stateCode=AS` now shows the Assam public publication active with rollback target `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug assam` passed with `districtCount=34`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - live browser verification loaded `https://nyaaywatch.in/states/assam` with the explicit Assam route family, published-snapshot trust text, and supported-state navigation showing Himachal Pradesh, Punjab, Haryana, Tamil Nadu, and Assam
+- Karnataka, Tripura, and Nagaland internal proof cycles completed on 2026-04-17 on task definition `:56`:
+  - Karnataka fetch `run_c57e88aa-c6bf-40d8-a3fb-9343bd819174`, publish `publication_54748fe1-5f7c-41d4-bc40-3c976d157f56`, replay `run_18f4c2a3-d811-496e-a277-d0d4574906c9`, replay publication `publication_144604b7-c587-4be3-8077-1c373bd9968e`, and rollback `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39` all succeeded
+  - Tripura fetch `run_6b5e6751-0835-42b1-a89a-f3da080f5287`, publish `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`, replay `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`, replay publication `publication_4e89a6b5-5d92-4884-9270-512e78ba2801`, and rollback `publication_81692c3c-e86a-4774-8619-32cc60f11a85` all succeeded
+  - Nagaland fetch `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`, publish `publication_abc433b9-1db4-4661-902e-ffd8861e35af`, replay `run_d3d5a492-1515-4e77-ab25-27135054b787`, replay publication `publication_134cafec-fe70-4245-95bc-aa79244cb823`, and rollback `publication_10a4a7ba-57ca-4382-86e5-3be094136be7` all succeeded
+  - `GET /operator/publications?stateCode=KA`, `stateCode=TR`, and `stateCode=NL` show the rollback publications active
+  - `https://nyaaywatch.in/states/karnataka`, `https://nyaaywatch.in/states/tripura`, `https://nyaaywatch.in/states/nagaland`, and the matching `/v1/states/.../stats` endpoints all returned `404`, so all three states remained internal-only throughout
 - Weekday internal fetch deploy reconciliation hardened on 2026-04-17 after PRs `#60` and `#62` plus a deploy-role IAM update:
   - GitHub deploy run `24585688516` completed successfully on rerun after granting `scheduler:GetSchedule`, `scheduler:CreateSchedule`, `scheduler:UpdateSchedule`, and scheduler-role `iam:PassRole` to `nyaaywatch-github-deploy-role`
   - the live ECS service rolled to task definition `:52`

@@ -10,17 +10,15 @@ Use this file for:
 
 ## Next Up
 
-### Assam Public Rollout
+### Next Public State Decision
 
-- next approved public state after Tamil Nadu
-- repo config, Assam-specific public parity tests, and the Assam go-live docs should land before the live rollout window
-- done only when a real Assam publication is live on `https://nyaaywatch.in/states/assam` and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug assam` passes on the stable hostname
+- Assam is now live, so the next public state should be an explicit new decision rather than an implied continuation of the previous queue
+- done only when one internal-only state is deliberately chosen for public-readiness review and stable-URL parity planning
 
-### Karnataka, Tripura, And Nagaland Internal Proof Cycles
+### Next Internal Expansion Trio
 
-- next internal-only trio after the Kerala plus Meghalaya wave
-- live source checks now confirm contract-compatible Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) pages with drilldown reachability
-- done only when each state clears a real `fetch -> inspect -> publish -> replay -> rollback` cycle while keeping public routes dark with `404`
+- Karnataka, Tripura, and Nagaland are now complete as internal-only proofs
+- done only when the next internal-only batch is chosen deliberately and held to the same `fetch -> inspect -> publish -> replay -> rollback` plus public-`404` bar
 
 ## Completed
 
@@ -30,6 +28,21 @@ Use this file for:
 - Tamil Nadu fetch `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa` published as `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
 - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tamil-nadu` passed with `districtCount=38`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
 - live browser verification loaded `https://nyaaywatch.in/states/tamil-nadu` with explicit Tamil Nadu navigation, published-snapshot trust text, and supported-state navigation for Himachal Pradesh, Punjab, Haryana, and Tamil Nadu
+
+### Assam Public Rollout
+
+- completed live on 2026-04-17 after PR `#66` merged and deploy run `24589991106` rolled the live stack to task definition `:56`
+- Assam fetch `run_e0f10a98-5e60-445a-b080-b9dafc962f61` published as `publication_111cc225-f1a6-455d-8d7e-fd6af06ed597`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug assam` passed with `districtCount=34`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live browser verification loaded `https://nyaaywatch.in/states/assam` with explicit Assam navigation, published-snapshot trust text, and supported-state navigation for Himachal Pradesh, Punjab, Haryana, Tamil Nadu, and Assam
+
+### Karnataka, Tripura, And Nagaland Internal Proof Cycles
+
+- completed live on 2026-04-17 after PR `#66` merged and deploy run `24589991106` rolled the live stack to task definition `:56`
+- Karnataka completed fetch `run_c57e88aa-c6bf-40d8-a3fb-9343bd819174`, publication `publication_54748fe1-5f7c-41d4-bc40-3c976d157f56`, replay `run_18f4c2a3-d811-496e-a277-d0d4574906c9`, and rollback `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
+- Tripura completed fetch `run_6b5e6751-0835-42b1-a89a-f3da080f5287`, publication `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`, replay `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`, and rollback `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
+- Nagaland completed fetch `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`, publication `publication_abc433b9-1db4-4661-902e-ffd8861e35af`, replay `run_d3d5a492-1515-4e77-ab25-27135054b787`, and rollback `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
+- public routes for Karnataka, Tripura, and Nagaland all remained dark with `404` responses throughout
 
 ### Haryana Public Rollout
 

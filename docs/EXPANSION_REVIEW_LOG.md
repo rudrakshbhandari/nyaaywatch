@@ -78,7 +78,7 @@ Haryana has now moved past the internal-only bar and is also live on the public 
 Those next-slice decisions are now made:
 
 1. Haryana is now live on the public site at `/states/haryana` with verified API, CSV, and browser parity on 2026-04-17
-2. Tamil Nadu (`TN`) and Assam (`AS`) have now joined Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) as internal-only states that cleared live proof cycles without widening the public surface
+2. Uttarakhand (`UK`), Rajasthan (`RJ`), Uttar Pradesh (`UP`), Kerala (`KL`), Meghalaya (`ML`), Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have now all cleared internal-only live proof cycles without widening the public surface
 3. High Courts remain a separate later track rather than being mixed into subordinate-court expansion now
 
 ## Haryana (`HR`) Internal Trial And Public Rollout
@@ -373,16 +373,16 @@ Those next-slice decisions are now made:
 - treat Tamil Nadu as live and keep the next public-state decision separate from the internal-only qualification track
 - keep Kerala internal-only after its proof cycle unless a later public-readiness review says otherwise
 
-## Assam (`AS`) Internal Trial
+## Assam (`AS`) Internal Trial And Public Rollout
 
 - candidate geography: Assam
 - review date: 2026-04-17
 - source boundary: NJDG Assam district dashboard aggregate pages
 - methodology version: `2026.04-alpha`
 - first successful capture date: 2026-04-17
-- latest successful validation date: 2026-04-17 live replay and rollback validation
+- latest successful validation date: 2026-04-17 live public rollout verification
 - reviewer: Codex
-- decision: `internal trial completed`
+- decision: `public rollout completed`
 
 ### Source Viability Notes
 
@@ -417,10 +417,22 @@ Those next-slice decisions are now made:
 - operator validation: `GET /operator/publications?stateCode=AS` showed the rollback publication active after replay plus rollback
 - public-surface validation: `https://nyaaywatch.in/states/assam` and `https://nyaaywatch.in/v1/states/assam/stats` both returned `404`, so Assam remained internal-only throughout the trial
 
+### Public Rollout Evidence
+
+- public rollout deploy run: `24589991106`
+- public rollout deployed task definition: `nyaaywatch-staging:56`
+- public rollout fetch run: `run_e0f10a98-5e60-445a-b080-b9dafc962f61`
+- public rollout publication: `publication_111cc225-f1a6-455d-8d7e-fd6af06ed597`
+- public rollout snapshot: `snapshot_f296e9bb-fc95-476e-9f79-1bcd3ff1f1c7`
+- operator validation: `GET /operator/publications?stateCode=AS` showed the Assam public publication active with rollback target `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug assam` passed with `districtCount=34`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- browser validation: `https://nyaaywatch.in/states/assam` loaded with explicit Assam navigation, published-snapshot trust text, and supported-state navigation for Himachal Pradesh, Punjab, Haryana, Tamil Nadu, and Assam
+
 ### Next Required Work
 
-- keep Assam internal-only until a separate public-readiness review exists
-- keep Meghalaya internal-only after its proof cycle unless a later public-readiness review says otherwise
+- keep public expansion narrower than internal qualification even though Assam is now live
+- keep Meghalaya, Tripura, and Nagaland internal-only unless later public-readiness reviews say otherwise
+- choose the next public state deliberately rather than inheriting the old pre-Assam queue
 
 ## Kerala (`KL`) Internal Trial
 
@@ -470,7 +482,7 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - keep Kerala internal-only until a separate public-readiness review exists
-- use Kerala as the validated southern follow-on baseline while Tamil Nadu's public slot is underway
+- use Kerala as the validated southern follow-on baseline while the next public-state decision stays separate
 
 ## Meghalaya (`ML`) Internal Trial
 
@@ -520,4 +532,151 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - keep Meghalaya internal-only until a separate public-readiness review exists
-- use Meghalaya as the validated north-east follow-on baseline while Tamil Nadu remains the next public slot
+- use Meghalaya as the validated north-east follow-on baseline now that Assam has moved into the public slot
+
+## Karnataka (`KA`) Internal Trial
+
+- candidate geography: Karnataka
+- review date: 2026-04-17
+- source boundary: NJDG Karnataka district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `29~3`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `31`
+- statewide pending cases shown on the live state page: `22,30,354`
+- instituted in last month: `1,99,126`
+- disposed in last month: `2,87,712`
+- first visible district labels: `BELAGAVI`, `BAGALKOT`, `VIJAYAPURA`, `KALABURAGI`, `BIDAR`
+- all five age-bucket widgets were present on the live state page
+
+### Why Karnataka Was The Right Southern Follow-On
+
+- Karnataka keeps the southern expansion story moving after Tamil Nadu and Kerala without forcing another public-state decision first.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 31-district footprint is large enough to matter operationally while staying smaller than the heaviest national stress cases.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:56`
+- first live fetch run: `run_c57e88aa-c6bf-40d8-a3fb-9343bd819174`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `31`
+- statewide pending cases captured: `2230354`
+- first live publication: `publication_54748fe1-5f7c-41d4-bc40-3c976d157f56`
+- first live snapshot: `snapshot_fe97877f-bf5a-475a-b89c-90a1926799f4`
+- replay run from stored evidence: `run_18f4c2a3-d811-496e-a277-d0d4574906c9`
+- replay publication: `publication_144604b7-c587-4be3-8077-1c373bd9968e`
+- rollback publication: `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
+- operator validation: `GET /operator/publications?stateCode=KA` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/karnataka` and `https://nyaaywatch.in/v1/states/karnataka/stats` both returned `404`, so Karnataka remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Karnataka internal-only until a separate public-readiness review exists
+- use Karnataka as the validated next southern internal-only baseline after Kerala
+
+## Tripura (`TR`) Internal Trial
+
+- candidate geography: Tripura
+- review date: 2026-04-17
+- source boundary: NJDG Tripura district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `16~20`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `8`
+- statewide pending cases shown on the live state page: `63,981`
+- instituted in last month: `10,656`
+- disposed in last month: `15,663`
+- first visible district labels: `West Tripura`, `North Tripura`, `South Tripura`, `Unakoti`, `Gomati`
+- all five age-bucket widgets were present on the live state page
+
+### Why Tripura Was The Right Light North-East Follow-On
+
+- Tripura deepens the north-east operating story after Assam and Meghalaya without widening the public site.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 8-district footprint makes it a clean light-state proof while the heavier north-east baseline already exists.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:56`
+- first live fetch run: `run_6b5e6751-0835-42b1-a89a-f3da080f5287`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `8`
+- statewide pending cases captured: `63981`
+- first live publication: `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`
+- first live snapshot: `snapshot_fc6ae256-9681-48ce-a27f-a36f005c3edb`
+- replay run from stored evidence: `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`
+- replay publication: `publication_4e89a6b5-5d92-4884-9270-512e78ba2801`
+- rollback publication: `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
+- operator validation: `GET /operator/publications?stateCode=TR` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/tripura` and `https://nyaaywatch.in/v1/states/tripura/stats` both returned `404`, so Tripura remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Tripura internal-only until a separate public-readiness review exists
+- use Tripura as a validated light north-east follow-on state behind Assam and Meghalaya
+
+## Nagaland (`NL`) Internal Trial
+
+- candidate geography: Nagaland
+- review date: 2026-04-17
+- source boundary: NJDG Nagaland district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `13~34`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `11`
+- statewide pending cases shown on the live state page: `3,984`
+- instituted in last month: `70`
+- disposed in last month: `76`
+- first visible district labels: `Dimapur`, `Kohima`, `Mokokchung`, `Wokha`, `Zunheboto`
+- all five age-bucket widgets were present on the live state page
+
+### Why Nagaland Was The Right Additional North-East Proof
+
+- Nagaland keeps the north-east track from depending on only one large baseline and one lighter follow-on.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 11-district footprint is manageable enough to make it a sensible additional internal-only proof candidate while Assam is live publicly.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:56`
+- first live fetch run: `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`
+- source snapshot date: `2026-04-17`
+- candidate quality state: `complete`
+- district count captured: `11`
+- statewide pending cases captured: `3984`
+- first live publication: `publication_abc433b9-1db4-4661-902e-ffd8861e35af`
+- first live snapshot: `snapshot_1d804dd1-895d-4db9-870c-0ff030c22082`
+- replay run from stored evidence: `run_d3d5a492-1515-4e77-ab25-27135054b787`
+- replay publication: `publication_134cafec-fe70-4245-95bc-aa79244cb823`
+- rollback publication: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
+- operator validation: `GET /operator/publications?stateCode=NL` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/nagaland` and `https://nyaaywatch.in/v1/states/nagaland/stats` both returned `404`, so Nagaland remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Nagaland internal-only until a separate public-readiness review exists
+- use Nagaland as additional north-east operating evidence rather than as an implied next public slot
