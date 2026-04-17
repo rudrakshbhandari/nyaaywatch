@@ -6,7 +6,7 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR"] as const;
+export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "UK"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -30,6 +30,13 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Haryana",
     stateSlug: "haryana",
     njdgStateValue: "6~14",
+    publicAlpha: false,
+  },
+  UK: {
+    stateCode: "UK",
+    stateName: "Uttarakhand",
+    stateSlug: "uttarakhand",
+    njdgStateValue: "5~15",
     publicAlpha: false,
   },
 };

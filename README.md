@@ -222,6 +222,7 @@ Internal or post-MVP planning:
 - [Expansion review log](docs/EXPANSION_REVIEW_LOG.md)
 - [Punjab go-live checklist](docs/PUNJAB_GO_LIVE_CHECKLIST.md)
 - [Punjab public readiness review](docs/PUNJAB_PUBLIC_READINESS_REVIEW.md)
+- [Haryana public readiness review](docs/HARYANA_PUBLIC_READINESS_REVIEW.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
 - [AWS dev resources](infra/aws/dev/README.md)
 
