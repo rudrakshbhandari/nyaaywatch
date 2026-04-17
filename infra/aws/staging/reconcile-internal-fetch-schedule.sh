@@ -16,6 +16,8 @@ schedule_state="${INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
 schedule_name="${INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-weekday-internal-fetch}"
 role_name="${INTERNAL_FETCH_SCHEDULER_ROLE_NAME:-${stack_name}-internal-fetch-scheduler}"
 role_policy_name="${INTERNAL_FETCH_SCHEDULER_POLICY_NAME:-${stack_name}-internal-fetch-scheduler}"
+role_arn_override="${INTERNAL_FETCH_SCHEDULER_ROLE_ARN:-}"
+manage_iam_mode="${INTERNAL_FETCH_MANAGE_IAM:-auto}"
 schedule_group_name="${INTERNAL_FETCH_SCHEDULE_GROUP_NAME:-default}"
 note_prefix="${INTERNAL_FETCH_NOTE_PREFIX:-Scheduled weekday internal raw fetch}"
 
@@ -110,9 +112,66 @@ aws ecs describe-task-definition \
   --output json \
   > "$tmpdir/task-definition.json"
 
+schedule_exists="false"
+if aws scheduler get-schedule \
+  --region "$region" \
+  --group-name "$schedule_group_name" \
+  --name "$schedule_name" \
+  --output json \
+  > "$tmpdir/existing-schedule.json" 2>/dev/null; then
+  schedule_exists="true"
+fi
+
 role_exists="false"
-if aws iam get-role --role-name "$role_name" >/dev/null 2>&1; then
+iam_can_manage_role="false"
+role_arn=""
+
+if [[ -n "$role_arn_override" ]]; then
+  role_arn="$role_arn_override"
+fi
+
+iam_get_role_output=""
+if iam_get_role_output="$(aws iam get-role --role-name "$role_name" --output json 2>&1)"; then
   role_exists="true"
+  iam_can_manage_role="true"
+  role_arn="$(
+    python3 - <<'PY' "$iam_get_role_output"
+import json
+import sys
+
+print(json.loads(sys.argv[1])["Role"]["Arn"])
+PY
+  )"
+elif [[ "$iam_get_role_output" == *"NoSuchEntity"* ]]; then
+  role_exists="false"
+  iam_can_manage_role="true"
+elif [[ "$manage_iam_mode" == "always" ]]; then
+  echo "$iam_get_role_output" >&2
+  exit 1
+elif [[ "$schedule_exists" == "true" && -z "$role_arn" ]]; then
+  role_arn="$(
+    python3 - "$tmpdir/existing-schedule.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], "r", encoding="utf-8") as handle:
+    schedule = json.load(handle)
+
+print(schedule["Target"]["RoleArn"])
+PY
+  )"
+fi
+
+if [[ "$manage_iam_mode" != "auto" && "$manage_iam_mode" != "always" && "$manage_iam_mode" != "never" ]]; then
+  echo "INTERNAL_FETCH_MANAGE_IAM must be one of auto, always, never" >&2
+  exit 1
+fi
+
+manage_iam="false"
+if [[ "$manage_iam_mode" == "always" ]]; then
+  manage_iam="true"
+elif [[ "$manage_iam_mode" == "auto" && "$iam_can_manage_role" == "true" ]]; then
+  manage_iam="true"
 fi
 
 cat > "$tmpdir/trust-policy.json" <<'EOF'
@@ -130,16 +189,18 @@ cat > "$tmpdir/trust-policy.json" <<'EOF'
 }
 EOF
 
-if [[ "$role_exists" != "true" ]]; then
-  aws iam create-role \
-    --role-name "$role_name" \
-    --assume-role-policy-document "file://$tmpdir/trust-policy.json" \
-    >/dev/null
-else
-  aws iam update-assume-role-policy \
-    --role-name "$role_name" \
-    --policy-document "file://$tmpdir/trust-policy.json" \
-    >/dev/null
+if [[ "$manage_iam" == "true" ]]; then
+  if [[ "$role_exists" != "true" ]]; then
+    aws iam create-role \
+      --role-name "$role_name" \
+      --assume-role-policy-document "file://$tmpdir/trust-policy.json" \
+      >/dev/null
+  else
+    aws iam update-assume-role-policy \
+      --role-name "$role_name" \
+      --policy-document "file://$tmpdir/trust-policy.json" \
+      >/dev/null
+  fi
 fi
 
 python3 - "$tmpdir/task-definition.json" "$tmpdir/role-policy.json" <<'PY'
@@ -154,13 +215,15 @@ execution_role = task_definition.get("executionRoleArn")
 if execution_role:
     resources.append(execution_role)
 
+task_definition_resource = task_definition["taskDefinitionArn"].rsplit(":", 1)[0] + ":*"
+
 policy = {
     "Version": "2012-10-17",
     "Statement": [
         {
             "Effect": "Allow",
             "Action": ["ecs:RunTask"],
-            "Resource": task_definition["taskDefinitionArn"],
+            "Resource": task_definition_resource,
         },
         {
             "Effect": "Allow",
@@ -174,18 +237,27 @@ with open(sys.argv[2], "w", encoding="utf-8") as handle:
     json.dump(policy, handle)
 PY
 
-aws iam put-role-policy \
-  --role-name "$role_name" \
-  --policy-name "$role_policy_name" \
-  --policy-document "file://$tmpdir/role-policy.json" \
-  >/dev/null
-
-role_arn="$(
-  aws iam get-role \
+if [[ "$manage_iam" == "true" ]]; then
+  aws iam put-role-policy \
     --role-name "$role_name" \
-    --query "Role.Arn" \
-    --output text
-)"
+    --policy-name "$role_policy_name" \
+    --policy-document "file://$tmpdir/role-policy.json" \
+    >/dev/null
+fi
+
+if [[ -z "$role_arn" && "$manage_iam" == "true" ]]; then
+  role_arn="$(
+    aws iam get-role \
+      --role-name "$role_name" \
+      --query "Role.Arn" \
+      --output text
+  )"
+fi
+
+if [[ -z "$role_arn" ]]; then
+  echo "Scheduler role ARN is unavailable. Either grant IAM read access, set INTERNAL_FETCH_SCHEDULER_ROLE_ARN, or bootstrap the schedule manually first." >&2
+  exit 1
+fi
 
 python3 - \
   "$tmpdir/service.json" \
