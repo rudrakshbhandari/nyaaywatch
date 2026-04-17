@@ -10,19 +10,12 @@ Use this file for:
 
 ## Review
 
+## Completed
+
 ### Publish-Time Cache Invalidation For Public Data
 
-**What:** Ensure public CSV and other cacheable published artifacts invalidate or bypass stale CDN cache immediately after a publish.
-
-**Why:** The state-aware live release flow is now working on AWS, but the latest Punjab verification showed a real parity break at the edge: the API moved to the new publication immediately while the CSV download still served a cached older publication until a cache-busting request forced a `MISS`.
-
-**Context:** `docs/DEPLOYMENT_STATUS.md` and `docs/EXPANSION_REVIEW_LOG.md` now record the live state-aware Punjab verification on task definition `:28`, including the stale Cloudflare CSV `HIT` versus current API snapshot mismatch.
-
-**Effort:** M
-**Priority:** P1
-**Depends on:** a decision on whether to solve this with cache-control changes, cache-busting asset URLs, or explicit publish-time purge logic
-
-## Completed
+- completed in the public data routes and release verification flow by marking `/data` and CSV export endpoints as `no-store` for browsers and CDNs, including the explicit Punjab state-scoped routes
+- `npm run release:verify` now fails if the public data page or district CSV is still cacheable, so future live publish checks catch this regression before the next state trial
 
 ### Source Terms And Redistribution Review
 
