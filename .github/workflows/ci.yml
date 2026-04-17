@@ -82,6 +82,7 @@ jobs:
       INTERNAL_FETCH_SCHEDULE_TIMEZONE: Asia/Kolkata
       INTERNAL_FETCH_SCHEDULE_STATE: ENABLED
       INTERNAL_FETCH_MANAGE_IAM: never
+      INTERNAL_FETCH_SCHEDULER_ROLE_ARN: arn:aws:iam::723951822728:role/nyaaywatch-staging-internal-fetch-scheduler
       PUBLIC_BASE_URL: https://nyaaywatch.in
       CLOUDFLARE_ZONE_NAME: nyaaywatch.in
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
