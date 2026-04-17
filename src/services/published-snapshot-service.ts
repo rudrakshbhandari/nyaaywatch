@@ -25,6 +25,7 @@ import {
 } from "../storage/postgres.js";
 import { sha256 } from "../lib/hash.js";
 import type { NjdgStateProfile } from "../geographies.js";
+import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
 
 const RAW_CAPTURE_ARTIFACT_TYPE = "raw-njdg-html-bundle";
 const SNAPSHOT_CANDIDATE_ARTIFACT_TYPE = "snapshot-candidate-json";
@@ -72,13 +73,17 @@ export interface DistrictDetail {
 }
 
 export class PublishedSnapshotService {
+  private readonly cacheInvalidation: PublicCacheInvalidationService;
+
   constructor(
     private readonly config: AppConfig,
     private readonly profile: NjdgStateProfile,
     private readonly store: PgWarehouseStore,
     private readonly artifactStore: ArtifactStore,
     private readonly sourceClient: NjdgSourceClient,
-  ) {}
+  ) {
+    this.cacheInvalidation = new PublicCacheInvalidationService(config);
+  }
 
   async getPublishedSnapshot(): Promise<PublishedSnapshotRecord | null> {
     return this.store.getLatestPublishedSnapshot(this.profile.stateCode);
@@ -292,7 +297,7 @@ export class PublishedSnapshotService {
       inspection.run.replayOfRunId ?? undefined,
     );
 
-    return this.store.withTransaction(async (tx) => {
+    const result = await this.store.withTransaction(async (tx) => {
       const snapshot = await tx.insertPublishedSnapshot({
         id: createId("snapshot"),
         runId,
@@ -327,6 +332,13 @@ export class PublishedSnapshotService {
 
       return { run, publication, snapshot };
     });
+
+    await this.cacheInvalidation.invalidatePublishedData(
+      this.profile.stateCode,
+      result.snapshot.payload.districts.map((district) => district.districtId),
+    );
+
+    return result;
   }
 
   async replayRun(runId: string, note?: string): Promise<{ run: RunRecord; publication: PublicationRecord; snapshot: PublishedSnapshotRecord }> {
@@ -419,6 +431,11 @@ export class PublishedSnapshotService {
       throw new Error("Rollback requires an existing publication history.");
     }
 
+    const targetSnapshot = await this.store.getPublishedSnapshotById(target.publishedSnapshotId);
+    if (!targetSnapshot) {
+      throw new Error(`Published snapshot ${target.publishedSnapshotId} was not found.`);
+    }
+
     const rollback = await this.store.insertPublication({
       id: createId("publication"),
       stateCode: this.profile.stateCode,
@@ -434,6 +451,11 @@ export class PublishedSnapshotService {
       restoredSnapshotId: rollback.publishedSnapshotId,
       previousPublicationId: rollback.previousPublicationId,
     });
+
+    await this.cacheInvalidation.invalidatePublishedData(
+      this.profile.stateCode,
+      targetSnapshot.payload.districts.map((district) => district.districtId),
+    );
 
     return rollback;
   }

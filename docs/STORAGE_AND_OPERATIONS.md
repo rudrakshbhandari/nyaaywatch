@@ -124,6 +124,8 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
    `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
     For a state-scoped rollout, add `--state-slug=<state-slug>`.
 
+If `CLOUDFLARE_API_TOKEN` is configured in the runtime, publish and rollback also purge the public data page plus CSV export URLs for that state so the stable download paths do not keep serving a stale cached snapshot after a release change.
+
 The `--state` override targets the operator flow only. A state becomes publicly reachable only if the runtime includes that state's published snapshot service and the public app has been intentionally rolled out with the corresponding state-scoped routes.
 
 ### Replay -> Rollback

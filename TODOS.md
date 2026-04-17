@@ -10,12 +10,23 @@ Use this file for:
 
 ## Review
 
+### Publish-Time Cache Invalidation For Public Data
+
+**What:** Finish the Cloudflare-backed purge path for public data URLs and rerun live Punjab verification on the stable URL family.
+
+**Why:** Route-level `no-store` headers are now in the app and `release:verify` enforces them, but the 2026-04-17 post-deploy Punjab check still hit an older Cloudflare-cached CSV object that predated the header fix. Durable parity now depends on the explicit purge hook plus live runtime credential wiring.
+
+**Context:** PR #44 landed the `no-store` headers and verification guard, but `https://nyaaywatch.in/states/punjab/data/districts.csv` still returned `cf-cache-status=HIT` with the earlier cached response at 2026-04-17 00:11 UTC. This follow-up branch adds publish/rollback purge support and deploy-time token plumbing; it is not done until the live runtime has the token and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passes without manual cache-busting.
+
+**Effort:** S
+**Priority:** P1
+
 ## Completed
 
 ### Publish-Time Cache Invalidation For Public Data
 
-- completed in the public data routes and release verification flow by marking `/data` and CSV export endpoints as `no-store` for browsers and CDNs, including the explicit Punjab state-scoped routes
-- `npm run release:verify` now fails if the public data page or district CSV is still cacheable, so future live publish checks catch this regression before the next state trial
+- partial code fix completed in PR #44 by marking `/data` and CSV export endpoints as `no-store` for browsers and CDNs, including the explicit Punjab state-scoped routes
+- `npm run release:verify` now fails if the public data page or district CSV is still cacheable, which exposed that a cached pre-fix Cloudflare object still survives until an explicit purge runs
 
 ### Source Terms And Redistribution Review
 

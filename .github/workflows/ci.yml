@@ -77,6 +77,7 @@ jobs:
       AWS_ACCOUNT_ID: "723951822728"
       ECR_REPOSITORY: nyaaywatch-staging
       STAGING_STACK_NAME: nyaaywatch-staging
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     steps:
       - name: Checkout repository

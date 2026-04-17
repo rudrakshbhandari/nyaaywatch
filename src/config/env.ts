@@ -25,6 +25,7 @@ const EnvSchema = z.object({
   OPERATOR_API_TOKEN: z.string().min(8),
   STATE_CODE: z.enum(SUPPORTED_STATE_CODES).default("HP"),
   CANONICAL_HOST: z.string().min(1).optional(),
+  PUBLIC_BASE_URL: z.string().url().optional(),
   LEGACY_HOSTS: z
     .string()
     .optional()
@@ -34,6 +35,9 @@ const EnvSchema = z.object({
         .map((host) => host.trim().toLowerCase())
         .filter(Boolean) ?? [],
     ),
+  CLOUDFLARE_API_TOKEN: z.string().min(1).optional(),
+  CLOUDFLARE_ZONE_ID: z.string().min(1).optional(),
+  CLOUDFLARE_ZONE_NAME: z.string().min(1).optional(),
 });
 
 export type AppConfig = z.infer<typeof EnvSchema>;
