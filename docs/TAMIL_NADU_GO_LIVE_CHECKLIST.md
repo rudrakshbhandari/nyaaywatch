@@ -55,8 +55,8 @@ Why this gate exists:
 
 ### 6. Verification
 
-- [ ] `npm run typecheck`
-- [ ] targeted regression tests for Tamil Nadu-related pipeline or public-surface changes
+- [x] `npm run typecheck`
+- [x] targeted regression tests for Tamil Nadu-related pipeline or public-surface changes
 - [ ] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tamil-nadu`
 - [ ] Browser verification on `https://nyaaywatch.in/states/tamil-nadu`
 

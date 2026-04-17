@@ -37,7 +37,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Tamil Nadu",
     stateSlug: "tamil-nadu",
     njdgStateValue: "33~10",
-    publicAlpha: false,
+    publicAlpha: true,
   },
   AS: {
     stateCode: "AS",

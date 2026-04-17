@@ -2,7 +2,7 @@
 
 Review of what we can already validate for Tamil Nadu before exposing any public Tamil Nadu route family.
 
-This review closes the Tamil Nadu go / no-go question at the trust-surface level. Tamil Nadu is now viable as the next narrow public rollout candidate after Haryana, and the remaining work is Tamil Nadu public-route parity, stable-URL verification, and the live rollout itself.
+This review closes the Tamil Nadu go / no-go question at the trust-surface level. Tamil Nadu is now viable as the next narrow public rollout candidate after Haryana, and the remaining work is stable-URL verification plus the live rollout itself.
 
 ## Review Basis
 
@@ -62,21 +62,21 @@ Nothing observed in the Tamil Nadu candidate suggests we need a looser trust sta
 
 ## What Still Needs Explicit Public Work
 
-### 1. Public Surface Implementation And Parity
+### 1. Stable-URL Public Verification
 
-Tamil Nadu is still dark on the public site. Before any launch we still need to verify:
+Tamil Nadu is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still need to verify:
 
 - `/states/tamil-nadu`
 - `/v1/states/tamil-nadu/...`
 - `/states/tamil-nadu/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Haryana now provides the pattern. Tamil Nadu does not need invention here, but it still needs the actual public verification pass.
+Haryana provided the pattern. Tamil Nadu no longer needs invention or repo-level public-surface work here, but it still needs the actual live-host verification pass.
 
-The verification artifacts for that pass should now live in:
+The verification artifacts for that pass now live in:
 
 - `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
-- targeted Tamil Nadu public-route parity coverage that exercises the intended `/states/tamil-nadu/...` and `/v1/states/tamil-nadu/...` surfaces under a test-only public-state promotion
+- targeted Tamil Nadu public-route parity coverage that exercises the intended `/states/tamil-nadu/...` and `/v1/states/tamil-nadu/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline
 
@@ -98,7 +98,7 @@ Tamil Nadu should be treated as the next narrow public rollout candidate.
 
 It should move forward once the conditions below are true:
 
-1. Tamil Nadu public routes are implemented and pass stable-URL UI/API/CSV parity verification
+1. Tamil Nadu passes stable-URL UI/API/CSV verification on the live hostname
 2. the preflight artifacts in `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md` are green on the integrated branch
 3. public copy remains explicit about which states are live, without implying nationwide coverage
 
@@ -110,5 +110,5 @@ This review closes the open Tamil Nadu trust question in `TODOS.md`:
 - trust-surface review: done
 - public recommendation: Tamil Nadu is the next public candidate
 - remaining blockers reduced to:
-  - Tamil Nadu public-route implementation and parity verification
+  - live stable-URL verification
   - live release evidence on the public hostname
