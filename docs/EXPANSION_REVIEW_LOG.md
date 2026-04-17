@@ -134,7 +134,8 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - keep public expansion narrower than internal qualification even though Haryana is now live
-- use Haryana as the public baseline while Tamil Nadu and Assam stay internal-only until separate public-readiness decisions exist
+- treat Tamil Nadu as the next public state once its explicit go-live checklist is complete
+- keep Assam internal-only for now while Kerala and Meghalaya become the next southern and north-east internal proof pair
 - keep the ECS-backed operator lane as the default path for heavier future internal-state fetches
 
 ## Uttarakhand (`UK`) Internal Trial
@@ -358,8 +359,8 @@ Those next-slice decisions are now made:
 
 ### Next Required Work
 
-- keep Tamil Nadu internal-only until a separate public-readiness review exists
-- use Tamil Nadu as the southern benchmark for future internal expansion decisions
+- complete the Tamil Nadu public-route parity and checklist work, then use Tamil Nadu as the next public rollout
+- keep Kerala as the next southern internal proof state while Tamil Nadu's public slot is underway
 
 ## Assam (`AS`) Internal Trial
 
@@ -408,4 +409,72 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - keep Assam internal-only until a separate public-readiness review exists
-- use Assam as the north-east benchmark for future internal expansion decisions
+- use Assam as the north-east benchmark while Meghalaya becomes the next north-east internal proof state
+
+## Kerala (`KL`) Internal Candidate
+
+- candidate geography: Kerala
+- review date: 2026-04-17
+- source boundary: NJDG Kerala district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest source viability date: 2026-04-17
+- reviewer: Codex
+- decision: `internal candidate prepared`
+
+### Source Viability Notes
+
+- NJDG state code value: `32~4`
+- source page footer observed on live responses: `2026-04-16`
+- district count exposed on the live state page: `14`
+- statewide pending cases shown on the live state page: `18,01,417`
+- instituted in last month: `57,299`
+- disposed in last month: `77,311`
+- first visible district labels: `Kasaragod`, `Ernakulam`, `Kannur`, `Thrissur`, `Kozhikode`
+- all five age-bucket widgets were present on the live state page
+- sample district drilldown `dist_code=1` returned `200 OK`
+
+### Why Kerala Is Next
+
+- Kerala keeps the southern expansion story moving after Tamil Nadu without forcing another public-state decision first.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 14-district footprint is lighter than Tamil Nadu, which makes it a clean internal follow-on proof state.
+
+### Next Required Work
+
+- merge the Kerala internal-only repo wiring to `main`
+- run the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle
+- keep Kerala internal-only unless a later public-readiness review says otherwise
+
+## Meghalaya (`ML`) Internal Candidate
+
+- candidate geography: Meghalaya
+- review date: 2026-04-17
+- source boundary: NJDG Meghalaya district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest source viability date: 2026-04-17
+- reviewer: Codex
+- decision: `internal candidate prepared`
+
+### Source Viability Notes
+
+- NJDG state code value: `17~21`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `14`
+- statewide pending cases shown on the live state page: `18,450`
+- instituted in last month: `1,456`
+- disposed in last month: `778`
+- first visible district labels: `East Khasi Hills`, `West Garo Hills`, `West Jaintia Hills`, `East Garo Hills`, `Ri Bhoi`
+- all five age-bucket widgets were present on the live state page
+- sample district drilldown `dist_code=1` returned `200 OK`
+
+### Why Meghalaya Is Next
+
+- Meghalaya keeps the north-east expansion story moving after Assam without widening the public site prematurely.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 14-district footprint is manageable enough to make it a clean internal follow-on proof state.
+
+### Next Required Work
+
+- merge the Meghalaya internal-only repo wiring to `main`
+- run the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle
+- keep Meghalaya internal-only unless a later public-readiness review says otherwise

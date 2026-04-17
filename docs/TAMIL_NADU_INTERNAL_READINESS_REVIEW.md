@@ -1,8 +1,14 @@
 # Tamil Nadu Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Tamil Nadu before any live operator trial or public exposure.
+Initial source-viability and internal-readiness review for Tamil Nadu before the first live operator trial or public exposure.
 
 Tamil Nadu is a strong internal-only candidate for the southern expansion track. This document records live source evidence only. It does not approve public exposure.
+
+Historical note:
+
+- repo wiring for `TN` is now complete
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage and `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` for the current public recommendation
 
 ## Review Basis
 
@@ -48,11 +54,11 @@ The live state page exposes district drilldowns, and a sample district page requ
 
 ### 1. Repo Wiring
 
-Tamil Nadu still needs to be wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
+Tamil Nadu is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site until a deliberate public decision is made.
 
 ### 2. Operating Evidence
 
-Tamil Nadu has not yet cleared:
+Tamil Nadu has now cleared:
 
 - live `fetch`
 - live `inspect`
@@ -60,18 +66,18 @@ Tamil Nadu has not yet cleared:
 - live `replay`
 - live `rollback`
 
-Until those are complete, Tamil Nadu remains only a source-viability candidate.
+That closes the internal proof bar. Tamil Nadu is no longer only a source-viability candidate.
 
 ### 3. Public Trust Review
 
-No Tamil Nadu-specific public-route parity, copy, or methodology review has been done yet. Public exposure should not be considered until the internal proof cycle succeeds first.
+Tamil Nadu-specific public-route parity and live hostname verification still remain. Public exposure should now be considered through the narrower go-live artifacts rather than through this initial source-viability note.
 
 ## Recommendation
 
-Tamil Nadu should be added as an internal-only candidate state and used as the first southern proof state.
+Tamil Nadu should now be treated as the validated southern baseline and the next public candidate.
 
-It should remain internal-only until:
+Its next step is:
 
-1. repo wiring lands for `TN`
-2. the first live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+1. complete the public-route parity and checklist work in `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` and `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
+2. run the live Tamil Nadu public rollout on the stable hostname
+3. keep later internal expansion narrower than nationwide theater while that public work is underway
