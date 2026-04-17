@@ -71,12 +71,12 @@ As of `2026-04-17`:
 
 - Himachal subordinate-court observability is publicly live
 - Punjab is publicly live through explicit state-scoped routes after clearing the narrow expansion path
+- Haryana is publicly live through the same explicit state-scoped route pattern after passing public parity and live rollout verification
 - AWS staging/public stack is live at `https://nyaaywatch.in`
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
-- Haryana (`HR`) is now the reviewed next narrow public rollout candidate, with public-route parity work in progress
 - Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all completed internal-only live proof cycles
-- Tamil Nadu (`TN`) and Assam (`AS`) are now the next internal-only candidate states for the south and north-east expansion tracks
+- Tamil Nadu (`TN`) and Assam (`AS`) have now both completed internal-only live proof cycles for the south and north-east expansion tracks
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
 
@@ -145,7 +145,7 @@ Actions:
 
 Output:
 
-- Haryana (`HR`) is the next narrow public rollout candidate after Punjab, with public-route parity as the active rollout slice
+- Haryana (`HR`) has completed the next narrow public rollout after Punjab and is now live on the public site
 - chosen next internal states for the new expansion direction: Tamil Nadu (`TN`) for the south and Assam (`AS`) for the north-east
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
 - Punjab has already completed its internal and narrow public rollout evidence, and the updated Haryana-plus-south-and-north-east sequencing is now recorded in the repo docs

@@ -27,7 +27,7 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
-- explicit state-scoped public routing for approved expansion states, with Punjab implemented as the first additional state surface
+- explicit state-scoped public routing for approved expansion states, with Punjab and Haryana now live as additional state surfaces
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
@@ -142,7 +142,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - additional approved states use explicit `/states/:stateSlug/...` routes
-- Punjab is the first implemented state-scoped public surface
+- Punjab and Haryana are the current live state-scoped public surfaces
 - deployment docs still decide whether a given state is live on `https://nyaaywatch.in`
 
 Public API:

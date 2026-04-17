@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:43`
+- ECS task definition: `nyaaywatch-staging:45`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -62,12 +62,16 @@ Operational notes:
 - Current public coverage:
   - unscoped default routes for Himachal Pradesh
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
+  - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
 - Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal source snapshot date: `2026-04-10`
 - Current active Punjab publication: `publication_8a5ddc6e-f520-4344-8161-76dc4dead033`
 - Current active Punjab published snapshot: `snapshot_35226b6d-2fac-49d6-9d53-7aa24b9387e5`
 - Current Punjab source snapshot date: `2026-04-16`
+- Current active Haryana publication: `publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c`
+- Current active Haryana published snapshot: `snapshot_68b8cf79-ee86-4644-a876-8222e2bce71a`
+- Current Haryana source snapshot date: `2026-04-16`
 - Public methodology version: `2026.04-alpha`
 
 ## How To Retrieve The AWS Staging URL
@@ -102,6 +106,9 @@ curl -fsSL <base-url>/v1/trends
 curl -fsSL <base-url>/v1/states/punjab/stats
 curl -fsSL <base-url>/v1/states/punjab/districts
 curl -fsSL <base-url>/v1/states/punjab/trends
+curl -fsSL <base-url>/v1/states/haryana/stats
+curl -fsSL <base-url>/v1/states/haryana/districts
+curl -fsSL <base-url>/v1/states/haryana/trends
 ```
 
 Expected:
@@ -175,6 +182,19 @@ Latest confirmed operator validation:
   - raw artifact `raw/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-njdg-dashboard-html.json` and normalized artifact `normalize/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-snapshot-candidate.json` were stored successfully
   - `https://nyaaywatch.in/states/uttar-pradesh` and `https://nyaaywatch.in/v1/states/uttar-pradesh/stats` both still returned `404`, so the heavier-state proof stayed internal-only
   - the durable heavy-state default is now the ECS-backed operator lane rather than the Cloudflare-fronted public operator path
+- Haryana public rollout completed on 2026-04-17 after PR `#56` merged to `main`:
+  - GitHub deploy run `24582480598` rolled the live service to task definition `:45`
+  - live Haryana fetch run `run_bf1fd888-173c-4a58-9dde-f797b92f7c30`
+  - live Haryana publication `publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c`
+  - live Haryana snapshot `snapshot_68b8cf79-ee86-4644-a876-8222e2bce71a`
+  - `GET /operator/publications?stateCode=HR` now shows the Haryana public publication active with rollback target `publication_09613d9d-ae89-4543-9028-8f5d971df587`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug haryana` passed with `districtCount=22`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - live browser verification loaded `https://nyaaywatch.in/states/haryana` with the explicit Haryana route family, trust metadata, and supported-state navigation showing Himachal Pradesh, Punjab, and Haryana
+- Tamil Nadu and Assam internal proof cycles completed on 2026-04-17 on task definition `:45`:
+  - Tamil Nadu fetch `run_329a8b74-2b9d-4c33-ba2f-46b19186935c`, publish `publication_34aa96eb-f212-4cad-9412-086bfe3c41a6`, replay `run_c69af2d5-b2dd-455e-82aa-3a7125122d71`, replay publication `publication_4965e74e-97de-47b2-b16e-eb2a2ccca25a`, and rollback `publication_43eefb27-a754-4590-91f1-0e38d9e40705` all succeeded
+  - Assam fetch `run_32e2194a-027d-4ec2-8d50-b3c282446b90`, publish `publication_688f053e-53a4-4662-9367-a4ffba4973ce`, replay `run_c28d9a91-0543-40b2-adac-1ca5e0c2e85d`, replay publication `publication_c8e143f6-61f4-4c1b-9423-b49e53b17399`, and rollback `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f` all succeeded
+  - `GET /operator/publications?stateCode=TN` and `GET /operator/publications?stateCode=AS` show the rollback publications active
+  - `https://nyaaywatch.in/states/tamil-nadu`, `https://nyaaywatch.in/v1/states/tamil-nadu/stats`, `https://nyaaywatch.in/states/assam`, and `https://nyaaywatch.in/v1/states/assam/stats` all returned `404`, so both states remained internal-only throughout
 
 ## Release Use
 

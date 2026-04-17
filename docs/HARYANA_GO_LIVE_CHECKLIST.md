@@ -8,7 +8,7 @@ This is narrower than a nationwide launch checklist. Haryana should clear this b
 
 - Candidate state: `Haryana`
 - State code: `HR`
-- Current decision: `next narrow public rollout candidate`
+- Current decision: `soft public availability completed`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Readiness review: `docs/HARYANA_PUBLIC_READINESS_REVIEW.md`
 - Methodology version: `2026.04-alpha`
@@ -30,14 +30,14 @@ Why this gate exists:
 - [x] Haryana public routes can be wired to read only from the active published snapshot in the state-scoped runtime.
 - [x] No public Haryana route or download reads unpublished run state in local verification.
 - [x] Haryana CSV, API, and UI resolve to the same publication lineage in local verification.
-- [ ] Haryana rollback target is recorded in live public release history after the first public publication.
+- [x] Haryana rollback target is recorded in live public release history after the first public publication.
 
 ### 3. Trust Metadata And Caveats
 
 - [x] Haryana entry, district index, and district detail surfaces show source snapshot date, publication date, freshness, methodology version, and source attribution in local verification.
 - [x] Haryana copy uses `published snapshot`, `flagged signal`, and `operator-published` semantics in local verification.
 - [x] Haryana copy avoids live, predictive, or verdict-like framing in local verification.
-- [ ] Live hostname/browser checks confirm the same trust posture after rollout.
+- [x] Live hostname/browser checks confirm the same trust posture after rollout.
 
 ### 4. Product And IA Discipline
 
@@ -55,20 +55,20 @@ Why this gate exists:
 
 ### 6. Verification
 
-- [ ] `npm run typecheck`
-- [ ] `npm test -- tests/geographies.test.ts tests/haryana-public-rollout.test.ts`
-- [ ] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug haryana`
-- [ ] Browser verification on `https://nyaaywatch.in/states/haryana`
+- [x] `npm run typecheck`
+- [x] `npm test -- tests/geographies.test.ts tests/haryana-public-rollout.test.ts`
+- [x] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug haryana`
+- [x] Browser verification on `https://nyaaywatch.in/states/haryana`
 
 ### 7. Deployment
 
-- [ ] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
-- [ ] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
-- [ ] The first Haryana public publication id and rollback posture are recorded explicitly.
+- [x] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
+- [x] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
+- [x] The first Haryana public publication id and rollback posture are recorded explicitly.
 
 ## Decision
 
-- [ ] Ready for soft public availability
+- [x] Ready for soft public availability
 - [ ] Keep internal only
 
-If blocked, record the blocker and exact next action in `docs/EXPANSION_REVIEW_LOG.md`.
+Haryana cleared soft public availability on `2026-04-17` with publication `publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c`, verified state-scoped API and CSV parity, and a live browser check on `https://nyaaywatch.in/states/haryana`.
