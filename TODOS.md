@@ -8,6 +8,20 @@ Use this file for:
 - post-MVP follow-up work
 - important items that are not yet part of the ordered execution path
 
+## Next Up
+
+### Assam Public Rollout
+
+- next approved public state after Tamil Nadu
+- repo config, Assam-specific public parity tests, and the Assam go-live docs should land before the live rollout window
+- done only when a real Assam publication is live on `https://nyaaywatch.in/states/assam` and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug assam` passes on the stable hostname
+
+### Karnataka, Tripura, And Nagaland Internal Proof Cycles
+
+- next internal-only trio after the Kerala plus Meghalaya wave
+- live source checks now confirm contract-compatible Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) pages with drilldown reachability
+- done only when each state clears a real `fetch -> inspect -> publish -> replay -> rollback` cycle while keeping public routes dark with `404`
+
 ## Completed
 
 ### Tamil Nadu Public Rollout

@@ -6,7 +6,7 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "KL", "ML", "UK", "RJ", "UP"] as const;
+export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -44,7 +44,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Assam",
     stateSlug: "assam",
     njdgStateValue: "18~6",
-    publicAlpha: false,
+    publicAlpha: true,
   },
   KL: {
     stateCode: "KL",
@@ -58,6 +58,27 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Meghalaya",
     stateSlug: "meghalaya",
     njdgStateValue: "17~21",
+    publicAlpha: false,
+  },
+  KA: {
+    stateCode: "KA",
+    stateName: "Karnataka",
+    stateSlug: "karnataka",
+    njdgStateValue: "29~3",
+    publicAlpha: false,
+  },
+  TR: {
+    stateCode: "TR",
+    stateName: "Tripura",
+    stateSlug: "tripura",
+    njdgStateValue: "16~20",
+    publicAlpha: false,
+  },
+  NL: {
+    stateCode: "NL",
+    stateName: "Nagaland",
+    stateSlug: "nagaland",
+    njdgStateValue: "13~34",
     publicAlpha: false,
   },
   UK: {

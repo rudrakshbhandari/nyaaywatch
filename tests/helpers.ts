@@ -376,6 +376,77 @@ export function buildHaryanaTestSnapshot(): PublishedSnapshot {
   };
 }
 
+export function buildAssamTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "AS",
+      stateName: "Assam",
+      sourceName: "NJDG Assam district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-17T14:12:03.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Assam",
+      publishedFromRunId: "run_32e2194a-027d-4ec2-8d50-b3c282446b90",
+    },
+    stats: {
+      pendingCases: 581244,
+      disposalRate: 104.0,
+      medianCaseAgeDays: 183,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "tinsukia",
+        districtName: "Tinsukia",
+        rank: 1,
+        backlogCases: 48211,
+        disposalRate: 82.4,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 17.6,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Assam's biggest.",
+        summary:
+          "Tinsukia has 48,211 cases waiting. A typical pending case falls around 183 days old, and the district cleared 82.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "sivasagar",
+        districtName: "Sivasagar",
+        rank: 2,
+        backlogCases: 26604,
+        disposalRate: 107.9,
+        medianAgeDays: 730,
+        filingVsDisposalGap: -7.9,
+        flagReason:
+          "People appear to be waiting longer here than in much of Assam, based on the latest published snapshot.",
+        summary:
+          "Sivasagar has 26,604 cases waiting. A typical pending case falls around 730 days old, and the district cleared 107.9% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "lakhimpur",
+        districtName: "Lakhimpur",
+        rank: 3,
+        backlogCases: 21897,
+        disposalRate: 76.3,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 23.7,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
+        summary:
+          "Lakhimpur has 21,897 cases waiting. A typical pending case falls around 365 days old, and the district cleared 76.3% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 581244,
+        disposalRate: 104.0,
+      },
+    ],
+  };
+}
+
 export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
   return {
     snapshot: {
