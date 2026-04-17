@@ -74,7 +74,8 @@ As of `2026-04-17`:
 - AWS staging/public stack is live at `https://nyaaywatch.in`
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
-- Haryana (`HR`) is the newly chosen next internal subordinate-court candidate
+- Haryana (`HR`) is now the reviewed next narrow public rollout candidate, but remains internal-only for now
+- Uttarakhand (`UK`) is now the newly prepared next internal subordinate-court candidate
 - no High Court or Supreme Court tier has cleared source or methodology review
 
 ## End Goal
@@ -142,9 +143,10 @@ Actions:
 
 Output:
 
-- chosen next state: Haryana (`HR`) as the next internal subordinate-court candidate after Punjab
+- Haryana (`HR`) is the next narrow public rollout candidate after Punjab, but not an immediate go-live
+- chosen next internal state: Uttarakhand (`UK`) as the next subordinate-court candidate after Haryana
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
-- Punjab has already completed its internal and narrow public rollout evidence, and the next state-selection note is now recorded in `docs/EXPANSION_REVIEW_LOG.md`
+- Punjab has already completed its internal and narrow public rollout evidence, and the updated Haryana-plus-Uttarakhand sequencing is now recorded in `docs/EXPANSION_REVIEW_LOG.md`
 
 ### Day 1
 

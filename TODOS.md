@@ -10,18 +10,29 @@ Use this file for:
 
 ## Review
 
-### Haryana Public Readiness Review
+### Uttarakhand Internal Trial
 
-**What:** Decide whether Haryana should become the next narrow public state rollout or remain internal-only while another state trial runs.
+**What:** Run the first live Uttarakhand internal `fetch -> inspect -> publish -> replay -> rollback` cycle and record the evidence.
 
-**Why:** Haryana has now cleared the internal fetch/publish/replay/rollback bar on the live stack, so the remaining question is public trust posture rather than extraction viability.
+**Why:** Haryana is now the next public-rollout candidate, so the fastest safe acceleration path is qualifying another internal-only state in parallel rather than widening the public surface immediately.
 
-**Context:** The live Haryana trial completed on 2026-04-17 with fetch run `run_171cccad-9fef-47cb-9cc1-c1ae4449fe4e`, publication `publication_0d8a736d-1c27-4ae3-8cba-c0593057e3d2`, replay run `run_76e23910-ffd8-4dcc-a3be-3eda0b130356`, replay publication `publication_cc7b1068-b97e-470a-a079-570cad23061f`, and rollback `publication_09613d9d-ae89-4543-9028-8f5d971df587`. Public Haryana routes still return `404`, so the next move is a deliberate go/no-go review, not more hidden plumbing work.
+**Context:** The live Uttarakhand source viability review completed on 2026-04-17 with NJDG state value `5~15`, 13 districts visible on the state page, total pending cases `3,05,801`, instituted last month `15,352`, disposed last month `23,841`, and footer freshness dated `2026-04-16`. The repo now carries internal-only `UK` support, so the next work is the live operator proof cycle rather than more source archaeology.
 
-**Effort:** S
+**Effort:** M
 **Priority:** P1
 
 ## Completed
+
+### Haryana Public Readiness Review
+
+- completed in `docs/HARYANA_PUBLIC_READINESS_REVIEW.md`
+- the review concludes Haryana should be the next narrow public rollout candidate, but not an immediate go-live
+- Haryana remains internal-only until one more internal state clears the live proof cycle and Haryana public-route parity is verified
+
+### Uttarakhand Internal Trial Candidate Preparation
+
+- completed on 2026-04-17 with a live source viability review against the NJDG Uttarakhand page
+- internal-only `UK` state support and regression coverage are now in the repo without widening the public site
 
 ### Publish-Time Cache Invalidation For Public Data
 

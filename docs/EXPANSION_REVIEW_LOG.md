@@ -75,11 +75,11 @@ Punjab is now the first non-Himachal geography live on the public site, and the 
 
 Haryana has now also cleared the internal-only operating evidence bar without widening the public surface.
 
-The next expansion slice should not be more hidden Haryana plumbing. It should be one of:
+Those next-slice decisions are now made:
 
-1. an explicit Haryana public-readiness review with trust-surface scrutiny
-2. one additional internal state trial using the same evidence discipline
-3. a separate later track for High Courts rather than mixing court tiers now
+1. `docs/HARYANA_PUBLIC_READINESS_REVIEW.md` concludes Haryana should be the next narrow public rollout candidate, but not an immediate go-live
+2. Uttarakhand (`UK`) is now prepared as the next internal-only trial candidate after a live source viability review on 2026-04-17
+3. High Courts remain a separate later track rather than being mixed into subordinate-court expansion now
 
 ## Haryana (`HR`) Internal Trial
 
@@ -122,5 +122,36 @@ The next expansion slice should not be more hidden Haryana plumbing. It should b
 
 ### Next Required Work
 
-- run an explicit Haryana public-readiness review before exposing any `/states/haryana/...` surface
-- decide whether Haryana is the next narrow public rollout or whether the next slice should instead be a third internal state trial
+- keep Haryana internal-only until the conditions in `docs/HARYANA_PUBLIC_READINESS_REVIEW.md` are satisfied
+- run the first live Uttarakhand internal `fetch -> inspect -> publish -> replay -> rollback` cycle
+
+## Uttarakhand (`UK`) Internal Trial Candidate
+
+- candidate geography: Uttarakhand
+- review date: 2026-04-17
+- source boundary: NJDG Uttarakhand district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- reviewer: Codex
+- decision: `internal trial candidate prepared`
+
+### Source Viability Notes
+
+- NJDG state code value: `5~15`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `13`
+- statewide pending cases shown on the live state page: `3,05,801`
+- instituted in last month: `15,352`
+- disposed in last month: `23,841`
+- first visible district labels: `Nainital`, `Pauri Garhwal`, `Tehri Garhwal`, `Udham Singh Nagar`, `Dehradun`
+- all five age-bucket widgets were present on the live state page
+
+### Why Uttarakhand Is Next
+
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Uttarakhand is smaller than Haryana and Punjab, which makes it a good parallel internal proof candidate while Haryana stays under public-readiness review.
+- Preparing Uttarakhand now supports faster internal expansion without widening the public surface prematurely.
+
+### Next Required Work
+
+- run the first live Uttarakhand internal proof cycle on the deployed stack
+- record the resulting run, publication, replay, and rollback ids in this log
