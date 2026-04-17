@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:48`
+- ECS task definition: `nyaaywatch-staging:52`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
@@ -210,6 +210,11 @@ Latest confirmed operator validation:
   - Meghalaya fetch `run_3dd14fff-0791-45b4-9bd7-27ce798cc850`, publish `publication_b1b1d691-d8bf-4e79-8d2d-119dff5b024c`, replay `run_5fda86c5-aefe-4e33-ae39-e25dac3f4830`, replay publication `publication_503248fe-3cc6-4b24-96e9-1317a4ba6001`, and rollback `publication_7337df86-24c6-4290-8ee4-2b740e5110af` all succeeded
   - `GET /operator/publications?stateCode=KL` and `GET /operator/publications?stateCode=ML` show the rollback publications active
   - `https://nyaaywatch.in/states/kerala`, `https://nyaaywatch.in/v1/states/kerala/stats`, `https://nyaaywatch.in/states/meghalaya`, and `https://nyaaywatch.in/v1/states/meghalaya/stats` all returned `404`, so both states remained internal-only throughout
+- Weekday internal fetch deploy reconciliation hardened on 2026-04-17 after PRs `#60` and `#62` plus a deploy-role IAM update:
+  - GitHub deploy run `24585688516` completed successfully on rerun after granting `scheduler:GetSchedule`, `scheduler:CreateSchedule`, `scheduler:UpdateSchedule`, and scheduler-role `iam:PassRole` to `nyaaywatch-github-deploy-role`
+  - the live ECS service rolled to task definition `:52`
+  - the recurring scheduler `nyaaywatch-staging-weekday-internal-fetch` now targets the same live task definition `:52`
+  - the deploy path now keeps the weekday internal fetch schedule aligned with the latest ECS task definition after each successful `main` rollout
 
 ## Release Use
 
