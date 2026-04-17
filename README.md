@@ -214,6 +214,7 @@ Developer and operator workflow:
 - [Release policy](docs/RELEASE_POLICY.md)
 - [Deployment status](docs/DEPLOYMENT_STATUS.md)
 - [Release history](docs/RELEASE_HISTORY.md)
+- [Long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md)
 
 Internal or post-MVP planning:
 
