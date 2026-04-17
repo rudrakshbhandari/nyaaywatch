@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:46`
+- ECS task definition: `nyaaywatch-staging:48`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
@@ -44,7 +44,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
-- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the weekday internal fetch schedule against the live task definition
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the weekday internal fetch schedule against the live task definition while reusing the existing scheduler role
 
 Operational notes:
 
@@ -55,6 +55,7 @@ Operational notes:
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 - For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
 - The live weekday internal fetch schedule currently targets `STATE_CODE=HP` and runs `fetch` only. It does not publish or change the public snapshot.
+- Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
 
 ### Public Alpha

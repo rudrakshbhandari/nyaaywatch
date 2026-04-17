@@ -168,6 +168,12 @@ What it does:
 - creates or updates the EventBridge Scheduler schedule
 - keeps the schedule pointed at the current ECS task definition after each deploy
 
+Bootstrap note:
+
+- the GitHub Actions deploy role can update the schedule target, but it cannot create or rewrite IAM roles
+- first-time schedule bootstrap or scheduler-role policy changes still require an IAM-capable operator run
+- once the role exists, CI reconciles the schedule against the latest ECS task definition on every `main` deploy
+
 ## Heavy-State Operator Lane
 
 Long-running internal-state fetches should use the ECS-backed operator lane instead of the Cloudflare-fronted public hostname.
