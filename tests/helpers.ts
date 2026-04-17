@@ -304,3 +304,74 @@ export function buildPunjabTestSnapshot(): PublishedSnapshot {
     ],
   };
 }
+
+export function buildHaryanaTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "HR",
+      stateName: "Haryana",
+      sourceName: "NJDG Haryana district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-17T09:32:11.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Haryana",
+      publishedFromRunId: "run_171cccad-9fef-47cb-9cc1-c1ae4449fe4e",
+    },
+    stats: {
+      pendingCases: 1509969,
+      disposalRate: 97.4,
+      medianCaseAgeDays: 183,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "faridabad",
+        districtName: "Faridabad",
+        rank: 1,
+        backlogCases: 219876,
+        disposalRate: 88.4,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 11.6,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Haryana's biggest.",
+        summary:
+          "Faridabad has 2,19,876 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "ambala",
+        districtName: "Ambala",
+        rank: 2,
+        backlogCases: 110452,
+        disposalRate: 104.7,
+        medianAgeDays: 730,
+        filingVsDisposalGap: -4.7,
+        flagReason:
+          "People appear to be waiting longer here than in much of Haryana, based on the latest published snapshot.",
+        summary:
+          "Ambala has 1,10,452 cases waiting. A typical pending case falls around 730 days old, and the district cleared 104.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "karnal",
+        districtName: "Karnal",
+        rank: 3,
+        backlogCases: 93840,
+        disposalRate: 79.2,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 20.8,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
+        summary:
+          "Karnal has 93,840 cases waiting. A typical pending case falls around 365 days old, and the district cleared 79.2% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 1509969,
+        disposalRate: 97.4,
+      },
+    ],
+  };
+}

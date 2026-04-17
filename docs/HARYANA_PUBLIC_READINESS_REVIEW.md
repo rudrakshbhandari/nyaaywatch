@@ -2,7 +2,7 @@
 
 Review of what we can already validate for Haryana before exposing any public Haryana route family.
 
-This review closes the Haryana go / no-go question at the trust-surface level. Haryana is viable as the next narrow public rollout candidate, but it should remain internal-only until one more internal state clears the full proof cycle and Haryana public-route parity is verified end to end.
+This review closes the Haryana go / no-go question at the trust-surface level. Haryana is viable as the next narrow public rollout candidate, and the earlier "wait for one more internal state" gate is now satisfied by the completed Uttarakhand, Rajasthan, and Uttar Pradesh internal proof cycles. The remaining work is Haryana public-route parity, stable-URL verification, and the live rollout itself.
 
 ## Review Basis
 
@@ -73,6 +73,11 @@ Haryana is still dark on the public site. Before any launch we still need to ver
 
 Punjab now provides the pattern. Haryana does not need invention here, but it still needs the actual public verification pass.
 
+The verification artifacts for that pass should now live in:
+
+- `docs/HARYANA_GO_LIVE_CHECKLIST.md`
+- targeted Haryana public-route parity tests that exercise the intended `/states/haryana/...` and `/v1/states/haryana/...` surfaces under a test-only public-state promotion
+
 ### 2. Information Architecture Discipline
 
 The product is no longer Himachal-only, but it is still intentionally not nationwide. Haryana public exposure should keep that narrow explicit posture:
@@ -85,16 +90,16 @@ The product is no longer Himachal-only, but it is still intentionally not nation
 
 The operational system is now good enough to qualify internal states in parallel. Public exposure should still lag internal qualification.
 
-That means Haryana should not go public before at least one more internal-only state clears the same `fetch -> inspect -> publish -> replay -> rollback` bar. Otherwise we would be expanding the public surface and the internal confidence base at the same time.
+That earlier expansion-risk gate is now cleared. Uttarakhand, Rajasthan, and Uttar Pradesh have all since completed the same internal-only `fetch -> inspect -> publish -> replay -> rollback` bar, so Haryana no longer needs to wait on an additional internal proof state before public-route work can proceed.
 
 ## Recommendation
 
 Haryana should be treated as the next narrow public rollout candidate.
 
-It should remain internal-only until all three conditions below are true:
+It should move forward once the conditions below are true:
 
-1. one more internal-only state clears the full live proof cycle
-2. Haryana public routes are implemented and pass stable-URL UI/API/CSV parity verification
+1. Haryana public routes are implemented and pass stable-URL UI/API/CSV parity verification
+2. the preflight artifacts in `docs/HARYANA_GO_LIVE_CHECKLIST.md` and `tests/haryana-public-rollout.test.ts` are green on the integrated branch
 3. public copy remains explicit about which states are live, without implying nationwide coverage
 
 ## Useful Work Completed By This Review
@@ -103,7 +108,7 @@ This review closes the open Haryana trust question in `TODOS.md`:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: Haryana is the next public candidate, but not an immediate go-live
+- public recommendation: Haryana is the next public candidate, and the next slice is rollout execution rather than further readiness debate
 - remaining blockers reduced to:
-  - one more internal-only state proof cycle
   - Haryana public-route implementation and parity verification
+  - live release evidence on the public hostname
