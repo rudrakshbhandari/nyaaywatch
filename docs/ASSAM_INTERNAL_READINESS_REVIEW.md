@@ -8,6 +8,7 @@ Historical note:
 
 - repo wiring for `AS` is now complete
 - the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- Assam now also has a dedicated public-readiness review and go-live checklist in the repo
 - use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
 
 ## Review Basis
@@ -70,13 +71,18 @@ That closes the internal proof bar. Assam is no longer only a source-viability c
 
 ### 3. Public Trust Review
 
-No Assam-specific public-route parity, copy, or methodology review has been done yet. Public exposure should still lag the internal proof cycle.
+Assam now has a dedicated public-readiness review and go-live checklist:
+
+- `docs/ASSAM_PUBLIC_READINESS_REVIEW.md`
+- `docs/ASSAM_GO_LIVE_CHECKLIST.md`
+
+The remaining public work is no longer whether Assam can be exposed narrowly in principle. It is the actual live rollout window plus stable-URL verification.
 
 ## Recommendation
 
-Assam should now be treated as the validated north-east baseline and remain internal-only for the moment.
+Assam should now be treated as the validated north-east baseline and the next approved public rollout candidate after Tamil Nadu.
 
-It should remain internal-only until:
+It should remain non-live on the public hostname until:
 
-1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
-2. a deliberate public rollout slot is chosen after Tamil Nadu
+1. the state-scoped parity branch is merged with the local go-live gates green
+2. a live Assam publication passes `release:verify` and browser checks on `https://nyaaywatch.in`

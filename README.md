@@ -27,11 +27,11 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
-- explicit state-scoped public routing for approved expansion states, with Punjab and Haryana now live as additional state surfaces
+- explicit state-scoped public routing for approved expansion states, with Punjab, Haryana, and Tamil Nadu now live as additional state surfaces
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision.
+Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision. Assam is the next approved public rollout candidate in repo config, while Karnataka, Tripura, and Nagaland are the next internal-only candidates after live source review.
 
 ## Product Guardrails
 
@@ -145,7 +145,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - additional approved states use explicit `/states/:stateSlug/...` routes
-- Punjab and Haryana are the current live state-scoped public surfaces
+- Punjab, Haryana, and Tamil Nadu are the current live state-scoped public surfaces
 - deployment docs still decide whether a given state is live on `https://nyaaywatch.in`
 
 Public API:
@@ -235,9 +235,15 @@ Internal or post-MVP planning:
 - [Punjab public readiness review](docs/PUNJAB_PUBLIC_READINESS_REVIEW.md)
 - [Haryana public readiness review](docs/HARYANA_PUBLIC_READINESS_REVIEW.md)
 - [Haryana go-live checklist](docs/HARYANA_GO_LIVE_CHECKLIST.md)
+- [Assam public readiness review](docs/ASSAM_PUBLIC_READINESS_REVIEW.md)
+- [Assam go-live checklist](docs/ASSAM_GO_LIVE_CHECKLIST.md)
+- [Assam internal readiness review](docs/ASSAM_INTERNAL_READINESS_REVIEW.md)
 - [Tamil Nadu public readiness review](docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md)
 - [Tamil Nadu go-live checklist](docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu internal readiness review](docs/TAMIL_NADU_INTERNAL_READINESS_REVIEW.md)
+- [Karnataka internal readiness review](docs/KARNATAKA_INTERNAL_READINESS_REVIEW.md)
+- [Tripura internal readiness review](docs/TRIPURA_INTERNAL_READINESS_REVIEW.md)
+- [Nagaland internal readiness review](docs/NAGALAND_INTERNAL_READINESS_REVIEW.md)
 - [Assam internal readiness review](docs/ASSAM_INTERNAL_READINESS_REVIEW.md)
 - [Kerala internal readiness review](docs/KERALA_INTERNAL_READINESS_REVIEW.md)
 - [Meghalaya internal readiness review](docs/MEGHALAYA_INTERNAL_READINESS_REVIEW.md)
