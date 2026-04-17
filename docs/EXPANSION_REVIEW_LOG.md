@@ -78,7 +78,7 @@ Haryana has now also cleared the internal-only operating evidence bar without wi
 Those next-slice decisions are now made:
 
 1. `docs/HARYANA_PUBLIC_READINESS_REVIEW.md` concludes Haryana should be the next narrow public rollout candidate, but not an immediate go-live
-2. Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all cleared the first live internal-only proof cycle on 2026-04-17, while Uttar Pradesh also exposed a heavier-state operator-path timeout risk behind Cloudflare
+2. Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all cleared live internal-only proof cycles on 2026-04-17, and the heavier-state Uttar Pradesh follow-up now verifies the ECS-backed operator lane as the routine durable path
 3. High Courts remain a separate later track rather than being mixed into subordinate-court expansion now
 
 ## Haryana (`HR`) Internal Trial
@@ -233,9 +233,9 @@ Those next-slice decisions are now made:
 - source boundary: NJDG Uttar Pradesh district dashboard aggregate pages
 - methodology version: `2026.04-alpha`
 - first successful capture date: 2026-04-17
-- latest successful validation date: 2026-04-17 live replay and rollback validation
+- latest successful validation date: 2026-04-17 live ECS heavy-state validation
 - reviewer: Codex
-- decision: `internal trial completed with an operator-path caveat`
+- decision: `internal trial completed`
 
 ### Source Viability Notes
 
@@ -282,7 +282,21 @@ Those next-slice decisions are now made:
 - Publish, replay, rollback, and validation then succeeded by bypassing Cloudflare and connecting to the ALB while preserving the `nyaaywatch.in` TLS host via `curl --connect-to`.
 - That means the blocking issue for heavier states is now operator request path durability, not extractor or normalizer correctness.
 
+### ECS Heavy-State Follow-Up
+
+- follow-up deploy run: `24554574390`
+- follow-up merged fix PR: `#54`
+- follow-up deployed task definition: `nyaaywatch-staging:43`
+- ECS-backed follow-up fetch run: `run_a16bb291-e3fb-4238-8695-bc60e4d63a64`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `74`
+- statewide pending cases captured: `11911564`
+- raw artifact key: `raw/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-njdg-dashboard-html.json`
+- normalized artifact key: `normalize/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-snapshot-candidate.json`
+- public-surface validation: `https://nyaaywatch.in/states/uttar-pradesh` and `https://nyaaywatch.in/v1/states/uttar-pradesh/stats` both still returned `404`, so the heavier-state follow-up remained internal-only
+- outcome: `npm run operator:staging` is now verified live as the routine heavy-state fetch lane, which closes the Cloudflare-timeout durability gap without widening the public read surface
+
 ### Next Required Work
 
-- decide on a non-Cloudflare operator lane for heavier internal states, such as a direct origin path or one-off ECS task path
-- keep Uttar Pradesh internal-only until that operator-path decision is closed and a public-readiness review exists
+- keep Uttar Pradesh internal-only until a deliberate public-readiness review exists, even though the ECS-backed heavy-state operator lane is now verified live

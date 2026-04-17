@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:39`
+- ECS task definition: `nyaaywatch-staging:43`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -168,6 +168,13 @@ Latest confirmed operator validation:
   - the first Uttar Pradesh fetch through `https://nyaaywatch.in/operator/runs/fetch` returned a Cloudflare `504`, but the origin still completed and persisted fetch run `run_0b2ea65b-4d28-4d7b-a72c-308187a4e096`
   - Uttar Pradesh publish `publication_dbf86893-c8b4-4587-813f-b624e009b9da`, replay `run_79cb8508-85fa-4d99-a3c5-d6243d95838d`, and rollback `publication_55a13942-b67d-4a89-826a-b0ae334a7807` then succeeded via the ALB-bypassed origin path, and the public Uttar Pradesh routes still returned `404`
   - this makes large-state operator-path durability the next operational gap, not multi-state extraction or publication correctness
+- ECS-backed heavy-state follow-up completed on 2026-04-17 after PR `#54` merged to `main`:
+  - GitHub deploy run `24554574390` rolled the live service to task definition `:43`
+  - `npm run operator:staging -- --state UP fetch "UP ECS heavy-state proof cycle fetch"` succeeded as fetch run `run_a16bb291-e3fb-4238-8695-bc60e4d63a64`
+  - the live ECS helper completed with `sourceSnapshotAt=2026-04-16T00:00:00.000Z`, `qualityState=complete`, `districtCount=74`, and `pendingCases=11911564`
+  - raw artifact `raw/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-njdg-dashboard-html.json` and normalized artifact `normalize/staging/up/2026-04-16/run_a16bb291-e3fb-4238-8695-bc60e4d63a64-snapshot-candidate.json` were stored successfully
+  - `https://nyaaywatch.in/states/uttar-pradesh` and `https://nyaaywatch.in/v1/states/uttar-pradesh/stats` both still returned `404`, so the heavier-state proof stayed internal-only
+  - the durable heavy-state default is now the ECS-backed operator lane rather than the Cloudflare-fronted public operator path
 
 ## Release Use
 
