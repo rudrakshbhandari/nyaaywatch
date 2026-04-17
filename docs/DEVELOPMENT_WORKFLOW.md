@@ -92,6 +92,7 @@ npm run operator:publish -- <run-id> "Publish latest run"
 npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm run operator:remote -- --base-url=https://nyaaywatch.in publications
+npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
@@ -112,6 +113,8 @@ npm run operator:remote -- \
 ```
 
 Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` even locally so the code path matches the AWS deployment target.
+
+Use `npm run operator:remote` for live remote operator access. Use `npm run operator:staging` for live AWS heavy-state work when the operator command should run inside one-off ECS tasks instead of through the public HTTP path.
 
 ## Commit Examples
 

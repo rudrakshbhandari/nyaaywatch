@@ -50,7 +50,8 @@ Operational notes:
 - Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
-- For origin-only recovery of long-running operator calls, connect to the ALB while preserving `nyaaywatch.in` as the TLS host and HTTP host, for example with `curl --connect-to`.
+- For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
+- ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
 
 ### Public Alpha
 
