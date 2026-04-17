@@ -6,7 +6,7 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP"] as const;
+export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "KL", "ML", "KA", "TR", "NL", "TS", "AP", "AR", "MN", "UK", "RJ", "UP"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -79,6 +79,34 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Nagaland",
     stateSlug: "nagaland",
     njdgStateValue: "13~34",
+    publicAlpha: false,
+  },
+  TS: {
+    stateCode: "TS",
+    stateName: "Telangana",
+    stateSlug: "telangana",
+    njdgStateValue: "36~29",
+    publicAlpha: false,
+  },
+  AP: {
+    stateCode: "AP",
+    stateName: "Andhra Pradesh",
+    stateSlug: "andhra-pradesh",
+    njdgStateValue: "28~2",
+    publicAlpha: false,
+  },
+  AR: {
+    stateCode: "AR",
+    stateName: "Arunachal Pradesh",
+    stateSlug: "arunachal-pradesh",
+    njdgStateValue: "12~36",
+    publicAlpha: false,
+  },
+  MN: {
+    stateCode: "MN",
+    stateName: "Manipur",
+    stateSlug: "manipur",
+    njdgStateValue: "14~25",
     publicAlpha: false,
   },
   UK: {

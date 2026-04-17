@@ -13,12 +13,13 @@ Use this file for:
 ### Next Public State Decision
 
 - Assam is now live, so the next public state should be an explicit new decision rather than an implied continuation of the previous queue
+- internal completion order can seed that queue, but public promotion should still remain a deliberate decision after a narrow public-readiness review
 - done only when one internal-only state is deliberately chosen for public-readiness review and stable-URL parity planning
 
-### Next Internal Expansion Trio
+### Next Internal Expansion Batch
 
-- Karnataka, Tripura, and Nagaland are now complete as internal-only proofs
-- done only when the next internal-only batch is chosen deliberately and held to the same `fetch -> inspect -> publish -> replay -> rollback` plus public-`404` bar
+- Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur are the next internal-only candidates after live source review
+- done only when all four states clear real `fetch -> inspect -> publish -> replay -> rollback` cycles while keeping public routes dark with `404`
 
 ## Completed
 

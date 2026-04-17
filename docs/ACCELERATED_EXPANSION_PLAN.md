@@ -81,6 +81,7 @@ As of `2026-04-17`:
 - Tamil Nadu (`TN`) has completed both an internal-only proof cycle and a later public rollout
 - Kerala (`KL`) and Meghalaya (`ML`) have now both completed internal-only live proof cycles for the south and north-east follow-on tracks
 - Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have now all completed internal-only live proof cycles after live NJDG source checks confirmed contract-compatible state pages
+- Telangana (`TS`), Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) are now the next internal-only candidates after live NJDG source checks confirmed contract-compatible state pages
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
 
@@ -153,6 +154,7 @@ Output:
 - most recently launched public state: Assam (`AS`)
 - Kerala (`KL`) and Meghalaya (`ML`) have both completed their internal-only proof cycles for the south and north-east follow-on tracks
 - Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have also completed their internal-only proof cycles after the Kerala plus Meghalaya wave
+- next internal-only batch: Telangana (`TS`), Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`)
 - next public state now requires a deliberate post-Assam decision rather than another pre-approved slot
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
 - Punjab, Haryana, Tamil Nadu, and Assam have all completed their public rollout evidence, and the updated south-plus-north-east sequencing is now recorded in the repo docs

@@ -31,7 +31,7 @@ What is shipped now:
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision. Assam is now live on the public site, while Karnataka, Tripura, and Nagaland have completed internal-only proof cycles and remain dark on the public hostname.
+Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision. Assam is now live on the public site, while Karnataka, Tripura, and Nagaland have completed internal-only proof cycles and remain dark on the public hostname. Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur are the next internal-only candidates after live source review.
 
 ## Product Guardrails
 
@@ -244,7 +244,10 @@ Internal or post-MVP planning:
 - [Karnataka internal readiness review](docs/KARNATAKA_INTERNAL_READINESS_REVIEW.md)
 - [Tripura internal readiness review](docs/TRIPURA_INTERNAL_READINESS_REVIEW.md)
 - [Nagaland internal readiness review](docs/NAGALAND_INTERNAL_READINESS_REVIEW.md)
-- [Assam internal readiness review](docs/ASSAM_INTERNAL_READINESS_REVIEW.md)
+- [Telangana internal readiness review](docs/TELANGANA_INTERNAL_READINESS_REVIEW.md)
+- [Andhra Pradesh internal readiness review](docs/ANDHRA_PRADESH_INTERNAL_READINESS_REVIEW.md)
+- [Arunachal Pradesh internal readiness review](docs/ARUNACHAL_PRADESH_INTERNAL_READINESS_REVIEW.md)
+- [Manipur internal readiness review](docs/MANIPUR_INTERNAL_READINESS_REVIEW.md)
 - [Kerala internal readiness review](docs/KERALA_INTERNAL_READINESS_REVIEW.md)
 - [Meghalaya internal readiness review](docs/MEGHALAYA_INTERNAL_READINESS_REVIEW.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
