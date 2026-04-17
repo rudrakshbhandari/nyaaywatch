@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:35`
+- ECS task definition: `nyaaywatch-staging:39`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -50,6 +50,7 @@ Operational notes:
 - Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
+- For origin-only recovery of long-running operator calls, connect to the ALB while preserving `nyaaywatch.in` as the TLS host and HTTP host, for example with `curl --connect-to`.
 
 ### Public Alpha
 
@@ -159,6 +160,13 @@ Latest confirmed operator validation:
   - replay from stored evidence produced `run_76e23910-ffd8-4dcc-a3be-3eda0b130356` and replay publication `publication_cc7b1068-b97e-470a-a079-570cad23061f`
   - rollback publication `publication_09613d9d-ae89-4543-9028-8f5d971df587` restored the original Haryana snapshot as the active internal publication
   - `GET /operator/publications?stateCode=HR` now shows the rollback publication active, while `https://nyaaywatch.in/states/haryana` and `https://nyaaywatch.in/v1/states/haryana/stats` both still return `404`
+- Parallel internal-state live trials completed on 2026-04-17 after PR `#50` merged to `main`:
+  - GitHub deploy run `24548048035` rolled the live service to task definition `:39`
+  - Uttarakhand fetch `run_cf76f87a-0090-4bdd-b6f5-2df5913c45bd`, publish `publication_d7ef7572-a8ef-4e2d-af90-6873162b667b`, replay `run_86b44e6e-41dc-4135-8a39-481f6c255658`, and rollback `publication_680b9cd9-b54c-4a97-926b-dbaac9256c98` all succeeded, and the public Uttarakhand routes still returned `404`
+  - Rajasthan fetch `run_b8bf0aec-3bfb-48fd-b2bf-81b45ce62177`, publish `publication_75842a37-713a-4d45-8030-086141343db1`, replay `run_211368fd-7ef3-40e5-a8f9-426487f4499e`, and rollback `publication_90655c18-6088-44b7-9740-b4546a62242b` all succeeded, and the public Rajasthan routes still returned `404`
+  - the first Uttar Pradesh fetch through `https://nyaaywatch.in/operator/runs/fetch` returned a Cloudflare `504`, but the origin still completed and persisted fetch run `run_0b2ea65b-4d28-4d7b-a72c-308187a4e096`
+  - Uttar Pradesh publish `publication_dbf86893-c8b4-4587-813f-b624e009b9da`, replay `run_79cb8508-85fa-4d99-a3c5-d6243d95838d`, and rollback `publication_55a13942-b67d-4a89-826a-b0ae334a7807` then succeeded via the ALB-bypassed origin path, and the public Uttar Pradesh routes still returned `404`
+  - this makes large-state operator-path durability the next operational gap, not multi-state extraction or publication correctness
 
 ## Release Use
 

@@ -10,18 +10,27 @@ Use this file for:
 
 ## Review
 
-### Parallel Internal State Trials
+### Long-Running Operator Requests For Large States
 
-**What:** Run the first live internal `fetch -> inspect -> publish -> replay -> rollback` cycles for Uttarakhand, Rajasthan, and Uttar Pradesh, and record the evidence for each.
+**What:** Decide and implement the operator lane for heavier internal states so long-running fetches do not fail at the Cloudflare edge even when the origin succeeds.
 
-**Why:** Haryana is now the next public-rollout candidate, so the fastest safe acceleration path is qualifying multiple internal-only states in parallel rather than widening the public surface immediately.
+**Why:** Uttar Pradesh proved that the data pipeline itself can complete a heavy-state run, but the current public-domain operator path is not durable enough for those longer requests. That is the real bottleneck if we want faster multi-state internal expansion.
 
-**Context:** Live source viability reviews completed on 2026-04-17 for Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`). Uttarakhand exposed 13 districts with total pending `3,05,801`; Rajasthan exposed 44 districts with total pending `26,35,615`; Uttar Pradesh exposed 74 district options with total pending `1,19,09,807`. The repo now carries internal-only support for all three, so the next work is live operator proof rather than more source archaeology. Uttar Pradesh should be treated as the heaviest and riskiest of the three because of both scale and the 74-district source-shape caveat.
+**Context:** On 2026-04-17, the first live Uttar Pradesh fetch attempt through `https://nyaaywatch.in/operator/runs/fetch` returned a Cloudflare `504`, but the origin still completed and persisted `run_0b2ea65b-4d28-4d7b-a72c-308187a4e096`. The rest of the UP proof cycle succeeded only after bypassing Cloudflare and connecting to the ALB while preserving the `nyaaywatch.in` host. The choice now is whether heavier-state operator work should use a direct origin path, a one-off ECS task path, or another explicit internal-only execution lane.
 
-**Effort:** L
+**Effort:** M
 **Priority:** P1
 
 ## Completed
+
+### Parallel Internal State Trials
+
+- completed live on 2026-04-17 after PR #50 merged and task definition `:39` rolled out
+- Uttarakhand completed fetch `run_cf76f87a-0090-4bdd-b6f5-2df5913c45bd`, publication `publication_d7ef7572-a8ef-4e2d-af90-6873162b667b`, replay `run_86b44e6e-41dc-4135-8a39-481f6c255658`, and rollback `publication_680b9cd9-b54c-4a97-926b-dbaac9256c98`
+- Rajasthan completed fetch `run_b8bf0aec-3bfb-48fd-b2bf-81b45ce62177`, publication `publication_75842a37-713a-4d45-8030-086141343db1`, replay `run_211368fd-7ef3-40e5-a8f9-426487f4499e`, and rollback `publication_90655c18-6088-44b7-9740-b4546a62242b`
+- Uttar Pradesh completed fetch `run_0b2ea65b-4d28-4d7b-a72c-308187a4e096`, publication `publication_dbf86893-c8b4-4587-813f-b624e009b9da`, replay `run_79cb8508-85fa-4d99-a3c5-d6243d95838d`, and rollback `publication_55a13942-b67d-4a89-826a-b0ae334a7807`
+- public routes for Uttarakhand, Rajasthan, and Uttar Pradesh all remained dark with `404` responses throughout
+- the only new blocker exposed by the batch was the Cloudflare-fronted timeout on the first UP fetch, which is now tracked above as the next operational item
 
 ### Haryana Public Readiness Review
 

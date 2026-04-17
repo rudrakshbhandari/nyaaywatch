@@ -75,7 +75,8 @@ As of `2026-04-17`:
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
 - Haryana (`HR`) is now the reviewed next narrow public rollout candidate, but remains internal-only for now
-- Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) are now prepared internal subordinate-court candidates
+- Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all completed internal-only live proof cycles
+- the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
 
 ## End Goal
