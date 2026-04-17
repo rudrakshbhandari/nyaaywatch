@@ -4,6 +4,12 @@ Initial source-viability and internal-readiness review for Meghalaya before any 
 
 Meghalaya is a strong internal-only candidate for the next north-east expansion track after Assam. This document records live source evidence only. It does not approve public exposure.
 
+Historical note:
+
+- repo wiring for `ML` is now complete
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
+
 ## Review Basis
 
 Source checks run against the live NJDG Meghalaya district dashboard on `2026-04-17`.
@@ -52,7 +58,7 @@ Meghalaya is now wired into the repo as an internal-only state profile with test
 
 ### 2. Operating Evidence
 
-Meghalaya has not yet cleared:
+Meghalaya has now cleared:
 
 - live `fetch`
 - live `inspect`
@@ -60,18 +66,17 @@ Meghalaya has not yet cleared:
 - live `replay`
 - live `rollback`
 
-Until those are complete, Meghalaya remains only a source-viability candidate.
+That closes the internal proof bar. Meghalaya is no longer only a source-viability candidate.
 
 ### 3. Public Trust Review
 
-No Meghalaya-specific public-route parity, copy, or methodology review has been done yet. Public exposure should not be considered until the internal proof cycle succeeds first.
+No Meghalaya-specific public-route parity, copy, or methodology review has been done yet. Public exposure should still lag the internal proof cycle.
 
 ## Recommendation
 
-Meghalaya should now be treated as the next north-east internal proof state behind Assam.
+Meghalaya should now be treated as the validated north-east follow-on internal baseline behind Assam.
 
 It should remain internal-only until:
 
-1. the first live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-2. the resulting publication lineage is recorded in the deployment and expansion docs
-3. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
+2. a deliberate public rollout slot is chosen after Tamil Nadu

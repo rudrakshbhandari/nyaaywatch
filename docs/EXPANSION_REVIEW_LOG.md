@@ -360,7 +360,7 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - complete the Tamil Nadu public-route parity and checklist work, then use Tamil Nadu as the next public rollout
-- keep Kerala as the next southern internal proof state while Tamil Nadu's public slot is underway
+- keep Kerala internal-only after its proof cycle unless a later public-readiness review says otherwise
 
 ## Assam (`AS`) Internal Trial
 
@@ -409,17 +409,18 @@ Those next-slice decisions are now made:
 ### Next Required Work
 
 - keep Assam internal-only until a separate public-readiness review exists
-- use Assam as the north-east benchmark while Meghalaya becomes the next north-east internal proof state
+- keep Meghalaya internal-only after its proof cycle unless a later public-readiness review says otherwise
 
-## Kerala (`KL`) Internal Candidate
+## Kerala (`KL`) Internal Trial
 
 - candidate geography: Kerala
 - review date: 2026-04-17
 - source boundary: NJDG Kerala district dashboard aggregate pages
 - methodology version: `2026.04-alpha`
-- latest source viability date: 2026-04-17
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
 - reviewer: Codex
-- decision: `internal candidate prepared`
+- decision: `internal trial completed`
 
 ### Source Viability Notes
 
@@ -439,21 +440,37 @@ Those next-slice decisions are now made:
 - The live source shape matches the current extractor and normalizer contract without new metric exceptions.
 - Its 14-district footprint is lighter than Tamil Nadu, which makes it a clean internal follow-on proof state.
 
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:47`
+- first live fetch run: `run_60fc22fb-a2b2-41e5-9bf5-f01b6e7b39e3`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `14`
+- statewide pending cases captured: `1801417`
+- first live publication: `publication_4f53dbb3-7530-40ca-aeed-3a27bbd5b892`
+- first live snapshot: `snapshot_d12e6bcc-c016-4f66-be4f-f9b3f3956b69`
+- replay run from stored evidence: `run_84af7110-13b1-4150-8be6-cc82e83a36c3`
+- replay publication: `publication_ddd7c94d-d4c9-4cad-8da9-13ef1d0b8ba1`
+- rollback publication: `publication_dafbab89-af38-4a41-a006-9153f126e785`
+- operator validation: `GET /operator/publications?stateCode=KL` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/kerala` and `https://nyaaywatch.in/v1/states/kerala/stats` both returned `404`, so Kerala remained internal-only throughout the trial
+
 ### Next Required Work
 
-- merge the Kerala internal-only repo wiring to `main`
-- run the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle
-- keep Kerala internal-only unless a later public-readiness review says otherwise
+- keep Kerala internal-only until a separate public-readiness review exists
+- use Kerala as the validated southern follow-on baseline while Tamil Nadu's public slot is underway
 
-## Meghalaya (`ML`) Internal Candidate
+## Meghalaya (`ML`) Internal Trial
 
 - candidate geography: Meghalaya
 - review date: 2026-04-17
 - source boundary: NJDG Meghalaya district dashboard aggregate pages
 - methodology version: `2026.04-alpha`
-- latest source viability date: 2026-04-17
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
 - reviewer: Codex
-- decision: `internal candidate prepared`
+- decision: `internal trial completed`
 
 ### Source Viability Notes
 
@@ -473,8 +490,23 @@ Those next-slice decisions are now made:
 - The live source shape matches the current extractor and normalizer contract without new metric exceptions.
 - Its 14-district footprint is manageable enough to make it a clean internal follow-on proof state.
 
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:47`
+- first live fetch run: `run_3dd14fff-0791-45b4-9bd7-27ce798cc850`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `14`
+- statewide pending cases captured: `18450`
+- first live publication: `publication_b1b1d691-d8bf-4e79-8d2d-119dff5b024c`
+- first live snapshot: `snapshot_d3bb97e6-6f30-4077-b174-05bf401b96e7`
+- replay run from stored evidence: `run_5fda86c5-aefe-4e33-ae39-e25dac3f4830`
+- replay publication: `publication_503248fe-3cc6-4b24-96e9-1317a4ba6001`
+- rollback publication: `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
+- operator validation: `GET /operator/publications?stateCode=ML` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/meghalaya` and `https://nyaaywatch.in/v1/states/meghalaya/stats` both returned `404`, so Meghalaya remained internal-only throughout the trial
+
 ### Next Required Work
 
-- merge the Meghalaya internal-only repo wiring to `main`
-- run the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle
-- keep Meghalaya internal-only unless a later public-readiness review says otherwise
+- keep Meghalaya internal-only until a separate public-readiness review exists
+- use Meghalaya as the validated north-east follow-on baseline while Tamil Nadu remains the next public slot

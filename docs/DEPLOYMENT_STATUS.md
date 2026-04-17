@@ -205,6 +205,11 @@ Latest confirmed operator validation:
   - Assam fetch `run_32e2194a-027d-4ec2-8d50-b3c282446b90`, publish `publication_688f053e-53a4-4662-9367-a4ffba4973ce`, replay `run_c28d9a91-0543-40b2-adac-1ca5e0c2e85d`, replay publication `publication_c8e143f6-61f4-4c1b-9423-b49e53b17399`, and rollback `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f` all succeeded
   - `GET /operator/publications?stateCode=TN` and `GET /operator/publications?stateCode=AS` show the rollback publications active
   - `https://nyaaywatch.in/states/tamil-nadu`, `https://nyaaywatch.in/v1/states/tamil-nadu/stats`, `https://nyaaywatch.in/states/assam`, and `https://nyaaywatch.in/v1/states/assam/stats` all returned `404`, so both states remained internal-only throughout
+- Kerala and Meghalaya internal proof cycles completed on 2026-04-17 on task definition `:47`:
+  - Kerala fetch `run_60fc22fb-a2b2-41e5-9bf5-f01b6e7b39e3`, publish `publication_4f53dbb3-7530-40ca-aeed-3a27bbd5b892`, replay `run_84af7110-13b1-4150-8be6-cc82e83a36c3`, replay publication `publication_ddd7c94d-d4c9-4cad-8da9-13ef1d0b8ba1`, and rollback `publication_dafbab89-af38-4a41-a006-9153f126e785` all succeeded
+  - Meghalaya fetch `run_3dd14fff-0791-45b4-9bd7-27ce798cc850`, publish `publication_b1b1d691-d8bf-4e79-8d2d-119dff5b024c`, replay `run_5fda86c5-aefe-4e33-ae39-e25dac3f4830`, replay publication `publication_503248fe-3cc6-4b24-96e9-1317a4ba6001`, and rollback `publication_7337df86-24c6-4290-8ee4-2b740e5110af` all succeeded
+  - `GET /operator/publications?stateCode=KL` and `GET /operator/publications?stateCode=ML` show the rollback publications active
+  - `https://nyaaywatch.in/states/kerala`, `https://nyaaywatch.in/v1/states/kerala/stats`, `https://nyaaywatch.in/states/meghalaya`, and `https://nyaaywatch.in/v1/states/meghalaya/stats` all returned `404`, so both states remained internal-only throughout
 
 ## Release Use
 

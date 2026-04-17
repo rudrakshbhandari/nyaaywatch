@@ -80,7 +80,14 @@ Use this file for:
 
 - completed on 2026-04-17 with live source viability reviews against the NJDG Kerala and Meghalaya pages
 - internal-only `KL` and `ML` state support plus regression coverage are now in the repo without widening the public site
-- Kerala is the next southern internal proof candidate behind Tamil Nadu, and Meghalaya is the next north-east internal proof candidate behind Assam
+- Kerala and Meghalaya have now both cleared internal-only live proof cycles and remain dark on the public site
+
+### Kerala And Meghalaya Internal Proof Cycles
+
+- completed live on 2026-04-17 after PR #58 merged and task definition `:47` rolled out with Kerala and Meghalaya internal-only support
+- Kerala fetch `run_60fc22fb-a2b2-41e5-9bf5-f01b6e7b39e3` published as `publication_4f53dbb3-7530-40ca-aeed-3a27bbd5b892`, replayed as `run_84af7110-13b1-4150-8be6-cc82e83a36c3` with replay publication `publication_ddd7c94d-d4c9-4cad-8da9-13ef1d0b8ba1`, and ended with rollback publication `publication_dafbab89-af38-4a41-a006-9153f126e785`
+- Meghalaya fetch `run_3dd14fff-0791-45b4-9bd7-27ce798cc850` published as `publication_b1b1d691-d8bf-4e79-8d2d-119dff5b024c`, replayed as `run_5fda86c5-aefe-4e33-ae39-e25dac3f4830` with replay publication `publication_503248fe-3cc6-4b24-96e9-1317a4ba6001`, and ended with rollback publication `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
+- `GET /operator/publications?stateCode=KL` and `GET /operator/publications?stateCode=ML` both show the rollback publications active, and the Kerala plus Meghalaya public routes still return `404`
 
 ### Uttarakhand Internal Trial Candidate Preparation
 
