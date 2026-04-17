@@ -50,9 +50,8 @@ Use this file for:
 ### Haryana Public Readiness Review
 
 - completed in `docs/HARYANA_PUBLIC_READINESS_REVIEW.md`
-- the review concludes Haryana should be the next narrow public rollout candidate
-- the earlier "one more internal state" gate is now satisfied by the later Uttarakhand, Rajasthan, and Uttar Pradesh proof cycles
-- the remaining Haryana work is public-route parity, live rollout verification, and release-history recording
+- the review is now superseded by the completed Haryana public rollout
+- Haryana is live, so the next public-candidate decision has moved to Tamil Nadu
 
 ### Haryana Public Preflight
 
@@ -63,13 +62,25 @@ Use this file for:
 
 - completed on 2026-04-17 with a live source viability review against the NJDG Tamil Nadu page
 - internal-only `TN` state support and the selector value `33~10` are now in the repo without widening the public site
-- Tamil Nadu is the current southern internal proof candidate with a 38-district live source surface and the expected metric families
+- Tamil Nadu then cleared the full live internal proof cycle and is now the next public candidate
 
 ### Assam Internal Trial Candidate Preparation
 
 - completed on 2026-04-17 with a live source viability review against the NJDG Assam page
 - internal-only `AS` state support and the selector value `18~6` are now in the repo without widening the public site
-- Assam is the current north-east internal proof candidate with a 34-district live source surface and the expected metric families
+- Assam then cleared the full live internal proof cycle and is now the north-east internal baseline behind Tamil Nadu's public slot
+
+### Tamil Nadu Public Readiness Review
+
+- completed in `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` and `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
+- Tamil Nadu is now the next narrow public rollout candidate after Haryana
+- the remaining Tamil Nadu work is public-route parity, live rollout verification, and release-history recording
+
+### Kerala And Meghalaya Internal Trial Candidate Preparation
+
+- completed on 2026-04-17 with live source viability reviews against the NJDG Kerala and Meghalaya pages
+- internal-only `KL` and `ML` state support plus regression coverage are now in the repo without widening the public site
+- Kerala is the next southern internal proof candidate behind Tamil Nadu, and Meghalaya is the next north-east internal proof candidate behind Assam
 
 ### Uttarakhand Internal Trial Candidate Preparation
 

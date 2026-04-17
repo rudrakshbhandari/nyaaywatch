@@ -72,11 +72,13 @@ As of `2026-04-17`:
 - Himachal subordinate-court observability is publicly live
 - Punjab is publicly live through explicit state-scoped routes after clearing the narrow expansion path
 - Haryana is publicly live through the same explicit state-scoped route pattern after passing public parity and live rollout verification
+- Tamil Nadu is now the next explicit public candidate after Haryana
 - AWS staging/public stack is live at `https://nyaaywatch.in`
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
 - Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all completed internal-only live proof cycles
 - Tamil Nadu (`TN`) and Assam (`AS`) have now both completed internal-only live proof cycles for the south and north-east expansion tracks
+- Kerala (`KL`) and Meghalaya (`ML`) are now the next internal-only candidate states for the south and north-east follow-on tracks
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
 
@@ -146,9 +148,10 @@ Actions:
 Output:
 
 - Haryana (`HR`) has completed the next narrow public rollout after Punjab and is now live on the public site
-- chosen next internal states for the new expansion direction: Tamil Nadu (`TN`) for the south and Assam (`AS`) for the north-east
+- next public state: Tamil Nadu (`TN`)
+- chosen next internal states for the new expansion direction: Kerala (`KL`) for the south and Meghalaya (`ML`) for the north-east
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
-- Punjab has already completed its internal and narrow public rollout evidence, and the updated Haryana-plus-south-and-north-east sequencing is now recorded in the repo docs
+- Punjab and Haryana have already completed their public rollout evidence, Tamil Nadu is now the next public candidate, and the updated south-plus-north-east sequencing is now recorded in the repo docs
 
 ### Day 1
 
