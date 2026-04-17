@@ -10,15 +10,15 @@ Use this file for:
 
 ## Review
 
-### Publish-Time Cache Invalidation For Public Data
+### Haryana Internal Trial
 
-**What:** Finish the Cloudflare-backed purge path for public data URLs and rerun live Punjab verification on the stable URL family.
+**What:** Run Haryana as the next internal subordinate-court trial using the same `fetch -> inspect -> publish -> verify -> replay/rollback` discipline Punjab cleared.
 
-**Why:** Route-level `no-store` headers are now in the app and `release:verify` enforces them, but the 2026-04-17 post-deploy Punjab check still hit an older Cloudflare-cached CSV object that predated the header fix. Durable parity now depends on the explicit purge hook plus live runtime credential wiring.
+**Why:** Punjab is now live and the cache-invalidity gap is closed, so the next credible expansion step is another state under the same trust bar instead of more Punjab-specific proof.
 
-**Context:** PR #44 landed the `no-store` headers and verification guard, but `https://nyaaywatch.in/states/punjab/data/districts.csv` still returned `cf-cache-status=HIT` with the earlier cached response at 2026-04-17 00:11 UTC. This follow-up branch adds publish/rollback purge support and deploy-time token plumbing; it is not done until the live runtime has the token and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passes without manual cache-busting.
+**Context:** On 2026-04-17 the live NJDG Haryana page (`state_code=6~14`) exposed the same metric family as Himachal and Punjab, with `22` districts, `15,09,969` pending cases, source date `2026-04-16`, and stable district labels (`Karnal`, `Sirsa`, `Ambala`, `Bhiwani`, `Faridabad`). Haryana is now added as an internal-only supported state profile and should be trialed without widening the public route family.
 
-**Effort:** S
+**Effort:** M
 **Priority:** P1
 
 ## Completed
@@ -27,6 +27,7 @@ Use this file for:
 
 - partial code fix completed in PR #44 by marking `/data` and CSV export endpoints as `no-store` for browsers and CDNs, including the explicit Punjab state-scoped routes
 - `npm run release:verify` now fails if the public data page or district CSV is still cacheable, which exposed that a cached pre-fix Cloudflare object still survives until an explicit purge runs
+- completed live on 2026-04-17 after PR #45 merged, the Cloudflare token wiring was corrected, task definition `:34` rolled out with purge credentials, and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passed without cache-busting
 
 ### Source Terms And Redistribution Review
 

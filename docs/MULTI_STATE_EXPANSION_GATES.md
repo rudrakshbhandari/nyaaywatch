@@ -165,6 +165,8 @@ Decision values:
 
 ## Current Policy Implication
 
-Himachal Pradesh remains the only geography cleared for the public alpha.
+Himachal Pradesh remains the default reference geography for the public alpha.
 
-This document does not itself approve any new state or tier. It defines the bar they must clear.
+Punjab has now cleared the narrow public expansion path and is live only through explicit `/states/punjab/...` routes rather than a nationwide shell.
+
+This document does not itself approve any further state or tier. It defines the bar they must clear.
