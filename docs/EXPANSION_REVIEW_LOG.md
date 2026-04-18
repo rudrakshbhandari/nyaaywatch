@@ -1137,3 +1137,40 @@ Arunachal Pradesh is now the twelfth additional public state. The next public ro
 ### Recommendation
 
 All planned states are now covered by live internal proof. Public rollout should continue in internal-proof order, which keeps Goa, Sikkim, and Mizoram at the back of the current queue behind the earlier validated states.
+
+## Remaining Supported States Public Rollout Window
+
+- review date: 2026-04-18
+- reviewer: Codex
+- decision: `all currently supported states are now live on the public site`
+- deploy run: `24600208536`
+- settled ECS task definition after deploy: `nyaaywatch-staging:74`
+- methodology version: `2026.04-alpha`
+
+### Public Rollout Evidence
+
+- Manipur: fetch `run_d8eee45f-ad4d-490e-b779-362a1737b2d6`, publication `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02`, snapshot `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`, rollback target `publication_29505d10-5434-4237-8b0d-89a9dfcf08cf`, source snapshot date `2026-04-16`, district count `9`, route status `200`
+- Uttarakhand: fetch `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b`, publication `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343`, snapshot `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`, rollback target `publication_680b9cd9-b54c-4a97-926b-dbaac9256c98`, source snapshot date `2026-04-16`, district count `13`, route status `200`
+- Rajasthan: fetch `run_692dc19a-c8a9-4061-a22b-2f0631475baa`, publication `publication_fe0f7c25-a719-4120-bab4-8427163cd311`, snapshot `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`, rollback target `publication_90655c18-6088-44b7-9740-b4546a62242b`, source snapshot date `2026-04-16`, district count `44`, route status `200`
+- Uttar Pradesh: fetch `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293`, publication `publication_c05f662d-560f-4849-8750-37d92aa00e98`, snapshot `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`, rollback target `publication_55a13942-b67d-4a89-826a-b0ae334a7807`, source snapshot date `2026-04-16`, district count `74`, route status `200`
+- Madhya Pradesh: fetch `run_466f100f-22b9-4c16-8dbd-1584e462e181`, publication `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678`, snapshot `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`, rollback target `publication_3f08b92a-ac96-4a4a-9041-c02d90b1a2f2`, source snapshot date `2026-04-16`, district count `51`, route status `200`
+- Maharashtra: fetch `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c`, publication `publication_7a82419f-059a-456c-8797-bb33dbf5ab89`, snapshot `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`, rollback target `publication_f000da6a-79d1-4683-8acf-2a1b235611b4`, source snapshot date `2026-04-16`, district count `42`, route status `200`
+- Bihar: fetch `run_154efd48-8963-44d2-8606-b5877145e26f`, publication `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86`, snapshot `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`, rollback target `publication_3319a11d-16fd-4a40-ad4a-cb4869f41d31`, source snapshot date `2026-04-16`, district count `38`, route status `200`
+- Gujarat: fetch `run_baf67425-5948-4e43-828c-b37b274ecfa5`, publication `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583`, snapshot `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`, rollback target `publication_82c79b8b-aa07-4733-802e-12bd65e1c897`, source snapshot date `2026-04-16`, district count `33`, route status `200`
+- Odisha: fetch `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3`, publication `publication_bde17d21-e0fe-409a-9981-37ed7784e133`, snapshot `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`, rollback target `publication_0b8376be-33ae-4c60-a534-835ebb199b57`, source snapshot date `2026-04-16`, district count `30`, route status `200`
+- West Bengal: fetch `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0`, publication `publication_df487011-4eaa-4b43-b127-166efd0866f7`, snapshot `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`, rollback target `publication_09fd4895-3a75-4c8f-97aa-5222e4137541`, source snapshot date `2026-04-18`, district count `23`, route status `200`
+- Jharkhand: fetch `run_a64b3f23-836b-4f4e-b7e6-7693d035283e`, publication `publication_5c30543e-2094-4616-aff3-b17ade4254a2`, snapshot `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`, rollback target `publication_12683d90-942c-4050-b5f7-7ccca8932b07`, source snapshot date `2026-04-16`, district count `24`, route status `200`
+- Chhattisgarh: fetch `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d`, publication `publication_2400d34a-2320-483e-866d-f529b4b81172`, snapshot `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`, rollback target `publication_412a4d67-73fe-4bdd-b149-24c05cbaf973`, source snapshot date `2026-04-18`, district count `25`, route status `200`
+- Goa: fetch `run_f07af2ea-5cf4-4943-a602-bf673744c9e4`, publication `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4`, snapshot `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`, rollback target `publication_03355c7b-12b3-4d56-99ff-a88cffaf99fe`, source snapshot date `2026-04-16`, district count `2`, route status `200`
+- Sikkim: fetch `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f`, publication `publication_257083da-bd8c-4efc-93f1-6837905c177f`, snapshot `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`, rollback target `publication_cde025be-6141-4f4c-8933-42844f5d0f0f`, source snapshot date `2026-04-16`, district count `6`, route status `200`
+- Mizoram: fetch `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0`, publication `publication_468cfd50-4661-43e5-b4a4-bce047b46618`, snapshot `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`, rollback target `publication_fbcca757-9039-4891-900f-98bc0889c481`, source snapshot date `2026-04-16`, district count `3`, route status `200`
+
+### What Cleared
+
+- every currently supported state profile is now exposed through the explicit `/states/:stateSlug/...` public route family
+- stable `release:verify` checks passed across the rollout window with CSV metadata parity and cache protection intact
+- there is no remaining internal-only state inside the current supported-state map
+
+### Recommendation
+
+The supported-state rollout program is complete for the current repo scope. Any next geography work should be treated as a deliberate scope increase rather than unfinished state rollout.

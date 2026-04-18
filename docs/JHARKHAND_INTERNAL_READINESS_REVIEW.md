@@ -1,79 +1,37 @@
 # Jharkhand Internal Readiness Review
 
-Internal readiness review for Jharkhand.
+Historical internal-readiness record for Jharkhand.
 
-Jharkhand is now a validated internal-only state after clearing the full live proof cycle. This document records the source notes plus the live operating evidence. It still does not approve public exposure.
+Jharkhand first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Jharkhand is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_5c30543e-2094-4616-aff3-b17ade4254a2`.
 
-Historical note:
-
-- repo wiring for `JH` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
-- use `docs/EXPANSION_REVIEW_LOG.md` for the full batch lineage
-
-## Review Basis
-
-Verified live-source checks against the NJDG Jharkhand district dashboard observed:
+## Current Status
 
 - `stateCode=JH`
 - `stateName=Jharkhand`
 - `stateSlug=jharkhand`
 - `njdgStateValue=20~7`
-- 24 districts exposed on the live NJDG state page
-- sample district checked during source review: `Bokaro`
-- no obvious source-shape caveat was observed during the read-only review
+- current public publication id: `publication_5c30543e-2094-4616-aff3-b17ade4254a2`
+- current public snapshot id: `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- rollback target from the prior internal proof cycle: `publication_12683d90-942c-4050-b5f7-7ccca8932b07`
+- current published source snapshot date: `2026-04-16`
+- current published district count: `24`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Basic Source Reachability
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Jharkhand clears the first viability bar for an internal-only candidate:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- the state selector resolves cleanly
-- the district list is present
-- a sample district path was reviewable without an obvious source exception
+For the complete rollout lineage, use:
 
-That is enough to justify moving from read-only review toward internal operator wiring and a first stored-evidence capture attempt.
-
-### 2. Expansion Value
-
-Jharkhand gives the next internal wave another eastern operating surface without forcing immediate public exposure. Its 24-district footprint is substantial enough to matter operationally while still fitting the current internal-only expansion discipline.
-
-## What Still Needs Explicit Work
-
-### 1. Metric-Parity Confirmation
-
-This read-only review does not yet record the full state metric surface. The first explicit capture pass should still confirm:
-
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- stable district drilldown behavior across stored evidence
-
-### 2. Repo Wiring
-
-Jharkhand is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
-
-### 3. Operating Evidence
-
-Jharkhand has now cleared:
-
-- live `fetch` as `run_9555324e-3416-4c6d-8287-e666982f8bec`
-- live `publish` as `publication_ff13fc7e-1d39-44ad-ad17-c45f2515f159`
-- live `replay` as `run_ad91c0c0-59f9-4c50-be1c-26f387539e47`
-- replay publication as `publication_12072ce8-33b1-4349-b13d-63516900d091`
-- live `rollback` as `publication_12683d90-942c-4050-b5f7-7ccca8932b07`
-
-That closes the internal proof bar. Jharkhand is no longer only a source-viability candidate.
-
-### 4. Public Trust Review
-
-No Jharkhand-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/JHARKHAND_PUBLIC_READINESS_REVIEW.md`
+- `docs/JHARKHAND_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Jharkhand should now be treated as validated eastern internal operating evidence.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-2. a deliberate public rollout slot is chosen after the earlier cleared internal states already ahead of it in queue
+No further internal-only gating remains for Jharkhand. The state is already live on the public site through explicit `/states/jharkhand/...` routes, and this document should be read as historical rollout context rather than a current blocker.

@@ -1,70 +1,37 @@
 # Andhra Pradesh Internal Readiness Review
 
-Source-viability and internal-readiness review for Andhra Pradesh, with the first live internal proof cycle now completed.
+Historical internal-readiness record for Andhra Pradesh.
 
-Andhra Pradesh is now validated operating evidence for the southern expansion track after Tamil Nadu, Kerala, and Karnataka. This document records the source review plus the completed live internal proof cycle that later supported public rollout.
+Andhra Pradesh first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Andhra Pradesh is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_b090f61a-3762-4bf5-8529-36b331b6e362`.
 
-## Review Basis
-
-Verified live-source checks against the NJDG Andhra Pradesh district dashboard observed:
+## Current Status
 
 - `stateCode=AP`
 - `stateName=Andhra Pradesh`
 - `stateSlug=andhra-pradesh`
 - `njdgStateValue=28~2`
-- source page footer updated on `2026-04-17`
-- 13 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `9,29,470`
-- instituted last month shown on the live state page: `94,380`
-- disposed last month shown on the live state page: `1,05,140`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown for `Ananthapur` returned `200 OK`
+- current public publication id: `publication_b090f61a-3762-4bf5-8529-36b331b6e362`
+- current public snapshot id: `snapshot_e0ec4181-cc09-46e5-a606-39a8c54bd815`
+- rollback target from the prior internal proof cycle: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+- current published source snapshot date: `2026-04-16`
+- current published district count: `13`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Andhra Pradesh exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Andhra Pradesh is not blocked on a missing metric class or a clearly different page family.
-
-### 2. Southern Continuity Value
-
-Andhra Pradesh extends the southern operating story into another meaningful state surface without widening the public site. Its 13-district footprint is lighter than Tamil Nadu and Karnataka but still substantial enough to make it useful internal-only operating evidence rather than only another tiny proof state.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and the verified `Ananthapur` district request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## Live Internal Trial Outcome
-
-Andhra Pradesh has now cleared the full internal proof bar on the live AWS stack.
-
-### Live Trial Evidence
-
-- deployed task definition during proof cycle: `nyaaywatch-staging:58`
-- first live fetch run: `run_4cb87c2a-1c31-4437-98ef-dc7d082ad6ef`
-- source snapshot date: `2026-04-16`
-- candidate quality state: `complete`
-- district count captured: `13`
-- statewide pending cases captured: `929470`
-- first live publication: `publication_337af32e-4f9c-45ab-a4a4-52d43a2028b4`
-- first live snapshot: `snapshot_95c7f026-6db2-46a8-a0d2-2641512df02f`
-- replay run from stored evidence: `run_ce2ec512-176a-483e-ba9c-309054a0fff6`
-- replay publication: `publication_89c24d14-008d-4ede-a6e8-2728976b8579`
-- rollback publication: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
-- operator validation: `GET /operator/publications?stateCode=AP` showed the rollback publication active after replay plus rollback
-- public-surface validation: `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` both returned `404`, so Andhra Pradesh remained internal-only throughout the trial
-
-### Later Public Outcome
-
-Andhra Pradesh later cleared a separate public-readiness review, public-route parity, stable-URL verification, and a deliberate public rollout. See `docs/ANDHRA_PRADESH_PUBLIC_READINESS_REVIEW.md` for the public-state evidence.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/ANDHRA_PRADESH_PUBLIC_READINESS_REVIEW.md`
+- `docs/ANDHRA_PRADESH_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Andhra Pradesh should now be treated as validated southern operating evidence whose internal proof path is complete and later public rollout is also complete.
+No further internal-only gating remains for Andhra Pradesh. The state is already live on the public site through explicit `/states/andhra-pradesh/...` routes, and this document should be read as historical rollout context rather than a current blocker.

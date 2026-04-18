@@ -107,7 +107,7 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
   };
 }
 
-describe("remaining public rollout preflight", () => {
+describe("supported state public route coverage", () => {
   const pools: Array<{ end: () => Promise<void> }> = [];
   const servers: Server[] = [];
 

@@ -1,82 +1,37 @@
 # Meghalaya Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Meghalaya before any live operator trial or public exposure.
+Historical internal-readiness record for Meghalaya.
 
-Meghalaya is a strong internal-only candidate for the next north-east expansion track after Assam. This document records live source evidence only. It does not approve public exposure.
+Meghalaya first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Meghalaya is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5`.
 
-Historical note:
-
-- repo wiring for `ML` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
-- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
-
-## Review Basis
-
-Source checks run against the live NJDG Meghalaya district dashboard on `2026-04-17`.
-
-Observed Meghalaya source notes:
+## Current Status
 
 - `stateCode=ML`
 - `stateName=Meghalaya`
 - `stateSlug=meghalaya`
 - `njdgStateValue=17~21`
-- source page footer updated on `2026-04-16`
-- 14 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `18,450`
-- instituted last month shown on the live state page: `1,456`
-- disposed last month shown on the live state page: `778`
-- first visible district labels: `East Khasi Hills`, `West Garo Hills`, `West Jaintia Hills`, `East Garo Hills`, `Ri Bhoi`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown `dist_code=1` returned `200 OK`
+- current public publication id: `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5`
+- current public snapshot id: `snapshot_4b2e5621-0336-41aa-a492-3163e57cad1a`
+- rollback target from the prior internal proof cycle: `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
+- current published source snapshot date: `2026-04-16`
+- current published district count: `14`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Meghalaya exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Meghalaya is not blocked on a missing metric class or a clearly different page family.
-
-### 2. North-East Continuity Value
-
-Meghalaya lets the internal expansion track keep building a real north-east operating story after Assam without widening the public site prematurely. Its 14-district footprint is manageable enough to make it a clean follow-on internal proof candidate.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## What Still Needs Explicit Work
-
-### 1. Repo Wiring
-
-Meghalaya is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
-
-### 2. Operating Evidence
-
-Meghalaya has now cleared:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-That closes the internal proof bar. Meghalaya is no longer only a source-viability candidate.
-
-### 3. Public Trust Review
-
-No Meghalaya-specific public-route parity, copy, or methodology review has been done yet. Public exposure should still lag the internal proof cycle.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/MEGHALAYA_PUBLIC_READINESS_REVIEW.md`
+- `docs/MEGHALAYA_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Meghalaya should now be treated as the validated north-east follow-on internal baseline behind Assam.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
-2. a deliberate public rollout slot is chosen after Tamil Nadu
+No further internal-only gating remains for Meghalaya. The state is already live on the public site through explicit `/states/meghalaya/...` routes, and this document should be read as historical rollout context rather than a current blocker.

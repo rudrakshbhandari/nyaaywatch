@@ -1,82 +1,37 @@
 # Nagaland Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Nagaland before the first live operator trial or public exposure.
+Historical internal-readiness record for Nagaland.
 
-Nagaland is a strong internal-only candidate for the next north-east expansion track after Assam, Meghalaya, and Tripura. This document records live source evidence only. It does not approve public exposure.
+Nagaland first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Nagaland is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_b01df802-1d04-409b-b608-55500e1b47a9`.
 
-Historical note:
-
-- repo wiring for `NL` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
-- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
-
-## Review Basis
-
-Source checks run against the live NJDG Nagaland district dashboard on `2026-04-17`.
-
-Observed Nagaland source notes:
+## Current Status
 
 - `stateCode=NL`
 - `stateName=Nagaland`
 - `stateSlug=nagaland`
 - `njdgStateValue=13~34`
-- source page footer updated on `2026-04-16`
-- 11 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `3,984`
-- instituted last month shown on the live state page: `70`
-- disposed last month shown on the live state page: `76`
-- first visible district labels: `Dimapur`, `Kohima`, `Mokokchung`, `Wokha`, `Zunheboto`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown `dist_code=1` returned `200 OK`
+- current public publication id: `publication_b01df802-1d04-409b-b608-55500e1b47a9`
+- current public snapshot id: `snapshot_f73774d4-0f6f-473f-9eda-21e5cd454050`
+- rollback target from the prior internal proof cycle: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
+- current published source snapshot date: `2026-04-17`
+- current published district count: `11`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Nagaland exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Nagaland is not blocked on a missing metric class or a clearly different page family.
-
-### 2. North-East Continuity Value
-
-Nagaland keeps the north-east track from depending on only one large baseline and one follow-on state. Its 11-district footprint is manageable enough to make it a sensible additional internal-only proof candidate while Assam is live publicly.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## What Still Needs Explicit Work
-
-### 1. Repo Wiring
-
-Nagaland is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
-
-### 2. Operating Evidence
-
-Nagaland has now cleared:
-
-- live `fetch` as `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`
-- live `inspect`
-- live `publish` as `publication_abc433b9-1db4-4661-902e-ffd8861e35af`
-- live `replay` as `run_d3d5a492-1515-4e77-ab25-27135054b787`
-- live `rollback` as `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
-
-That closes the internal proof bar. Nagaland is no longer only a source-viability candidate.
-
-### 3. Public Trust Review
-
-No Nagaland-specific public-route parity, copy, or methodology review has been done yet. Public exposure should still lag the internal proof cycle.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/NAGALAND_PUBLIC_READINESS_REVIEW.md`
+- `docs/NAGALAND_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Nagaland should now be treated as validated additional north-east operating evidence behind Assam, Meghalaya, and Tripura.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
-2. the product makes an explicit post-Assam public-state decision
+No further internal-only gating remains for Nagaland. The state is already live on the public site through explicit `/states/nagaland/...` routes, and this document should be read as historical rollout context rather than a current blocker.

@@ -1,79 +1,37 @@
 # Mizoram Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Mizoram before the first live operator trial or public exposure.
+Historical internal-readiness record for Mizoram.
 
-Mizoram has now completed the live internal proof bar for a very small north-east follow-on source check. This document records both the source evidence and the completed internal proof cycle. It does not approve public exposure.
+Mizoram first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Mizoram is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_468cfd50-4661-43e5-b4a4-bce047b46618`.
 
-Historical note:
-
-- repo wiring for `MZ` is complete
-- live fetch `run_b788b9fe-194f-496b-a546-df26e62dd920`, publish `publication_087ca72e-d021-4138-8933-37a227010631`, replay `run_1cd62bb2-cb1c-4780-a56e-726323045f78`, replay publication `publication_906406d3-585e-49bc-9b9d-5caf3ad6868d`, and rollback `publication_fbcca757-9039-4891-900f-98bc0889c481` all succeeded on `2026-04-18`
-- Mizoram remains internal-only because its public routes still returned `404`
-
-## Review Basis
-
-Source checks run against the live NJDG Mizoram district dashboard on `2026-04-18`.
-
-Observed Mizoram source notes:
+## Current Status
 
 - `stateCode=MZ`
 - `stateName=Mizoram`
 - `stateSlug=mizoram`
 - `njdgStateValue=15~19`
-- source page footer updated on `2026-04-16`
-- 3 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `7,677`
-- instituted last month shown on the live state page: `1,009`
-- disposed last month shown on the live state page: `760`
-- first visible district labels: `Aizawl`, `Lunglei`, `Champhai`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown for `Aizawl` returned `200 OK`
+- current public publication id: `publication_468cfd50-4661-43e5-b4a4-bce047b46618`
+- current public snapshot id: `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- rollback target from the prior internal proof cycle: `publication_fbcca757-9039-4891-900f-98bc0889c481`
+- current published source snapshot date: `2026-04-16`
+- current published district count: `3`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Mizoram exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Mizoram is not blocked on a missing metric class or a clearly different page family.
-
-### 2. North-East Coverage Value
-
-Mizoram widens the internal north-east map without forcing a heavier public or operator decision immediately.
-
-That makes it a reasonable follow-on if the goal is breadth of regional source validation more than operational stress testing.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and the verified `Aizawl` district request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## What Still Needs Explicit Work
-
-### 1. Operating Evidence
-
-Mizoram-specific live operating evidence now exists and is sufficient for the internal-only bar.
-
-### 2. Stress-Test Limits
-
-Mizoram's 3-district surface is too small to tell us much about heavier-state behavior.
-
-It is valuable as a source-compatibility check, but it should not be mistaken for a meaningful stress or scale qualification.
-
-### 3. Public Trust Review
-
-No Mizoram-specific public-route parity, copy, or methodology review has been done yet. Public exposure should lag any future internal proof cycle.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/MIZORAM_PUBLIC_READINESS_REVIEW.md`
+- `docs/MIZORAM_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Mizoram should now be treated as an internal trial completed small-surface state for the end of the current queue.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-2. the product deliberately chooses Mizoram rather than promoting it automatically
-3. the public rollout queue reaches Mizoram in internal-proof order
+No further internal-only gating remains for Mizoram. The state is already live on the public site through explicit `/states/mizoram/...` routes, and this document should be read as historical rollout context rather than a current blocker.

@@ -99,12 +99,9 @@ Punjab does not currently introduce a new exposure-boundary issue, but public la
 
 ## Recommendation
 
-Punjab now looks viable for a soft public release path once two things are done:
+Punjab should now be treated as a completed public rollout, not a pending candidate.
 
-1. a concrete public-surface implementation
-2. a public-surface parity review across UI, API, CSV, and trust metadata
-
-Until then, Punjab should remain internal-only.
+The remaining value of this document is historical: it records the narrower trust questions that remained after Punjab first cleared internal proof. Those questions are now closed by the live Punjab public rollout and the later state-aware release verification captured in `docs/EXPANSION_REVIEW_LOG.md`, `docs/DEPLOYMENT_STATUS.md`, and `docs/RELEASE_HISTORY.md`.
 
 ## Useful Work Completed By This Review
 
@@ -112,6 +109,4 @@ This review closes part of the “meanwhile” work:
 
 - metadata-shape review: done
 - signal/copy posture review on the Punjab payload: done
-- launch blockers reduced to a smaller set:
-  - public-surface implementation
-  - public-surface parity verification
+- rollout blockers: resolved by the completed public launch

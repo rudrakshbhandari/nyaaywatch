@@ -6,6 +6,292 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02:start -->
+## publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02
+
+- Reviewed at: `2026-04-18T07:58:45.143Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/manipur`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T07:58:45.143Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_d8eee45f-ad4d-490e-b779-362a1737b2d6`
+- Rollback target: `publication_29505d10-5434-4237-8b0d-89a9dfcf08cf`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Manipur became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/manipur`.
+
+<!-- release:publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02:end -->
+
+<!-- release:publication_5463d029-d19a-4ed4-8271-57bb3dfc5343:start -->
+## publication_5463d029-d19a-4ed4-8271-57bb3dfc5343
+
+- Reviewed at: `2026-04-18T08:03:55.898Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/uttarakhand`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:03:55.898Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b`
+- Rollback target: `publication_680b9cd9-b54c-4a97-926b-dbaac9256c98`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Uttarakhand became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/uttarakhand`.
+
+<!-- release:publication_5463d029-d19a-4ed4-8271-57bb3dfc5343:end -->
+
+<!-- release:publication_fe0f7c25-a719-4120-bab4-8427163cd311:start -->
+## publication_fe0f7c25-a719-4120-bab4-8427163cd311
+
+- Reviewed at: `2026-04-18T08:07:01.418Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/rajasthan`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:07:01.418Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_692dc19a-c8a9-4061-a22b-2f0631475baa`
+- Rollback target: `publication_90655c18-6088-44b7-9740-b4546a62242b`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Rajasthan became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/rajasthan`.
+
+<!-- release:publication_fe0f7c25-a719-4120-bab4-8427163cd311:end -->
+
+<!-- release:publication_c05f662d-560f-4849-8750-37d92aa00e98:start -->
+## publication_c05f662d-560f-4849-8750-37d92aa00e98
+
+- Reviewed at: `2026-04-18T08:10:14.239Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/uttar-pradesh`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:10:14.239Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293`
+- Rollback target: `publication_55a13942-b67d-4a89-826a-b0ae334a7807`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Uttar Pradesh became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/uttar-pradesh`.
+
+<!-- release:publication_c05f662d-560f-4849-8750-37d92aa00e98:end -->
+
+<!-- release:publication_fb5fccde-e81a-4c14-ad07-e91a810eb678:start -->
+## publication_fb5fccde-e81a-4c14-ad07-e91a810eb678
+
+- Reviewed at: `2026-04-18T08:13:18.990Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/madhya-pradesh`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:13:18.990Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_466f100f-22b9-4c16-8dbd-1584e462e181`
+- Rollback target: `publication_3f08b92a-ac96-4a4a-9041-c02d90b1a2f2`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Madhya Pradesh became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/madhya-pradesh`.
+
+<!-- release:publication_fb5fccde-e81a-4c14-ad07-e91a810eb678:end -->
+
+<!-- release:publication_7a82419f-059a-456c-8797-bb33dbf5ab89:start -->
+## publication_7a82419f-059a-456c-8797-bb33dbf5ab89
+
+- Reviewed at: `2026-04-18T08:15:53.023Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/maharashtra`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:15:53.023Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c`
+- Rollback target: `publication_f000da6a-79d1-4683-8acf-2a1b235611b4`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Maharashtra became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/maharashtra`.
+
+<!-- release:publication_7a82419f-059a-456c-8797-bb33dbf5ab89:end -->
+
+<!-- release:publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86:start -->
+## publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86
+
+- Reviewed at: `2026-04-18T08:18:39.333Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/bihar`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:18:39.333Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_154efd48-8963-44d2-8606-b5877145e26f`
+- Rollback target: `publication_3319a11d-16fd-4a40-ad4a-cb4869f41d31`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Bihar became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/bihar`.
+
+<!-- release:publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86:end -->
+
+<!-- release:publication_b6092d4c-e9e4-483d-bb7e-2669adb52583:start -->
+## publication_b6092d4c-e9e4-483d-bb7e-2669adb52583
+
+- Reviewed at: `2026-04-18T08:21:10.137Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/gujarat`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:21:10.137Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_baf67425-5948-4e43-828c-b37b274ecfa5`
+- Rollback target: `publication_82c79b8b-aa07-4733-802e-12bd65e1c897`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Gujarat became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/gujarat`.
+
+<!-- release:publication_b6092d4c-e9e4-483d-bb7e-2669adb52583:end -->
+
+<!-- release:publication_bde17d21-e0fe-409a-9981-37ed7784e133:start -->
+## publication_bde17d21-e0fe-409a-9981-37ed7784e133
+
+- Reviewed at: `2026-04-18T08:23:44.395Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/odisha`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:23:44.395Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3`
+- Rollback target: `publication_0b8376be-33ae-4c60-a534-835ebb199b57`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Odisha became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/odisha`.
+
+<!-- release:publication_bde17d21-e0fe-409a-9981-37ed7784e133:end -->
+
+<!-- release:publication_df487011-4eaa-4b43-b127-166efd0866f7:start -->
+## publication_df487011-4eaa-4b43-b127-166efd0866f7
+
+- Reviewed at: `2026-04-18T08:26:23.073Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/west-bengal`
+- Action: `publish`
+- Source snapshot date: `2026-04-18T00:00:00.000Z`
+- Published at: `2026-04-18T08:26:23.073Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0`
+- Rollback target: `publication_09fd4895-3a75-4c8f-97aa-5222e4137541`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: West Bengal became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/west-bengal`.
+
+<!-- release:publication_df487011-4eaa-4b43-b127-166efd0866f7:end -->
+
+<!-- release:publication_5c30543e-2094-4616-aff3-b17ade4254a2:start -->
+## publication_5c30543e-2094-4616-aff3-b17ade4254a2
+
+- Reviewed at: `2026-04-18T08:29:10.372Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/jharkhand`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:29:10.372Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_a64b3f23-836b-4f4e-b7e6-7693d035283e`
+- Rollback target: `publication_12683d90-942c-4050-b5f7-7ccca8932b07`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Jharkhand became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/jharkhand`.
+
+<!-- release:publication_5c30543e-2094-4616-aff3-b17ade4254a2:end -->
+
+<!-- release:publication_2400d34a-2320-483e-866d-f529b4b81172:start -->
+## publication_2400d34a-2320-483e-866d-f529b4b81172
+
+- Reviewed at: `2026-04-18T08:31:49.594Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/chhattisgarh`
+- Action: `publish`
+- Source snapshot date: `2026-04-18T00:00:00.000Z`
+- Published at: `2026-04-18T08:31:49.594Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d`
+- Rollback target: `publication_412a4d67-73fe-4bdd-b149-24c05cbaf973`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Chhattisgarh became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/chhattisgarh`.
+
+<!-- release:publication_2400d34a-2320-483e-866d-f529b4b81172:end -->
+
+<!-- release:publication_f55b59d8-e47a-4159-b166-ea89b8af29d4:start -->
+## publication_f55b59d8-e47a-4159-b166-ea89b8af29d4
+
+- Reviewed at: `2026-04-18T08:33:52.546Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/goa`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:33:52.546Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_f07af2ea-5cf4-4943-a602-bf673744c9e4`
+- Rollback target: `publication_03355c7b-12b3-4d56-99ff-a88cffaf99fe`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Goa became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/goa`.
+
+<!-- release:publication_f55b59d8-e47a-4159-b166-ea89b8af29d4:end -->
+
+<!-- release:publication_257083da-bd8c-4efc-93f1-6837905c177f:start -->
+## publication_257083da-bd8c-4efc-93f1-6837905c177f
+
+- Reviewed at: `2026-04-18T08:36:04.400Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/sikkim`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:36:04.400Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f`
+- Rollback target: `publication_cde025be-6141-4f4c-8933-42844f5d0f0f`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Sikkim became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/sikkim`.
+
+<!-- release:publication_257083da-bd8c-4efc-93f1-6837905c177f:end -->
+
+<!-- release:publication_468cfd50-4661-43e5-b4a4-bce047b46618:start -->
+## publication_468cfd50-4661-43e5-b4a4-bce047b46618
+
+- Reviewed at: `2026-04-18T08:38:04.396Z`
+- Reviewer: `Codex all-states public rollout`
+- Public URL: `https://nyaaywatch.in/states/mizoram`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T08:38:04.396Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0`
+- Rollback target: `publication_fbcca757-9039-4891-900f-98bc0889c481`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Mizoram became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/mizoram`.
+
+<!-- release:publication_468cfd50-4661-43e5-b4a4-bce047b46618:end -->
+
+
 <!-- release:publication_4fff0bca-7b58-49d1-992d-a113c43f577a:start -->
 ## publication_4fff0bca-7b58-49d1-992d-a113c43f577a
 

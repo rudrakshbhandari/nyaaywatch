@@ -94,11 +94,11 @@ That earlier expansion-risk gate was cleared before go-live by the Uttarakhand, 
 
 Haryana should now be treated as a completed narrow public rollout, not a candidate.
 
-The next discipline point is:
+The remaining discipline point is repository truthfulness, not Haryana launch readiness:
 
-1. keep Haryana as the newest live public state rather than widening again immediately
-2. treat Tamil Nadu as live and keep Assam internal-only until it clears a separate public-readiness review
-3. preserve the explicit state-scoped IA and trust posture instead of implying national parity
+1. keep Haryana documented as a completed public rollout
+2. preserve the explicit state-scoped IA and trust posture instead of implying national parity
+3. treat later state decisions as separate rollout history rather than future Haryana work
 
 ## Useful Work Completed By This Review
 
