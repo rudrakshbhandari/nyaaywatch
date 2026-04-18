@@ -1,8 +1,8 @@
 # Bihar Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Bihar before the first live operator trial or public exposure.
+Internal-readiness review for Bihar after the first live operator trial and before any public exposure.
 
-Bihar is a strong internal-only candidate for the next central and eastern expansion wave after the current south-plus-north-east batch. This document records live source evidence only. It does not approve public exposure.
+Bihar has now cleared the full live internal proof bar. This document records both the source evidence and the completed internal-only operator cycle. It still does not approve public exposure.
 
 ## Review Basis
 
@@ -44,34 +44,32 @@ Bihar adds another large-case eastern state surface without forcing immediate pu
 
 The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
 
+## Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:60`
+- first live fetch run: `run_0e7317c9-2774-481f-88a9-3c52c8e1b49d`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `38`
+- statewide pending cases captured: `3722495`
+- first live publication: `publication_07d2e083-c592-4017-b1a5-5a4ce03075ae`
+- first live snapshot: `snapshot_4e817487-7b03-49bd-a8d0-7d44b65e4379`
+- replay run from stored evidence: `run_af0583ea-ef66-48d0-9b21-f582697061ce`
+- replay publication: `publication_7e723234-8fa1-4d61-ad81-bfd4c39c49be`
+- rollback publication: `publication_3319a11d-16fd-4a40-ad4a-cb4869f41d31`
+- public-surface validation: `https://nyaaywatch.in/states/bihar` and `https://nyaaywatch.in/v1/states/bihar/stats` both returned `404`, so Bihar remained internal-only throughout the trial
+
 ## What Still Needs Explicit Work
 
-### 1. Repo Wiring
-
-Bihar still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
-
-### 2. Operating Evidence
-
-Bihar has not yet cleared the full internal proof bar. It still needs:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
-
-### 3. Public Trust Review
+### 1. Public Trust Review
 
 No Bihar-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope.
 
 ## Recommendation
 
-Bihar should be treated as a viable next internal-only candidate for the post-Telangana wave.
+Bihar should now be treated as validated internal operating evidence rather than a source-only candidate.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. it reaches the front of the deliberate public queue instead of being exposed implicitly

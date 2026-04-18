@@ -1,8 +1,8 @@
 # Madhya Pradesh Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Madhya Pradesh before the first live operator trial or public exposure.
+Internal-readiness review for Madhya Pradesh after the first live operator trial and before any public exposure.
 
-Madhya Pradesh is a strong internal-only candidate for the next central and western expansion wave after the current south-plus-north-east batch. This document records live source evidence only. It does not approve public exposure.
+Madhya Pradesh has now cleared the full live internal proof bar. This document records both the source evidence and the completed internal-only operator cycle. It still does not approve public exposure.
 
 ## Review Basis
 
@@ -44,34 +44,32 @@ Madhya Pradesh is a meaningful heavier-state candidate for the next internal-onl
 
 The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
 
+## Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:60`
+- first live fetch run: `run_14520fbf-0fea-4bd9-95cb-e77b100a807f`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `51`
+- statewide pending cases captured: `2101244`
+- first live publication: `publication_18e27b87-5922-40da-a084-8af808be3ecb`
+- first live snapshot: `snapshot_d82b181f-f934-4b32-a358-2513971b5801`
+- replay run from stored evidence: `run_bfdce54a-47ac-4a5f-854d-fcd744fd9513`
+- replay publication: `publication_d37491d5-5714-4590-a542-ebda13b14b03`
+- rollback publication: `publication_3f08b92a-ac96-4a4a-9041-c02d90b1a2f2`
+- public-surface validation: `https://nyaaywatch.in/states/madhya-pradesh` and `https://nyaaywatch.in/v1/states/madhya-pradesh/stats` both returned `404`, so Madhya Pradesh remained internal-only throughout the trial
+
 ## What Still Needs Explicit Work
 
-### 1. Repo Wiring
-
-Madhya Pradesh still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
-
-### 2. Operating Evidence
-
-Madhya Pradesh has not yet cleared the full internal proof bar. It still needs:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
-
-### 3. Public Trust Review
+### 1. Public Trust Review
 
 No Madhya Pradesh-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope.
 
 ## Recommendation
 
-Madhya Pradesh should be treated as a viable next heavier internal-only candidate for the post-Telangana wave.
+Madhya Pradesh should now be treated as validated internal operating evidence rather than a source-only candidate.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. it reaches the front of the deliberate public queue instead of being exposed implicitly
