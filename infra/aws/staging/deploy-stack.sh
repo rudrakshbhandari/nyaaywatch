@@ -29,6 +29,18 @@ deploy_args=(
     CertificateArn="$certificate_arn"
 )
 
+if [[ -n "${PUBLIC_BASE_URL:-}" ]]; then
+  deploy_args+=(PublicBaseUrl="$PUBLIC_BASE_URL")
+fi
+
+if [[ -n "${CLOUDFLARE_ZONE_NAME:-}" ]]; then
+  deploy_args+=(CloudflareZoneName="$CLOUDFLARE_ZONE_NAME")
+fi
+
+if [[ -n "${CLOUDFLARE_API_TOKEN_SECRET_ARN:-}" ]]; then
+  deploy_args+=(CloudflareApiTokenSecretArn="$CLOUDFLARE_API_TOKEN_SECRET_ARN")
+fi
+
 if [[ -n "$alarm_email" ]]; then
   deploy_args+=(AlarmEmail="$alarm_email")
 fi

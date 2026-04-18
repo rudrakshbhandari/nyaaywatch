@@ -1,5 +1,6 @@
 import { DataType, newDb } from "pg-mem";
 import type { Pool } from "pg";
+import { randomUUID } from "node:crypto";
 
 import { createApp } from "../api/app.js";
 import { loadConfig, type AppConfig } from "../config/env.js";
@@ -35,7 +36,8 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
     AWS_REGION: rawEnv.AWS_REGION ?? "ap-south-1",
     S3_BUCKET: rawEnv.S3_BUCKET ?? "nyaaywatch-preview-artifacts",
     DEPLOY_ENV: rawEnv.DEPLOY_ENV ?? "dev",
-    OPERATOR_API_TOKEN: rawEnv.OPERATOR_API_TOKEN ?? "preview-operator-token",
+    OPERATOR_API_TOKEN: rawEnv.OPERATOR_API_TOKEN ?? `preview-disabled-${randomUUID()}`,
+    ENABLE_OPERATOR_ROUTES: rawEnv.ENABLE_OPERATOR_ROUTES ?? "false",
     STATE_CODE: rawEnv.STATE_CODE ?? "HP",
   });
   const profile = getStateProfile(config.STATE_CODE);

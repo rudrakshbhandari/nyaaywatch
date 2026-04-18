@@ -478,95 +478,97 @@ export function createApp(
     }),
   );
 
-  app.get(
-    "/operator/runs",
-    operatorOnly(config),
-    asyncRoute(async (request, response) => {
-      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
-      response.json({ state: resolved.profile, runs: await resolved.service.listRuns() });
-    }),
-  );
+  if (config.ENABLE_OPERATOR_ROUTES) {
+    app.get(
+      "/operator/runs",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+        response.json({ state: resolved.profile, runs: await resolved.service.listRuns() });
+      }),
+    );
 
-  app.get(
-    "/operator/publications",
-    operatorOnly(config),
-    asyncRoute(async (request, response) => {
-      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
-      response.json({ state: resolved.profile, publications: await resolved.service.listPublicationHistory() });
-    }),
-  );
+    app.get(
+      "/operator/publications",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+        response.json({ state: resolved.profile, publications: await resolved.service.listPublicationHistory() });
+      }),
+    );
 
-  app.get(
-    "/operator/runs/:runId",
-    operatorOnly(config),
-    asyncRoute(async (request, response) => {
-      const inspection = await findRunInspectionAcrossServices(readRouteParam(request.params.runId), serviceMap);
-      if (!inspection) {
-        response.status(404).json({ error: "Run not found." });
-        return;
-      }
+    app.get(
+      "/operator/runs/:runId",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const inspection = await findRunInspectionAcrossServices(readRouteParam(request.params.runId), serviceMap);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
 
-      response.json(inspection);
-    }),
-  );
+        response.json(inspection);
+      }),
+    );
 
-  app.post(
-    "/operator/runs/fetch",
-    operatorOnly(config),
-    asyncRoute(async (request, response) => {
-      const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
-      const result = await resolved.service.captureRun(request.body?.note);
-      response.status(201).json(result);
-    }),
-  );
+    app.post(
+      "/operator/runs/fetch",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveOperatorServiceRequest(request, serviceMap, config.STATE_CODE);
+        const result = await resolved.service.captureRun(request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
 
-  app.post(
-    "/operator/runs/:runId/publish",
-    operatorOnly(config),
-    asyncRoute(async (request, response) => {
-      const runId = readRouteParam(request.params.runId);
-      const resolved = await findRunServiceAcrossServices(runId, serviceMap);
-      if (!resolved) {
-        response.status(404).json({ error: "Run not found." });
-        return;
-      }
+    app.post(
+      "/operator/runs/:runId/publish",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const runId = readRouteParam(request.params.runId);
+        const resolved = await findRunServiceAcrossServices(runId, serviceMap);
+        if (!resolved) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
 
-      const result = await resolved.service.publishRun(runId, request.body?.note);
-      response.status(201).json(result);
-    }),
-  );
+        const result = await resolved.service.publishRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
 
-  app.post(
-    "/operator/runs/:runId/replay",
-    operatorOnly(config),
-    asyncRoute(async (request, response) => {
-      const runId = readRouteParam(request.params.runId);
-      const resolved = await findRunServiceAcrossServices(runId, serviceMap);
-      if (!resolved) {
-        response.status(404).json({ error: "Run not found." });
-        return;
-      }
+    app.post(
+      "/operator/runs/:runId/replay",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const runId = readRouteParam(request.params.runId);
+        const resolved = await findRunServiceAcrossServices(runId, serviceMap);
+        if (!resolved) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
 
-      const result = await resolved.service.replayRun(runId, request.body?.note);
-      response.status(201).json(result);
-    }),
-  );
+        const result = await resolved.service.replayRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
 
-  app.post(
-    "/operator/publications/:publicationId/rollback",
-    operatorOnly(config),
-    asyncRoute(async (request, response) => {
-      const publicationId = readRouteParam(request.params.publicationId);
-      const resolved = await findPublicationServiceAcrossServices(publicationId, serviceMap);
-      if (!resolved) {
-        response.status(404).json({ error: "Publication not found." });
-        return;
-      }
+    app.post(
+      "/operator/publications/:publicationId/rollback",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const publicationId = readRouteParam(request.params.publicationId);
+        const resolved = await findPublicationServiceAcrossServices(publicationId, serviceMap);
+        if (!resolved) {
+          response.status(404).json({ error: "Publication not found." });
+          return;
+        }
 
-      const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
-      response.status(201).json(result);
-    }),
-  );
+        const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+  }
 
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";

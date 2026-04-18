@@ -20,6 +20,9 @@ describe("preview runtime", () => {
       expect(districts.status).toBe(200);
       expect(districts.body.snapshot.stateCode).toBe("HP");
 
+      const operator = await request(runtime.app).get("/operator/publications");
+      expect(operator.status).toBe(404);
+
       expect(home.text).not.toContain("/states/punjab");
 
       const punjab = await request(runtime.app).get("/states/punjab");

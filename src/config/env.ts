@@ -23,6 +23,10 @@ const EnvSchema = z.object({
     .regex(/^nyaaywatch-[a-z0-9-]+$/, "S3_BUCKET must be nyaaywatch-prefixed"),
   DEPLOY_ENV: z.enum(["dev", "staging"]).default("dev"),
   OPERATOR_API_TOKEN: z.string().min(8),
+  ENABLE_OPERATOR_ROUTES: z
+    .string()
+    .optional()
+    .transform((value) => value !== "false"),
   STATE_CODE: z.enum(SUPPORTED_STATE_CODES).default("HP"),
   CANONICAL_HOST: z.string().min(1).optional(),
   PUBLIC_BASE_URL: z.string().url().optional(),
