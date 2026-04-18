@@ -517,3 +517,74 @@ export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
     ],
   };
 }
+
+export function buildKeralaTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "KL",
+      stateName: "Kerala",
+      sourceName: "NJDG Kerala district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-18T02:15:00.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Kerala",
+      publishedFromRunId: "run_60fc22fb-a2b2-41e5-9bf5-f01b6e7b39e3",
+    },
+    stats: {
+      pendingCases: 1801417,
+      disposalRate: 134.9,
+      medianCaseAgeDays: 365,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "ernakulam",
+        districtName: "Ernakulam",
+        rank: 1,
+        backlogCases: 268114,
+        disposalRate: 91.7,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 8.3,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Kerala's biggest.",
+        summary:
+          "Ernakulam has 2,68,114 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "kozhikode",
+        districtName: "Kozhikode",
+        rank: 2,
+        backlogCases: 187442,
+        disposalRate: 111.6,
+        medianAgeDays: 730,
+        filingVsDisposalGap: -11.6,
+        flagReason:
+          "People appear to be waiting longer here than in much of Kerala, based on the latest published snapshot.",
+        summary:
+          "Kozhikode has 1,87,442 cases waiting. A typical pending case falls around 730 days old, and the district cleared 111.6% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "kasaragod",
+        districtName: "Kasaragod",
+        rank: 3,
+        backlogCases: 92481,
+        disposalRate: 83.4,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 16.6,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
+        summary:
+          "Kasaragod has 92,481 cases waiting. A typical pending case falls around 183 days old, and the district cleared 83.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 1801417,
+        disposalRate: 134.9,
+      },
+    ],
+  };
+}

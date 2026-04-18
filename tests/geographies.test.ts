@@ -72,7 +72,7 @@ describe("state profiles", () => {
       stateName: "Kerala",
       stateSlug: "kerala",
       njdgStateValue: "32~4",
-      publicAlpha: false,
+      publicAlpha: true,
     });
 
     expect(getStateProfile("ML")).toMatchObject({
@@ -163,6 +163,38 @@ describe("state profiles", () => {
       publicAlpha: false,
     });
 
+    expect(getStateProfile("OD")).toMatchObject({
+      stateCode: "OD",
+      stateName: "Odisha",
+      stateSlug: "odisha",
+      njdgStateValue: "21~11",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("WB")).toMatchObject({
+      stateCode: "WB",
+      stateName: "West Bengal",
+      stateSlug: "west-bengal",
+      njdgStateValue: "19~16",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("JH")).toMatchObject({
+      stateCode: "JH",
+      stateName: "Jharkhand",
+      stateSlug: "jharkhand",
+      njdgStateValue: "20~7",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("CG")).toMatchObject({
+      stateCode: "CG",
+      stateName: "Chhattisgarh",
+      stateSlug: "chhattisgarh",
+      njdgStateValue: "22~18",
+      publicAlpha: false,
+    });
+
     expect(listStateProfiles().map((profile) => profile.stateCode)).toEqual([
       "HP",
       "PB",
@@ -185,8 +217,12 @@ describe("state profiles", () => {
       "MH",
       "BR",
       "GJ",
+      "OD",
+      "WB",
+      "JH",
+      "CG",
     ]);
-    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN", "AS", "TS"]);
+    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN", "AS", "TS", "KL"]);
     expect(getStateProfileByCode("hr")?.stateName).toBe("Haryana");
     expect(getStateProfileByCode("tn")?.stateName).toBe("Tamil Nadu");
     expect(getStateProfileByCode("as")?.stateName).toBe("Assam");
@@ -206,6 +242,10 @@ describe("state profiles", () => {
     expect(getStateProfileByCode("mh")?.stateName).toBe("Maharashtra");
     expect(getStateProfileByCode("br")?.stateName).toBe("Bihar");
     expect(getStateProfileByCode("gj")?.stateName).toBe("Gujarat");
+    expect(getStateProfileByCode("od")?.stateName).toBe("Odisha");
+    expect(getStateProfileByCode("wb")?.stateName).toBe("West Bengal");
+    expect(getStateProfileByCode("jh")?.stateName).toBe("Jharkhand");
+    expect(getStateProfileByCode("cg")?.stateName).toBe("Chhattisgarh");
     expect(getStateProfileByCodeOrSlug("haryana")?.stateCode).toBe("HR");
     expect(getStateProfileByCodeOrSlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getStateProfileByCodeOrSlug("assam")?.stateCode).toBe("AS");
@@ -225,6 +265,10 @@ describe("state profiles", () => {
     expect(getStateProfileByCodeOrSlug("maharashtra")?.stateCode).toBe("MH");
     expect(getStateProfileByCodeOrSlug("bihar")?.stateCode).toBe("BR");
     expect(getStateProfileByCodeOrSlug("gujarat")?.stateCode).toBe("GJ");
+    expect(getStateProfileByCodeOrSlug("odisha")?.stateCode).toBe("OD");
+    expect(getStateProfileByCodeOrSlug("west-bengal")?.stateCode).toBe("WB");
+    expect(getStateProfileByCodeOrSlug("jharkhand")?.stateCode).toBe("JH");
+    expect(getStateProfileByCodeOrSlug("chhattisgarh")?.stateCode).toBe("CG");
     expect(getPublicStateProfileBySlug("haryana")?.stateCode).toBe("HR");
     expect(getPublicStateProfileBySlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getPublicStateProfileBySlug("assam")?.stateCode).toBe("AS");
@@ -232,7 +276,7 @@ describe("state profiles", () => {
     expect(getPublicStateProfileBySlug("andhra-pradesh")).toBeNull();
     expect(getPublicStateProfileBySlug("arunachal-pradesh")).toBeNull();
     expect(getPublicStateProfileBySlug("manipur")).toBeNull();
-    expect(getPublicStateProfileBySlug("kerala")).toBeNull();
+    expect(getPublicStateProfileBySlug("kerala")?.stateCode).toBe("KL");
     expect(getPublicStateProfileBySlug("meghalaya")).toBeNull();
     expect(getPublicStateProfileBySlug("karnataka")).toBeNull();
     expect(getPublicStateProfileBySlug("tripura")).toBeNull();
@@ -244,5 +288,9 @@ describe("state profiles", () => {
     expect(getPublicStateProfileBySlug("maharashtra")).toBeNull();
     expect(getPublicStateProfileBySlug("bihar")).toBeNull();
     expect(getPublicStateProfileBySlug("gujarat")).toBeNull();
+    expect(getPublicStateProfileBySlug("odisha")).toBeNull();
+    expect(getPublicStateProfileBySlug("west-bengal")).toBeNull();
+    expect(getPublicStateProfileBySlug("jharkhand")).toBeNull();
+    expect(getPublicStateProfileBySlug("chhattisgarh")).toBeNull();
   });
 });

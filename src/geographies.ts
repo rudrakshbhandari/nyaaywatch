@@ -6,7 +6,7 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ"] as const;
+export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ", "OD", "WB", "JH", "CG"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -79,7 +79,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Kerala",
     stateSlug: "kerala",
     njdgStateValue: "32~4",
-    publicAlpha: false,
+    publicAlpha: true,
   },
   ML: {
     stateCode: "ML",
@@ -156,6 +156,34 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Gujarat",
     stateSlug: "gujarat",
     njdgStateValue: "24~17",
+    publicAlpha: false,
+  },
+  OD: {
+    stateCode: "OD",
+    stateName: "Odisha",
+    stateSlug: "odisha",
+    njdgStateValue: "21~11",
+    publicAlpha: false,
+  },
+  WB: {
+    stateCode: "WB",
+    stateName: "West Bengal",
+    stateSlug: "west-bengal",
+    njdgStateValue: "19~16",
+    publicAlpha: false,
+  },
+  JH: {
+    stateCode: "JH",
+    stateName: "Jharkhand",
+    stateSlug: "jharkhand",
+    njdgStateValue: "20~7",
+    publicAlpha: false,
+  },
+  CG: {
+    stateCode: "CG",
+    stateName: "Chhattisgarh",
+    stateSlug: "chhattisgarh",
+    njdgStateValue: "22~18",
     publicAlpha: false,
   },
 };
