@@ -195,3 +195,41 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Note: Karnataka became the eighth additional public state after task definition `:66` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/karnataka`.
 
 <!-- release:publication_c58870a4-f378-4848-a8ce-ae38fb62f885:end -->
+
+<!-- release:publication_a2308b8b-946e-4725-900e-14e638fe85dd:start -->
+## publication_a2308b8b-946e-4725-900e-14e638fe85dd
+
+- Reviewed at: `2026-04-18T04:09:58.921Z`
+- Reviewer: `Codex Tripura public rollout`
+- Public URL: `https://nyaaywatch.in/states/tripura`
+- Action: `publish`
+- Source snapshot date: `2026-04-17T00:00:00.000Z`
+- Published at: `2026-04-18T04:09:15.326Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_fa4c7a48-6536-4e32-9d3a-63f6eecec153`
+- Rollback target: `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Tripura became the ninth additional public state on task definition `:66`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/tripura`.
+
+<!-- release:publication_a2308b8b-946e-4725-900e-14e638fe85dd:end -->
+
+<!-- release:publication_b01df802-1d04-409b-b608-55500e1b47a9:start -->
+## publication_b01df802-1d04-409b-b608-55500e1b47a9
+
+- Reviewed at: `2026-04-18T04:13:03.128Z`
+- Reviewer: `Codex Nagaland public rollout`
+- Public URL: `https://nyaaywatch.in/states/nagaland`
+- Action: `publish`
+- Source snapshot date: `2026-04-17T00:00:00.000Z`
+- Published at: `2026-04-18T04:12:28.608Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_575e0ebe-fd32-4fda-88f2-1c6d69175d6c`
+- Rollback target: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Nagaland became the tenth additional public state on task definition `:66`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/nagaland`.
+
+<!-- release:publication_b01df802-1d04-409b-b608-55500e1b47a9:end -->

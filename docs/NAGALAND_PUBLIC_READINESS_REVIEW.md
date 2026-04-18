@@ -1,17 +1,20 @@
 # Nagaland Public Readiness Review
 
-Review of what Nagaland now requires before exposing the public Nagaland route family.
+Review of what Nagaland required before exposing the public Nagaland route family.
 
-Nagaland has already cleared the internal proof bar on the live stack. This review records why the remaining public question is narrow: Nagaland no longer needs extractor invention or source-shape debate, but it still needs stable-URL verification and a deliberate public rollout before exposure on the live hostname.
+Nagaland had already cleared the internal proof bar on the live stack before launch. This review records why the remaining public question was narrow: Nagaland no longer needed extractor invention or source-shape debate, but it still needed stable-URL verification and a deliberate public rollout before exposure on the live hostname.
 
 ## Review Basis
 
-Based on the live Nagaland internal proof cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`:
+Based on the live Nagaland internal proof cycle and public rollout recorded in `docs/EXPANSION_REVIEW_LOG.md`:
 
 - first live fetch run id: `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`
 - first live publication id: `publication_abc433b9-1db4-4661-902e-ffd8861e35af`
 - replay run id: `run_d3d5a492-1515-4e77-ab25-27135054b787`
 - rollback publication id: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
+- public rollout fetch run id: `run_575e0ebe-fd32-4fda-88f2-1c6d69175d6c`
+- public rollout publication id: `publication_b01df802-1d04-409b-b608-55500e1b47a9`
+- public rollout snapshot id: `snapshot_f73774d4-0f6f-473f-9eda-21e5cd454050`
 
 Observed Nagaland source notes:
 
@@ -66,14 +69,14 @@ Nothing observed in the Nagaland candidate suggests we need a looser trust stand
 
 ### 1. Stable-URL Public Verification
 
-Nagaland is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still need to verify:
+Nagaland was wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still needed to verify:
 
 - `/states/nagaland`
 - `/v1/states/nagaland/...`
 - `/states/nagaland/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Meghalaya provides the immediate rollout pattern. Nagaland does not need broader repo-level public-surface invention here, but it still needs the actual state-scoped verification pass before launch.
+Tripura provided the immediate rollout pattern. Nagaland did not need broader repo-level public-surface invention here, but it did need the actual state-scoped verification pass before launch.
 
 The Nagaland-specific artifacts for that pass are:
 
@@ -92,23 +95,24 @@ The product is intentionally not nationwide. Nagaland public exposure should kee
 
 The operational system is now good enough to qualify public-prep states in parallel. Public exposure should still lag stable-URL verification and a deliberate rollout slot.
 
-That gate is satisfied for Nagaland because Haryana, Tamil Nadu, Assam, Telangana, and Kerala are already live publicly, Meghalaya is the active current rollout candidate, and Karnataka, Tripura, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh provide surrounding operating evidence. Nagaland no longer needs more internal-proof debate before public-route work can proceed.
+That gate is satisfied for Nagaland because Haryana, Tamil Nadu, Assam, Telangana, Kerala, Karnataka, and Tripura are already live publicly, while Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh provide surrounding operating evidence. Nagaland no longer needed more internal-proof debate before public-route work could proceed.
 
 ## Outcome
 
-Nagaland should now be treated as the next viable narrow public candidate after Meghalaya, not as a state that still needs basic source or operator validation.
+Nagaland is now live on the public site as the tenth additional public state.
 
-Before launch, the remaining conditions are:
+The launch conditions that cleared were:
 
-1. the Nagaland-specific public-route parity artifacts stay green under the approved public-state configuration
-2. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug nagaland` and a live browser pass both succeed on the stable hostname
-3. rollout docs record the actual public publication lineage after launch
+1. Nagaland was deliberately promoted into the approved public-state set rather than exposed by implication
+2. the Nagaland-specific public-route parity artifacts went green under that configuration
+3. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug nagaland` and a live HTML verification pass both succeeded on the stable hostname
+4. rollout docs now record the actual public publication lineage after launch
 
 ## Useful Work Completed By This Review
 
-This review closes the Nagaland trust question at the pre-launch level:
+This review now closes the Nagaland trust question at the launched-public-state level:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: Nagaland is a viable next narrow public candidate
-- remaining blockers are rollout-specific rather than extractor- or source-specific
+- public rollout: completed
+- remaining blockers: none for Nagaland itself; the queue now advances to Andhra Pradesh

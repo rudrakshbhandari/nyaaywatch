@@ -12,10 +12,10 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Karnataka is now live, and Tripura is the next public state in the internal-proof order
-- current remaining public queue after Tripura: Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- Tripura and Nagaland already have dedicated public-readiness reviews, go-live checklists, and targeted parity suites in repo config
-- done only when Tripura completes live publish and stable-URL verification without widening national scaffolding, after which the queue advances to Nagaland
+- Nagaland is now live, and Andhra Pradesh is the next public state in the internal-proof order
+- current remaining public queue after Andhra Pradesh: Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- Andhra Pradesh, Arunachal Pradesh, and Manipur remain the next already-cleared public-prep candidates once their explicit public-route parity slice lands
+- done only when Andhra Pradesh completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 
 ### Next Internal Expansion Batch
 
@@ -112,6 +112,20 @@ Use this file for:
 - Karnataka fetch `run_79131eaf-bd31-4c4e-a95f-fc84b065a261` published as `publication_c58870a4-f378-4848-a8ce-ae38fb62f885` with snapshot `snapshot_87bd1945-6b36-415f-965e-8c06cf60a989`
 - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug karnataka` passed with `districtCount=31`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
 - live route and HTML verification confirmed `https://nyaaywatch.in/states/karnataka` and `https://nyaaywatch.in/v1/states/karnataka/stats` return `200`, with the expected Karnataka title and `How long is the wait for justice in Karnataka?` heading
+
+### Tripura Public Rollout
+
+- completed live on 2026-04-18 on task definition `:66`
+- Tripura fetch `run_fa4c7a48-6536-4e32-9d3a-63f6eecec153` published as `publication_a2308b8b-946e-4725-900e-14e638fe85dd` with snapshot `snapshot_73cd7146-7d74-41e0-85a5-f352baa439df`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tripura` passed with `districtCount=8`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route and HTML verification confirmed `https://nyaaywatch.in/states/tripura` and `https://nyaaywatch.in/v1/states/tripura/stats` return `200`, with the expected Tripura title and `How long is the wait for justice in Tripura?` heading
+
+### Nagaland Public Rollout
+
+- completed live on 2026-04-18 on task definition `:66`
+- Nagaland fetch `run_575e0ebe-fd32-4fda-88f2-1c6d69175d6c` published as `publication_b01df802-1d04-409b-b608-55500e1b47a9` with snapshot `snapshot_f73774d4-0f6f-473f-9eda-21e5cd454050`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug nagaland` passed with `districtCount=11`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route and HTML verification confirmed `https://nyaaywatch.in/states/nagaland` and `https://nyaaywatch.in/v1/states/nagaland/stats` return `200`, with the expected Nagaland title and `How long is the wait for justice in Nagaland?` heading
 
 ### Telangana, Andhra Pradesh, Arunachal Pradesh, And Manipur Internal Proof Cycles
 
