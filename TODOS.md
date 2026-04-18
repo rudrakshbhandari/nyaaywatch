@@ -12,13 +12,15 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Assam is now live, and Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur have all cleared internal-only proof cycles
-- internal completion order can seed that queue, but public promotion should still remain a deliberate decision after a narrow public-readiness review
-- done only when one state from the newly cleared internal-only batch is deliberately chosen for public-readiness review and stable-URL parity planning
+- public promotion now follows internal-proof order for the cleared post-Assam batch
+- current public queue: Telangana, Andhra Pradesh, Arunachal Pradesh, then Manipur
+- done only when Telangana completes public-route parity, live publish, and stable-URL verification, and the queue is then advanced to Andhra Pradesh
 
 ### Next Internal Expansion Batch
 
 - Madhya Pradesh, Maharashtra, Bihar, and Gujarat are the recommended next internal-only batch after read-only source review
+- remaining queued internal-only waves after that: Odisha, West Bengal, Jharkhand, and Chhattisgarh, then Goa, Sikkim, and Mizoram
+- after that batch, keep going until the remaining unsupported states are internally covered in subsequent waves rather than stopping at one more quartet
 - done only when repo wiring plus all four live `fetch -> inspect -> publish -> replay -> rollback` cycles succeed while keeping public routes dark with `404`
 
 ## Completed
