@@ -659,3 +659,216 @@ export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
     ],
   };
 }
+
+export function buildKarnatakaTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "KA",
+      stateName: "Karnataka",
+      sourceName: "NJDG Karnataka district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-18T05:10:00.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Karnataka",
+      publishedFromRunId: "run_c57e88aa-c6bf-40d8-a3fb-9343bd819174",
+    },
+    stats: {
+      pendingCases: 2230354,
+      disposalRate: 144.5,
+      medianCaseAgeDays: 365,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "belagavi",
+        districtName: "Belagavi",
+        rank: 1,
+        backlogCases: 184320,
+        disposalRate: 91.8,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 8.2,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Karnataka's biggest.",
+        summary:
+          "Belagavi has 1,84,320 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.8% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "bagalkot",
+        districtName: "Bagalkot",
+        rank: 2,
+        backlogCases: 117408,
+        disposalRate: 152.4,
+        medianAgeDays: 730,
+        filingVsDisposalGap: -52.4,
+        flagReason:
+          "People appear to be waiting longer here than in much of Karnataka, based on the latest published snapshot.",
+        summary:
+          "Bagalkot has 1,17,408 cases waiting. A typical pending case falls around 730 days old, and the district cleared 152.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "vijayapura",
+        districtName: "Vijayapura",
+        rank: 3,
+        backlogCases: 103226,
+        disposalRate: 88.1,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 11.9,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
+        summary:
+          "Vijayapura has 1,03,226 cases waiting. A typical pending case falls around 365 days old, and the district cleared 88.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 2230354,
+        disposalRate: 144.5,
+      },
+    ],
+  };
+}
+
+export function buildTripuraTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "TR",
+      stateName: "Tripura",
+      sourceName: "NJDG Tripura district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-18T05:20:00.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Tripura",
+      publishedFromRunId: "run_6b5e6751-0835-42b1-a89a-f3da080f5287",
+    },
+    stats: {
+      pendingCases: 63981,
+      disposalRate: 146.9,
+      medianCaseAgeDays: 183,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "west-tripura",
+        districtName: "West Tripura",
+        rank: 1,
+        backlogCases: 18214,
+        disposalRate: 91.6,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 8.4,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Tripura's biggest.",
+        summary:
+          "West Tripura has 18,214 cases waiting. A typical pending case falls around 183 days old, and the district cleared 91.6% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "north-tripura",
+        districtName: "North Tripura",
+        rank: 2,
+        backlogCases: 9732,
+        disposalRate: 168.4,
+        medianAgeDays: 730,
+        filingVsDisposalGap: -68.4,
+        flagReason:
+          "People appear to be waiting longer here than in much of Tripura, based on the latest published snapshot.",
+        summary:
+          "North Tripura has 9,732 cases waiting. A typical pending case falls around 730 days old, and the district cleared 168.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "south-tripura",
+        districtName: "South Tripura",
+        rank: 3,
+        backlogCases: 8651,
+        disposalRate: 102.7,
+        medianAgeDays: 365,
+        filingVsDisposalGap: -2.7,
+        flagReason:
+          "This district still carries a visible backlog in the statewide snapshot even after clearing slightly more cases than it received last month.",
+        summary:
+          "South Tripura has 8,651 cases waiting. A typical pending case falls around 365 days old, and the district cleared 102.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 63981,
+        disposalRate: 146.9,
+      },
+    ],
+  };
+}
+
+export function buildNagalandTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "NL",
+      stateName: "Nagaland",
+      sourceName: "NJDG Nagaland district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-18T05:30:00.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Nagaland",
+      publishedFromRunId: "run_8abb0436-80c5-4ce3-92c7-cf6049c55010",
+    },
+    stats: {
+      pendingCases: 3984,
+      disposalRate: 108.6,
+      medianCaseAgeDays: 183,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "dimapur",
+        districtName: "Dimapur",
+        rank: 1,
+        backlogCases: 1432,
+        disposalRate: 94.2,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 5.8,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Nagaland's biggest.",
+        summary:
+          "Dimapur has 1,432 cases waiting. A typical pending case falls around 183 days old, and the district cleared 94.2% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "kohima",
+        districtName: "Kohima",
+        rank: 2,
+        backlogCases: 1108,
+        disposalRate: 117.1,
+        medianAgeDays: 365,
+        filingVsDisposalGap: -17.1,
+        flagReason:
+          "People appear to be waiting longer here than in much of Nagaland, based on the latest published snapshot.",
+        summary:
+          "Kohima has 1,108 cases waiting. A typical pending case falls around 365 days old, and the district cleared 117.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "mokokchung",
+        districtName: "Mokokchung",
+        rank: 3,
+        backlogCases: 524,
+        disposalRate: 88.9,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 11.1,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
+        summary:
+          "Mokokchung has 524 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.9% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 3984,
+        disposalRate: 108.6,
+      },
+    ],
+  };
+}
