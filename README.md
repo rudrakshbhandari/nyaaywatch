@@ -213,6 +213,8 @@ Start here:
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
 - [Himachal High Court pilot plan](docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md)
+- [Himachal High Court source review](docs/HIMACHAL_HIGH_COURT_SOURCE_REVIEW.md)
+- [Himachal High Court methodology draft](docs/HIMACHAL_HIGH_COURT_METHODOLOGY.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
 - [TODO backlog](TODOS.md)
