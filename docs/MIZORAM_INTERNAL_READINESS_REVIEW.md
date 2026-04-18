@@ -2,13 +2,13 @@
 
 Initial source-viability and internal-readiness review for Mizoram before the first live operator trial or public exposure.
 
-Mizoram is a viable internal-only candidate for a very small north-east follow-on source check. This document records live source evidence only. It does not approve public exposure.
+Mizoram has now completed the live internal proof bar for a very small north-east follow-on source check. This document records both the source evidence and the completed internal proof cycle. It does not approve public exposure.
 
 Historical note:
 
-- repo wiring for `MZ` is now complete
-- no live `fetch -> inspect -> publish -> replay -> rollback` proof cycle has been run yet
-- use `docs/EXPANSION_REVIEW_LOG.md` later if Mizoram moves into the live internal trial queue
+- repo wiring for `MZ` is complete
+- live fetch `run_b788b9fe-194f-496b-a546-df26e62dd920`, publish `publication_087ca72e-d021-4138-8933-37a227010631`, replay `run_1cd62bb2-cb1c-4780-a56e-726323045f78`, replay publication `publication_906406d3-585e-49bc-9b9d-5caf3ad6868d`, and rollback `publication_fbcca757-9039-4891-900f-98bc0889c481` all succeeded on `2026-04-18`
+- Mizoram remains internal-only because its public routes still returned `404`
 
 ## Review Basis
 
@@ -56,15 +56,7 @@ The live state page exposes district drilldowns, and the verified `Aizawl` distr
 
 ### 1. Operating Evidence
 
-No Mizoram-specific live operating evidence exists yet.
-
-Mizoram still needs to clear:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+Mizoram-specific live operating evidence now exists and is sufficient for the internal-only bar.
 
 ### 2. Stress-Test Limits
 
@@ -78,10 +70,10 @@ No Mizoram-specific public-route parity, copy, or methodology review has been do
 
 ## Recommendation
 
-Mizoram should be treated as a small-surface internal-only candidate for the final prep wave.
+Mizoram should now be treated as an internal trial completed small-surface state for the end of the current queue.
 
 It should remain internal-only until:
 
-1. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-2. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-3. the product deliberately chooses Mizoram rather than promoting it automatically
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. the product deliberately chooses Mizoram rather than promoting it automatically
+3. the public rollout queue reaches Mizoram in internal-proof order

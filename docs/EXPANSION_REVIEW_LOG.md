@@ -961,3 +961,52 @@ Kerala is now the sixth additional public state. The next public rollout should 
 ### Recommendation
 
 This batch is now operating evidence, not source-only speculation. The final unsupported-state work should now move to Goa, Sikkim, and Mizoram, while public rollout continues in the already-cleared internal-proof order.
+
+## Meghalaya (`ML`) Public Rollout
+
+- candidate geography: Meghalaya
+- review date: 2026-04-18
+- source boundary: NJDG Meghalaya district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest successful validation date: 2026-04-18 live public rollout verification
+- reviewer: Codex
+- decision: `public rollout completed`
+
+### Public Rollout Evidence
+
+- deployed task definition during rollout: `nyaaywatch-staging:64`
+- deploy run: `24595471387`
+- public rollout fetch run: `run_30e5689d-a0da-46e8-8c27-c8624b68cd9d`
+- public rollout publication: `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5`
+- public rollout snapshot: `snapshot_4b2e5621-0336-41aa-a492-3163e57cad1a`
+- rollback target retained from the prior internal proof cycle: `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug meghalaya` passed with `districtCount=14`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route validation: `https://nyaaywatch.in/states/meghalaya` and `https://nyaaywatch.in/v1/states/meghalaya/stats` both returned `200`
+- live HTML validation: the public page title resolved to `NyaayWatch — How long is the wait for justice in Meghalaya?` and the page heading resolved to `How long is the wait for justice in Meghalaya?`
+
+### Recommendation
+
+Meghalaya is now the seventh additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Karnataka.
+
+## Goa (`GA`), Sikkim (`SK`), And Mizoram (`MZ`) Internal Proof Batch
+
+- candidate geographies: Goa, Sikkim, and Mizoram
+- review date: 2026-04-18
+- source boundary: NJDG district dashboard aggregate pages for each state
+- methodology version: `2026.04-alpha`
+- first successful capture date: `2026-04-18`
+- latest successful validation date: 2026-04-18 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:64`
+- Goa fetch `run_1e21db34-f85b-48ef-9f3b-aaeea6e92f35`, publish `publication_72807a9b-b91b-4f66-8b46-2b04bcaec370`, replay `run_710e9e5f-63b3-469b-a774-2e981fa7ade2`, replay publication `publication_bfb24816-c643-4953-9afc-496f116a9f36`, and rollback `publication_03355c7b-12b3-4d56-99ff-a88cffaf99fe` all succeeded
+- Sikkim fetch `run_cbd239e8-ac46-44fd-bd7b-00e62e4c853f`, publish `publication_67ef880e-b6e6-4b84-8991-e0ff35f70f67`, replay `run_1861f08d-09df-4cfd-a440-c7e3d8e69add`, replay publication `publication_061c8ad2-e542-4d35-8740-08326b68ade0`, and rollback `publication_cde025be-6141-4f4c-8933-42844f5d0f0f` all succeeded
+- Mizoram fetch `run_b788b9fe-194f-496b-a546-df26e62dd920`, publish `publication_087ca72e-d021-4138-8933-37a227010631`, replay `run_1cd62bb2-cb1c-4780-a56e-726323045f78`, replay publication `publication_906406d3-585e-49bc-9b9d-5caf3ad6868d`, and rollback `publication_fbcca757-9039-4891-900f-98bc0889c481` all succeeded
+- public-surface validation: the page and stats routes for Goa, Sikkim, and Mizoram all returned `404`, so all three states remained internal-only throughout the batch
+
+### Recommendation
+
+All planned states are now covered by live internal proof. Public rollout should continue in internal-proof order, which keeps Goa, Sikkim, and Mizoram at the back of the current queue behind the earlier validated states.

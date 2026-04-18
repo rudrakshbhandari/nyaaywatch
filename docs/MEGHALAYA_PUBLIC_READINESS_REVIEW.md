@@ -1,6 +1,6 @@
 # Meghalaya Public Readiness Review
 
-Review of what Meghalaya now requires before exposing any public Meghalaya route family.
+Review of what Meghalaya required before exposing any public Meghalaya route family.
 
 Meghalaya has already cleared the internal proof bar on the live stack. This review records why the remaining public question is narrow: Meghalaya no longer needs extractor invention or source-shape debate, but it still needs explicit public-route parity, stable-URL verification, and a deliberate rollout decision before any public exposure.
 
@@ -99,12 +99,23 @@ That gate is satisfied for Meghalaya because Haryana, Tamil Nadu, Assam, Telanga
 
 Meghalaya should now be treated as the next viable narrow public candidate after Kerala, not as a state that still needs basic source or operator validation.
 
-Before launch, the remaining conditions are:
+Before launch, the remaining conditions were:
 
 1. Meghalaya is deliberately promoted into the approved public-state set rather than exposed by implication
 2. the Meghalaya-specific public-route parity artifacts are green under that configuration
 3. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug meghalaya` and a live browser pass both succeed on the stable hostname
 4. rollout docs record the actual public publication lineage after launch
+
+## Rollout Result
+
+Meghalaya completed the public rollout on `2026-04-18` after PR `#74` merged and deploy run `24595471387` rolled the live stack to task definition `:64`.
+
+- public rollout fetch run: `run_30e5689d-a0da-46e8-8c27-c8624b68cd9d`
+- public rollout publication: `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5`
+- public rollout snapshot: `snapshot_4b2e5621-0336-41aa-a492-3163e57cad1a`
+- rollback target retained from the prior internal proof cycle: `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug meghalaya` passed with `districtCount=14`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- stable Meghalaya page plus stats routes now return `200`
 
 ## Useful Work Completed By This Review
 
@@ -113,4 +124,4 @@ This review closes the Meghalaya trust question at the pre-launch level:
 - source-shape review: done
 - trust-surface review: done
 - public recommendation: Meghalaya is a viable next narrow public candidate
-- remaining blockers are rollout-specific rather than extractor- or source-specific
+- the rollout-specific blockers are now closed

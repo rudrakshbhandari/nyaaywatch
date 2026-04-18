@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:62`
+- ECS task definition: `nyaaywatch-staging:64`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
@@ -72,6 +72,7 @@ Operational notes:
   - explicit Assam public routes at `/states/assam` and `/v1/states/assam/...`
   - explicit Telangana public routes at `/states/telangana` and `/v1/states/telangana/...`
   - explicit Kerala public routes at `/states/kerala` and `/v1/states/kerala/...`
+  - explicit Meghalaya public routes at `/states/meghalaya` and `/v1/states/meghalaya/...`
 - Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal source snapshot date: `2026-04-10`
@@ -93,6 +94,9 @@ Operational notes:
 - Current active Kerala publication: `publication_4fff0bca-7b58-49d1-992d-a113c43f577a`
 - Current active Kerala published snapshot: `snapshot_99d7ad98-ff3c-40e2-9922-e4661998e839`
 - Current Kerala source snapshot date: `2026-04-17`
+- Current active Meghalaya publication: `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5`
+- Current active Meghalaya published snapshot: `snapshot_4b2e5621-0336-41aa-a492-3163e57cad1a`
+- Current Meghalaya source snapshot date: `2026-04-16`
 - Public methodology version: `2026.04-alpha`
 
 ## How To Retrieve The AWS Staging URL
@@ -142,6 +146,9 @@ curl -fsSL <base-url>/v1/states/telangana/trends
 curl -fsSL <base-url>/v1/states/kerala/stats
 curl -fsSL <base-url>/v1/states/kerala/districts
 curl -fsSL <base-url>/v1/states/kerala/trends
+curl -fsSL <base-url>/v1/states/meghalaya/stats
+curl -fsSL <base-url>/v1/states/meghalaya/districts
+curl -fsSL <base-url>/v1/states/meghalaya/trends
 ```
 
 Expected:
@@ -238,6 +245,17 @@ Latest confirmed operator validation:
   - Meghalaya fetch `run_3dd14fff-0791-45b4-9bd7-27ce798cc850`, publish `publication_b1b1d691-d8bf-4e79-8d2d-119dff5b024c`, replay `run_5fda86c5-aefe-4e33-ae39-e25dac3f4830`, replay publication `publication_503248fe-3cc6-4b24-96e9-1317a4ba6001`, and rollback `publication_7337df86-24c6-4290-8ee4-2b740e5110af` all succeeded
   - `GET /operator/publications?stateCode=KL` and `GET /operator/publications?stateCode=ML` show the rollback publications active
   - `https://nyaaywatch.in/states/kerala`, `https://nyaaywatch.in/v1/states/kerala/stats`, `https://nyaaywatch.in/states/meghalaya`, and `https://nyaaywatch.in/v1/states/meghalaya/stats` all returned `404`, so both states remained internal-only throughout
+- Meghalaya public rollout completed on 2026-04-18 after PR `#74` merged to `main`:
+  - GitHub deploy run `24595471387` rolled the live service to task definition `:64`
+  - Meghalaya fetch `run_30e5689d-a0da-46e8-8c27-c8624b68cd9d`, publication `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5`, and snapshot `snapshot_4b2e5621-0336-41aa-a492-3163e57cad1a` all succeeded
+  - rollback target retained from the prior internal proof cycle: `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug meghalaya` passed with `districtCount=14`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - `https://nyaaywatch.in/states/meghalaya` and `https://nyaaywatch.in/v1/states/meghalaya/stats` both return `200`, and the public page title plus heading resolve to `How long is the wait for justice in Meghalaya?`
+- Goa, Sikkim, and Mizoram internal proof cycles completed on 2026-04-18 on task definition `:64`:
+  - Goa fetch `run_1e21db34-f85b-48ef-9f3b-aaeea6e92f35`, publish `publication_72807a9b-b91b-4f66-8b46-2b04bcaec370`, replay `run_710e9e5f-63b3-469b-a774-2e981fa7ade2`, replay publication `publication_bfb24816-c643-4953-9afc-496f116a9f36`, and rollback `publication_03355c7b-12b3-4d56-99ff-a88cffaf99fe` all succeeded
+  - Sikkim fetch `run_cbd239e8-ac46-44fd-bd7b-00e62e4c853f`, publish `publication_67ef880e-b6e6-4b84-8991-e0ff35f70f67`, replay `run_1861f08d-09df-4cfd-a440-c7e3d8e69add`, replay publication `publication_061c8ad2-e542-4d35-8740-08326b68ade0`, and rollback `publication_cde025be-6141-4f4c-8933-42844f5d0f0f` all succeeded
+  - Mizoram fetch `run_b788b9fe-194f-496b-a546-df26e62dd920`, publish `publication_087ca72e-d021-4138-8933-37a227010631`, replay `run_1cd62bb2-cb1c-4780-a56e-726323045f78`, replay publication `publication_906406d3-585e-49bc-9b9d-5caf3ad6868d`, and rollback `publication_fbcca757-9039-4891-900f-98bc0889c481` all succeeded
+  - the page and stats routes for Goa, Sikkim, and Mizoram all returned `404`, so all three states remained internal-only throughout the batch
 - Tamil Nadu public rollout completed on 2026-04-17 after PR `#64` merged to `main`:
   - GitHub deploy run `24588602379` rolled the live service to task definition `:54`
   - live Tamil Nadu fetch run `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`
