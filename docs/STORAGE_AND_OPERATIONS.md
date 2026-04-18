@@ -84,6 +84,12 @@ Approved additional public states use the same fetch / inspect / publish / repla
 
 All operator endpoints require `x-operator-token`.
 
+Preview runtimes are different on purpose:
+
+- `APP_MODE=preview` now disables operator HTTP routes by default
+- preview deployments should not expose fetch / publish / replay / rollback over public URLs
+- only re-enable preview operator routes intentionally by setting `ENABLE_OPERATOR_ROUTES=true` alongside a non-placeholder `OPERATOR_API_TOKEN`
+
 For multi-state operation, operator surfaces accept explicit state targeting through `stateCode` or `stateSlug` query params or JSON-body fields. If omitted, the runtime falls back to its configured default state.
 
 ### Remote Operator Lane
@@ -155,7 +161,7 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
     `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"`
     For a state-scoped rollout, add `--state-slug=<state-slug>`.
 
-If `CLOUDFLARE_API_TOKEN` is configured in the runtime, publish and rollback also purge the public data page plus CSV export URLs for that state so the stable download paths do not keep serving a stale cached snapshot after a release change.
+If `CLOUDFLARE_API_TOKEN` is configured in the runtime via ECS `secrets`, publish and rollback also purge the public data page plus CSV export URLs for that state so the stable download paths do not keep serving a stale cached snapshot after a release change.
 
 The `--state` override targets the operator flow only. A state becomes publicly reachable only if the runtime includes that state's published snapshot service and the public app has been intentionally rolled out with the corresponding state-scoped routes.
 

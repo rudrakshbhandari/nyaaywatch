@@ -11,6 +11,11 @@ The preview runtime:
 
 It is intentionally not a full operator environment.
 
+The GitHub preview job treats App Runner quota exhaustion as an infrastructure-capacity condition, not a code regression:
+
+- if a preview service can be created or updated, the workflow comments with the preview URL
+- if App Runner rejects a new service because the account is already at its service quota, the workflow posts a "preview unavailable" comment instead of failing the PR's core verification checks
+
 ## Required AWS Roles
 
 - GitHub deploy role for pull request workflows:

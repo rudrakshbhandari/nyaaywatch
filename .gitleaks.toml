@@ -1,0 +1,26 @@
+title = "nyaaywatch gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "ignore checked-in fixtures, generated output, and intentional placeholders"
+paths = [
+  '''(?:^|/)\.env\.example$''',
+  '''(?:^|/)fixtures/''',
+  '''(?:^|/)node_modules/''',
+  '''(?:^|/)dist/''',
+  '''(?:^|/)coverage/''',
+  '''(?:^|/)playwright-report/''',
+  '''(?:^|/)test-results/''',
+  '''(?:^|/)output/''',
+  '''(?:^|/)\.gstack/''',
+]
+regexes = [
+  '''operator-test-token''',
+  '''postgres://postgres:postgres@(?:127\.0\.0\.1|localhost):\d+/''',
+  '''AWS_SECRET_ACCESS_KEY=test''',
+  '''OPERATOR_API_TOKEN=\.\.\.''',
+  '''<operator-token>''',
+  '''<database-password>''',
+]
