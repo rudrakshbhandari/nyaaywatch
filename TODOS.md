@@ -30,6 +30,7 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
+- [ ] Turn the next court-tier decision into execution, not just theory: use `docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md` as the concrete next-step plan for the first High Court module inside the national NyaayWatch product shell.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
