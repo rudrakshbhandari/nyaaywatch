@@ -31,7 +31,8 @@ Use this document as the live environment map. For routine release go/no-go deci
 - ECS task definition: `nyaaywatch-staging:64`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
-- Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
+- Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
+- Internal raw fetch schedule scope policy: all implemented states
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -44,7 +45,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
-- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the weekday internal fetch schedule against the live task definition while reusing the existing scheduler role
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the internal fetch schedule against the live task definition while reusing the existing scheduler role
 
 Operational notes:
 
@@ -54,7 +55,7 @@ Operational notes:
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 - For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
-- The live weekday internal fetch schedule currently targets `STATE_CODE=HP` and runs `fetch` only. It does not publish or change the public snapshot.
+- The documented internal raw-fetch policy is to run `fetch` only every day at `8:00 AM Asia/Kolkata` across all implemented states. It does not publish or change the public snapshot.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
 
@@ -218,8 +219,8 @@ Latest confirmed operator validation:
 - ECS-backed heavy-state follow-up completed on 2026-04-17 after PR `#54` merged to `main`:
   - GitHub deploy run `24554574390` rolled the live service to task definition `:43`
   - `npm run operator:staging -- --state UP fetch "UP ECS heavy-state proof cycle fetch"` succeeded as fetch run `run_a16bb291-e3fb-4238-8695-bc60e4d63a64`
-- Weekday internal fetch scheduler enabled and smoke-tested on 2026-04-17:
-  - recurring schedule `nyaaywatch-staging-weekday-internal-fetch` is enabled in EventBridge Scheduler with `cron(0 8 ? * MON-FRI *)` plus `Asia/Kolkata`
+- Internal fetch scheduler enabled and smoke-tested on 2026-04-17:
+  - recurring schedule `nyaaywatch-staging-weekday-internal-fetch` was initially enabled in EventBridge Scheduler with `cron(0 8 ? * MON-FRI *)` plus `Asia/Kolkata`
   - scheduler target role is `arn:aws:iam::723951822728:role/nyaaywatch-staging-internal-fetch-scheduler`
   - one-time smoke schedule `nyaaywatch-staging-internal-fetch-smoke-1776456368` launched ECS task `bb223b4991934e2ebc554cb9d2e933cb` with `startedBy=chronos-schedule/...`
   - the smoke task exited `0` and CloudWatch logs recorded completed fetch run `run_337a80ae-4980-415a-8585-d670e413dfed` with `qualityState=complete`
@@ -349,11 +350,11 @@ Latest confirmed operator validation:
   - Jharkhand fetch `run_9555324e-3416-4c6d-8287-e666982f8bec`, publish `publication_ff13fc7e-1d39-44ad-ad17-c45f2515f159`, replay `run_ad91c0c0-59f9-4c50-be1c-26f387539e47`, replay publication `publication_12072ce8-33b1-4349-b13d-63516900d091`, and rollback `publication_12683d90-942c-4050-b5f7-7ccca8932b07` all succeeded
   - Chhattisgarh fetch `run_3deffe82-3ee7-477f-ae37-e70b93d544e6`, publish `publication_301acf9a-e2d2-46b2-940c-42a2cd989ece`, replay `run_d60f4c4b-8385-4193-9a63-efc5dcc3dcda`, replay publication `publication_e4502b2d-9466-434a-903e-53ff22426428`, and rollback `publication_412a4d67-73fe-4bdd-b149-24c05cbaf973` all succeeded
   - `https://nyaaywatch.in/states/odisha`, `https://nyaaywatch.in/v1/states/odisha/stats`, `https://nyaaywatch.in/states/west-bengal`, `https://nyaaywatch.in/v1/states/west-bengal/stats`, `https://nyaaywatch.in/states/jharkhand`, `https://nyaaywatch.in/v1/states/jharkhand/stats`, `https://nyaaywatch.in/states/chhattisgarh`, and `https://nyaaywatch.in/v1/states/chhattisgarh/stats` all returned `404`, so all four states remained internal-only throughout
-- Weekday internal fetch deploy reconciliation hardened on 2026-04-17 after PRs `#60` and `#62` plus a deploy-role IAM update:
+- Internal fetch deploy reconciliation hardened on 2026-04-17 after PRs `#60` and `#62` plus a deploy-role IAM update:
   - GitHub deploy run `24585688516` completed successfully on rerun after granting `scheduler:GetSchedule`, `scheduler:CreateSchedule`, `scheduler:UpdateSchedule`, and scheduler-role `iam:PassRole` to `nyaaywatch-github-deploy-role`
   - the live ECS service rolled to task definition `:52`
   - the recurring scheduler `nyaaywatch-staging-weekday-internal-fetch` now targets the same live task definition `:52`
-  - the deploy path now keeps the weekday internal fetch schedule aligned with the latest ECS task definition after each successful `main` rollout
+  - the deploy path now keeps the internal fetch schedule aligned with the latest ECS task definition after each successful `main` rollout
 
 ## Release Use
 

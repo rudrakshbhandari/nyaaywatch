@@ -76,7 +76,7 @@ If blocked, record the exact blocker and required follow-up:
 
 - Blocker: `None`
 - Owner: `N/A`
-- Next action: `Keep the weekday 8:00 AM Asia/Kolkata internal fetch schedule healthy, continue the twice-weekly publish cadence in docs/RELEASE_POLICY.md, and repeat the log/alarm review before each public publish.`
+- Next action: `Keep the daily 8:00 AM Asia/Kolkata internal fetch schedule healthy across all implemented states, continue the existing operator-reviewed public publish cadence in docs/RELEASE_POLICY.md, and repeat the log/alarm review before each public publish.`
 
 ## Release Evidence
 

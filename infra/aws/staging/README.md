@@ -140,20 +140,20 @@ The deploy job:
 - discovers the live ECS service from the `nyaaywatch-staging` CloudFormation stack
 - registers a fresh task definition revision pinned to the commit-SHA image
 - updates the ECS service and waits for steady state
-- reconciles the weekday internal raw-fetch schedule against the new live task definition
+- reconciles the internal raw-fetch schedule against the new live task definition
 - confirms the raw ALB `ServiceUrl` still answers `/health`
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
 
-## Weekday Internal Fetch Schedule
+## Internal Fetch Schedule
 
 The live stack can keep an internal raw-fetch cadence without auto-publishing public data.
 
 Default schedule:
 
-- state: `HP`
-- cadence: weekdays at `8:00 AM Asia/Kolkata`
-- behavior: runs `fetch` only inside a one-off ECS task and leaves public publication unchanged
+- scope: all implemented states
+- cadence: every day at `8:00 AM Asia/Kolkata`
+- behavior: launches a one-off ECS task that runs sequential `fetch` operations for every implemented state and leaves public publication unchanged
 
 Manual reconcile command:
 

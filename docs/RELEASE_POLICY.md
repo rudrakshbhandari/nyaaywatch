@@ -15,7 +15,7 @@ This document answers four practical questions:
 
 Use a calm, predictable cadence for alpha:
 
-- Internal raw fetches: **every weekday at 8:00 AM Asia/Kolkata**
+- Internal raw fetches: **every day at 8:00 AM Asia/Kolkata across all implemented states**
 - Public snapshot publishes: **twice per week**
 - Recommended publish window: **Tuesday and Friday, 11:00 AM Asia/Kolkata**
 - Allowed exception: a same-day hotfix for broken public copy, methodology wording, or platform issues that do not weaken the trust boundary
@@ -23,17 +23,17 @@ Use a calm, predictable cadence for alpha:
 Why this cadence:
 
 - it separates collection freshness from public-claim changes
-- it catches upstream breakage on weekdays without making the site feel live
+- it catches upstream breakage every day without making the site feel live
 - it leaves room for operator inspection before public publish
 - it is frequent enough for a public alpha but slow enough to keep every release deliberate
 
 Do not publish just because a newer run exists. Publish only after the release checklist is green.
 
-Treat the weekday fetches as internal evidence collection only:
+Treat the daily fetches as internal evidence collection only:
 
-- they may create completed candidate runs
+- they may create completed candidate runs across all implemented states
 - they must not change the public snapshot without an explicit operator publish
-- a failed weekday fetch is an operational signal, not a reason to auto-publish or auto-rollback
+- a failed daily fetch is an operational signal, not a reason to auto-publish or auto-rollback
 
 ## Publish Authority
 

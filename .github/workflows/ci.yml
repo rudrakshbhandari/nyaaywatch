@@ -77,8 +77,7 @@ jobs:
       AWS_ACCOUNT_ID: "723951822728"
       ECR_REPOSITORY: nyaaywatch-staging
       STAGING_STACK_NAME: nyaaywatch-staging
-      INTERNAL_FETCH_STATE_CODE: HP
-      INTERNAL_FETCH_SCHEDULE_EXPRESSION: "cron(0 8 ? * MON-FRI *)"
+      INTERNAL_FETCH_SCHEDULE_EXPRESSION: "cron(0 8 * * ? *)"
       INTERNAL_FETCH_SCHEDULE_TIMEZONE: Asia/Kolkata
       INTERNAL_FETCH_SCHEDULE_STATE: ENABLED
       INTERNAL_FETCH_MANAGE_IAM: never
@@ -115,7 +114,7 @@ jobs:
           chmod +x infra/aws/staging/redeploy-service.sh
           ./infra/aws/staging/redeploy-service.sh "$STAGING_STACK_NAME" "$IMAGE_SHA"
 
-      - name: Reconcile weekday internal fetch schedule
+      - name: Reconcile daily internal fetch schedule
         run: |
           chmod +x infra/aws/staging/reconcile-internal-fetch-schedule.sh
           ./infra/aws/staging/reconcile-internal-fetch-schedule.sh "$STAGING_STACK_NAME"
