@@ -2,13 +2,13 @@
 
 Initial source-viability and internal-readiness review for Sikkim before the first live operator trial or public exposure.
 
-Sikkim is a viable internal-only candidate for extending the north-east source map with another small state. This document records live source evidence only. It does not approve public exposure.
+Sikkim has now completed the live internal proof bar for extending the north-east source map with another small state. This document records both the source evidence and the completed internal proof cycle. It does not approve public exposure.
 
 Historical note:
 
-- repo wiring for `SK` is now complete
-- no live `fetch -> inspect -> publish -> replay -> rollback` proof cycle has been run yet
-- use `docs/EXPANSION_REVIEW_LOG.md` later if Sikkim moves into the live internal trial queue
+- repo wiring for `SK` is complete
+- live fetch `run_cbd239e8-ac46-44fd-bd7b-00e62e4c853f`, publish `publication_67ef880e-b6e6-4b84-8991-e0ff35f70f67`, replay `run_1861f08d-09df-4cfd-a440-c7e3d8e69add`, replay publication `publication_061c8ad2-e542-4d35-8740-08326b68ade0`, and rollback `publication_cde025be-6141-4f4c-8933-42844f5d0f0f` all succeeded on `2026-04-18`
+- Sikkim remains internal-only because its public routes still returned `404`
 
 ## Review Basis
 
@@ -56,15 +56,7 @@ The live state page exposes district drilldowns, and the verified `Namchi` distr
 
 ### 1. Operating Evidence
 
-No Sikkim-specific live operating evidence exists yet.
-
-Sikkim still needs to clear:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+Sikkim-specific live operating evidence now exists and is sufficient for the internal-only bar.
 
 ### 2. Stress-Test Limits
 
@@ -78,10 +70,10 @@ No Sikkim-specific public-route parity, copy, or methodology review has been don
 
 ## Recommendation
 
-Sikkim should be treated as a credible lower-stress north-east internal-only candidate.
+Sikkim should now be treated as an internal trial completed lower-stress north-east state.
 
 It should remain internal-only until:
 
-1. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-2. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-3. the product deliberately chooses Sikkim rather than promoting it automatically
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. the product deliberately chooses Sikkim rather than promoting it automatically
+3. the public rollout queue reaches Sikkim in internal-proof order

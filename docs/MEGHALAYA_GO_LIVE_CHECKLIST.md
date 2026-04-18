@@ -8,7 +8,7 @@ This is narrower than a nationwide launch checklist. Meghalaya has already clear
 
 - Candidate state: `Meghalaya`
 - State code: `ML`
-- Current decision: `keep internal only until public-route parity and live verification are complete`
+- Current decision: `public rollout completed`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Readiness review: `docs/MEGHALAYA_PUBLIC_READINESS_REVIEW.md`
 - Methodology version: `2026.04-alpha`
@@ -30,14 +30,14 @@ Why this gate exists:
 - [x] Meghalaya public routes can be wired to read only from the active published snapshot in the state-scoped runtime.
 - [x] No public Meghalaya route or download reads unpublished run state in local verification.
 - [x] Meghalaya CSV, API, and UI can resolve to the same publication lineage once promoted in verification.
-- [ ] Meghalaya rollback target is recorded in live public release history after the first public publication.
+- [x] Meghalaya rollback target is recorded in live public release history after the first public publication.
 
 ### 3. Trust Metadata And Caveats
 
 - [x] Meghalaya entry, district index, and district detail surfaces can show source snapshot date, publication date, freshness, methodology version, and source attribution in local verification.
 - [x] Meghalaya copy can use `published snapshot`, `flagged signal`, and `operator-published` semantics in local verification.
 - [x] Meghalaya copy can avoid live, predictive, or verdict-like framing in local verification.
-- [ ] Live hostname/browser checks confirm the same trust posture after rollout.
+- [x] Live hostname/browser checks confirm the same trust posture after rollout.
 
 ### 4. Product And IA Discipline
 
@@ -55,20 +55,20 @@ Why this gate exists:
 
 ### 6. Verification
 
-- [ ] `npm run typecheck`
-- [ ] `npm test -- tests/geographies.test.ts tests/meghalaya-public-rollout.test.ts`
-- [ ] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug meghalaya`
-- [ ] Browser verification on `https://nyaaywatch.in/states/meghalaya`
+- [x] `npm run typecheck`
+- [x] `npm test -- tests/geographies.test.ts tests/meghalaya-public-rollout.test.ts`
+- [x] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug meghalaya`
+- [x] Browser verification on `https://nyaaywatch.in/states/meghalaya`
 
 ### 7. Deployment
 
-- [ ] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
-- [ ] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
-- [ ] The first Meghalaya public publication id and rollback posture are recorded explicitly.
+- [x] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
+- [x] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
+- [x] The first Meghalaya public publication id and rollback posture are recorded explicitly.
 
 ## Decision
 
-- [ ] Ready for soft public availability
-- [x] Keep internal only
+- [x] Ready for soft public availability
+- [ ] Keep internal only
 
 If blocked, record the blocker and exact next action in `docs/EXPANSION_REVIEW_LOG.md`.

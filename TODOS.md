@@ -12,23 +12,38 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Kerala is now live, and Meghalaya is the active next public rollout slice in repo prep
-- current remaining public queue after Meghalaya: Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh
-- done only when Meghalaya completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
+- Meghalaya is now live, and Karnataka is the next public state in the internal-proof order
+- current remaining public queue after Karnataka: Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- done only when Karnataka completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 
 ### Next Internal Expansion Batch
 
-- Goa, Sikkim, and Mizoram are now wired as the final internal-only prep wave
-- after their proof cycles, all currently planned states should be covered by both repo support and live internal evidence
-- done only when each live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds while keeping public routes dark with `404`
+- all currently planned states are now covered by both repo support and live internal proof
+- there is no remaining unsupported-state prep wave inside the current states-only roadmap
+- any additional internal expansion work would be maintenance or a deliberate scope increase, not missing state coverage
 
 ## Completed
+
+### Meghalaya Public Rollout
+
+- completed live on 2026-04-18 after PR `#74` merged and deploy run `24595471387` rolled the live stack to task definition `:64`
+- Meghalaya fetch `run_30e5689d-a0da-46e8-8c27-c8624b68cd9d` published as `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5` with snapshot `snapshot_4b2e5621-0336-41aa-a492-3163e57cad1a`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug meghalaya` passed with `districtCount=14`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route and HTML verification confirmed `https://nyaaywatch.in/states/meghalaya` and `https://nyaaywatch.in/v1/states/meghalaya/stats` return `200`, with the expected Meghalaya title and `How long is the wait for justice in Meghalaya?` heading
 
 ### Goa, Sikkim, And Mizoram Internal Trial Candidate Preparation
 
 - completed in repo prep on 2026-04-18 with internal-only state-profile wiring, regression coverage, and updated readiness reviews
 - Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`) are now supported internal candidates in repo config without widening the public site
-- the remaining work for the trio is live internal proof, not more unsupported-state prep
+- the remaining work was live internal proof, which is now complete below
+
+### Goa, Sikkim, And Mizoram Internal Proof Cycles
+
+- completed live on 2026-04-18 after PR `#74` merged and deploy run `24595471387` rolled the live stack to task definition `:64`
+- Goa completed fetch `run_1e21db34-f85b-48ef-9f3b-aaeea6e92f35`, publication `publication_72807a9b-b91b-4f66-8b46-2b04bcaec370`, replay `run_710e9e5f-63b3-469b-a774-2e981fa7ade2`, replay publication `publication_bfb24816-c643-4953-9afc-496f116a9f36`, and rollback `publication_03355c7b-12b3-4d56-99ff-a88cffaf99fe`
+- Sikkim completed fetch `run_cbd239e8-ac46-44fd-bd7b-00e62e4c853f`, publication `publication_67ef880e-b6e6-4b84-8991-e0ff35f70f67`, replay `run_1861f08d-09df-4cfd-a440-c7e3d8e69add`, replay publication `publication_061c8ad2-e542-4d35-8740-08326b68ade0`, and rollback `publication_cde025be-6141-4f4c-8933-42844f5d0f0f`
+- Mizoram completed fetch `run_b788b9fe-194f-496b-a546-df26e62dd920`, publication `publication_087ca72e-d021-4138-8933-37a227010631`, replay `run_1cd62bb2-cb1c-4780-a56e-726323045f78`, replay publication `publication_906406d3-585e-49bc-9b9d-5caf3ad6868d`, and rollback `publication_fbcca757-9039-4891-900f-98bc0889c481`
+- public routes for Goa, Sikkim, and Mizoram all remained dark with `404` responses throughout
 
 ### Kerala Public Rollout
 

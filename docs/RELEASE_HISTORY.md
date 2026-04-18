@@ -157,3 +157,22 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Note: Post-deploy rollback restored the intended public publication after validating fetch, publish, replay, and rollback in the live stack.
 
 <!-- release:publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1:end -->
+
+<!-- release:publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5:start -->
+## publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5
+
+- Reviewed at: `2026-04-18T03:11:44.833Z`
+- Reviewer: `Codex Meghalaya public rollout`
+- Public URL: `https://nyaaywatch.in/states/meghalaya`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T03:10:17.194Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_30e5689d-a0da-46e8-8c27-c8624b68cd9d`
+- Rollback target: `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Meghalaya became the seventh additional public state after task definition `:64` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/meghalaya`.
+
+<!-- release:publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5:end -->

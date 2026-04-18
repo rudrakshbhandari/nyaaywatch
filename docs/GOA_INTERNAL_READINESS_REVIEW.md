@@ -2,13 +2,13 @@
 
 Initial source-viability and internal-readiness review for Goa before the first live operator trial or public exposure.
 
-Goa is a viable internal-only candidate for the final low-complexity prep wave. This document records live source evidence only. It does not approve public exposure.
+Goa has now completed the live internal proof bar for the final low-complexity prep wave. This document records both the source evidence and the completed internal proof cycle. It does not approve public exposure.
 
 Historical note:
 
-- repo wiring for `GA` is now complete
-- no live `fetch -> inspect -> publish -> replay -> rollback` proof cycle has been run yet
-- use `docs/EXPANSION_REVIEW_LOG.md` later if Goa moves into the live internal trial queue
+- repo wiring for `GA` is complete
+- live fetch `run_1e21db34-f85b-48ef-9f3b-aaeea6e92f35`, publish `publication_72807a9b-b91b-4f66-8b46-2b04bcaec370`, replay `run_710e9e5f-63b3-469b-a774-2e981fa7ade2`, replay publication `publication_bfb24816-c643-4953-9afc-496f116a9f36`, and rollback `publication_03355c7b-12b3-4d56-99ff-a88cffaf99fe` all succeeded on `2026-04-18`
+- Goa remains internal-only because its public routes still returned `404`
 
 ## Review Basis
 
@@ -56,15 +56,7 @@ The live state page exposes district drilldowns, and the verified `North Goa` di
 
 ### 1. Operating Evidence
 
-No Goa-specific live operating evidence exists yet.
-
-Goa still needs to clear:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+Goa-specific live operating evidence now exists and is sufficient for the internal-only bar.
 
 ### 2. Internal Expansion Value
 
@@ -78,10 +70,10 @@ No Goa-specific public-route parity, copy, or methodology review has been done y
 
 ## Recommendation
 
-Goa should be treated as a low-complexity internal-only candidate for the final prep wave.
+Goa should now be treated as an internal trial completed state with a small-surface operating profile.
 
 It should remain internal-only until:
 
-1. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-2. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-3. the product deliberately chooses Goa rather than promoting it automatically
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. the product deliberately chooses Goa rather than promoting it automatically
+3. the public rollout queue reaches Goa in internal-proof order

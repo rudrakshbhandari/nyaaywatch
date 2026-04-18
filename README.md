@@ -31,7 +31,7 @@ What is shipped now:
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Kerala is now live on the public site after Telangana, Meghalaya is the next public rollout slice in repo prep, Odisha, West Bengal, Jharkhand, and Chhattisgarh have cleared internal-only proof, and Goa, Sikkim, and Mizoram are now wired as the final internal-only prep wave before live qualification.
+Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Meghalaya is now live on the public site after Kerala, Goa, Sikkim, and Mizoram have cleared the final internal-only proof wave, and Karnataka is next in the public rollout queue.
 
 ## Product Guardrails
 
@@ -145,7 +145,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - additional approved states use explicit `/states/:stateSlug/...` routes
-- Punjab, Haryana, and Tamil Nadu are the current live state-scoped public surfaces
+- Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, and Meghalaya are the current live state-scoped public surfaces
 - deployment docs still decide whether a given state is live on `https://nyaaywatch.in`
 
 Public API:
