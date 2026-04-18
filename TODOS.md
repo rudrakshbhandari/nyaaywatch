@@ -12,11 +12,11 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Nagaland is now live, and Andhra Pradesh is the next public state in the internal-proof order
-- current remaining public queue after Andhra Pradesh: Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- Andhra Pradesh now has a dedicated public-readiness review, go-live checklist, and targeted parity suite in repo config
-- Arunachal Pradesh and Manipur remain the next already-cleared internal candidates behind Andhra Pradesh once their explicit public-route parity slices land
-- done only when Andhra Pradesh completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
+- Andhra Pradesh is now live, and Arunachal Pradesh is the next public state in the internal-proof order
+- current remaining public queue after Arunachal Pradesh: Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- Andhra Pradesh has completed both public-prep and live rollout evidence, so the next repo-prep slice is Arunachal Pradesh public parity
+- Manipur remains the next already-cleared internal candidate behind Arunachal Pradesh once its explicit public-route parity slice lands
+- done only when Arunachal Pradesh completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 
 ### Next Internal Expansion Batch
 
@@ -25,6 +25,13 @@ Use this file for:
 - any additional internal expansion work would be maintenance or a deliberate scope increase, not missing state coverage
 
 ## Completed
+
+### Andhra Pradesh Public Rollout
+
+- completed live on 2026-04-18 after PR `#79` merged and deploy run `24599082633` rolled the live stack to task definition `:69`
+- Andhra Pradesh fetch `run_60611cb7-7a5c-44b5-970e-4ca51355c1e7` published as `publication_b090f61a-3762-4bf5-8529-36b331b6e362` with snapshot `snapshot_e0ec4181-cc09-46e5-a606-39a8c54bd815`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug andhra-pradesh` passed with `districtCount=13`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route and HTML verification confirmed `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` return `200`, with the expected Andhra Pradesh title and `How long is the wait for justice in Andhra Pradesh?` heading
 
 ### Meghalaya Public Rollout
 

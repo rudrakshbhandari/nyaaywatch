@@ -2,7 +2,7 @@
 
 Source-viability and internal-readiness review for Andhra Pradesh, with the first live internal proof cycle now completed.
 
-Andhra Pradesh is now validated internal-only operating evidence for the southern expansion track after Tamil Nadu, Kerala, and Karnataka. This document records both the source review and the completed live internal proof cycle. It does not approve public exposure.
+Andhra Pradesh is now validated operating evidence for the southern expansion track after Tamil Nadu, Kerala, and Karnataka. This document records the source review plus the completed live internal proof cycle that later supported public rollout.
 
 ## Review Basis
 
@@ -61,16 +61,10 @@ Andhra Pradesh has now cleared the full internal proof bar on the live AWS stack
 - operator validation: `GET /operator/publications?stateCode=AP` showed the rollback publication active after replay plus rollback
 - public-surface validation: `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` both returned `404`, so Andhra Pradesh remained internal-only throughout the trial
 
-### Remaining Constraint
+### Later Public Outcome
 
-No Andhra Pradesh-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope until a separate public-readiness review is complete.
+Andhra Pradesh later cleared a separate public-readiness review, public-route parity, stable-URL verification, and a deliberate public rollout. See `docs/ANDHRA_PRADESH_PUBLIC_READINESS_REVIEW.md` for the public-state evidence.
 
 ## Recommendation
 
-Andhra Pradesh should now be treated as validated southern internal-only operating evidence.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-2. explicit public-route parity, trust-copy review, and stable-URL verification are in place
-3. the next public-state decision deliberately chooses Andhra Pradesh rather than promoting it automatically
+Andhra Pradesh should now be treated as validated southern operating evidence whose internal proof path is complete and later public rollout is also complete.

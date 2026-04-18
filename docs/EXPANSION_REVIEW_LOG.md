@@ -1064,6 +1064,32 @@ Tripura is now the ninth additional public state. The next public rollout should
 
 Nagaland is now the tenth additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Andhra Pradesh.
 
+## Andhra Pradesh (`AP`) Public Rollout
+
+- candidate geography: Andhra Pradesh
+- review date: 2026-04-18
+- source boundary: NJDG Andhra Pradesh district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest successful validation date: 2026-04-18 live public rollout verification
+- reviewer: Codex
+- decision: `public rollout completed`
+
+### Public Rollout Evidence
+
+- deployed task definition during rollout: `nyaaywatch-staging:69`
+- deploy run: `24599082633`
+- public rollout fetch run: `run_60611cb7-7a5c-44b5-970e-4ca51355c1e7`
+- public rollout publication: `publication_b090f61a-3762-4bf5-8529-36b331b6e362`
+- public rollout snapshot: `snapshot_e0ec4181-cc09-46e5-a606-39a8c54bd815`
+- rollback target retained from the prior internal proof cycle: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug andhra-pradesh` passed with `districtCount=13`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route validation: `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` both returned `200`
+- live HTML validation: the public page title resolved to `NyaayWatch — How long is the wait for justice in Andhra Pradesh?` and the page heading resolved to `How long is the wait for justice in Andhra Pradesh?`
+
+### Recommendation
+
+Andhra Pradesh is now the eleventh additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Arunachal Pradesh.
+
 ## Goa (`GA`), Sikkim (`SK`), And Mizoram (`MZ`) Internal Proof Batch
 
 - candidate geographies: Goa, Sikkim, and Mizoram

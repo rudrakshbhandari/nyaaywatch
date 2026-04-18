@@ -1,17 +1,20 @@
 # Andhra Pradesh Public Readiness Review
 
-Review of what Andhra Pradesh now requires before exposing the public Andhra Pradesh route family.
+Review of what Andhra Pradesh required before exposing the public Andhra Pradesh route family.
 
-Andhra Pradesh has already cleared the internal proof bar on the live stack. This review records why the remaining public question is narrow: Andhra Pradesh no longer needs extractor invention or source-shape debate, but it still needs stable-URL verification and a deliberate public rollout before exposure on the live hostname.
+Andhra Pradesh had already cleared the internal proof bar on the live stack before launch. This review records why the remaining public question was narrow: Andhra Pradesh no longer needed extractor invention or source-shape debate, but it still needed stable-URL verification and a deliberate public rollout before exposure on the live hostname.
 
 ## Review Basis
 
-Based on the live Andhra Pradesh internal proof cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`:
+Based on the live Andhra Pradesh internal proof cycle and public rollout recorded in `docs/EXPANSION_REVIEW_LOG.md`:
 
 - first live fetch run id: `run_4cb87c2a-1c31-4437-98ef-dc7d082ad6ef`
 - first live publication id: `publication_337af32e-4f9c-45ab-a4a4-52d43a2028b4`
 - replay run id: `run_ce2ec512-176a-483e-ba9c-309054a0fff6`
 - rollback publication id: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+- public rollout fetch run id: `run_60611cb7-7a5c-44b5-970e-4ca51355c1e7`
+- public rollout publication id: `publication_b090f61a-3762-4bf5-8529-36b331b6e362`
+- public rollout snapshot id: `snapshot_e0ec4181-cc09-46e5-a606-39a8c54bd815`
 
 Observed Andhra Pradesh source notes:
 
@@ -66,14 +69,14 @@ Nothing observed in the Andhra Pradesh candidate suggests we need a looser trust
 
 ### 1. Stable-URL Public Verification
 
-Andhra Pradesh is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still need to verify:
+Andhra Pradesh was wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still needed to verify:
 
 - `/states/andhra-pradesh`
 - `/v1/states/andhra-pradesh/...`
 - `/states/andhra-pradesh/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Nagaland provides the immediate rollout pattern. Andhra Pradesh does not need broader repo-level public-surface invention here, but it still needs the actual state-scoped verification pass before launch.
+Nagaland provided the immediate rollout pattern. Andhra Pradesh did not need broader repo-level public-surface invention here, but it did need the actual state-scoped verification pass before launch.
 
 The Andhra Pradesh-specific artifacts for that pass are:
 
@@ -92,23 +95,24 @@ The product is intentionally not nationwide. Andhra Pradesh public exposure shou
 
 The operational system is now good enough to qualify public-prep states in parallel. Public exposure should still lag stable-URL verification and a deliberate rollout slot.
 
-That gate is satisfied for Andhra Pradesh because Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, and Nagaland are already live publicly, while Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram provide surrounding operating evidence. Andhra Pradesh no longer needs more internal-proof debate before public-route work can proceed.
+That gate is satisfied for Andhra Pradesh because Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, and Nagaland are already live publicly, while Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram provide surrounding operating evidence. Andhra Pradesh no longer needed more internal-proof debate before public-route work could proceed.
 
 ## Outcome
 
-Andhra Pradesh should now be treated as the next viable narrow public candidate after Nagaland, not as a state that still needs basic source or operator validation.
+Andhra Pradesh is now live on the public site as the eleventh additional public state.
 
-Before launch, the remaining conditions are:
+The launch conditions that cleared were:
 
-1. the Andhra Pradesh-specific public-route parity artifacts stay green under the approved public-state configuration
-2. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug andhra-pradesh` and a live browser pass both succeed on the stable hostname
-3. rollout docs record the actual public publication lineage after launch
+1. Andhra Pradesh was deliberately promoted into the approved public-state set rather than exposed by implication
+2. the Andhra Pradesh-specific public-route parity artifacts went green under that configuration
+3. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug andhra-pradesh` and a live HTML verification pass both succeeded on the stable hostname
+4. rollout docs now record the actual public publication lineage after launch
 
 ## Useful Work Completed By This Review
 
-This review closes the Andhra Pradesh trust question at the pre-launch level:
+This review now closes the Andhra Pradesh trust question at the launched-public-state level:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: Andhra Pradesh is a viable next narrow public candidate
-- remaining blockers are rollout-specific rather than extractor- or source-specific
+- public rollout: completed
+- remaining blockers: none for Andhra Pradesh itself; the queue now advances to Arunachal Pradesh
