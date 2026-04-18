@@ -48,3 +48,8 @@ Delete a preview service:
 ```bash
 ./infra/aws/preview/delete-service.sh nyaaywatch-pr-21
 ```
+
+The delete helper waits for App Runner services to leave transient states such as
+`OPERATION_IN_PROGRESS` before calling `DeleteService`. This avoids the cleanup
+race where a just-updated preview is still settling when the PR close workflow
+tries to remove it.
