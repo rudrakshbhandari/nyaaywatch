@@ -322,13 +322,13 @@ Decision:
 
 Current status:
 
-- Source viability: `unknown`
-- Extract / normalize reliability: `unknown`
-- Methodology defensibility: `unknown`
+- Source viability: `partially established at the public-source level, but not yet captured in repo-native stored-evidence form`
+- Extract / normalize reliability: `unknown in code`
+- Methodology defensibility: `not yet written as a tier-specific NyaayWatch contract`
 
 Decision:
 
-- `blocked for now`
+- `next pilot track after the current lower-court operating loop is stable`
 
 ### Supreme Court
 
@@ -365,10 +365,11 @@ Instead:
 
 ### High Court Plan
 
-1. pick one High Court for internal source review
-2. define what the public metrics should be at that tier
-3. validate whether those metrics can be tied back to stored evidence with the same rigor
-4. only then build a pilot pipeline
+1. use Himachal High Court as the first tier pilot inside the national NyaayWatch shell
+2. follow `docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md` for source review, data contract, operator flow, and public-beta gates
+3. define what the public metrics should be at that tier before implementation drifts into case-level scope
+4. validate that those metrics can be tied back to stored evidence with the same rigor as the lower-court layer
+5. only then expand into a small multi-High-Court wave
 
 ### Supreme Court Plan
 
@@ -395,6 +396,6 @@ Do this now:
 3. pick one next subordinate-court state
 4. clear that state for internal trial in 48-72 hours
 5. if it clears, launch that one state or a tiny cohort publicly
-6. defer High Courts and Supreme Court until subordinate multi-state is stable
+6. treat Himachal High Court as the next concrete tier pilot once the current public-alpha operating loop is boring enough to support a new module
 
 That is the fastest realistic route from the current repo state to the long-term national goal.
