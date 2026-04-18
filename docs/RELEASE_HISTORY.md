@@ -233,3 +233,22 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Note: Nagaland became the tenth additional public state on task definition `:66`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/nagaland`.
 
 <!-- release:publication_b01df802-1d04-409b-b608-55500e1b47a9:end -->
+
+<!-- release:publication_b090f61a-3762-4bf5-8529-36b331b6e362:start -->
+## publication_b090f61a-3762-4bf5-8529-36b331b6e362
+
+- Reviewed at: `2026-04-18T06:54:29.402Z`
+- Reviewer: `Codex Andhra Pradesh public rollout`
+- Public URL: `https://nyaaywatch.in/states/andhra-pradesh`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T06:53:32.028Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_60611cb7-7a5c-44b5-970e-4ca51355c1e7`
+- Rollback target: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Andhra Pradesh became the eleventh additional public state on task definition `:69`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/andhra-pradesh`.
+
+<!-- release:publication_b090f61a-3762-4bf5-8529-36b331b6e362:end -->

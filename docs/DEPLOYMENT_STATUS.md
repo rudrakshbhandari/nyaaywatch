@@ -278,6 +278,14 @@ Latest confirmed operator validation:
   - rollback target retained from the prior internal proof cycle: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
   - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug nagaland` passed with `districtCount=11`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
   - `https://nyaaywatch.in/states/nagaland` and `https://nyaaywatch.in/v1/states/nagaland/stats` now return `200`, and live HTML verification confirmed the Nagaland title and `How long is the wait for justice in Nagaland?` heading
+- Andhra Pradesh public rollout completed on 2026-04-18 on task definition `:69`:
+  - GitHub deploy run `24599082633` rolled the live service to task definition `:69`
+  - live Andhra Pradesh fetch run `run_60611cb7-7a5c-44b5-970e-4ca51355c1e7`
+  - live Andhra Pradesh publication `publication_b090f61a-3762-4bf5-8529-36b331b6e362`
+  - live Andhra Pradesh snapshot `snapshot_e0ec4181-cc09-46e5-a606-39a8c54bd815`
+  - rollback target retained from the prior internal proof cycle: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug andhra-pradesh` passed with `districtCount=13`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` now return `200`, and live HTML verification confirmed the Andhra Pradesh title and `How long is the wait for justice in Andhra Pradesh?` heading
 - Tamil Nadu public rollout completed on 2026-04-17 after PR `#64` merged to `main`:
   - GitHub deploy run `24588602379` rolled the live service to task definition `:54`
   - live Tamil Nadu fetch run `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`
