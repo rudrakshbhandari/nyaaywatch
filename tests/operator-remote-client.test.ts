@@ -2,7 +2,7 @@ import { createServer, type IncomingMessage, type Server } from "node:http";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { runRemoteOperatorCommand } from "../src/dev/operator-remote-client.js";
+import { parseRemoteOperatorCommand, runRemoteOperatorCommand } from "../src/dev/operator-remote-client.js";
 
 describe("remote operator client", () => {
   const servers: Server[] = [];
@@ -51,6 +51,13 @@ describe("remote operator client", () => {
     expect(JSON.parse(receivedBody)).toEqual({
       note: "UP fetch",
       stateCode: "UP",
+    });
+  });
+
+  it("keeps the full fetch note instead of dropping the first word", () => {
+    expect(parseRemoteOperatorCommand(["fetch", "Internal", "Punjab", "proof", "fetch"])).toEqual({
+      name: "fetch",
+      note: "Internal Punjab proof fetch",
     });
   });
 

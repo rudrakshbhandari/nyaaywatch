@@ -109,6 +109,7 @@ function buildTrends(
 
 function buildFlagReason(
   district: {
+    backlogCases: number;
     filingVsDisposalGap: number;
     disposalRate: number;
     medianAgeDays: number;
@@ -120,6 +121,10 @@ function buildFlagReason(
     stateMedianAgeDays: number;
   },
 ): string {
+  if (hasNoRecentDistrictActivity(district)) {
+    return "The latest published snapshot does not show active pending-case age or recent filing-versus-disposal movement for this district.";
+  }
+
   if (district.filingVsDisposalGap > 0 && context.isFlagged) {
     return "New cases are coming in faster than this district is clearing them, and the queue is already among the state's biggest.";
   }
@@ -141,9 +146,14 @@ function buildSummary(
     backlogCases: number;
     medianAgeDays: number;
     disposalRate: number;
+    filingVsDisposalGap: number;
   },
   isFlagged: boolean,
 ): string {
+  if (hasNoRecentDistrictActivity(district)) {
+    return `${district.districtName} has no pending cases in the latest published snapshot, and the source did not report a pending-age distribution or recent filing-versus-disposal movement for this district.`;
+  }
+
   const sentence = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. A typical pending case falls around ${district.medianAgeDays} days old, and the district cleared ${district.disposalRate.toFixed(1)}% as many cases as it received last month.`;
   return isFlagged ? `${sentence} It stays on the watchlist in this snapshot.` : sentence;
 }
@@ -156,6 +166,10 @@ function inferMedianAgeDays(ageBuckets: {
   aboveTenYears: number;
 }): number {
   const total = Object.values(ageBuckets).reduce((sum, count) => sum + count, 0);
+  if (total <= 0) {
+    return 0;
+  }
+
   const midpoint = total / 2;
   let running = 0;
 
@@ -195,4 +209,18 @@ function slugifyDistrict(name: string): string {
     .replace(/&/g, "and")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function hasNoRecentDistrictActivity(district: {
+  backlogCases: number;
+  medianAgeDays: number;
+  disposalRate: number;
+  filingVsDisposalGap: number;
+}) {
+  return (
+    district.backlogCases === 0 &&
+    district.medianAgeDays === 0 &&
+    district.disposalRate === 0 &&
+    district.filingVsDisposalGap === 0
+  );
 }

@@ -143,6 +143,9 @@ describe("PublishedSnapshotService", () => {
     expect(captured.run.stateCode).toBe("PB");
     expect(captured.candidate?.snapshot.stateCode).toBe("PB");
     expect(captured.candidate?.snapshot.stateName).toBe("Punjab");
+    expect(captured.candidate?.districts).toHaveLength(22);
+    expect(captured.candidate?.districts.some((district) => district.districtName === "Ludhiana")).toBe(true);
+    expect(captured.candidate?.districts.some((district) => district.districtName === "Kangra")).toBe(false);
     expect(captured.artifacts.every((artifact) => artifact.s3Key.includes("/pb/"))).toBe(true);
   });
 
