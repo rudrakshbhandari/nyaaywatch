@@ -100,6 +100,14 @@ Rules:
 - warning and quality colors should signal clearly without turning the interface into a traffic-light dashboard
 - no purple-forward palette and no blue-to-purple gradients
 
+### Brand Assets
+
+- brand identity should be wordmark-first, with a compact support mark for favicon and small-footprint surfaces
+- the mark should feel like a published-evidence seal, archive stamp, or watch dial, not a government emblem
+- do not use Ashoka lions, official court silhouettes, wreaths, shields, gavels, literal scales, or any insignia that implies official affiliation
+- AI can be used for concept exploration, but the canonical logo assets must be redrawn as reproducible SVG
+- the repo-owned source of truth for brand rules and export structure lives in `brand/BRAND.md`
+
 ### Spacing And Layout
 
 - use a consistent spacing scale rather than one-off values
