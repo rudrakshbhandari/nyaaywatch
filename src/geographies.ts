@@ -6,7 +6,7 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "KL", "ML", "KA", "TR", "NL", "TS", "AP", "AR", "MN", "UK", "RJ", "UP"] as const;
+export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -46,6 +46,34 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     njdgStateValue: "18~6",
     publicAlpha: true,
   },
+  TS: {
+    stateCode: "TS",
+    stateName: "Telangana",
+    stateSlug: "telangana",
+    njdgStateValue: "36~29",
+    publicAlpha: true,
+  },
+  AP: {
+    stateCode: "AP",
+    stateName: "Andhra Pradesh",
+    stateSlug: "andhra-pradesh",
+    njdgStateValue: "28~2",
+    publicAlpha: false,
+  },
+  AR: {
+    stateCode: "AR",
+    stateName: "Arunachal Pradesh",
+    stateSlug: "arunachal-pradesh",
+    njdgStateValue: "12~36",
+    publicAlpha: false,
+  },
+  MN: {
+    stateCode: "MN",
+    stateName: "Manipur",
+    stateSlug: "manipur",
+    njdgStateValue: "14~25",
+    publicAlpha: false,
+  },
   KL: {
     stateCode: "KL",
     stateName: "Kerala",
@@ -81,34 +109,6 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     njdgStateValue: "13~34",
     publicAlpha: false,
   },
-  TS: {
-    stateCode: "TS",
-    stateName: "Telangana",
-    stateSlug: "telangana",
-    njdgStateValue: "36~29",
-    publicAlpha: false,
-  },
-  AP: {
-    stateCode: "AP",
-    stateName: "Andhra Pradesh",
-    stateSlug: "andhra-pradesh",
-    njdgStateValue: "28~2",
-    publicAlpha: false,
-  },
-  AR: {
-    stateCode: "AR",
-    stateName: "Arunachal Pradesh",
-    stateSlug: "arunachal-pradesh",
-    njdgStateValue: "12~36",
-    publicAlpha: false,
-  },
-  MN: {
-    stateCode: "MN",
-    stateName: "Manipur",
-    stateSlug: "manipur",
-    njdgStateValue: "14~25",
-    publicAlpha: false,
-  },
   UK: {
     stateCode: "UK",
     stateName: "Uttarakhand",
@@ -128,6 +128,34 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Uttar Pradesh",
     stateSlug: "uttar-pradesh",
     njdgStateValue: "9~13",
+    publicAlpha: false,
+  },
+  MP: {
+    stateCode: "MP",
+    stateName: "Madhya Pradesh",
+    stateSlug: "madhya-pradesh",
+    njdgStateValue: "23~23",
+    publicAlpha: false,
+  },
+  MH: {
+    stateCode: "MH",
+    stateName: "Maharashtra",
+    stateSlug: "maharashtra",
+    njdgStateValue: "27~1",
+    publicAlpha: false,
+  },
+  BR: {
+    stateCode: "BR",
+    stateName: "Bihar",
+    stateSlug: "bihar",
+    njdgStateValue: "10~8",
+    publicAlpha: false,
+  },
+  GJ: {
+    stateCode: "GJ",
+    stateName: "Gujarat",
+    stateSlug: "gujarat",
+    njdgStateValue: "24~17",
     publicAlpha: false,
   },
 };

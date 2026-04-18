@@ -35,6 +35,38 @@ describe("state profiles", () => {
       publicAlpha: true,
     });
 
+    expect(getStateProfile("TS")).toMatchObject({
+      stateCode: "TS",
+      stateName: "Telangana",
+      stateSlug: "telangana",
+      njdgStateValue: "36~29",
+      publicAlpha: true,
+    });
+
+    expect(getStateProfile("AP")).toMatchObject({
+      stateCode: "AP",
+      stateName: "Andhra Pradesh",
+      stateSlug: "andhra-pradesh",
+      njdgStateValue: "28~2",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("AR")).toMatchObject({
+      stateCode: "AR",
+      stateName: "Arunachal Pradesh",
+      stateSlug: "arunachal-pradesh",
+      njdgStateValue: "12~36",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("MN")).toMatchObject({
+      stateCode: "MN",
+      stateName: "Manipur",
+      stateSlug: "manipur",
+      njdgStateValue: "14~25",
+      publicAlpha: false,
+    });
+
     expect(getStateProfile("KL")).toMatchObject({
       stateCode: "KL",
       stateName: "Kerala",
@@ -75,38 +107,6 @@ describe("state profiles", () => {
       publicAlpha: false,
     });
 
-    expect(getStateProfile("TS")).toMatchObject({
-      stateCode: "TS",
-      stateName: "Telangana",
-      stateSlug: "telangana",
-      njdgStateValue: "36~29",
-      publicAlpha: false,
-    });
-
-    expect(getStateProfile("AP")).toMatchObject({
-      stateCode: "AP",
-      stateName: "Andhra Pradesh",
-      stateSlug: "andhra-pradesh",
-      njdgStateValue: "28~2",
-      publicAlpha: false,
-    });
-
-    expect(getStateProfile("AR")).toMatchObject({
-      stateCode: "AR",
-      stateName: "Arunachal Pradesh",
-      stateSlug: "arunachal-pradesh",
-      njdgStateValue: "12~36",
-      publicAlpha: false,
-    });
-
-    expect(getStateProfile("MN")).toMatchObject({
-      stateCode: "MN",
-      stateName: "Manipur",
-      stateSlug: "manipur",
-      njdgStateValue: "14~25",
-      publicAlpha: false,
-    });
-
     expect(getStateProfile("UK")).toMatchObject({
       stateCode: "UK",
       stateName: "Uttarakhand",
@@ -131,70 +131,118 @@ describe("state profiles", () => {
       publicAlpha: false,
     });
 
+    expect(getStateProfile("MP")).toMatchObject({
+      stateCode: "MP",
+      stateName: "Madhya Pradesh",
+      stateSlug: "madhya-pradesh",
+      njdgStateValue: "23~23",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("MH")).toMatchObject({
+      stateCode: "MH",
+      stateName: "Maharashtra",
+      stateSlug: "maharashtra",
+      njdgStateValue: "27~1",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("BR")).toMatchObject({
+      stateCode: "BR",
+      stateName: "Bihar",
+      stateSlug: "bihar",
+      njdgStateValue: "10~8",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("GJ")).toMatchObject({
+      stateCode: "GJ",
+      stateName: "Gujarat",
+      stateSlug: "gujarat",
+      njdgStateValue: "24~17",
+      publicAlpha: false,
+    });
+
     expect(listStateProfiles().map((profile) => profile.stateCode)).toEqual([
       "HP",
       "PB",
       "HR",
       "TN",
       "AS",
+      "TS",
+      "AP",
+      "AR",
+      "MN",
       "KL",
       "ML",
       "KA",
       "TR",
       "NL",
-      "TS",
-      "AP",
-      "AR",
-      "MN",
       "UK",
       "RJ",
       "UP",
+      "MP",
+      "MH",
+      "BR",
+      "GJ",
     ]);
-    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN", "AS"]);
+    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN", "AS", "TS"]);
     expect(getStateProfileByCode("hr")?.stateName).toBe("Haryana");
     expect(getStateProfileByCode("tn")?.stateName).toBe("Tamil Nadu");
     expect(getStateProfileByCode("as")?.stateName).toBe("Assam");
+    expect(getStateProfileByCode("ts")?.stateName).toBe("Telangana");
+    expect(getStateProfileByCode("ap")?.stateName).toBe("Andhra Pradesh");
+    expect(getStateProfileByCode("ar")?.stateName).toBe("Arunachal Pradesh");
+    expect(getStateProfileByCode("mn")?.stateName).toBe("Manipur");
     expect(getStateProfileByCode("kl")?.stateName).toBe("Kerala");
     expect(getStateProfileByCode("ml")?.stateName).toBe("Meghalaya");
     expect(getStateProfileByCode("ka")?.stateName).toBe("Karnataka");
     expect(getStateProfileByCode("tr")?.stateName).toBe("Tripura");
     expect(getStateProfileByCode("nl")?.stateName).toBe("Nagaland");
-    expect(getStateProfileByCode("ts")?.stateName).toBe("Telangana");
-    expect(getStateProfileByCode("ap")?.stateName).toBe("Andhra Pradesh");
-    expect(getStateProfileByCode("ar")?.stateName).toBe("Arunachal Pradesh");
-    expect(getStateProfileByCode("mn")?.stateName).toBe("Manipur");
     expect(getStateProfileByCode("uk")?.stateName).toBe("Uttarakhand");
     expect(getStateProfileByCode("rj")?.stateName).toBe("Rajasthan");
     expect(getStateProfileByCode("up")?.stateName).toBe("Uttar Pradesh");
+    expect(getStateProfileByCode("mp")?.stateName).toBe("Madhya Pradesh");
+    expect(getStateProfileByCode("mh")?.stateName).toBe("Maharashtra");
+    expect(getStateProfileByCode("br")?.stateName).toBe("Bihar");
+    expect(getStateProfileByCode("gj")?.stateName).toBe("Gujarat");
     expect(getStateProfileByCodeOrSlug("haryana")?.stateCode).toBe("HR");
     expect(getStateProfileByCodeOrSlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getStateProfileByCodeOrSlug("assam")?.stateCode).toBe("AS");
+    expect(getStateProfileByCodeOrSlug("telangana")?.stateCode).toBe("TS");
+    expect(getStateProfileByCodeOrSlug("andhra-pradesh")?.stateCode).toBe("AP");
+    expect(getStateProfileByCodeOrSlug("arunachal-pradesh")?.stateCode).toBe("AR");
+    expect(getStateProfileByCodeOrSlug("manipur")?.stateCode).toBe("MN");
     expect(getStateProfileByCodeOrSlug("kerala")?.stateCode).toBe("KL");
     expect(getStateProfileByCodeOrSlug("meghalaya")?.stateCode).toBe("ML");
     expect(getStateProfileByCodeOrSlug("karnataka")?.stateCode).toBe("KA");
     expect(getStateProfileByCodeOrSlug("tripura")?.stateCode).toBe("TR");
     expect(getStateProfileByCodeOrSlug("nagaland")?.stateCode).toBe("NL");
-    expect(getStateProfileByCodeOrSlug("telangana")?.stateCode).toBe("TS");
-    expect(getStateProfileByCodeOrSlug("andhra-pradesh")?.stateCode).toBe("AP");
-    expect(getStateProfileByCodeOrSlug("arunachal-pradesh")?.stateCode).toBe("AR");
-    expect(getStateProfileByCodeOrSlug("manipur")?.stateCode).toBe("MN");
     expect(getStateProfileByCodeOrSlug("uttarakhand")?.stateCode).toBe("UK");
     expect(getStateProfileByCodeOrSlug("rajasthan")?.stateCode).toBe("RJ");
     expect(getStateProfileByCodeOrSlug("uttar-pradesh")?.stateCode).toBe("UP");
+    expect(getStateProfileByCodeOrSlug("madhya-pradesh")?.stateCode).toBe("MP");
+    expect(getStateProfileByCodeOrSlug("maharashtra")?.stateCode).toBe("MH");
+    expect(getStateProfileByCodeOrSlug("bihar")?.stateCode).toBe("BR");
+    expect(getStateProfileByCodeOrSlug("gujarat")?.stateCode).toBe("GJ");
     expect(getPublicStateProfileBySlug("haryana")?.stateCode).toBe("HR");
     expect(getPublicStateProfileBySlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getPublicStateProfileBySlug("assam")?.stateCode).toBe("AS");
+    expect(getPublicStateProfileBySlug("telangana")?.stateCode).toBe("TS");
+    expect(getPublicStateProfileBySlug("andhra-pradesh")).toBeNull();
+    expect(getPublicStateProfileBySlug("arunachal-pradesh")).toBeNull();
+    expect(getPublicStateProfileBySlug("manipur")).toBeNull();
     expect(getPublicStateProfileBySlug("kerala")).toBeNull();
     expect(getPublicStateProfileBySlug("meghalaya")).toBeNull();
     expect(getPublicStateProfileBySlug("karnataka")).toBeNull();
     expect(getPublicStateProfileBySlug("tripura")).toBeNull();
     expect(getPublicStateProfileBySlug("nagaland")).toBeNull();
-    expect(getPublicStateProfileBySlug("telangana")).toBeNull();
-    expect(getPublicStateProfileBySlug("andhra-pradesh")).toBeNull();
-    expect(getPublicStateProfileBySlug("arunachal-pradesh")).toBeNull();
-    expect(getPublicStateProfileBySlug("manipur")).toBeNull();
     expect(getPublicStateProfileBySlug("uttarakhand")).toBeNull();
     expect(getPublicStateProfileBySlug("rajasthan")).toBeNull();
     expect(getPublicStateProfileBySlug("uttar-pradesh")).toBeNull();
+    expect(getPublicStateProfileBySlug("madhya-pradesh")).toBeNull();
+    expect(getPublicStateProfileBySlug("maharashtra")).toBeNull();
+    expect(getPublicStateProfileBySlug("bihar")).toBeNull();
+    expect(getPublicStateProfileBySlug("gujarat")).toBeNull();
   });
 });
