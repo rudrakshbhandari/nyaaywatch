@@ -31,7 +31,7 @@ What is shipped now:
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Nagaland is now live on the public site after Tripura and Karnataka, and Andhra Pradesh is next in the public rollout queue.
+Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Nagaland is now live on the public site after Tripura and Karnataka, and Andhra Pradesh is next in the public rollout queue with dedicated public-prep artifacts now in repo.
 
 ## Product Guardrails
 
@@ -248,6 +248,8 @@ Internal or post-MVP planning:
 - [Tripura go-live checklist](docs/TRIPURA_GO_LIVE_CHECKLIST.md)
 - [Nagaland public readiness review](docs/NAGALAND_PUBLIC_READINESS_REVIEW.md)
 - [Nagaland go-live checklist](docs/NAGALAND_GO_LIVE_CHECKLIST.md)
+- [Andhra Pradesh public readiness review](docs/ANDHRA_PRADESH_PUBLIC_READINESS_REVIEW.md)
+- [Andhra Pradesh go-live checklist](docs/ANDHRA_PRADESH_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu public readiness review](docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md)
 - [Tamil Nadu go-live checklist](docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu internal readiness review](docs/TAMIL_NADU_INTERNAL_READINESS_REVIEW.md)

@@ -58,7 +58,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Andhra Pradesh",
     stateSlug: "andhra-pradesh",
     njdgStateValue: "28~2",
-    publicAlpha: false,
+    publicAlpha: true,
   },
   AR: {
     stateCode: "AR",

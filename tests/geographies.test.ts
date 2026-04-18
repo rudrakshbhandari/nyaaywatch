@@ -48,7 +48,7 @@ describe("state profiles", () => {
       stateName: "Andhra Pradesh",
       stateSlug: "andhra-pradesh",
       njdgStateValue: "28~2",
-      publicAlpha: false,
+      publicAlpha: true,
     });
 
     expect(getStateProfile("AR")).toMatchObject({
@@ -256,6 +256,7 @@ describe("state profiles", () => {
       "TN",
       "AS",
       "TS",
+      "AP",
       "KL",
       "ML",
       "KA",
@@ -318,7 +319,7 @@ describe("state profiles", () => {
     expect(getPublicStateProfileBySlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getPublicStateProfileBySlug("assam")?.stateCode).toBe("AS");
     expect(getPublicStateProfileBySlug("telangana")?.stateCode).toBe("TS");
-    expect(getPublicStateProfileBySlug("andhra-pradesh")).toBeNull();
+    expect(getPublicStateProfileBySlug("andhra-pradesh")?.stateCode).toBe("AP");
     expect(getPublicStateProfileBySlug("arunachal-pradesh")).toBeNull();
     expect(getPublicStateProfileBySlug("manipur")).toBeNull();
     expect(getPublicStateProfileBySlug("kerala")?.stateCode).toBe("KL");
