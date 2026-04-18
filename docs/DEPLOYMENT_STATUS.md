@@ -286,6 +286,14 @@ Latest confirmed operator validation:
   - rollback target retained from the prior internal proof cycle: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
   - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug andhra-pradesh` passed with `districtCount=13`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
   - `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` now return `200`, and live HTML verification confirmed the Andhra Pradesh title and `How long is the wait for justice in Andhra Pradesh?` heading
+- Arunachal Pradesh public rollout completed on 2026-04-18 on task definition `:71`:
+  - GitHub deploy run `24599656003` rolled the live service to task definition `:71`
+  - live Arunachal Pradesh fetch run `run_d2dadaec-bda6-4639-8629-28201a562708`
+  - live Arunachal Pradesh publication `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0`
+  - live Arunachal Pradesh snapshot `snapshot_0daffe74-e0ec-46f0-89b1-bc3e4177392f`
+  - rollback target retained from the prior internal proof cycle: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug arunachal-pradesh` passed with `districtCount=27`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - `https://nyaaywatch.in/states/arunachal-pradesh` and `https://nyaaywatch.in/v1/states/arunachal-pradesh/stats` now return `200`, and live HTML verification confirmed the Arunachal Pradesh title and `How long is the wait for justice in Arunachal Pradesh?` heading
 - Tamil Nadu public rollout completed on 2026-04-17 after PR `#64` merged to `main`:
   - GitHub deploy run `24588602379` rolled the live service to task definition `:54`
   - live Tamil Nadu fetch run `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`

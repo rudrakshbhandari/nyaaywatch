@@ -2,7 +2,7 @@
 
 Source-viability and internal-readiness review for Arunachal Pradesh, with the first live internal proof cycle now completed.
 
-Arunachal Pradesh is now validated internal-only operating evidence for the north-east expansion track after Assam, Meghalaya, Tripura, and Nagaland. This document records both the source review and the completed live internal proof cycle. It does not approve public exposure.
+Arunachal Pradesh is now validated operating evidence for the north-east expansion track after Assam, Meghalaya, Tripura, and Nagaland. This document records the source review plus the completed live internal proof cycle that later supported public rollout.
 
 ## Review Basis
 
@@ -61,16 +61,10 @@ Arunachal Pradesh has now cleared the full internal proof bar on the live AWS st
 - operator validation: `GET /operator/publications?stateCode=AR` showed the rollback publication active after replay plus rollback
 - public-surface validation: `https://nyaaywatch.in/states/arunachal-pradesh` and `https://nyaaywatch.in/v1/states/arunachal-pradesh/stats` both returned `404`, so Arunachal Pradesh remained internal-only throughout the trial
 
-### Remaining Constraint
+### Later Public Outcome
 
-No Arunachal Pradesh-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope until a separate public-readiness review is complete.
+Arunachal Pradesh later cleared a separate public-readiness review, public-route parity, stable-URL verification, and a deliberate public rollout. See `docs/ARUNACHAL_PRADESH_PUBLIC_READINESS_REVIEW.md` for the public-state evidence.
 
 ## Recommendation
 
-Arunachal Pradesh should now be treated as validated north-east internal-only operating evidence.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-2. explicit public-route parity, trust-copy review, and stable-URL verification are in place
-3. the next public-state decision deliberately chooses Arunachal Pradesh rather than promoting it automatically
+Arunachal Pradesh should now be treated as validated north-east operating evidence whose internal proof path is complete and later public rollout is also complete.

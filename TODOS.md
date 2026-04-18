@@ -12,11 +12,11 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Andhra Pradesh is now live, and Arunachal Pradesh is the next public state in the internal-proof order
-- current remaining public queue after Arunachal Pradesh: Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- Arunachal Pradesh now has a dedicated public-readiness review, go-live checklist, and targeted parity suite in repo config
-- Manipur remains the next already-cleared internal candidate behind Arunachal Pradesh once its explicit public-route parity slice lands
-- done only when Arunachal Pradesh completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
+- Arunachal Pradesh is now live, and Manipur is the next public state in the internal-proof order
+- current remaining public queue after Manipur: Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- Arunachal Pradesh has completed both public-prep and live rollout evidence, so the next repo-prep slice is Manipur public parity
+- Madhya Pradesh remains the next already-cleared internal candidate behind Manipur once its explicit public-route parity slice lands
+- done only when Manipur completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 
 ### Next Internal Expansion Batch
 
@@ -25,6 +25,13 @@ Use this file for:
 - any additional internal expansion work would be maintenance or a deliberate scope increase, not missing state coverage
 
 ## Completed
+
+### Arunachal Pradesh Public Rollout
+
+- completed live on 2026-04-18 after PR `#81` merged and deploy run `24599656003` rolled the live stack to task definition `:71`
+- Arunachal Pradesh fetch `run_d2dadaec-bda6-4639-8629-28201a562708` published as `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0` with snapshot `snapshot_0daffe74-e0ec-46f0-89b1-bc3e4177392f`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug arunachal-pradesh` passed with `districtCount=27`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route and HTML verification confirmed `https://nyaaywatch.in/states/arunachal-pradesh` and `https://nyaaywatch.in/v1/states/arunachal-pradesh/stats` return `200`, with the expected Arunachal Pradesh title and `How long is the wait for justice in Arunachal Pradesh?` heading
 
 ### Andhra Pradesh Public Rollout
 

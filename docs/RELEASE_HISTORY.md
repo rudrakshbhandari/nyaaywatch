@@ -252,3 +252,22 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Note: Andhra Pradesh became the eleventh additional public state on task definition `:69`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/andhra-pradesh`.
 
 <!-- release:publication_b090f61a-3762-4bf5-8529-36b331b6e362:end -->
+
+<!-- release:publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0:start -->
+## publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0
+
+- Reviewed at: `2026-04-18T07:24:12.373Z`
+- Reviewer: `Codex Arunachal Pradesh public rollout`
+- Public URL: `https://nyaaywatch.in/states/arunachal-pradesh`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T07:23:28.921Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_d2dadaec-bda6-4639-8629-28201a562708`
+- Rollback target: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Arunachal Pradesh became the twelfth additional public state on task definition `:71`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/arunachal-pradesh`.
+
+<!-- release:publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0:end -->

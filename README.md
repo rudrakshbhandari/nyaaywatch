@@ -27,11 +27,11 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
-- explicit state-scoped public routing for approved expansion states, with Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, and Andhra Pradesh now live as additional state surfaces
+- explicit state-scoped public routing for approved expansion states, with Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, and Arunachal Pradesh now live as additional state surfaces
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Andhra Pradesh is now live on the public site after Nagaland, and Arunachal Pradesh is next in the public rollout queue.
+Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Arunachal Pradesh is now live on the public site after Andhra Pradesh, and Manipur is next in the public rollout queue.
 
 ## Product Guardrails
 
