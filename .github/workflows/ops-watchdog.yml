@@ -1,0 +1,281 @@
+name: Ops Watchdog
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+      PUBLIC_BASE_URL: https://nyaaywatch.in
+      STAGING_STACK_NAME: nyaaywatch-staging
+      INTERNAL_FETCH_SCHEDULE_NAME: nyaaywatch-staging-weekday-internal-fetch
+      INTERNAL_FETCH_SCHEDULE_GROUP_NAME: default
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
+
+      - name: Load live operator token and alarm topic
+        run: |
+          cluster_name="$(
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" \
+              --stack-name "$STAGING_STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='ClusterName'].OutputValue | [0]" \
+              --output text
+          )"
+          service_name="$(
+            aws cloudformation describe-stack-resource \
+              --region "$AWS_REGION" \
+              --stack-name "$STAGING_STACK_NAME" \
+              --logical-resource-id Service \
+              --query "StackResourceDetail.PhysicalResourceId" \
+              --output text
+          )"
+          task_definition_arn="$(
+            aws ecs describe-services \
+              --region "$AWS_REGION" \
+              --cluster "$cluster_name" \
+              --services "$service_name" \
+              --query "services[0].taskDefinition" \
+              --output text
+          )"
+          operator_token="$(
+            aws ecs describe-task-definition \
+              --region "$AWS_REGION" \
+              --task-definition "$task_definition_arn" \
+              --query "taskDefinition.containerDefinitions[0].environment[?name=='OPERATOR_API_TOKEN'].value | [0]" \
+              --output text
+          )"
+          alarm_topic_arn="$(
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" \
+              --stack-name "$STAGING_STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='AlarmTopicArn'].OutputValue | [0]" \
+              --output text
+          )"
+          echo "::add-mask::$operator_token"
+          echo "OPERATOR_API_TOKEN=$operator_token" >> "$GITHUB_ENV"
+          echo "ALARM_TOPIC_ARN=$alarm_topic_arn" >> "$GITHUB_ENV"
+
+      - name: Run public alpha ops sweep
+        id: public_alpha
+        continue-on-error: true
+        run: |
+          set +e
+          npm run ops:verify-public-alpha -- --base-url="$PUBLIC_BASE_URL" > public-alpha-summary.json
+          status=$?
+          if [[ -f public-alpha-summary.json ]]; then
+            cat public-alpha-summary.json
+          fi
+          exit "$status"
+
+      - name: Run internal fetch schedule watchdog
+        id: schedule_watchdog
+        continue-on-error: true
+        run: |
+          set +e
+          npm run ops:verify-internal-fetch-schedule -- \
+            --base-url="$PUBLIC_BASE_URL" \
+            --stack-name="$STAGING_STACK_NAME" \
+            --schedule-name="$INTERNAL_FETCH_SCHEDULE_NAME" \
+            --schedule-group-name="$INTERNAL_FETCH_SCHEDULE_GROUP_NAME" \
+            > internal-fetch-schedule-summary.json
+          status=$?
+          if [[ -f internal-fetch-schedule-summary.json ]]; then
+            cat internal-fetch-schedule-summary.json
+          fi
+          exit "$status"
+
+      - name: Compose watchdog alert
+        if: always()
+        env:
+          PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
+          SCHEDULE_WATCHDOG_OUTCOME: ${{ steps.schedule_watchdog.outcome }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const publicOutcome = process.env.PUBLIC_ALPHA_OUTCOME ?? "failure";
+          const scheduleOutcome = process.env.SCHEDULE_WATCHDOG_OUTCOME ?? "failure";
+          const publicSummary = fs.existsSync("public-alpha-summary.json")
+            ? JSON.parse(fs.readFileSync("public-alpha-summary.json", "utf8"))
+            : null;
+          const scheduleSummary = fs.existsSync("internal-fetch-schedule-summary.json")
+            ? JSON.parse(fs.readFileSync("internal-fetch-schedule-summary.json", "utf8"))
+            : null;
+          const marker = "<!-- nyaaywatch-ops-watchdog -->";
+          const failed = publicOutcome !== "success" || scheduleOutcome !== "success";
+
+          const lines = [
+            marker,
+            `Updated: ${new Date().toISOString()}`,
+            "",
+            failed ? "The scheduled ops watchdog is failing." : "The scheduled ops watchdog is green.",
+            "",
+            "## Checks",
+            `- Public alpha sweep: ${publicOutcome}`,
+            `- Internal fetch schedule watchdog: ${scheduleOutcome}`,
+            "",
+          ];
+
+          if (publicSummary) {
+            lines.push("## Public Alpha Sweep");
+            lines.push(`- Healthy states: ${publicSummary.healthyStates.length}/${publicSummary.totalStates}`);
+            lines.push(`- Stale states: ${publicSummary.staleStates.length ? publicSummary.staleStates.join(", ") : "none"}`);
+            lines.push(
+              `- Daily fetch lag states: ${publicSummary.dailyFetchLagStates.length ? publicSummary.dailyFetchLagStates.join(", ") : "none"}`,
+            );
+            lines.push(
+              `- Verification failures: ${publicSummary.failingStates.length ? publicSummary.failingStates.join(", ") : "none"}`,
+            );
+            lines.push("");
+          }
+
+          if (scheduleSummary) {
+            lines.push("## Internal Fetch Schedule");
+            lines.push(`- Schedule: ${scheduleSummary.scheduleName}`);
+            lines.push(`- Schedule state: ${scheduleSummary.scheduleState ?? "unknown"}`);
+            lines.push(`- Schedule expression: ${scheduleSummary.scheduleExpression ?? "unknown"} (${scheduleSummary.scheduleExpressionTimezone ?? "unknown"})`);
+            lines.push(`- Live task definition: ${scheduleSummary.liveTaskDefinitionArn ?? "unknown"}`);
+            lines.push(`- Schedule target task definition: ${scheduleSummary.scheduleTaskDefinitionArn ?? "unknown"}`);
+            lines.push(`- Target matches service: ${scheduleSummary.schedulerTargetMatchesService ? "yes" : "no"}`);
+            lines.push(`- Uses scheduled fetch entrypoint: ${scheduleSummary.usesScheduledFetchEntrypoint ? "yes" : "no"}`);
+            lines.push(`- Anchor state: ${scheduleSummary.anchorRun.stateName} [${scheduleSummary.anchorRun.stateCode}]`);
+            lines.push(
+              `- Latest scheduled anchor run: ${scheduleSummary.anchorRun.latestScheduledRunId ?? "none"} (${scheduleSummary.anchorRun.latestScheduledRunStatus ?? "unknown"})`,
+            );
+            lines.push(
+              `- Latest scheduled anchor run freshness: ${scheduleSummary.anchorRun.latestScheduledRunFreshnessDays ?? "unknown"} day(s)`,
+            );
+            lines.push(`- Latest scheduled anchor run note: ${scheduleSummary.anchorRun.latestScheduledRunNote ?? "none"}`);
+            lines.push("");
+          }
+
+          const body = `${lines.join("\n")}\n`;
+          fs.writeFileSync("watchdog-alert.md", body);
+
+          const snsLines = [
+            failed ? "NyaayWatch ops watchdog failed." : "NyaayWatch ops watchdog recovered.",
+            `Public alpha sweep: ${publicOutcome}`,
+            `Internal fetch schedule watchdog: ${scheduleOutcome}`,
+          ];
+          if (publicSummary && publicSummary.staleStates.length > 0) {
+            snsLines.push(`Stale states: ${publicSummary.staleStates.join(", ")}`);
+          }
+          if (publicSummary && publicSummary.dailyFetchLagStates.length > 0) {
+            snsLines.push(`Daily fetch lag states: ${publicSummary.dailyFetchLagStates.join(", ")}`);
+          }
+          if (scheduleSummary && scheduleSummary.anchorRun.scheduleExecutionLagDetected) {
+            snsLines.push(
+              `Latest scheduled ${scheduleSummary.anchorRun.stateCode} run is older than ${scheduleSummary.scheduleExecutionLagThresholdDays} day(s).`,
+            );
+          }
+          fs.writeFileSync("watchdog-alert.txt", `${snsLines.join("\n")}\n`);
+          NODE
+
+      - name: Sync watchdog issue
+        if: always()
+        id: sync_issue
+        uses: actions/github-script@v7
+        env:
+          PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
+          SCHEDULE_WATCHDOG_OUTCOME: ${{ steps.schedule_watchdog.outcome }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("node:fs");
+            const marker = "<!-- nyaaywatch-ops-watchdog -->";
+            const title = "Ops watchdog failure";
+            const failed = process.env.PUBLIC_ALPHA_OUTCOME !== "success" || process.env.SCHEDULE_WATCHDOG_OUTCOME !== "success";
+            const body = fs.readFileSync("watchdog-alert.md", "utf8");
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+
+            const existing = issues.find((issue) => issue.title === title || issue.body?.includes(marker));
+            let action = "noop";
+
+            if (failed) {
+              if (existing) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  title,
+                  body,
+                });
+                action = "updated";
+              } else {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                });
+                action = "created";
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Watchdog recovered at ${new Date().toISOString()}.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: "closed",
+              });
+              action = "closed";
+            }
+
+            core.setOutput("action", action);
+
+      - name: Publish SNS alert for a new watchdog incident
+        if: always() && steps.sync_issue.outputs.action == 'created'
+        run: |
+          aws sns publish \
+            --region "$AWS_REGION" \
+            --topic-arn "$ALARM_TOPIC_ARN" \
+            --subject "NyaayWatch ops watchdog failure" \
+            --message file://watchdog-alert.txt
+
+      - name: Fail job if any watchdog failed
+        if: always()
+        env:
+          PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
+          SCHEDULE_WATCHDOG_OUTCOME: ${{ steps.schedule_watchdog.outcome }}
+        run: |
+          if [[ "$PUBLIC_ALPHA_OUTCOME" != "success" || "$SCHEDULE_WATCHDOG_OUTCOME" != "success" ]]; then
+            exit 1
+          fi

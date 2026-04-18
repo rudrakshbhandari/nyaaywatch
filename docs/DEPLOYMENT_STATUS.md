@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:74`
+- ECS task definition: `nyaaywatch-staging:78`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
@@ -46,6 +46,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
 - Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the internal fetch schedule against the live task definition while reusing the existing scheduler role
+- Scheduled ops monitor: `.github/workflows/ops-watchdog.yml` runs every day at `05:00 UTC` (`10:30 AM Asia/Kolkata`), executes the all-public-states sweep plus the internal-fetch-schedule watchdog, opens or updates the repo issue `Ops watchdog failure` on breakage, and sends a first-incident SNS alert through the staging alarm topic
 
 Operational notes:
 
@@ -207,6 +208,7 @@ Run these checks against the current public URL or staging `ServiceUrl`:
 ```bash
 export OPERATOR_API_TOKEN=...
 npm run ops:verify-public-alpha -- --base-url=<base-url>
+npm run ops:verify-internal-fetch-schedule -- --base-url=<base-url>
 curl -fsSL <base-url>/health
 curl -fsSL <base-url>/v1/stats/himachal
 curl -fsSL <base-url>/v1/districts
@@ -223,6 +225,7 @@ Expected:
 - `/health` returns `ok: true`
 - public API responses come from a published snapshot, not an empty or unpublished state
 - `npm run ops:verify-public-alpha` stays green across every public state and fails if any state has parity drift, a stale snapshot, or a latest successful internal fetch run old enough to imply the daily internal fetch cadence is slipping
+- `npm run ops:verify-internal-fetch-schedule` stays green and fails if `nyaaywatch-staging-weekday-internal-fetch` is disabled, no longer points at the live ECS task definition, no longer invokes `ecs-scheduled-fetch-entrypoint.js`, or no longer has a recent scheduled anchor-state operator run
 
 ## Operator Verification
 
@@ -241,6 +244,11 @@ Latest confirmed operator validation:
   - live AWS staging logs already showed the scheduled Himachal fetch `run_337a80ae-4980-415a-8585-d670e413dfed` completed on `2026-04-17T20:10:06Z` with `sourceSnapshotAt=2026-04-16T00:00:00.000Z`
   - `npm run ops:verify-public-alpha` now checks latest successful operator runs per state, so future lag alerts reflect actual internal collection drift rather than deliberate publish delay
   - the corrected live rerun completed green across all 28 public states, with Himachal still showing an older published snapshot date (`2026-04-10`) but a healthy latest successful internal fetch run (`run_337a80ae-4980-415a-8585-d670e413dfed`, `sourceSnapshotAt=2026-04-16`)
+- Scheduled watchdog path added on 2026-04-18:
+  - `.github/workflows/ops-watchdog.yml` now runs after the expected internal-fetch window and checks both `npm run ops:verify-public-alpha` and `npm run ops:verify-internal-fetch-schedule`
+  - the new schedule watchdog verifies that `nyaaywatch-staging-weekday-internal-fetch` is still enabled, still targets the live ECS task definition, still invokes `dist/src/dev/ecs-scheduled-fetch-entrypoint.js`, and still has a recent scheduled anchor-state operator run
+  - live verification on 2026-04-18 confirmed the ECS service and scheduler target are both already on task definition `:78`
+  - failures now create or update the repo issue `Ops watchdog failure`, and a brand-new incident also publishes through the existing staging SNS alarm topic
 - Remaining approved-state public rollouts completed on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the ECS service on task definition `:74`
   - public launches completed for Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
   - the rollout window used fetch runs `run_d8eee45f-ad4d-490e-b779-362a1737b2d6`, `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b`, `run_692dc19a-c8a9-4061-a22b-2f0631475baa`, `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293`, `run_466f100f-22b9-4c16-8dbd-1584e462e181`, `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c`, `run_154efd48-8963-44d2-8606-b5877145e26f`, `run_baf67425-5948-4e43-828c-b37b274ecfa5`, `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3`, `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0`, `run_a64b3f23-836b-4f4e-b7e6-7693d035283e`, `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d`, `run_f07af2ea-5cf4-4943-a602-bf673744c9e4`, `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f`, and `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0`
