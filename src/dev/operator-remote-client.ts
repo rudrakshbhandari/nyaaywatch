@@ -64,7 +64,7 @@ export function parseRemoteOperatorCommand(args: string[]): RemoteOperatorComman
   }
 
   if (command === "fetch") {
-    return { name: "fetch", note };
+    return { name: "fetch", note: args.slice(1).join(" ").trim() || undefined };
   }
 
   if (command === "publications") {

@@ -1,0 +1,2959 @@
+<!DOCTYPE html >
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="NJDG - National Judicial Data Grid">
+<meta name="keywords" content="NJDG, National Judicial Data Grid, official website">
+    <meta name="author" content="PPJ">
+    <meta name="title" content="NJDG - National Judicial Data Grid">
+    <meta name="lang" content="en">
+    <title>NJDG-National Judicial Data Grid</title>
+	<script src="/njdg_v3//vendor/jquery/jquery.min.js"></script>
+	<script src="/njdg_v3//vendor/jquery/jquery.validate.min.js" type="text/javascript"></script>
+	
+	<script src="/njdg_v3//vendor/jquery/chosen.jquery.min.js"></script>
+	<script src="/njdg_v3//vendor/jquery-date/js/jquery-ui.js"></script>
+	<link href="/njdg_v3//vendor/css/chosen.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="/njdg_v3//vendor/jquery-date/jquery-ui.css">
+	<script src="/njdg_v3//js/ecourts.js"></script>
+	<!--<script src="/njdg_v3//csrf-magic.js"></script>-->
+	
+   
+	<script src="/njdg_v3//vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	
+	<link href="/njdg_v3//vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/njdg_v3//vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+	<link href="/njdg_v3//vendor/css/app.css" rel="stylesheet">
+   <link href="/njdg_v3//vendor/css/aos.css" rel="stylesheet">
+   <link href="/njdg_v3//vendor/css/animate.min.css" rel="stylesheet">
+  
+  <!-- Custom styles for this template -->
+  
+  
+    
+<script>
+var labels_array;
+var buttons_array;
+var alerts_array;
+$(document).ready(function(){
+   $('.sidebar-nav').height($(window).height())-50;
+});
+</script>
+</head>
+
+
+
+
+
+ 
+
+
+
+
+
+
+<body class=''>
+<header class="navbar navbar-light sticky-top flex-md-nowrap p-0 shadow justify-content-between bg-topthemeLight">
+  <a class="navbar-brand col-md-4 col-sm-10 col-lg-3 me-0 px-0" href="/njdg_v3//?p=home&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">
+        <img src="images/ecourts-logo.png" class="float-start ms-2" alt="eCourts Logo">
+		<img src="images/NJDG-logo.png" class="float-start ms-1 me-2" alt="NJDG Logo">
+        <span class="h5 text-dark">National Judicial Data Grid</span><br>
+        <span class="d-block h6">District Court of India</span>
+  </a>
+  <button class="navbar-toggler bg-light p-0 small d-none " id="smallSidebar" type="button" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <button class="navbar-toggler  d-sm-none collapsed bg-light btn-sm p-1 position-absolute end-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03" aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+<div class="collapse navbar-collapse" id="navbarsExample03">
+        <ul class="navbar-nav me-auto mb-2 mb-sm-0">
+          <li class="nav-item">
+            <a class="nav-link active bg-white ps-4 border-bottom m-1 rounded" aria-current="page" href="#"><i class="fas fa-home"></i>&nbsp;&nbsp;Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link bg-white ps-4 m-1 rounded text-dark" href="#" onclick="openRightMenu()"><i class="fas fa-cogs"></i>&nbsp;&nbsp;Setting</a>
+          </li>
+        </ul>
+
+      </div>
+
+
+  <div class='w-25 stateDistDiv1 d-none' style='width:50% !important;margin-right:10%;'>
+	<select class='form-select me-2 w-50' id='state_code1' name='state_code1' onchange="get_district('home/fetchDist',this.value);"><option value=''>Select State</option>
+	<option value="35~28" >Andaman and Nicobar</option><option value="28~2" >Andhra Pradesh</option><option value="12~36" >Arunachal Pradesh</option><option value="18~6" >Assam</option><option value="10~8" >Bihar</option><option value="4~27" >Chandigarh</option><option value="22~18" >Chhattisgarh</option><option value="7~26" >Delhi</option><option value="30~30" >Goa</option><option value="24~17" >Gujarat</option><option value="6~14" >Haryana</option><option value="2~5" >Himachal Pradesh</option><option value="1~12" >Jammu and Kashmir</option><option value="20~7" >Jharkhand</option><option value="29~3" >Karnataka</option><option value="32~4" >Kerala</option><option value="37~33" >Ladakh</option><option value="31~37" >Lakshadweep</option><option value="23~23" >Madhya Pradesh</option><option value="27~1" >Maharashtra</option><option value="14~25" >Manipur</option><option value="17~21" >Meghalaya</option><option value="15~19" >Mizoram</option><option value="13~34" >Nagaland</option><option value="21~11" >Odisha</option><option value="34~35" >Puducherry</option><option value="3~22" selected>Punjab</option><option value="8~9" >Rajasthan</option><option value="11~24" >Sikkim</option><option value="33~10" >Tamil Nadu</option><option value="36~29" >Telangana</option><option value="38~38" >The Dadra And Nagar Haveli And Daman And Diu</option><option value="16~20" >Tripura</option><option value="9~13" >Uttar Pradesh</option><option value="5~15" >Uttarakhand</option><option value="19~16" >West Bengal</option>	</select>
+	<select class='form-select w-50' id='dist_code1' name='dist_code1' onchange=""><option value=''>Select District</option>
+	<option value="1" >Ludhiana</option><option value="2" >Jalandhar</option><option value="3" selected>Rupnagar</option><option value="4" >Fatehgarh Sahib</option><option value="5" >Patiala</option><option value="6" >Ferozepur</option><option value="8" >Amritsar</option><option value="9" >Faridkot</option><option value="10" >Gurdaspur</option><option value="11" >Kapurthala</option><option value="12" >Moga</option><option value="13" >Mansa</option><option value="14" >Sri Muktsar Sahib</option><option value="15" >SBS Nagar</option><option value="16" >Barnala</option><option value="17" >Bathinda</option><option value="18" >Hoshiarpur</option><option value="19" >Sangrur</option><option value="21" >Pathankot</option><option value="23" >Tarn Taran</option><option value="24" >SAS Nagar</option><option value="26" >Fazilka</option>	</select>
+
+		<button type="button" class="btn btn-primary btn-sm" aria-label="button" onclick=""><i class="fas fa-user"></i>  </button>
+	 <button type="button" class="btn btn-secondary btn-sm" onclick="get_distData('home/index',this.value);"> Go </button>
+</div>
+	
+</div>
+<div class="p-1 d-flex" style='/*width:20%*/'>
+
+		<!--<input type="search" class="form-control me-2 border" id='txtSearch' placeholder="Search ..." aria-label="Search" aria-describedby="search">
+
+    <div class="me-2">
+        <button type='button' class="btn btn-secondary" onclick="openRightMenu()">
+			<i class="fa fa-cogs"></i>
+		</button>
+    </div>-->
+<div class="me-2 topheader">
+        <ul>
+	<!--<li><a class="js-scroll-trigger" href="#efiling_activity">Skip to main content</a></li>-->
+	<li class="border-right"><a href="javascript:void(0)" class="noToken" id="decresefont" title="Decrese Font Size" aria-label="Decrese Font Size">A-</a></li>
+	<li><a href="javascript:void(0)" class="noToken" id="normalfont" title="Normal Font Size" aria-label="Normal Font Size">A</a></li>
+	<li><a href="javascript:void(0)" class="noToken" id="incresefont" title="Increse Font Size" aria-label="Increse Font Size">A+</a></li>
+	<li><a href="#" class="whitelink" id="Defaultcontrast" onclick="setTheme('1')" title="Default contrast" aria-label="normal contrast theme">A</a></li>
+	<li class="bg-dark"><a href="#" class="blacklink text-white" id="Highcontrast" onclick="setTheme('2')" title="High contrast" aria-label="high contrast theme">A</a></li>
+  </ul>
+
+    </div>
+<a type="link" class="btn btn-light btn-sm text-dark me-2" href="https://scdg.sci.gov.in/" target="_new"> <i class="fas fa-university"></i> SC NJDG </a>
+<a type="link" class="btn btn-light btn-sm text-dark" href="https://njdg.ecourts.gov.in/hcnjdg_v2/" target="_new"> <i class="fas fa-university"></i> HC NJDG </a>
+
+  <div class="dropdown d-none d-md-block">
+      <a class="dropdown-toggle nav-link px-3 text-dark" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="fa-stack">
+              <i class="fas fa-circle fa-stack-2x"></i>
+              <i class="fas fa-cog fa-stack-1x fa-inverse"></i>
+            </span>      </a>
+      <ul class="dropdown-menu dropdown-menu-end shadow border" aria-labelledby="dropdownMenu2">
+        <!--<li><button class="dropdown-item" type="button" onclick="requestUri('changePassword')"><i class="fa fa-key me-2" aria-hidden="true"></i>Change Password</button></li>-->
+        <li><button class="dropdown-item" type="button" onclick="openRightMenu()"><i class="fa fa-cogs me-2" aria-hidden="true"></i>Settings</button></li>
+        <!--<li><hr class="dropdown-divider"></li>
+        <li><button class="dropdown-item" type="button" onclick="logOut()"><i class="fa fa-sign-out-alt me-2" aria-hidden="true"></i>Logout</button></li>-->
+      </ul>
+    </div>
+</div>
+</header>
+
+<div class="rightSidebar w3-bar-block w3-card w3-animate-right shadow" style="display: none;" id="rightMenu">
+	  <div class="rightbar-title d-flex align-items-center bg-dark p-2">
+
+                    <h5 class="m-0 me-2 text-white">Theme Customizer</h5>
+
+                    <a href="#" class="btn btn-primary right-bar-toggle ms-auto" onclick="closeRightMenu()" aria-label="close button">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+		<div class='p-3'>
+		<h1 class='h6 bg-primary-txt'>Topbar Color</h1>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="topbarClr" id="topbarLight" value='L' checked onclick="setTopBar(this.value)" checked >
+		  <label class="form-check-label" for="topbarLight">
+			Light
+		  </label>
+		</div>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="topbarClr" id="topbarDark" value='D'  onclick="setTopBar(this.value)" >
+		  <label class="form-check-label" for="topbarDark">
+			Dark
+		  </label>
+		</div>
+		<hr class='my-2 m-0'>
+		<h1 class='h6 bg-primary-txt'>Theme Color</h1>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="sidebarClr" id="theme01" checked value='1'  onclick="setTheme(this.value)">
+		  <label class="form-check-label" for="theme01">
+			Default
+		  </label>
+		</div>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="sidebarClr" id="theme02" value='2'  onclick="setTheme(this.value)"  >
+		  <label class="form-check-label" for="theme02">
+			Dark
+		  </label>
+		</div>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="sidebarClr" id="theme03" value='3'  onclick="setTheme(this.value)" >
+		  <label class="form-check-label" for="theme03">
+			Eco
+		  </label>
+		</div>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="sidebarClr" id="theme04" value='4'  onclick="setTheme(this.value)" >
+		  <label class="form-check-label" for="theme04">
+			Light
+		  </label>
+		</div>
+		<!--<hr class='my-2 m-0'>
+		<h1 class='h6 bg-primary-txt'>Sidebar Size</h1>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="sidebarSize" id="sidebarSize1" checked value='D' onclick="setSideBar(this.value)" checked>
+		  <label class="form-check-label" for="sidebarSize1">
+			Default
+		  </label>
+		</div>
+		<div class="form-check">
+		  <input class="form-check-input" type="radio" name="sidebarSize" id="sidebarSize2" value='C'  onclick="setSideBar(this.value)"  >
+		  <label class="form-check-label" for="sidebarSize2">
+			Compact
+		  </label>
+		</div>
+-->
+		</div>
+	</div>
+
+
+<div class="container-fluid " id="mainContainer">
+  <div class="row">
+    
+
+
+<style>
+
+
+</style>
+
+
+<script>
+$(document).ready(function() { 
+                $('#incresefont').click(function(){        
+        curSize= parseInt($('body').css('font-size')) + 1;
+                
+                var h6= parseInt($('.h6').css('font-size')) + 1;
+                $('.h6').css('font-size', h6);
+
+                var h5= parseInt($('.h5').css('font-size')) + 1;
+                $('.h5').css('font-size', h5);
+
+                var h4= parseInt($('.h4').css('font-size')) + 1;
+                $('.h4').css('font-size', h4);
+
+                var h2= parseInt($('.h2').css('font-size')) + 1;
+                $('.h2').css('font-size', h2);
+
+                if(curSize<=16)
+        $('body').css('font-size', curSize);
+        });  
+
+                $('#decresefont').click(function(){        
+        curSize= parseInt($('body').css('font-size')) - 1;
+
+                var h6= parseInt($('.h6').css('font-size')) - 1;
+                $('.h6').css('font-size', h6);
+
+                var h5= parseInt($('.h5').css('font-size')) - 1;
+                $('.h5').css('font-size', h5);
+
+                var h4= parseInt($('.h4').css('font-size')) - 1;
+                $('.h4').css('font-size', h4);
+
+                var h2= parseInt($('.h2').css('font-size')) - 1;
+                $('.h2').css('font-size', h2);
+
+                var cardtitle= parseInt($('.card-title').css('font-size')) - 1;
+                $('.card-title').css('font-size', cardtitle);
+
+                if(curSize>=12)
+        $('body').css('font-size', curSize);
+        }); 
+
+                $("#normalfont").click(function(){
+                curSize= 14;
+
+                $('.h6').css('font-size', '1rem');
+                $('.h5').css('font-size', '1.25rem');
+                $('.h4').css('font-size', '1rem');
+                $('.h3').css('font-size', '1.25rem');
+                $('.h2').css('font-size', '2.5rem');
+
+                $('.card-title').css('font-size', '1rem');
+
+                $("body").css("font-size",curSize);
+                });
+
+        });
+</script>
+
+
+
+
+
+    <script src="/njdg_v3//vendor/DataTables/js/jquery.ecourtGrid.min.js" type="text/javascript"></script>
+    <script src="/njdg_v3//vendor/DataTables/Buttons/js/ecourtGrid.buttons.min.js" type="text/javascript"></script>
+  <script src="/njdg_v3//vendor/DataTables/js/ecourtGrid.rowGroup.min.js" type="text/javascript"></script>
+    
+<script src="/njdg_v3//vendor/DataTables/Buttons/js/buttons.html5.min.js" type="text/javascript"></script>  
+
+<script src="/njdg_v3//vendor/DataTables/JSZip/jszip.min.js" type="text/javascript"></script>  
+<script src="/njdg_v3//vendor/DataTables/pdfmake/pdfmake.min.js" type="text/javascript"></script>  
+<script src="/njdg_v3//vendor/DataTables/pdfmake/vfs_fonts.js" type="text/javascript"></script>  
+  
+	<link rel="stylesheet" type="text/css" href="/njdg_v3//vendor/DataTables/css/rowGroup.ecourtGrid.min.css"> 
+  <script src="/njdg_v3//vendor/DataTables/ecourtGrid.responsive.min.js" type="text/javascript"></script>
+  <script src="/njdg_v3//vendor/DataTables/responsive.bootstrap4.min.js" type="text/javascript"></script>
+  
+  <link href="/njdg_v3//vendor/DataTables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css">
+  <link href="/njdg_v3//vendor/DataTables/ecourtGrid.css" rel="stylesheet" type="text/css">
+  <link href="/njdg_v3//vendor/DataTables/ecourtGrid.css" rel="stylesheet" type="text/css">
+<!-------------------------->
+
+
+    
+    <script>
+    
+  $('select').addClass('form-control');
+    /* Code for set the stype to column
+    
+
+    jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+    "date-uk-pre": function ( a ) {
+        var ukDatea = a.split('-');
+        return (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+      },
+      "date-uk-asc": function ( a, b ) {
+        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+      },
+      "date-uk-desc": function ( a, b ) {
+        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+      }
+    } );
+  
+        
+      "aoColumns": [
+      { "sSortDataType": "dom-text", "sType": "numeric" },
+      { "sType": "date-uk"},
+      {"sSortDataType": "dom-text"}]
+
+
+
+*/
+jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+  "date-uk-pre": function ( a ) {
+      var ukDatea = a.split('-');
+      return (ukDatea[2] + ukDatea[1] + ukDatea[0]) * 1;
+    },
+    "date-uk-asc": function ( a, b ) {
+      if (a == b) { return 0; }
+      if (isNaN(a) || a < b) { return -1; }
+      if (isNaN(b) || a > b) { return 1; }
+      //return ((a < b) ? -1 : (a == '')?-1 : ((a > b) ? 1 : 0));
+    },
+    "date-uk-desc": function ( a, b ) {
+      if (a == b) { return 0; }
+      if (isNaN(a) || a < b) { return 1; }
+      if (isNaN(b) || a > b) { return -1; }
+      //return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+    }
+  } );
+
+    
+ 
+    </script>
+    
+  <body>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		charts(7763,5405,13168,13534,10884,24418,'','','','','','','','','',''); 	   
+	preTrialLitigationChart(0,557,557,30);
+		pendingAgewiseBarChart('Less than one year','5771~5110~2022~596~35','5479~3692~1380~307~26','lessthan1','"(46%)"~"(36%)"~"(14%)"~"(4%)"~"(0%)"');
+		
+	});								
+</script>
+
+      <main class="col-md-12 ms-sm-auto col-lg-12 dashboard">
+      <div class=" container-fluid py-2 p-0">
+       <div class='row'>
+			<div class='col'>
+				<ul class="nav nav-pills border-bottom pb-2" id="pills-tab" role="tablist">
+				  <!--<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="alerts-tab" data-bs-toggle="pill" data-bs-target="#pills-alerts" type="button" role="tab" aria-controls="pills-alerts" aria-selected="true"><i class="fas fa-bell"></i> At a Glance</button>
+				  </li>-->
+				  <li class="nav-item" role="presentation">
+					<button class="nav-link active" id="alerts-tab" data-bs-toggle="pill" data-bs-target="#pills-alerts" type="button" role="tab" aria-controls="pills-alerts" aria-selected="true"><i class="fas fa-bell"></i> Alerts</button>
+				  </li>
+				 
+				  <li class="nav-item" role="presentation">
+					<button class="nav-link" id="penDash1-tab" data-bs-toggle="pill" data-bs-target="#pills-penDash1" type="button" role="tab" aria-controls="pills-penDash1" aria-selected="false" onclick="fetchPendDashboard('2','pending');"><i class="fas fa-hourglass-half"></i> Pending Dashboard </button>
+				  </li>
+				   <li class="nav-item" role="presentation">
+					<button class="nav-link" id="penDash1-tab" data-bs-toggle="pill" data-bs-target="#pills-penDash1" type="button" role="tab" aria-controls="pills-penDash1" aria-selected="false" onclick="fetchPendDashboard('2','disposed');"><i class="fas fa-trash-alt"></i> Disposed Dashboard </button>
+				  </li>
+					
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="delayDash-tab" data-bs-toggle="pill" data-bs-target="#pills-delayDash" type="button" role="tab" aria-controls="pills-delayDash" aria-selected="false" onclick="delay_dashboard('2');"><i class="fas fa-clock"></i> Delay Reason</button>
+				</li>
+				 <li class="nav-item" role="presentation">
+					<button class="nav-link" id="infomgmt-tab" data-bs-toggle="pill" data-bs-target="#pills-infomgmt"  type="button" role="tab" aria-controls="pills-infomgmt" aria-selected="false" onclick="infomgnt_dashboard();"><i class="fas fa-book-open"></i> Information Management </button>
+				  </li>
+				  <li class="nav-item " id="set_year_li" role="presentation" style="display:none">
+					
+					<!--<option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022" selected="">2022</option>-->
+
+
+										<select id="sel_year" name="sel_year" onchange="" class="form-select form-select-sm " style="width: 100px !important;">
+						<option value="2018" >2018</option><option value="2019" >2019</option><option value="2020" >2020</option><option value="2021" >2021</option><option value="2022" >2022</option><option value="2023" >2023</option><option value="2024" >2024</option><option value="2025" >2025</option><option value="2026" selected >2026</option>				  </select>
+				  </li>
+
+
+
+					<!--li class="nav-item " id="set_stateDist_li" role="presentation" -->
+	<div class='stateDistDiv ' style='width:auto !important;' id='statediv'>
+		<select class='form-select me-2 w-50' id='state_code' name='state_code' onchange="get_district('home/fetchDist',this.value);"><option value=''>Select State</option>
+		<option value="35~28" >Andaman and Nicobar</option><option value="28~2" >Andhra Pradesh</option><option value="12~36" >Arunachal Pradesh</option><option value="18~6" >Assam</option><option value="10~8" >Bihar</option><option value="4~27" >Chandigarh</option><option value="22~18" >Chhattisgarh</option><option value="7~26" >Delhi</option><option value="30~30" >Goa</option><option value="24~17" >Gujarat</option><option value="6~14" >Haryana</option><option value="2~5" >Himachal Pradesh</option><option value="1~12" >Jammu and Kashmir</option><option value="20~7" >Jharkhand</option><option value="29~3" >Karnataka</option><option value="32~4" >Kerala</option><option value="37~33" >Ladakh</option><option value="31~37" >Lakshadweep</option><option value="23~23" >Madhya Pradesh</option><option value="27~1" >Maharashtra</option><option value="14~25" >Manipur</option><option value="17~21" >Meghalaya</option><option value="15~19" >Mizoram</option><option value="13~34" >Nagaland</option><option value="21~11" >Odisha</option><option value="34~35" >Puducherry</option><option value="3~22" selected>Punjab</option><option value="8~9" >Rajasthan</option><option value="11~24" >Sikkim</option><option value="33~10" >Tamil Nadu</option><option value="36~29" >Telangana</option><option value="38~38" >The Dadra And Nagar Haveli And Daman And Diu</option><option value="16~20" >Tripura</option><option value="9~13" >Uttar Pradesh</option><option value="5~15" >Uttarakhand</option><option value="19~16" >West Bengal</option>		</select>
+		<select class='form-select w-50' id='dist_code' name='dist_code' onchange=""><option value=''>Select District</option>
+		<option value="1" >Ludhiana</option><option value="2" >Jalandhar</option><option value="3" selected>Rupnagar</option><option value="4" >Fatehgarh Sahib</option><option value="5" >Patiala</option><option value="6" >Ferozepur</option><option value="8" >Amritsar</option><option value="9" >Faridkot</option><option value="10" >Gurdaspur</option><option value="11" >Kapurthala</option><option value="12" >Moga</option><option value="13" >Mansa</option><option value="14" >Sri Muktsar Sahib</option><option value="15" >SBS Nagar</option><option value="16" >Barnala</option><option value="17" >Bathinda</option><option value="18" >Hoshiarpur</option><option value="19" >Sangrur</option><option value="21" >Pathankot</option><option value="23" >Tarn Taran</option><option value="24" >SAS Nagar</option><option value="26" >Fazilka</option>		</select>
+
+				 <button type="button" class="btn btn-secondary btn-sm" onclick="get_distData('home/index',this.value);"> Go </button>
+	</div>
+	
+	<button type="button" class="btn btn-info btn-sm me-1 position-absolute" style='right: 20px;' id="toggleLayout" aria-label="toggle Dashboard Layout" ><i class="fa fa-arrows-alt"></i></button>
+				 
+		 <div class="container-fluid"><div class="text-center">
+<span class="badge rounded-pill bg-secondary border breadcrumb-badge" id='case_type_breadcrumb' style='display:none; font-size: 1.1rem;'>Appeal (C)&nbsp;&nbsp;<a href="#" aria-label="close button" onclick=""><i class="fa fa-times text-white"></i></a></span></div></div>
+
+				  
+				
+				  
+				<!--<button id="refresh_pend" class="d-none btn btn-secondary me-2 btn-sm position-absolute end-0 " onclick="refreshDashboard('2');" aria-label="refresh Dashboard"><i class="fas fa-sync-alt"></i></button>-->
+				</ul>
+
+
+				
+<div class="tab-content" id="pills-tabContent">
+				  <div class="tab-pane fade show active" id="pills-alerts" role="tabpanel" aria-labelledby="alerts-tab">
+				  <div class='container-fluid p-0'>
+
+				  <div class="row mt-2">
+					<div class="col-md-3" data-aos="fade-up" data-aos-duration="100">
+						<div class="card h-100">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline">Civil Cases</h4><span class="float-end h6 m-0 fw-bold">13,534</span>
+							</div>
+							<div class="card-body" id='chart3'>
+
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-3" data-aos="fade-up" data-aos-duration="500">
+						<div class="card h-100">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline">Criminal Cases</h4><span class="float-end h6 m-0 fw-bold ">10,884</span>
+							</div>
+							<div class="card-body" id='chart4'>
+							  
+							</div>
+						</div>
+					</div>
+					<div class="col-md-3" data-aos="fade-up" data-aos-duration="700">
+						<div class="card h-100">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline">Total Cases</h4><span class="float-end h6 m-0 fw-bold">24,418</span>
+							</div>
+							<div class="card-body" id='chart5'>
+							  
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-3" data-aos="fade-up" data-aos-duration="1000">
+							<div class="card" style="height:100%">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline">Pre-Litigation	/ Pre-Trial	</h4><span class="float-end h6 m-0 fw-bold">557</span>
+							</div>
+							<div class="card-body" id='chartPreLit' >
+							  
+							</div>
+						</div>
+					</div>
+					
+				<!--	<div class="col" data-aos="fade-up" data-aos-duration="1200">
+                                                        <div class="card">
+                                                        <div class="card-header">
+                                                                <h4 class="card-title mb-0 d-inline">Undated Cases</h4>
+                                                        </div>
+                                                        <div class="card-body" id='chartUndated' >
+
+                                                        </div>
+                                                </div>
+                                        </div>-->
+
+			
+					</div>
+
+					<div class="row mt-2 d-none">
+					
+			<div class="col-xl-7">
+				<div class="card h-100">
+					<div class="card-header">
+						<h4 class="card-title mb-0">Alerts</h4>
+					</div>
+					<div class="card-body" id=''>
+					<!--<table id="alertDashboard" class="table table-bordered" style="width:100%">
+							<thead>
+								<tr>
+									<th>Particulars</th>
+									<th>Civil</th>
+									<th>Criminal</th>
+									<th>Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Cases Disposed In Last Month(more than 10 years old)</td>
+									<td><a href="#" onclick="javascript:getAlertData('disposed','2')" aria-label="" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+									<td><a href="#" onclick="javascript:getAlertData('disposed','3')" aria-label="" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+									<td><a href="#" onclick="javascript:getAlertData('disposed','1')" aria-label="" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+								</tr>
+								<tr>	
+									<td>Cases Listed Today</td>
+									<td><a href="#" onclick="javascript:getAlertData('listed','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">	=====</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('listed','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+									<td><a href="#" onclick="javascript:getAlertData('listed','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+								</tr>
+								<tr>
+									<td>Undated Cases</td>
+									<td><a href="#" onclick="javascript:getAlertData('undated','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">	</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('undated','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+									<td><a href="#" onclick="javascript:getAlertData('undated','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+								</tr>
+								<tr>
+									<td>Cases Pending Registration	</td>
+									<td><a href="#" onclick="javascript:getAlertData('pending','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data"> 88578</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('pending','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data" >726187</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('pending','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data">814765</a></td>
+								</tr>
+								
+								<tr>
+									<td>Excessive Dated Cases (More than 3 Months)</td>
+									<td><a href="#" onclick="javascript:getAlertData('excessive','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">421</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('excessive','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data">204</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('excessive','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data">625</a></td>
+								</tr>
+								<tr>
+									<td>Pre-Litigation</td>
+									<td><a href="#" onclick="javascript:getAlertData('prelitigation','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+									<td><a href="#" onclick="javascript:getAlertData('prelitigation','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+									<td><a href="#" onclick="javascript:getAlertData('prelitigation','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+								</tr>
+								<tr>
+									<td>Pre-Trial</td>
+									<td><a href="#" onclick="javascript:getAlertData('pretrial','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">0</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('pretrial','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data">557</a></td>
+									<td><a href="#" onclick="javascript:getAlertData('pretrial','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data">Array</a></td>
+								</tr>
+								
+							</tbody>
+						</table>-->
+					</div>
+				</div>
+			</div>
+			<div class="col-xl-5">
+			<div class="card h-100">
+				<div class="card-header">
+					<h4 class="card-title mb-0 d-inline">Other Alerts</h4>
+				</div>
+				<div class="card-body" id=''>
+				<table id="" class="table table-bordered table-hover bg-light" style="width:100%;height: 295px;">
+					<thead>
+						<tr>
+							<th>Particulars</th>
+							<th>Civil</th>
+							<th>Criminal</th>
+							<th>Total</th>
+						</tr>
+					</thead>	
+					<tbody>
+					  <tr>
+							<td>Cases Instituted in Last Month</td>
+							<td><a href="#" onclick="fetchStateData('ins',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">456</a></td>
+							<td><a href="#" onclick="fetchStateData('ins',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">706</a></td>
+							<td><a href="#" onclick="fetchStateData('ins',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">1162</a></td>
+						</tr>
+						<tr>
+							<td>Cases Disposed in Last Month</td>
+							<td><a href="#" onclick="fetchStateData('disp',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">405</a></td>
+							<td><a href="#" onclick="fetchStateData('disp',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">546</a></td>
+							<td><a href="#" onclick="fetchStateData('disp',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">951</a></td>
+						</tr>
+						<tr>
+							<td>Filed Cases By Senior Citizen</td>
+							<td><a href="#" onclick="fetchStateData('citizen',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">4157</a></td>
+							<td><a href="#" onclick="fetchStateData('citizen',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">767</a></td>
+							<td><a href="#" onclick="fetchStateData('citizen',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">4924</a></td>
+						</tr>
+						<tr>
+							<td>Filed Cases By Woman</td>
+							<td><a href="#" onclick="fetchStateData('women',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">2674</a></td>
+							<td><a href="#" onclick="fetchStateData('women',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">2093</a></td>
+							<td><a href="#" onclick="fetchStateData('women',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">4767</a></td>
+						</tr>
+						<tr>
+							<td>Delay Reason</td>
+							<td><a href="#" onclick="fetchStateData('delay',2);" aria-label="" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+							<td><a href="#" onclick="fetchStateData('delay',3);" aria-label="" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+							<td><a href="#" onclick="fetchStateData('delay',1);" aria-label="" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></td>
+						</tr>
+					</tbody>
+				</table>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<div class="row mt-2 p-2 countsrow">
+	 <div class="col-xl-4">
+		 <div class="card h-100">
+			<div class="card-body" id=''>
+				<div class='container d-none'>
+					<div class='row'>
+						<div class='col text-center bg-light'>
+							<h6 style='color:#bc453d'>Court Complex</h6>
+							<span class='h2'> </span>
+						</div>
+					</div>
+					<div class='row my-2'>
+						<div class='col text-center bg-light'>
+							<h6 style='color:#5157ab'>Court Establishment</h6>
+							<span class='h2'> </span>
+						</div>
+					</div>
+					<div class='row my-2'>
+						<div class='col text-center bg-light'>
+							<h6 style='color:#0888a5'>No of Courts / Judges</h6>
+							<span class='h2'> /</span>
+						</div>
+					</div>
+					<div class='row my-2'>
+						<div class='col text-center bg-light'>
+							<h6 style='color:#06a883'>Data Not transferred</h6>
+							<span class='h2'></span>
+						</div>
+					</div>
+					<div class='row'>
+						<div class='col text-center bg-light'>
+							<h6 style='color:#e39f2d'>Orders Not Uploaded</h6>
+							<span class='h2'></span>
+						</div>
+					</div>
+			</div>
+			<div classs="container">
+			<div class="row">
+				<div class="col">
+					 <div class="card-header text-center h6" id=''>
+							<span style='color: #045846;font-weight: bold;'>Age wise pending cases</span>
+							  <div class="dropstart float-end ellipsis-vIcon">
+                                                                
+                                                                  <button class='btn btn-secondary float-end btn-sm' id='agewisependTblbtn1' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+                                                                    <button class='btn btn-primary float-end btn-sm' id='agewisependchartbtn1' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+				</div>	</div>
+				  <div class="card-body" style="" id='agewisePendchart'>
+						       </div>
+				 <div class="card-body" style="" id='agewisePendTbl'>
+				<table width="100%" cellpadding="0" align="center" class="text-center table table-bordered table-hover">
+							
+
+								<tbody>
+								<!--<tr class="bg-light1">
+									<td colspan="2"><h6 class="pt-1 fw-bold" style="color:#87191e;">Age wise pending cases</h6></td><td colspan="1"> <button class='btn btn-secondary float-end btn-sm' id='agewisependTblbtn1' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+                                          <button class='btn btn-primary float-end btn-sm' id='agewisependchartbtn1' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button></td>
+								</tr>-->
+								<tr class="fw-bold">
+									<td style="background: #fafafa;">Civil</td>
+									<td style="background: #fafafa;">Criminal</td>
+									<td style="background: #fafafa;">Total</td>
+								</tr>
+								 <tr class="border-top">
+                                                                        <td colspan="3"><h6 class="pt-1 fw-bold" style="color:#198754;">Less than one year</h6></td>
+                                                                </tr>
+																<tr>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot0_1',2);" aria-label="5,771" data-bs-toggle="modal" data-bs-target="#modal_year_data">5,771</span>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot0_1',3);" aria-label="5,479" data-bs-toggle="modal" data-bs-target="#modal_year_data">5,479</span></td>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot0_1',1);" aria-label="11,250 (46%)" data-bs-toggle="modal" data-bs-target="#modal_year_data">11,250 (46%)</span></td>
+								</tr>
+								
+								 <tr class="border-top">
+                                                                        <td colspan="3"><h6 class="pt-1 fw-bold" style="color:#198754;">1 to 3 Years</h6></td>
+                                                                </tr>
+																<tr>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot1_3',2);" aria-label="5,110" data-bs-toggle="modal" data-bs-target="#modal_year_data">5,110</span>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot1_3',3);" aria-label="3,692" data-bs-toggle="modal" data-bs-target="#modal_year_data">3,692</span></td>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot1_3',1);" aria-label="8,802 (36%)" data-bs-toggle="modal" data-bs-target="#modal_year_data">8,802 (36%)</span></td>
+								</tr>
+								
+						 <tr class="border-top">
+                                                                        <td colspan="3"><h6 class="pt-1 fw-bold" style="color:#198754;">3 to 5 Years</h6></td>
+                                                                </tr>								
+									<tr>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot3_5',2);" aria-label="2,022" data-bs-toggle="modal" data-bs-target="#modal_year_data">2,022</span>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot3_5',3);" aria-label="1,380" data-bs-toggle="modal" data-bs-target="#modal_year_data">1,380</span></td>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot3_5',1);" aria-label="3,402 (14%)" data-bs-toggle="modal" data-bs-target="#modal_year_data">3,402 (14%)</span></td>
+								</tr>
+							
+
+								
+									 <tr class="border-top">
+                                                                        <td colspan="3"><h6 class="pt-1 fw-bold" style="color:#198754;">5 to 10 Years</h6></td>
+                                                                </tr>
+																	<tr>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot5_10',2);" aria-label="596" data-bs-toggle="modal" data-bs-target="#modal_year_data">596</span>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot5_10',3);" aria-label="307" data-bs-toggle="modal" data-bs-target="#modal_year_data">307</span></td>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('tot5_10',1);" aria-label="903 (4%)" data-bs-toggle="modal" data-bs-target="#modal_year_data">903 (4%)</span></td>
+								</tr>
+								
+
+									
+							 <tr class="border-top">
+                                                                        <td colspan="3"><h6 class="pt-1 fw-bold" style="color:#198754;">Above 10 Years</h6></td>
+                                                                </tr>
+															<tr>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('above_10',2);" aria-label="35" data-bs-toggle="modal" data-bs-target="#modal_year_data">35</span>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('above_10',3);" aria-label="26" data-bs-toggle="modal" data-bs-target="#modal_year_data">26</span></td>
+									<td><span class="h4"><a href="#" onclick="fetchYearData('above_10',1);" aria-label="61 (0%)" data-bs-toggle="modal" data-bs-target="#modal_year_data">61 (0%)</span></td>
+								</tr>
+								
+								 
+							</tbody></table>	
+			</div>
+			</div>
+			</div></div>
+			</div>
+		</div> 
+
+	 
+	 </div>
+	 <div class="col-xl-8">	
+	 	<div class='row'>
+			<div class='col'>
+				 <div class='col'>
+					<div class="card mb-2">
+								<div class="card-header text-center h6" id=''>
+							<span style='color: #045846;font-weight: bold;'>Instituted in last month</span>
+					</div>
+						<div class="card-body" id=''>
+						<table width='100%' cellpadding='0' align='center' class='text-center'>
+					<tr>
+							<td colspan='3'>
+									<div class="progress d-none" style="height:10px;">
+									<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width:5%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">5% of Total Pending Cases</span> </div>
+									</div>
+							</td>
+					</tr>
+					<tr>
+							<td><span class='h4'><a href="#" onclick="fetchStateData('ins',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">456</span></td>
+							<td><span class='h4'><a href="#" onclick="fetchStateData('ins',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">706</span></td>
+							<td><span class='h4'><a href="#" onclick="fetchStateData('ins',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">1,162</span></td>
+					</tr>
+					<tr>
+							<td>Civil</td>
+							<td>Criminal</td>
+							<td>Total</td>
+					</tr>
+				</table>
+				</div>
+			</div>
+		</div>
+
+				<div class="card h-100">
+					<div class="card-header text-center h6" id=''>
+							<span style='color: #aa4349;font-weight: bold;'>Disposal in last month</span>
+					</div>
+					<div class="card-body" id=''>
+							<table width='100%' cellpadding='0' align='center' class='text-center'>
+							
+
+								<tr>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('disp',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">405</a></span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('disp',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">546</span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('disp',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">951</a></span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+								<tr class='border-top'>
+									<td colspan='3' class="my-3"><h6 class='py-2 fw-bold' style='color:#0d6efd;'>Contested</h6></td>
+								</tr>
+												<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:31%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">31% of Disposal in last month</span></div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><span class='h4'>118</span></td>
+									<td><span class='h4'>175</span></td>
+									<td><span class='h4'> 293</span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+								<tr  class='border-top'>
+									<td colspan='3' class="my-3"><h6 class='py-2 fw-bold' style='color:#198754;'>Uncontested</h6></td>
+								</tr>
+											<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										  <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 69%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">69% of Disposal in last month </span></div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+								<td><span class='h4'>287</span></td>
+								<td><span class='h4'>371</span></td>
+									<td><span class='h4'>658</span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+							</table>
+					</div>
+				</div>
+			</div>
+			<div class='col'>
+				<div class='row  mb-2 d-none'>
+					<div class='col'>
+						<div class="card h-100">
+											<div class="card-header text-center h6" id=''>
+							<span style='color: #048a6c;font-weight: bold;'>Instituted in last month</span>
+						</div>
+							<div class="card-body" id=''>
+							<table width='100%' cellpadding='0' align='center' class='text-center'>
+								<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width:5%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">5%</span> </div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('ins',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">456</span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('ins',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">706</span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('ins',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">1,162</span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+							</table>
+							</div>
+						</div>
+					</div>
+				</div>	
+				<div class='row'>
+					<div class='col'>
+						<div class="card h-100">
+											<div class="card-header text-center h6" id=''>
+							<span style='color: #1C5269;font-weight: bold;'>Cases Listed Today</span>
+						</div>
+							<div class="card-body" id=''>
+									<table width='100%' cellpadding='0' align='center' class='text-center'>
+								<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 4%; background-color: #4ca2c7!important;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">4% of Total Pending Cases</span></div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('listed','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">404</span></td>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('listed','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data">495</span></td>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('listed','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data">899</span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+							</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				  <div class="card">
+                                                        <div class="card-header text-center h6" id=''>
+                                                        <span style='color: #006c54;font-weight: bold;'>Undated</span>
+                                                </div>
+                                                        <div class="card-body" id=''>
+                                                                        <table width='100%' cellpadding='0' align='center' class='text-center'>
+                                                                <tr>
+                                                                        <td colspan='3'>
+                                                                                <div class="progress" style="height:10px;">
+                                                                                <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">0% of Total Pending Cases </span></div>
+                                                                                </div>
+                                                                        </td>
+                                                                </tr>
+                                                                <tr>
+                                                                        <td><span class='h4'><a href="#" onclick="javascript:getAlertData('undated','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">2</a></span></td>
+                                                                        <td><span class='h4'><a href="#" onclick="javascript:getAlertData('undated','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data">1</a></span></td>
+                                                                        <td><span class='h4'><a href="#" onclick="javascript:getAlertData('undated','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data">3</a></span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                        <td>Civil</td>
+                                                                        <td>Criminal</td>
+                                                                        <td>Total</td>
+                                                                </tr>
+                                                        </table>
+                                                        </div>
+                                                </div>
+					 <div class="card">
+                                                <div class="card-header text-center h6" id=''>
+                                                        <span style='color: #b53f34;font-weight: bold;'>Excessive Dated Cases</span>
+                                                </div>
+                                                        <div class="card-body" id=''>
+                                                                        <table width='100%' cellpadding='0' align='center' class='text-center'>
+                                                                <tr>
+                                                                        <td colspan='3'>
+                                                                                <div class="progress" style="height:10px;">
+                                                                                <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width:3%;background-color: #e36d61!important;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">3% of Total Pending Cases</span> </div>
+                                                                                </div>
+                                                                        </td>
+                                                                </tr>
+                                                                <tr>
+                                                                        <td><span class='h4'><a href="#" onclick="javascript:getAlertData('excessive','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">421</a></span></td>
+                                                                        <td><span class='h4'><a href="#" onclick="javascript:getAlertData('excessive','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data">204</span></td>
+                                                                        <td><span class='h4'><a href="#" onclick="javascript:getAlertData('excessive','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data">625</a></span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                        <td>Civil</td>
+                                                                        <td>Criminal</td>
+                                                                        <td>Total</td>
+                                                                </tr>
+                                                        </table>
+                                                        </div>
+						</div>
+
+					 <div class="card">
+                                                        <div class="card-header text-center h6" id=''>
+                                                        <span style='color: #3d4399;font-weight: bold;'>Cases Filed By Woman    </span>
+                                                </div>
+                                                        <div class="card-body" id=''>
+                                                                        <table width='100%' cellpadding='0' align='center' class='text-center'>
+                                                                <tr>
+                                                                        <td colspan='3'>
+                                                                                <div class="progress" style="height:10px;">
+                                                                                <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 20%;    background-color: #5157ab!important;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText"> 20% of Total Pending Cases</span> </div>
+                                                                                </div>
+                                                                        </td>
+                                                                </tr>
+                                                                <tr>
+                                                                        <td><span class='h4'><a href="#" onclick="fetchStateData('women',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">2,674</a></span></td>
+                                                                        <td><span class='h4'><a href="#" onclick="fetchStateData('women',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">2,093</a></span></td>
+                                                                        <td><span class='h4'><a href="#" onclick="fetchStateData('women',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">4,767</a></span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                        <td>Civil</td>
+                                                                        <td>Criminal</td>
+                                                                        <td>Total</td>
+                                                                </tr>
+                                                        </table>
+                                                        </div>
+                                                </div>
+
+
+			</div>
+		</div>
+		<div class='row'>
+			<div class='col'>
+			<div class="card d-none">
+						<div class="card-header text-center h6" id=''>
+							<span style='color: #b53f34;font-weight: bold;'>Excessive Dated Cases</span>
+						</div>
+							<div class="card-body" id=''>
+									<table width='100%' cellpadding='0' align='center' class='text-center'>
+								<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width:3%;background-color: #e36d61!important;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">3%</span> </div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('excessive','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data">421</a></span></td>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('excessive','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data">204</span></td>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('excessive','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data">625</a></span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+							</table>
+							</div>
+						</div>
+
+			</div>
+			<div class='col'>
+				<div class="card d-none">
+							<div class="card-header text-center h6" id=''>
+							<span style='color: #006c54;font-weight: bold;'>Undated</span>
+						</div>
+							<div class="card-body" id=''>
+									<table width='100%' cellpadding='0' align='center' class='text-center'>
+								<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText">0% </span></div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('undated','2')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></span></td>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('undated','3')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></span></td>
+									<td><span class='h4'><a href="#" onclick="javascript:getAlertData('undated','1')" data-bs-toggle="modal" data-bs-target="#modal_state_data"></a></span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+							</table>
+							</div>
+						</div>
+			</div>
+		</div>
+		<div class='row'>
+			<div class='col hideonMob'>
+				<div class="card h-100 d-none">
+							<div class="card-header text-center h6" id=''>
+						 	<span style='color: #3d4399;font-weight: bold;'>Cases Filed By Woman	</span>
+						</div>
+							<div class="card-body" id=''>
+									<table width='100%' cellpadding='0' align='center' class='text-center'>
+								<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 20%;    background-color: #5157ab!important;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText"> 20%</span> </div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('women',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">2,674</a></span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('women',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">2,093</a></span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('women',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">4,767</a></span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+							</table>
+							</div>
+						</div>
+			</div>
+			<div class='col'>
+				<div class="card h-100">
+							<div class="card-header text-center h6" id=''>
+							<span style='color: #6A470C;font-weight: bold;'>Cases Filed By Senior Citizen	</span>
+						</div>
+							<div class="card-body" id=''>
+									<table width='100%' cellpadding='0' align='center' class='text-center'>
+								<tr>
+									<td colspan='3'>
+										<div class="progress" style="height:10px;">
+										<div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 20%;    background-color: #e39f2d!important;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText"> 20% of Total Pending Cases</span>  </div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('citizen',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">4,157</a></span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('citizen',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">767</a></span></td>
+									<td><span class='h4'><a href="#" onclick="fetchStateData('citizen',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">4,924</a></span></td>
+								</tr>
+								<tr>
+									<td>Civil</td>
+									<td>Criminal</td>
+									<td>Total</td>
+								</tr>
+							</table>
+							</div>
+						</div>
+			</div>
+		</div>
+	 </div>
+</div>
+
+<div class="row mt-2 d-flex align-items-stretch">
+	
+
+			
+		</div>
+
+
+</div>
+ </div>
+ 
+<div class="tab-pane" id="pills-delayDash" role="tabpanel" aria-labelledby="delayDash-tab">
+	<div class="container-fluid mt-2">
+  <div class="row" id='delayReasonList'>
+				<div class="container-fluid mt-2">
+ 
+		<div class="row mt-2 d-flex align-items-stretch">
+			<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<!--<h4 class="card-title mb-0 d-inline"><span id=''>Case Type</span></h4>-->
+					 <table id='OAAE1chart' width='90%' class='float-start'>
+						<tr>
+						<td class='oriDiv'><button type="button" class="active" onclick="fetchDelayGroup('2','pending')" style='width:' data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus"  data-bs-placement="bottom" data-bs-content="Civil" id="civDelaybtn"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Civil <span class="visually-hidden">case type</span></button></td>
+						<td class='appDiv'><button type="button" class="" onclick="fetchDelayGroup('3','pending')" style='width:' data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Criminal" id="criDelaybtn"><i class="fas fa-landmark"></i>&nbsp;&nbsp;Criminal <span class="visually-hidden">case type</span></button></td>
+						<td class='applDiv'><button type="button" class="" onclick="fetchDelayGroup('1','pending')" style='width:' data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Both" id="bothDelaybtn"><i class="fas fa-balance-scale"></i>&nbsp;&nbsp;Both <span class="visually-hidden">civil and criminal case types</span></button></td>
+						</tr>
+						</table>
+
+					<div class="dropstart float-end ellipsis-vIcon">
+					   
+					  	<button class='btn btn-secondary float-end btn-sm' id='caseTypeTblbtn1' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+						<button class='btn btn-primary float-end btn-sm' id='caseTypechartbtn1' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+					   
+					</div>
+					
+					<div class="px-3 py-2">
+							<select name="case_type_select" id="case_type_select" aria-label="select case type" class="form-select form-select-sm mt-3" style="margin-top: 2rem !important;" onchange="fetchDelayGroup('','',this.value);"> 
+							 				
+								</select>
+					</div>
+					
+				</div>
+				<div class="card-body" id='pendash1chart1'>
+				</div>
+				 <div class="card-body" id='chartstbl' >
+
+
+				</div>
+			</div>
+			</div>
+
+			<div class="col-xl-9">
+				<div class="container-fluid p-0">
+					<div class="row d-flex align-items-stretch mainFourDivs">
+						<div class="col-xl-12  mb-2" >
+						<div class="card h-100 ">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline me-4"><span id='' tabindex='0'>Delay AgeWise</span></h4> <span class="badge rounded-pill bg-secondary border breadcrumb-badge" id='age_breadcrumb1' style='display:none'>0 to 1 Years&nbsp;&nbsp;<a href="#" aria-label="close button" onclick=""><i class="fa fa-times text-white"></i></a></span>
+
+								<div class="dropstart  float-end ellipsis-vIcon">
+					  <button class="btn p-1 py-0 dropdown-toggle" type="button" id="dropdownMenuButtonAge" data-bs-toggle="dropdown" data-bs-auto-close="outside"  aria-expanded="false" onclick="updateDelayCasesChartT2()" aria-label='click to view age wise pendency details'>
+					<i class="fas fa-ellipsis-v"></i>
+					  </button>
+
+					  <button class='btn btn-secondary float-end btn-sm' id='agewiseTblbtn1' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+					  <button class='btn btn-primary float-end btn-sm' id='agewisechartbtn1' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+
+					  <ul class="dropdown-menu mtpdropdown-menu" aria-labelledby="dropdownMenuButtonAge">
+						<li class='p-1 py-0'>			
+						<span class='position-absolute w-100 float-end pe-2 ' style="z-index: 999;">
+										<button class='btn btn-secondary float-end btn-sm' id='ageChartTblBtn1' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+										<button class='btn btn-primary float-end btn-sm' id='agechart1btn1' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+						</span>
+							<div  id='ageBarInDropdown1' style='width:250px;height:230px'></div>
+							 <div id='ageBarInDropdowntbl1' style='width:250px;height:230px;overflow-y: auto;padding-top:30px' >
+						 
+							</div> 
+						</li>
+						
+					  </ul>
+					</div>
+
+							</div>
+							<div class="card-body" style="overflow-x:auto;overflow-y:hidden;" id='agewise1chart1'>
+							</div>
+		<div class="card-body" id='agewisetbl1' style="overflow-y: auto;max-height:275px;">
+				
+				</div>
+						</div>
+						</div>
+						
+						<div class="col-xl-12  mb-2" >
+						<div class="card h-100 ">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline"><span id='stage_heading1'  tabindex='0'>Case Type</span></h4>
+								
+								<div class="dropstart float-end ellipsis-vIcon">
+								 <!--button class="btn p-1 py-0 dropdown-toggle" aria-label="click to view stage category"  type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" data-bs-auto-close="outside"  aria-expanded="false" onclick="updateStageChart()">
+									<i class="fas fa-ellipsis-v"></i>&nbsp;
+								  </button-->
+								  <button class='btn btn-secondary float-end btn-sm' id='stageTblbtn1' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+								    <button class='btn btn-primary float-end btn-sm' id='stagechartbtn1' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+								  <ul class="dropdown-menu mtpdropdown-menu" aria-labelledby="dropdownMenuButton3">
+									<li class='p-1 py-0'>
+										<span class='position-absolute w-100 float-end pe-2'>
+										<button class='btn btn-secondary float-end btn-sm' id='stageChartTblBtn1' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+										<button class='btn btn-primary float-end btn-sm' id='stagechart1btn1' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+										</span>
+										<div id='StageWisePInDropdown1' style='width:350px;height:230px'></div>
+										<div id='StageWisePInDropdowntbl1' style='width:350px;height:230px;overflow-y: auto;padding-top:30px' >
+										
+						</div>
+										 </li>
+								  </ul>
+								</div>
+ 
+							
+							<div class="d-inline-block me-2 float-end">
+								<!--<div class="btn-group btn-group-sm float-end me-1 stagereadygrp" role="group" aria-label="">
+								  <input type="radio" class="btn-check" name="Stagereadyradio" id="Stageready1" autocomplete="off" value="1"  onclick="fetchStageWise();">
+								  <label class="btn btn-info" for="Stageready1" title='Ready' id='labelReady'>Ready</label>
+									
+								  <input type="radio" class="btn-check" name="Stagereadyradio" id="Stageready2" autocomplete="off" value="2" onclick="fetchStageWise();">
+								  <label class="btn btn-info" for="Stageready2" title='Unready' id='labelUnready'>Unready</label>
+								   <input type="radio" class="btn-check active" name="Stagereadyradio" id="Stageready3" autocomplete="off" value="3" onclick="fetchStageWise();" Checked>
+								  <label class="btn btn-info" for="Stageready3" title='All'id='labelAll'>All</label>
+								  </div>-->
+								</div>
+								</div>
+							<div class="card-body" id='stageWise1chart1' style="overflow-x:auto;overflow-y:hidden;">
+							</div>
+							<div class="card-body" id='stagetbl1' style="overflow-y: auto;max-height:275px;">
+					 
+					</div>
+						</div>
+						</div>
+
+						 
+
+					 
+					</div>
+			</div>
+		</div>
+		
+		</div>
+		
+</div>
+  </div>
+</div>
+</div>
+<!-- pending dashboard 1 start -->
+
+	<div class="tab-pane fade" id="pills-penDash1" role="tabpanel" aria-labelledby="penDash1-tab">
+	<div class="container-fluid mt-2">
+ 
+		<div class="row mt-2 d-flex align-items-stretch">
+			<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<!--<h4 class="card-title mb-0 d-inline"><span id=''>Case Type</span></h4>-->
+					 <table id='OAAE1chart' width='90%' class='float-start'>
+						<tr>
+						<td class='oriDiv'><button type="button" class="active" onclick="fetchCaseGroup('2','pending')" style='width:' data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus"  data-bs-placement="bottom" data-bs-content="Civil" id="civbtn"><i class="fas fa-gavel"></i>&nbsp;&nbsp;Civil <span class="visually-hidden">case type</span></button></td>
+						<td class='appDiv'><button type="button" class="" onclick="fetchCaseGroup('3','pending')" style='width:' data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Criminal" id="cribtn"><i class="fas fa-landmark"></i>&nbsp;&nbsp;Criminal <span class="visually-hidden">case type</span></button></td>
+						<td class='applDiv'><button type="button" class="" onclick="fetchCaseGroup('1','pending')" style='width:' data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="Both" id="bothbtn"><i class="fas fa-balance-scale"></i>&nbsp;&nbsp;Both <span class="visually-hidden">civil and criminal case types</span></button></td>
+						</tr>
+						</table>
+
+					<div class="dropstart float-end ellipsis-vIcon">
+					  <button class="btn p-1 py-0 dropdown-toggle" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" data-bs-auto-close="outside"  aria-expanded="false" onclick="updateMatterType()" aria-label='click to view case category details'>
+					<i class="fas fa-ellipsis-v"></i><span class="visually-hidden">ick to view case category details/span>
+					  </button>
+					  	<button class='btn btn-secondary float-end btn-sm' id='caseTypeTblbtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+						<button class='btn btn-primary float-end btn-sm' id='caseTypechartbtn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+					  <ul class="dropdown-menu mtpdropdown-menu" aria-labelledby="dropdownMenuButton3">
+						<li class='p-1 py-0'>
+							<span class='position-absolute w-100 float-end pe-2'>
+								<button class='btn btn-secondary float-end btn-sm' id='caseTypeChartTblbtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+								<button class='btn btn-primary float-end btn-sm' id='caseTypechart1btn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+							</span>
+
+
+							<div id='MatterTypeInDropdown' style='width:350px;height:230px'></div>
+							<div id='MatterTypeInDropdowntbl' style='width:350px;height:230px;overflow-y: auto;padding-top:30px' >
+							
+							</div>
+					  </ul>
+					</div>
+					<div class="px-3 py-2">
+							<select name="case_type_gr" id="case_type_gr" class="form-select form-select-sm mt-3" style="margin-top: 2rem !important;" onchange="fetchCasetypeGroup('home/fetchMatterType',this.value);"> 
+									 <option value="4">All</option> 					 
+									<option value="0">Original</option> 
+									<option value="1">Appeal</option> 
+									<option value="2">Application</option> 
+									<option value="3">Execution</option> 				 
+								</select>
+					</div>
+					
+				</div>
+				<div class="card-body" id='pendash1chart'>
+				</div>
+				 <div class="card-body" id='chart9tbl' style="overflow-y: auto;max-height:275px;">
+
+				</div>
+			</div>
+			</div>
+
+			<div class="col-xl-9">
+				<div class="container-fluid p-0">
+					<div class="row d-flex align-items-stretch mainFourDivs">
+						<div class="col-xl-12  mb-2" >
+						<div class="card h-100 ">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline me-4"><span id='' tabindex='0'>Age</span></h4> <span class="badge rounded-pill bg-secondary border breadcrumb-badge" id='age_breadcrumb' style='display:none'>0 to 1 Years&nbsp;&nbsp;<a href="#" aria-label="close button" onclick=""><i class="fa fa-times text-white"></i></a></span>
+
+								<div class="dropstart  float-end ellipsis-vIcon">
+					  <button class="btn p-1 py-0 dropdown-toggle" type="button" id="dropdownMenuButtonAge" data-bs-toggle="dropdown" data-bs-auto-close="outside"  aria-expanded="false" onclick="updatePendingCasesChartT2()" aria-label='click to view age wise pendency details'>
+					<i class="fas fa-ellipsis-v"></i>
+					  </button>
+
+					  <button class='btn btn-secondary float-end btn-sm' id='agewiseTblbtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+					  <button class='btn btn-primary float-end btn-sm' id='agewisechartbtn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+
+					  <ul class="dropdown-menu mtpdropdown-menu" aria-labelledby="dropdownMenuButtonAge">
+						<li class='p-1 py-0'>			
+						<span class='position-absolute w-100 float-end pe-2 ' style="z-index: 999;">
+										<button class='btn btn-secondary float-end btn-sm' id='ageChartTblBtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+										<button class='btn btn-primary float-end btn-sm' id='agechart1btn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+						</span>
+							<div  id='ageBarInDropdown' style='width:250px;height:230px'></div>
+							 <div id='ageBarInDropdowntbl' style='width:250px;height:230px;overflow-y: auto;padding-top:30px' >
+						 
+							</div> 
+						</li>
+						
+					  </ul>
+					</div>
+
+							</div>
+							<div class="card-body" style="overflow-x:auto;overflow-y:hidden;" id='agewise1chart'>
+							</div>
+		<div class="card-body" id='agewisetbl' style="overflow-y: auto;max-height:275px;">
+				
+				</div>
+						</div>
+						</div>
+						
+						<div class="col-xl-6  mb-2" >
+						<div class="card h-100 ">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline"><span id='stage_heading'  tabindex='0'>Stage</span></h4>
+								
+								<div class="dropstart float-end ellipsis-vIcon">
+								 <button class="btn p-1 py-0 dropdown-toggle" aria-label="click to view stage category"  type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" data-bs-auto-close="outside"  aria-expanded="false" >
+								 <!-- onclick="updateStageChart()" -->
+									<i class="fas fa-ellipsis-v"></i>&nbsp;
+								  </button>
+								  <button class='btn btn-secondary float-end btn-sm' id='stageTblbtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+								    <button class='btn btn-primary float-end btn-sm' id='stagechartbtn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+								  <ul class="dropdown-menu mtpdropdown-menu" aria-labelledby="dropdownMenuButton3">
+									<li class='p-1 py-0'>
+										<span class='position-absolute w-100 float-end pe-2'>
+										<button class='btn btn-secondary float-end btn-sm' id='stageChartTblBtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+										<button class='btn btn-primary float-end btn-sm' id='stagechart1btn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+										</span>
+										<div id='StageWisePInDropdown' style='width:350px;height:230px'></div>
+										<div id='StageWisePInDropdowntbl' style='width:350px;height:230px;overflow-y: auto;padding-top:30px' >
+										
+						</div>
+										 </li>
+								  </ul>
+								</div>
+ 
+							
+							<div class="d-inline-block me-2 float-end">
+								<!--<div class="btn-group btn-group-sm float-end me-1 stagereadygrp" role="group" aria-label="">
+								  <input type="radio" class="btn-check" name="Stagereadyradio" id="Stageready1" autocomplete="off" value="1"  onclick="fetchStageWise();">
+								  <label class="btn btn-info" for="Stageready1" title='Ready' id='labelReady'>Ready</label>
+									
+								  <input type="radio" class="btn-check" name="Stagereadyradio" id="Stageready2" autocomplete="off" value="2" onclick="fetchStageWise();">
+								  <label class="btn btn-info" for="Stageready2" title='Unready' id='labelUnready'>Unready</label>
+								   <input type="radio" class="btn-check active" name="Stagereadyradio" id="Stageready3" autocomplete="off" value="3" onclick="fetchStageWise();" Checked>
+								  <label class="btn btn-info" for="Stageready3" title='All'id='labelAll'>All</label>
+								  </div>-->
+								</div>
+								</div>
+							<div class="card-body" id='stageWise1chart' style="overflow-x:auto;overflow-y:hidden;">
+							</div>
+							<div class="card-body" id='stagetbl' style="overflow-y: auto;max-height:275px;">
+					 
+					</div>
+						</div>
+						</div>
+
+						<div class="col-xl-6  mb-2" id="div_delay">
+						<div class="card h-100 ">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline"><span id='title_3'  tabindex='0'>Delay Reason </span></h4>
+								<button class='btn btn-secondary float-end btn-sm' id='delayTblbtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+								 <button class='btn btn-primary float-end btn-sm' id='delaychartbtn' aria-label="click to view data in graphical form"><i class="fas fa-chart-bar"></i></button>
+							</div>
+							<div class="card-body" id='delayWise1chart' style="overflow-x:auto;overflow-y:hidden;">
+							</div>
+							<div class="card-body" id='delaytbl' style="overflow-y: auto;max-height:275px;">
+  
+</div>
+						</div>
+						</div>
+
+						<div class="col-xl-6  mb-2" id="div_ins_disp">
+						<div class="card h-100 ">
+							<div class="card-header">
+								<h4 class="card-title mb-0 d-inline"><span id='title_4'  tabindex='0'>Institution Vs Disposal</span></h4>
+								
+								<div class="dropstart float-end ellipsis-vIcon d-none" id='dv_disp_nature_pie'>
+								  <button class="btn p-1 py-0 dropdown-toggle" aria-label="click to view disposal nature category" type="button" id="dropdownMenuButton4" data-bs-toggle="dropdown" data-bs-auto-close="outside"  aria-expanded="false" onclick="updateDisposalNature()">
+									<i class="fas fa-ellipsis-v"></i>
+								  </button>
+								 
+								  <button class='btn btn-secondary float-end btn-sm' id='dispwiseTblbtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+								  <button class='btn btn-primary float-end btn-sm' id='dispwisechartbtn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+								  <ul class="dropdown-menu mtpdropdown-menu" aria-labelledby="dropdownMenuButton4">
+									<li class='p-1 py-0'>
+										<span class='position-absolute w-100 float-end pe-2'>
+											<button class='btn btn-secondary float-end btn-sm' id='natofdispTblBtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+											<button class='btn btn-primary float-end btn-sm' id='natofdispChartBtn' aria-label="click to view data in graphical form"><i class="fas fa-chart-pie"></i></button>
+										</span>
+
+										<div id='disaposalNatureChart' style='width:350px;height:230px'></div>
+										<div id='disaposalNatureChartTbl' style='overflow-y: auto;height:230px;padding-top:20px'>
+										<!--table-->
+										</div>
+										 
+								  </ul>
+
+								</div>
+								
+								<div class="d-inline-block float-end w-25 me-2" id='dv_inst_disp_select'>
+								<select name="ins_year" id="ins_year" class="form-select form-select-sm" style='width:80px;float:left;' onchange="fetchInsDisp();">
+									<option value="">Year</option>
+									<option value="2018">2018</option><option value="2019">2019</option><option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option><option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>	
+								</select>
+								 <button class='btn btn-secondary float-end btn-sm' id='insDispTblbtn' aria-label="click to view data in tabular form"><i class='fas fa-table'></i></button>
+								 <button class='btn btn-primary float-end btn-sm' id='insDispchartbtn' aria-label="click to view data in graphical form"><i class="fas fa-chart-bar"></i></button>
+								</div>
+								
+							</div>
+							<div class="card-body" id='instVsDisp1chart' style="overflow-x:auto;overflow-y:hidden;">
+							</div>
+										<div class="card-body" id='instVsDisptbl' style="overflow-y: auto;max-height:275px;">
+  
+</div>
+						</div>
+						</div>
+					</div>
+			</div>
+		</div>
+		
+		</div>
+</div>
+</div>
+<!-- pending Dashboard 1 End -->
+
+<!--  information management new start -->
+
+	<div class="tab-pane fade" id="pills-infomgmt" role="tabpanel" aria-labelledby="infomgmt-tab12">
+  <!-- Information Management tabs -->
+  <ul class="nav nav-tabs mt-3" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" href="" data-bs-toggle="tab" data-bs-target="#imtab01">Data Monitoring - Summary Report</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href=""  data-bs-toggle="tab" data-bs-target="#imtab02" onclick='show_court_judgeData()'>Court Judge Report</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="" data-bs-toggle="tab" data-bs-target="#imtab03" onclick='show_national_master()'>National Master - Summary Report</a>
+    </li>
+    <!--<li class="nav-item">
+      <a class="nav-link" href="" data-bs-toggle="tab" data-bs-target="#imtab04" onclick='show_est_data()'>Establishmentwise Code Not Entered</a>
+    </li>-->
+    <li class="nav-item">
+      <a class="nav-link" href="" data-bs-toggle="tab" data-bs-target="#imtab05" onclick='show_under_trail()'>Under Trial Report</a>
+    </li>
+  </ul>
+
+   <!-- Tab panes -->
+  <div class="tab-content">
+    <div id="imtab01" class="container mx-auto m-3 tab-pane fade show active"><br>
+      <br>
+    </div>
+    <div id="imtab02" class="container mx-auto m-3 tab-pane fade"><br>    
+      <br>
+    </div>
+
+    <div id="imtab03" class="container mx-auto m-3 tab-pane fade"><br>
+	 <center><h3>Establishment wise National Code Not entered</h3>
+		<table border="0" width='30%' cellpadding="2" cellspacing="3"  >
+		<tr>
+			<td  align="left"><font color="red">*</font>&nbsp;State</td>
+			<td align="left">
+				<select name="natmast_state_code" id="natmast_state_code" aria-label="select natmast state code" class="form-select"   onchange="show_national_mast_data_level2(this.value)"  >
+				<!--onchange="show_national_mast_data_level2(this.value)"--->
+				
+			</select>
+		</td></tr>
+		</table>
+		<br><br>
+		<div id='natmast'>
+		</div>     
+      
+      <br>
+    </div>
+
+    <div id="imtab04" class="container mx-auto m-3 tab-pane fade"><br>
+      <center><h3>Master list where National Code not entered  </h3>
+	   <table border="0" width='30%' cellpadding="2" cellspacing="3"  >
+		<tr>
+			<td  align="left"><font color="red">*</font>&nbsp;State</td>
+			<td align="left">
+				<select name="est_state_code" id="est_state_code" aria-label="select state" class="form-select"   onChange='cleardata()'>
+				
+			</select>
+		</td></tr>
+		
+		<tr>
+			<td  align="left"><font color="red">*</font>&nbsp;Report Type</td>
+			<td align="left">
+				<select name="report_type"  id="report_type"  class="select1" onChange='show_dist(this.value)' >
+					<option value="">Select</option> 
+					<option value="1"   >Case Type</option> 
+					<option value="2"   >Purpose Type</option> 
+					<option value="3"    >Adjourn Type</option>	
+					<option value="4"    >Police Station</option> 
+					<option value="5"    >Disposal Type</option> 
+					<option value="6"    >Act Type</option>
+			</select>
+		</td></tr>
+		
+
+		<tr>
+			<td  align="left"><font color="red">*</font>&nbsp;District</td>
+			<td align="left">
+				<select name="est_dist_code" id="est_dist_code" aria-label="select district" class="form-select" onChange='show_estwise_data(this.value)'>
+				
+			</select>
+		</td></tr>
+
+
+		
+		</table>
+		</center>
+		<div id='divOutput'>
+		</div>
+
+		<br>
+		</center>
+    </div>
+
+    <div id="imtab05" class="container mx-auto m-3 tab-pane fade"><br>
+       <center><h3>Under Trial Report</h3>  
+	  <table border="0"   width='30%' cellpadding="2" cellspacing="3"    >
+	  <tr >
+			<td  align="left"><font color="red">*</font>&nbsp;State</td>
+			<td align="left">
+				<select name="underest_state_code" id="underest_state_code" aria-label="select State" class="form-select"  onChange='show_est_trialdata(this.value)'>
+				
+			</select>
+		</td></tr>
+		<tr  >
+			<td  align="left"><font color="red">*</font>&nbsp;District</td>
+			<td align="left">
+				<select name="underest_dist_code" id="underest_dist_code" aria-label="select district" class="form-select"   onChange='show_est_trialdata()'>
+				
+			</select>
+		</td></tr>
+		</table>
+		 <center>
+		<div id='divOutputunder'>
+		</div>
+    </div>
+
+  </div>
+
+</div>
+
+<!--  information management old start -->
+
+	<div class="tab-pane fade" id="pills-infomgmt1" role="tabpanel" aria-labelledby="infomgmt-tab12">
+	<div class="container-fluid mt-2 p-0">
+<!--div class="row" id='infMgtList'-->
+		<div class="row mt-2 d-flex align-items-stretch">
+			<div class="col-xl px-1" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id='infomgmt-tab12'>Court</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row m-1' id=''><span class='col pt-1'>Court Complex</span><span id='ctCmplx' class='h4 col m-0 text-end text-inmg01'> </span></div>
+					<div class='countcoldiv bg-light row m-1' id=''><span class='col pt-1'>Court Establishment</span><span id='ctEst' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class='countcoldiv bg-light row m-1' id=''><span class='col pt-1'>Data Not transferred</span><span id='dataNtTransferred' class='h4 col m-0 text-end text-inmg03'></span></div>
+					<div class='countcoldiv bg-light row m-1' id=''><span class='col pt-1'>Orders Not Uploaded</span><span id='ordersNtUploaded' class='h4 col m-0 text-end text-inmg04'></span></div>
+				</div>
+			</div>
+			</div>
+
+
+				<div class="col-xl px-1" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Cases</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Undated Cases</span><span id='undtCases' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='undatedCasesWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+						<span id='undatedCasesPerc' class='progressText' style='margin-left: 10%;'></span>
+					  </div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Excessive Dated</span><span id='exceDated' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='exceDatedWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span id='exceDatedPerc' class='progressText' style='margin-left: 20%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Listed Today</span><span id='listedToday' class='h4 col m-0 text-end text-inmg03'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg03 progress-bar-animated" role="progressbar" id='listedTodayWidth'  aria-valuenow="2" aria-valuemin="0" aria-valuemax="100"><span id='listedTodayPerc' class='progressText' style='margin-left: 2%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+				<div class="col-xl px-1">
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>JustIS</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Total Judicial Officers</span><span id='totalJudiOfficers' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Total Courts</span><span id='totalCourts' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Presiding officers</span><span id='presidingOfficers' class='h4 col m-0 text-end text-inmg03'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Justis App Used</span><span id='justisAppUsed' class='h4 col m-0 text-end text-inmg04'></span></div>
+				</div>
+			</div>
+			</div>
+
+		<div class="col-xl px-1">
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>NSTEP</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Bailiffs Onboarded</span><span id='bailiffsOnboarded' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Process Generated</span><span id='processGenerated' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Process Allocated</span><span id='processAllocated' class='h4 col m-0 text-end text-inmg03'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Process Delivered</span><span id='processDelivered' class='h4 col m-0 text-end text-inmg04'></span></div>
+				</div>
+			</div>
+			</div>
+
+			<div class="col-xl px-1">
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Virtual Court</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Received</span><span id='received' class='h4 col m-0 text-end' style='color:#2d92bd;'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Proceedings Done</span><span id='proceedingsDone' class='h4 col m-0 text-end' style='color:#8e44ad;'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Contested</span><span id='contested' class='h4 col m-0 text-end' style='color:#d35400;'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Paid Challans</span><span id='paidChallans' class='h4 col m-0 text-end' style='color:#d35400;'></span></div>
+					<div class='countcoldiv bg-light row m-1'><span class='col pt-1'>Amount</span><span id='amount' class='h4 col m-0 text-end' style='color:#e18f0e;'></span></div>
+				</div>
+			</div>
+			</div>
+
+		</div>
+
+		<div class='row mt-2 d-flex align-items-stretch bg-light border radius'>
+			<h5 class="card-title mb-0 text-center"><span id='' class='text-inmg01'>ePay</span></h5>
+			<div class="row mt-2 d-flex align-items-stretch mb-2">
+			<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Court Fee</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Establishments</span><span id='establishments'class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='establishmentsWidth'  aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText'  id='establishmentsPerc' style='margin-left: 10%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Cases</span><span id='courtFeeCases' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='courtFeeCasesWidth'  aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText'id='courtFeeCasesPerc' style='margin-left: 20%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Amount</span><span id='courtFeeAmt' class='h4 col m-0 text-end text-inmg03'></span></div>
+					<!--div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg03 progress-bar-animated" role="progressbar" style="width: 2%" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100"><span class='progressText' style='margin-left: 2%;'>2%</span></div>
+					</div-->
+				</div>
+			</div>
+			</div>
+
+
+				<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Fine</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Establishments</span><span id='fineEstablishments' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='fineEstablishmentsWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='fineEstablishmentsPerc' style='margin-left: 10%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Cases</span><span id='fineCases' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='fineCasesWidth'  aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='fineCasesPerc' style='margin-left: 20%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Amount</span><span id='fineAmt' class='h4 col m-0 text-end text-inmg03'></span></div>
+					
+				</div>
+			</div>
+			</div>
+
+				<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Penalty</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Establishments</span><span id='penaltyEstablishments' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='penaltyEstablishmentsWidth'  aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='penaltyEstablishmentsPerc' style='margin-left: 10%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Cases</span><span id='penaltyCases' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='penaltyCasesWidth'  aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='penaltyCasesPerc' style='margin-left: 20%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Amount</span><span id='penaltyAmt' class='h4 col m-0 text-end text-inmg03'></span></div>
+					
+				</div>
+			</div>
+			</div>
+
+		<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Judicial Deposit</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Establishments</span><span id='judiDepositeEstablishments' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='judiDepositeEstablishmentsWidth'  aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='judiDepositeEstablishmentsPerc'  style='margin-left: 10%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Cases</span><span id='judiDepositeCases' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='judiDepositeCasesWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='judiDepositeCasesPerc' style='margin-left: 20%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Amount</span><span id='judiDepositeAmt' class='h4 col m-0 text-end text-inmg03'></span></div>
+					
+				</div>
+			</div>
+			</div>
+
+		</div>
+
+</div>
+
+
+		<div class='row mt-2 d-flex align-items-stretch bg-light border radius'>
+			<h5 class="card-title mb-0 text-center"><span id='' class='text-inmg02'>ICJS</span></h5>
+			<div class="row mt-2 d-flex align-items-stretch mb-2">
+			<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Establishments</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>FIR</span><span id='estFir' class='h4 col m-0 text-end text-inmg01'></span></div>
+					
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Chargesheets</span><span id='estChargesheets' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='estChargesheetsWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='estChargesheetsPerc' style='margin-left: 20%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+
+				<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Consumed</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>FIR</span><span id='consumedFir' class='h4 col m-0 text-end text-inmg01'></span></div>
+
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Chargesheets</span><span id='consumedChargesheets' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='consumedChargesheetsWidth'  aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='consumedChargesheetsPerc' style='margin-left: 20%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+				<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Verified</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>FIR</span><span id='verifiedFir' class='h4 col m-0 text-end text-inmg01'></span></div>
+					
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Chargesheets</span><span id='verifiedChargesheets' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='verifiedChargesheetsWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='verifiedChargesheetsPerc'  style='margin-left: 20%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+		<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Rejected</span></h4>
+				</div>
+				<div class="card-body" id=''>
+				<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>FIR</span><span id='chrgShtsFir' class='h4 col m-0 text-end text-inmg01'></span></div>
+				
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Chargesheets</span><span id='chrgShtsChrgSht' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='chrgShtsChrgShtWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='chrgShtsChrgShtPerc' style='margin-left: 20%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+		</div>
+
+
+	</div>
+
+<div class='row mt-2 d-flex align-items-stretch bg-light border radius'>
+			<h5 class="card-title mb-0 text-center"><span id='' class='text-inmg03'>eFiling</span></h5>
+			<div class="row mt-2 d-flex align-items-stretch mb-2">
+
+			                <div class="col-xl-3" >
+                        <div class="card h-100 ">
+                                <div class="card-header p-0 m-0">
+                                <h4 class="card-title mb-0 text-center"><span id=''>Advocates</span></h4>
+                                </div>
+                                <div class="card-body" id=''>
+                                        <div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Total Registered</span><span id='advTtlRegd' class='h4 col m-0 text-end text-inmg01'></span></div>
+                                        <div class="progress mt-0 m-1" style='height:10px;'>
+                                          <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='advTtlRegdWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='advTtlRegdPerc' style='margin-left: 10%;'></span></div>
+                                        </div>
+                                        <div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Verified</span><span id='advVerified' class='h4 col m-0 text-end text-inmg02'></span></div>
+                                        <div class="progress mt-0 m-1" style='height:10px;'>
+                                          <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='advVerifiedWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='advVerifiedPerc' style='margin-left: 20%;'></span></div>
+                                        </div>
+                                </div>
+                        </div>
+                        </div>
+
+			<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>New Cases</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Final Submited</span><span id='nwCasesFnlSmtd' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='nwCasesFnlSmtdWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='nwCasesFnlSmtdPerc' style='margin-left: 10%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Consumed in CIS</span><span id='nwCasesCnsmdCIS' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='nwCasesCnsmdCISWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='nwCasesCnsmdCISPerc' style='margin-left: 20%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+
+				<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Applications</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Final Submited</span><span id='applFnlSmtd' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='applFnlSmtdWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='applFnlSmtdPerc' style='margin-left: 10%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Consumed in CIS</span><span id='applCnsmdCIS' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='applCnsmdCISWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='applCnsmdCISPerc' style='margin-left: 20%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+				<div class="col-xl-3" >
+			<div class="card h-100 ">
+				<div class="card-header p-0 m-0">
+				<h4 class="card-title mb-0 text-center"><span id=''>Documents</span></h4>
+				</div>
+				<div class="card-body" id=''>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>In new cases</span><span id='docinNwCases' class='h4 col m-0 text-end text-inmg01'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='docinNwCasesWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='docinNwCasesPerc' style='margin-left: 10%;'></span></div>
+					</div>
+					<div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>In existing cases</span><span id='docinExistingCases' class='h4 col m-0 text-end text-inmg02'></span></div>
+					<div class="progress mt-0 m-1" style='height:10px;'>
+					  <div class="progress-bar progress-bar-striped bg-inmg02 progress-bar-animated" role="progressbar" id='docinExistingCasesWidth' aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='docinExistingCasesPerc' style='margin-left: 20%;'></span></div>
+					</div>
+				</div>
+			</div>
+			</div>
+
+
+		</div>
+		</div>
+
+
+
+		<!--SMS/Email start -->
+		<div class='row mt-2 d-flex align-items-stretch bg-light border radius'>
+                        <h5 class="card-title mb-0 text-center"><span id='' class='text-inmg03'>SMS/Email</span></h5>
+                        <div class="row mt-2 d-flex align-items-stretch mb-2">
+
+                                        <div class="col-xl-3" >
+                        <div class="card h-100 ">
+                                <div class="card-header p-0 m-0">
+                                <h4 class="card-title mb-0 text-center"><span id=''>SMS</span></h4>
+                                </div>
+                                <div class="card-body" id=''>
+                                        <div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>SMS Sent</span><span id='smsSent' class='h4 col m-0 text-end text-inmg01'></span></div>
+                                        <div class="progress mt-0 m-1" style='height:10px;'>
+                                          <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='advTtlRegdWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='' style='margin-left: 10%;'></span>0%</div>
+                                        </div>
+                                      
+                                </div>
+                        </div>
+                        </div>
+
+                        <div class="col-xl-3" >
+                        <div class="card h-100 ">
+                                <div class="card-header p-0 m-0">
+                                <h4 class="card-title mb-0 text-center"><span id=''>Email</span></h4>
+                                </div>
+                                <div class="card-body" id=''>
+                                        <div class='countcoldiv bg-light row mb-0 m-1'><span class='col pt-1'>Email Sent</span><span id='emailSent' class='h4 col m-0 text-end text-inmg01'></span></div>
+                                        <div class="progress mt-0 m-1" style='height:10px;'>
+                                          <div class="progress-bar progress-bar-striped bg-inmg01 progress-bar-animated" role="progressbar" id='nwCasesFnlSmtdWidth' aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"><span class='progressText' id='' style='margin-left: 10%;'></span>0%</div>
+                                        </div>
+                                       
+                                </div>
+                        </div>
+                        </div>
+			
+			 
+
+                </div>
+	
+		</div>
+</div>
+</div>
+</div>
+
+<!--div class="col-md-12">
+                                                <div id="drillDown_tbl_heading"><i class="fa fa-arrow-circle-down fa-fw"></i> &nbsp;
+                                               <a id="iframe_back" href="javascript:back(6)" class="btn btn-default back_btn" style='margin-right:50%;display:none;'><i class="fa fa-chevron-circle-left" aria-hidden="true"></i>&nbsp;Back</a>
+                                                </div-->
+
+<div class="row" id="drillDown_tbl">
+
+						<div class="col-md-8 offset-md-2" id='state_tab' style="display:none;"></div>
+						<div class="col-md-8 offset-md-2" id='year_tab' style="display:none;"></div>
+                                                <div class="col-md-8 offset-md-2" id='dist_tab' style="display:none;"></div>
+                                                <div class="col-md-8 offset-md-2" id='est_tab' style="display:none;"></div>
+                                                <div class="col-md-8 offset-md-2 row border rounded shadow p-2 mt-5" id='cases_captcha_tab' style="display:none;"></div>
+
+							<div class="col-md-8 offset-md-2" id='cases_tab1' style= "display:none;">
+                                                                 <table id='example_cases' class='bordered' width='100%' border='1' cellspacing='0' cellpadding='0' >
+                                                                <thead>
+                                                                <tr> <a class='btn btn-sm btn-primary m-2' style='margin-left: 50% !important;' href='#' onclick='javascript:back(4)'  >Back</a></tr>
+                                                                <tr style='background-color:white;font-weight:bold' ><td colspan='2' class='alert alert-warning' id='label'></td></tr>
+
+                                                                <tr align='left'>
+                                                                        <th>Cases</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody id='cases_report_body'></table>
+
+                                                        </div>
+
+
+
+</div>						
+                                                        <div class="col-md-8 offset-md-2" id='caseDetails_tab' style="display:none;"></div>
+                                                        <div class="col-md-8 offset-md-2" id='stateWise_caseDetails_tab' style="display:none;"></div>
+                                                        <div class="col-md-8 offset-md-2" id='distWise_caseDetails_tab' style="display:none;"></div>
+                                                        <div class="col-md-8 offset-md-2" id='estCodeWise_caseDetails_tab' style="display:none;"></div>
+                                                        <div class="col-md-8 offset-md-2" id='regYearWise_caseDetails_tab' style="display:none;"></div>
+							<div class="col-md-8 offset-md-2" id='regno_Wise_caseDetails_tab' style="display:none;">
+<!--<a class='btn btn-sm btn-primary m-2' style='margin-left: 50% !important' href='#' onclick='javascript:back_data(4)'   >Back</a-->
+						                <table id='example_regnoWise_caseDetails' class='bordered' width='100%' border='1' cellspacing='0' cellpadding='0' >
+                                                                <thead>
+                                                                <tr> <a class='btn btn-sm btn-primary m-2' style='margin-left: 50% !important' href='#' onclick='javascript:back_data(6)'   >Back</a></tr>
+                                                                <tr style='background-color:white;font-weight:bold' ><td colspan='2' class='alert alert-warning'></td></tr>
+
+                                                                <tr align='left'>
+                                                                        <th>Cases</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody id='regnoWise_caseDetails_report_body'></table>
+
+					                </div>
+
+  
+<!-- information management End -->
+<input type='hidden' name='regCasetype' id='regCasetype' value=''>
+<input type='hidden' name='txt_state_name' id='txt_state_name' >
+<input type='hidden' name='txt_dist_name' id='txt_dist_name' >
+
+<input type='hidden' name='txt_get_lbl_type' id='txt_get_lbl_type'>
+<input type='hidden' name='txt_case_name' id='txt_case_name' >
+<input type='hidden' name='txt_est_code' id='txt_est_code' >
+
+<input type='hidden' name='arrdelayId1' id='arrdelayId1' value=''>
+  <input type='hidden' name='txt_base_url' id='txt_base_url' value="/njdg_v3/">
+  <input type='hidden' name='mattertypeval' id='mattertypeval' value=''>
+  <input type='hidden' name='agewiseval' id='agewiseval' value=''>
+  <input type='hidden' name='stagewiseval' id='stagewiseval' value=''>
+  <input type='hidden' name='delayval' id='delayval' value=''>
+  <input type='hidden' name='dispmattertypeval' id='dispmattertypeval' value=''>
+  <input type='hidden' name='dispagewiseval' id='dispagewiseval' value=''>
+  <input type='hidden' name='disp_case_type' id='disp_case_type' value=''>
+
+  <input type='hidden' name='ageline' id='ageline' value=''>
+  <input type='hidden' name='agelinecount' id='agelinecount' value=''>
+   <input type='hidden' name='pendageline' id='pendageline' value=''>
+
+
+<input type='hidden' name='ageline1' id='ageline1' value=''>
+  <input type='hidden' name='agelinecount1' id='agelinecount1' value=''>
+   <input type='hidden' name='pendageline1' id='pendageline1' value=''>
+ 
+  <input type='hidden' name='ci_cri' id='ci_cri' value=''>
+   <input type='hidden' name='casetype' id='casetype' value=''>
+   <input type='hidden' name='flag' id='flag' value=''>
+ <input type='hidden' name='judge_code' id='judge_code' value=''>
+	<input type='hidden' name='active_tab' id='active_tab' value=''>
+<input type='hidden' name='val' id='val' value=''>
+ 
+<input type='hidden' name='ci_cri_caselist' id='ci_cri_caselist' value=''>
+<input type='hidden' name='casetypeval' id='casetypeval' value=''>
+<input type='hidden' name='flag_caselist' id='flag_caselist' value=''>
+ 
+
+<input type='hidden' name='get_year' id='get_year'>
+<input type='hidden' name='get_state_name' id='get_state_name'>
+
+<input type='hidden' name='flag_add' id='flag_add'>
+
+<input type='hidden' name='state_code2' id='state_code2' value=''>
+<input type='hidden' name='dist_code2' id='dist_code2' value=''>
+<input type='hidden' name='col_name' id='col_name' value=''>
+<input type='hidden' name='label' id='label' value=''>
+</div>
+
+ </div>
+ </div>
+	
+<div class="modal fade" id="modal_home" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-home'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_info_state_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+		  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+				<h5 class="modal-title" id="staticBackdropLabel1">Modal Title</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body" id='modal_body_levelone'>
+
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+			  </div>
+
+	</div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modal_info_judge_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+		  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+				<h5 class="modal-title" id="staticBackdropLabel1">Modal Title</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body" id='modal_judge_level_2'>
+
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+				
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+
+<div class="modal fade" id="modal_info_judge_data3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+		  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+				<h5 class="modal-title" id="staticBackdropLabel1">Modal Title</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body" id='modal_judge_level_3'>
+
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+				
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+<div class="modal fade" id="modal_national_mast_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel">National Master-Summary Report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-nat-mast-data'>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="modal_undertail_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel">Under Trail Report-District wise</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-dist-trial-data'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_undertail_data3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel">Under Trail Report-Establishmentwise</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal_trail_level_3'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-------- Other Details --------->
+<div class="modal fade" id="modal_year_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelYear" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabelYear">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-year'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal_count_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+		  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+				<h5 class="modal-title" id="modal_count_report_type"></h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body" id='modal_count_levelthree'>
+
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+				
+			  </div>
+			</div>
+		  </div>
+		</div>
+
+
+
+<div class="modal fade" id="modal_state_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropState" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+    <button type="button" id="yearBtn" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back" data-bs-target=""><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropState">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-state'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_dist_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" aria-label="Back" data-bs-target="#modal_state_data"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel2">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-toggle="modal" aria-label="close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-dist'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_est_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" aria-label="Back" data-bs-target="#modal_dist_data"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel3">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-est'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" >Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_casedata_captcha" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel3">Captcha</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+	<div class="row">
+	<label class="col-md-auto pt-2">Enter Captcha</label>
+	<div class="row" style="width: 75% !important;" id="modal-body-case-captcha"></div>
+	</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" >Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_case_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel4" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_est_data" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel4">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-case'>
+<!--	  <select class="form-control" id="sel_search_by" name="sel_search_by" onchange="">
+			<option value="">Search By</option>
+			<option value="regcase_type_name_in_est">Case Type</option>
+			<option value="case_no">Case Number/Year</option>
+		</select>-->
+
+        <table id='tbl_cases' class='bordered' width='100%' border='1' cellspacing='0' cellpadding='0' >
+								<thead>
+								
+								<tr align='left'>
+									<!--th class='text-start'>Diary No.</th>
+									<th class='text-start'>Cases</th>
+									<th class='text-start'>Registration Date</th>
+									<th class='text-start'>Party Name</th-->
+									<th>Cases</th>	
+								</tr>
+								</thead>
+								<tbody id='tbl_cases_report_body'></table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_court_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabelCourt" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_est_data" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabelCourt">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-court'>
+	 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_case_data1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel14" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_est_data" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel14">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-case1'>
+	  <!--select class="form-control" id="sel_search_by2" name="sel_search_by2" onchange="fetchCasesRecords();">
+			<option value="">Search By</option> 
+			<option value="regcase_type_nc_full_name">Case Type</option>
+			<option value="case_no">Case Number/Year</option>
+			 
+		</select-->
+
+        <table id='tbl_cases1' class='bordered' width='100%' border='1' cellspacing='0' cellpadding='0' >
+								<thead>
+								
+								<tr align='left'>
+									<!--th class='text-start'>Diary No.</th>
+									<th class='text-start'>Cases</th>
+									<th class='text-start'>Registration Date</th>
+									<th class='text-start'>Party Name</th-->
+									<th>Cases</th>	
+								</tr>
+								</thead>
+								<tbody id='tbl_cases1_report_body'></table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_alertcase_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel6" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modal_court_data" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel6">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-alertcase'>
+        <table id='tbl_cases_pending' class='bordered' width='100%' border='1' cellspacing='0' cellpadding='0' >
+								<thead>
+									<tr align='left'>
+									<th>Cases</th>					
+								</tr>
+								</thead>
+								<tbody id='tbl_alertcases_report_body'></tbody></table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modal_captcha_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel7" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	  	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" onclick="back_modal()" aria-label="back button"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel7">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-start" id='modal-body-history'>
+			<div class="col-md-8 col-md-offset-2" id='case_history' style="display:none;"></div>
+        
+      </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+	
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modal_captcha_data1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel8" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back" data-bs-toggle="modal" data-bs-target="#modal_case_data1"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel8">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-start" id='modal-body-history1'>
+			<div class="col-md-8 col-md-offset-2" id='case_history1' style="display:none;"></div>
+        
+      </div>
+     <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+	
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_history2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back" data-bs-toggle="modal" data-bs-target="#modal_case_data"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel5">Captcha</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+	  
+      <div class="modal-body" >
+        <div class="col-md-8 col-md-offset-2" id='case_history_captcha2' style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modal_history" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel5">Captcha</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+	  
+      <div class="modal-body" >
+        <div class="col-md-8 col-md-offset-2" id='case_history_captcha1' style="display:none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Other Details -->
+   
+	<!-- Delay Cases --->
+<div class="modal fade" id="modal_delay_cases" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="delay_header">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-delay-cases'>
+        <table class='table table-sm  mb-1 NJDGReports' id='tbl_delay_cases'>
+		<thead>
+			<tr class='fw-bold'>
+				
+				  <th>Sr No.</th>
+                                        <th class='state'>State</th>
+                                        <th >District</th>
+                                        <th >Establishment</th>
+                                        <!--<th>CNR</th>-->
+                                        <th>Case Number(CNR)</th>
+                                       <!-- <th>Year</th>-->
+                                        <th>Cause Title</th>
+                                        <th class='ex_th5'style='font-weight:bold'> Pending Since</th>
+                                
+                                        <th class='ex_th1 no-sort' style='font-weight:bold'>From Date</th>
+                                        <th class='ex_th2 no-sort' style='font-weight:bold'>Police Station</th>
+                                         <th class='ex_th3 no-sort' style='font-weight:bold'>Case Number</th>
+                                        <th class='ex_th4 no-sort' style='font-weight:bold'>Accused</th>
+                                        
+                                         <th>Registration Date</th>
+                                        <th>Next Stage(Next Date)</th>
+
+			</tr> 
+		</thead>
+		<tbody>
+		</tbody>
+		</table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--  delay cases end -->
+
+
+<!------ Statewise Case Data Modal -->
+<div class="modal fade" id="modal_statewiseCase_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel">State</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-statewise-data'>
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- END --> 
+<!------ distwise Case Data Modal -->
+<div class="modal fade" id="modal_distwiseCase_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header"> 
+		 
+				<button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+		        <h5 class="modal-title" id="staticBackdropLabel">District</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-distwise-data'>
+			<!--    <table class='table table-sm  mb-1' id='tbl_cases_dash'>
+						<thead>
+								<tr class='fw-bold'>
+										<th class='text-left'>Sr. No.</th>
+										<th  class='text-left' id='th_state'>State</th>
+										<th class='text-left' id='th_dist'>District</th>
+										<th class='text-left' id='th_est'>Establishment</th>
+						<th class='text-left'>CNR</th>
+						<th class='text-left'>Case Number</th>
+						 <th class='text-left'>Party Name</th>
+										<th class='text-left'>Date of Registration</th>
+								</tr>
+						</thead>
+						<tbody>
+						</tbody>
+						</table>-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_estwiseCase_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">        
+	  		<button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back"><i class="fa fa-arrow-left"></i></button>
+		        <h5 class="modal-title" id="staticBackdropLabel">Est</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-estwise-data'>
+    <!--    <table class='table table-sm  mb-1' id='tbl_cases_dash'>
+                <thead>
+                        <tr class='fw-bold'>
+                                <th class='text-left'>Sr. No.</th>
+                                <th  class='text-left' id='th_state'>State</th>
+                                <th class='text-left' id='th_dist'>District</th>
+                                <th class='text-left' id='th_est'>Establishment</th>
+				<th class='text-left'>CNR</th>
+				<th class='text-left'>Case Number</th>
+				 <th class='text-left'>Party Name</th>
+                                <th class='text-left'>Date of Registration</th>
+                        </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                </table>-->
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- END -->
+
+
+<div class="modal fade" id="modal_business" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel3" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+	    <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back" data-bs-toggle="modal" data-bs-target="#modal_captcha_data"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel6">Modal Title</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-business'>
+        <div class="col-md-8 col-md-offset-2" id='case_history_business' ></div>
+      </div>
+     
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="modalOders" tabindex="-1" aria-label="external Site" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" >PDF Viewer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal_order_body'>
+		
+      </div>
+     
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard case List            -->
+
+<div class="modal fade" id="modal_dashcaselist" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+            <button type="button" class="btn btn-primary me-2 btn-sm" data-bs-dismiss="modal" aria-label="Back" data-bs-toggle="modal" data-bs-target="#modal_estwiseCase_data"><i class="fa fa-arrow-left"></i></button>
+        <h5 class="modal-title" id="staticBackdropLabel1">Case List</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id='modal-body-dashcaselist'>
+	 <!--select class="form-control" id="sel_search_by1" name="sel_search_by1" onchange="casewise_case_details();">
+			<option value="">Search By</option>
+			<option value="cino">CNR</option>
+
+			<option value="regcase_type_nc_full_name">Case Type</option>
+			<option value="case_no">Case Number/Year</option>
+			<option value="pet_name">Petitioner Name</option>
+			<option value="res_name">Respondent Name</option>
+			<option value="dt_regis">Date of Registration</option>
+		
+		</select-->
+        <table class='table table-sm  mb-1' id='tbl_cases_dash'>
+                <thead>
+                        <tr class='fw-bold'>
+                                 <th class='text-left'>Sr. No.</th>
+                                <th  class='text-left' id='th_state'>State</th>
+                                <th class='text-left' id='th_dist'>District</th>
+                                <th class='text-left' id='th_est'>Establishment</th>
+                                <th class='text-left'>CNR</th>
+                                <th class='text-left'>Case Number</th>
+                                <th class='text-left'>Party Name</th>
+				<th class='text-left'>Date of Registration</th>
+			 
+				<th class='text-left'>Purpose Name</th>
+				<th class='text-left'>Next Date</th>
+				
+				<th class='text-left'>Disposal Nature</th>
+                                <th class='text-left'>Date of Decision</th>
+
+                        </tr>
+                </thead>
+                <tbody>
+                </tbody>
+                </table>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+	</main>
+  
+                                                       
+
+  
+  </body>
+	<script src="vendor/apexcharts/dist/apexcharts.min.js"></script>
+	<script src="vendor/counterUp/waypoints.min.js"></script>
+	<script src="vendor/counterUp/jquery.counterup.min.js"></script>
+	<script src="js/home.js"></script>
+        <script src="js/aos.js"></script>
+	<script src="vendor/jquery/jquery.session.js"></script>
+
+	<style>
+                .progressText{margin-left: 15% !important;}
+				#modal-body-captcha div {text-align:left;}
+		#modal-body-captcha label{ float:left;width:5rem;margin-right:10px;}
+		#fcaptcha_code { width:50% !important; margin-top:1rem !important;}
+		#div_captcha_cnr div.form-inline.text-left {padding:0 !important;}  
+		#modal-content {width: 140%!important;}
+		
+		.th_heading {
+			background-color: #e5f3d5!important;
+			}
+
+			#success, #fail{
+			display: none;
+
+			}
+
+		#message, #success, #fail{
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+
+		/*.apexcharts-legend{
+		margin-top:20px;
+		}*/
+
+        </style>
+
+</html>
+
+
+
+
+
+</div>
+</div>
+
+ 
+    <div class='alert alert-danger alert-dismissible'  style='align:center;text-align:center;display: none;'><a href="#" class="close" data-dismiss="alert" aria-label="close" style='padding: 0px;'>&times;</a><div id='msg-danger'></div></div>
+    <div class='alert alert-success alert-dismissible' style='align:center;text-align:center;display: none;'><a href="#" class="close" data-dismiss="alert" aria-label="close" style='padding: 0px;'>&times;</a><div id='msg-success'></div></div>
+	<div class='alert alert-warning alert-dismissible' style='align:center;text-align:center;display: none;'><a href="#" class="close" data-dismiss="alert" aria-label="close" style='padding: 0px;'>&times;</a><div id='msg-warning'></div></div>
+	<div class='alert alert-info alert-dismissible' style='align:center;text-align:center;display: none;'><a href="#" class="close" data-dismiss="alert" aria-label="close" style='padding: 0px;'>&times;</a><div id='msg-info'></div></div>
+   
+	
+    <input type="hidden" name="base_url" id='base_url' value="/njdg_v3/">
+   
+  
+    <input type="hidden" name="app_token" id='app_token' value="3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">
+	<input type="hidden" name="sessionlangid" id='sessionlangid' value="">
+	<input type="hidden" name="level1" id='level1' value="">
+	<input type="hidden" name="link_id" id='link_id' value="">
+
+	
+   
+	<div class="modal fade" id="loadMe" tabindex="-1" role="dialog" aria-label="loading">
+	  <div class="modal-dialog modal-sm" role="document">
+		<div class="modal-content">
+		  <div class="modal-body text-center">
+			<div class="loader"></div>
+			<div class="loader-txt">
+			  <p>Loading...</small></p>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+
+	<div class="modal fade" id="validateError" tabindex="-1" role="dialog" aria-label="Validation Error panel" style="display:none;">
+  <div class="modal-dialog modal-sm" role="document">
+	<div class="modal-content">
+	<div class="modal-header text-center align-items-start">
+        <i class="fas fa-3x fa-exclamation-triangle mb-3 text-secondary mx-auto w-100 d-none" id="errorIcon"></i>
+		<i class="fas fa-3x fa-check-circle mb-3 text-success mx-auto w-100 " id="successIcon" aria-hidden="true"></i>
+        <button type="button" class="btn-close" aria-label="close button" data-bs-dismiss="modal" ></button>
+      </div>
+
+	  <div class="modal-body p-1 text-center">
+		
+		<div clas="loader-txt">
+		  <div class='alert alert-danger-cust'  style='align:center;text-align:center;word-wrap: break-word;'>
+              </div>
+		<div class='alert alert-success-cust' style='align:center;text-align:center;display: none;word-wrap: break-word;'></div>
+		</div>
+	  </div>
+	</div>
+  </div>
+</div>
+
+
+<!-- Help Modal -->
+<div class="modal fade" id="HelpModal" tabindex="-1" aria-labelledby="HelpModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="HelpModalLabel">Help</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Help Text
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+ 
+
+<script>
+
+	$('[type="submit"]').attr('type','button');
+	
+
+
+</script>
+<footer class="login-footer bg-light">
+  <div id="footer-container" class="container-fluid clearfix pt-2 mt-2" role="contentinfo">
+	
+	  <div class="row topfooter p-0">
+          <div class="col-md-3 border-right">
+                <nav class="row">
+                      <ol class="col footerlinks">
+                          <li><a href="/njdg_v3//?p=home/footerlinks/ab&escr_flag=&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">About Us</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/sm&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Site map </a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/cu&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Contact Us</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/as&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Accessibility Statement</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/sr&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Screen Reader Access</a></li>
+			 <li><a href="/njdg_v3//?p=home/footerlinks/wi&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Web Information Manager</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/tc&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Terms and Conditions</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/cp&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Copyright Policy</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/hl&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Hyper Linking Policy</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/pp&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Privacy Policy</a></li>
+                          <li><a href="/njdg_v3//?p=home/footerlinks/di&app_token=3c41d9d81009555d31bf6c00887f0cef18ed04acd12724bf1204250437aeb2c1">Disclaimer</a></li>
+                          </ol> 
+
+                </nav>
+          </div>
+          <div class="col-md-7 border-right">
+           <div class="row px-2">
+                   <div class="col text-lg-left text-center p-0">
+                         <ol class="footerlogolist" role="list">
+                                <li class="logos" role="listitem">
+                                         <a href="http://www.digitalindia.gov.in/" target="_blank" onclick="return confirm('You are being redirected to an external website.');"  title="Digital India External website that opens a new window" aria-label="Digital India opens a new window" rel="noopener noreferrer">
+                                         <img class="digital-india fooimg" src="images/di-logo.png" alt="Digital India External website that opens a new window">
+                                         </a>
+                                 </li>
+                                 <li class="logos" role="listitem">
+                                         <a href="http://www.india.gov.in/" target="_blank" onclick="return confirm('You are being redirected to an external website.');"  title="National Portal of India External website that opens a new window" aria-label="National Portal of India opens a new window" rel="noopener noreferrer">
+                                         <img class="india-gov-logo fooimg" src="images/india-gov-logo.png" alt="National Portal of India External website that opens a new window">
+                                         </a>
+                                 </li>
+                                 <li class="logos" role="listitem">
+                                         <a href="https://doj.gov.in/" target="_blank" onclick="return confirm('You are being redirected to an external website.');"  title="Department of Justice External website that opens a new window" aria-label="Department of Justice opens a new window" rel="noopener noreferrer">
+                                         <img class="doj-logo fooimg" src="images/DOJ-logo.png" alt="Department of Justice External website that opens a new window">
+                                         </a>
+                                 </li>
+                                 <li class="logos" role="listitem">
+                                        <a href="https://ecommitteesci.gov.in/" target="_blank" onclick="return confirm('You are being redirected to an external website.');" title="e-Committee Supreme Court of India External website that opens a new window" aria-label="e-committee supreme court of india opens a new window" rel="noopener noreferrer">
+                                         <img class="fooimg" src="images/ecommittee-logo.png" alt="e-Committee Supreme Court of India External website that opens a new window">
+                                         </a>
+                                 </li>
+                                 <li class="logos" role="listitem">
+                                        <a href="http://indiacode.nic.in/" target="_blank" onclick="return confirm('You are being redirected to an external website.');"  title="India Code External website that opens a new window" aria-label="India Code opens a new window" rel="noopener noreferrer">
+                                         <img class="fooimg" src="images/IC-logo.png" alt="India Code Centre External website that opens a new window">
+                                         </a>
+                                 </li>
+                                 <li class="logos" role="listitem">
+                                         <a href="https://www.nic.in/" target="_blank" onclick="return confirm('You are being redirected to an external website.');"  title="National Informatics Centre External website that opens a new window" aria-label="National Informatics Centre opens a new window" rel="noopener noreferrer">
+                                         <img class="fooimg" src="images/NIC-logo.png" alt="National Informatics Centre External website that opens a new window">
+                                 </a>
+                                 </li>
+                                </ol>
+                         </div>
+           </div>
+		 <div class="row px-2">
+				<p class="m-0"> This site is designed, hosted and maintained by <a href="http://www.nic.in/" target="_blank" onclick="return confirm('You are being redirected to an external website.');" class="text-info1" title="National Informatics Centre (NIC) External website that opens a new window" aria-label="National Informatics Centre (NIC) opens a new window" rel="noopener noreferrer">National Informatics Centre (NIC) </a> Ministry of Electronics &amp; Information Technology, Government of India.</p>
+           </div>
+          </div>
+          <div class="col-md">
+                <p>Last Reviewed and Updated on : 16-04-2026</p>
+		<p class="text-white rounded p-1">S3</p>
+		<p class="text-white rounded p-1">Version :3.0</p>
+          </div>
+
+</div>
+	
+<div class="row d-none">
+	<div class="col-md-4"><span class="btn-secondary-theme rounded p-1">S3</span></div>
+	<div class="col-md-4"><span class="text-primary rounded p-1">Version :3.0</span></div>
+	<div class="col-md-4"><span class="text-dark"><a href="#" class="link-dark rounded">Disclaimer</a></span></div>
+</div>
+  </div>
+</footer>  
+</html>
+<script>
+	
+	var labels_array=null
+	var buttons_array=null
+	var alerts_array=null
+	
+	
+	</script>
