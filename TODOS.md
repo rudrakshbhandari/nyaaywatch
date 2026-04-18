@@ -12,17 +12,23 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Kerala is now live, so the remaining public rollout order should resume from the still-internal states in internal-proof order
-- current remaining public queue: Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh
-- done only when the next chosen state completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
+- Kerala is now live, and Meghalaya is the active next public rollout slice in repo prep
+- current remaining public queue after Meghalaya: Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh
+- done only when Meghalaya completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 
 ### Next Internal Expansion Batch
 
-- Goa, Sikkim, and Mizoram are the final remaining unsupported wave
-- after that batch, all currently unsupported states should be internally covered
-- done only when repo wiring plus each live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds while keeping public routes dark with `404`
+- Goa, Sikkim, and Mizoram are now wired as the final internal-only prep wave
+- after their proof cycles, all currently planned states should be covered by both repo support and live internal evidence
+- done only when each live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds while keeping public routes dark with `404`
 
 ## Completed
+
+### Goa, Sikkim, And Mizoram Internal Trial Candidate Preparation
+
+- completed in repo prep on 2026-04-18 with internal-only state-profile wiring, regression coverage, and updated readiness reviews
+- Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`) are now supported internal candidates in repo config without widening the public site
+- the remaining work for the trio is live internal proof, not more unsupported-state prep
 
 ### Kerala Public Rollout
 
