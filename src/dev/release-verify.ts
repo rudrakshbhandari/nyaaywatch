@@ -1,4 +1,5 @@
 import { verifyPublicRelease } from "./release-verification.js";
+import { readFlag } from "./cli-flags.js";
 
 async function main() {
   const baseUrl = readBaseUrl();
@@ -9,12 +10,9 @@ async function main() {
 
 function readBaseUrl() {
   const args = process.argv.slice(2);
-  const flagIndex = args.findIndex((value) => value === "--base-url");
-  if (flagIndex >= 0) {
-    const value = args[flagIndex + 1];
-    if (value) {
-      return value;
-    }
+  const value = readFlag(args, "--base-url");
+  if (value) {
+    return value;
   }
 
   const positional = args.find((value) => !value.startsWith("--"));
@@ -31,12 +29,9 @@ function readBaseUrl() {
 
 function readStateSlug() {
   const args = process.argv.slice(2);
-  const flagIndex = args.findIndex((value) => value === "--state-slug");
-  if (flagIndex >= 0) {
-    const value = args[flagIndex + 1];
-    if (value) {
-      return value;
-    }
+  const value = readFlag(args, "--state-slug");
+  if (value) {
+    return value;
   }
 
   if (process.env.STATE_SLUG) {

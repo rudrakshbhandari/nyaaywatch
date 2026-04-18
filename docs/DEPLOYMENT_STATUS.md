@@ -205,6 +205,7 @@ Then write those values back into this file in the same PR or deployment change.
 Run these checks against the current public URL or staging `ServiceUrl`:
 
 ```bash
+npm run ops:verify-public-alpha -- --base-url=<base-url>
 curl -fsSL <base-url>/health
 curl -fsSL <base-url>/v1/stats/himachal
 curl -fsSL <base-url>/v1/districts
@@ -220,6 +221,7 @@ Expected:
 
 - `/health` returns `ok: true`
 - public API responses come from a published snapshot, not an empty or unpublished state
+- `npm run ops:verify-public-alpha` stays green across every public state and fails if any state has parity drift, a stale snapshot, or source freshness old enough to imply the daily internal fetch cadence is slipping
 
 ## Operator Verification
 
@@ -233,6 +235,9 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Broad public-alpha ops sweep run on 2026-04-18 with `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`:
+  - every public state passed route, CSV/API parity, cache-protection, and operator-auth verification
+  - the only failing condition was daily-fetch lag for Himachal Pradesh, whose live source snapshot date remains `2026-04-10` while the rest of the public states stayed within the 2-day lag budget used by the new ops sweep
 - Remaining approved-state public rollouts completed on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the ECS service on task definition `:74`
   - public launches completed for Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
   - the rollout window used fetch runs `run_d8eee45f-ad4d-490e-b779-362a1737b2d6`, `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b`, `run_692dc19a-c8a9-4061-a22b-2f0631475baa`, `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293`, `run_466f100f-22b9-4c16-8dbd-1584e462e181`, `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c`, `run_154efd48-8963-44d2-8606-b5877145e26f`, `run_baf67425-5948-4e43-828c-b37b274ecfa5`, `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3`, `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0`, `run_a64b3f23-836b-4f4e-b7e6-7693d035283e`, `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d`, `run_f07af2ea-5cf4-4943-a602-bf673744c9e4`, `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f`, and `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0`
