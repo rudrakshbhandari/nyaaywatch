@@ -67,7 +67,7 @@ Do not run three back-to-back publishes 5 minutes apart and call that operating 
 
 ## Current State
 
-As of `2026-04-17`:
+As of `2026-04-18`:
 
 - Himachal subordinate-court observability is publicly live
 - Punjab is publicly live through explicit state-scoped routes after clearing the narrow expansion path
@@ -77,16 +77,16 @@ As of `2026-04-17`:
 - AWS staging/public stack is live at `https://nyaaywatch.in`
 - release verification and release-history tooling exist
 - the current release ledger is still sparse
-- Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) have now all completed internal-only live proof cycles
+- Uttarakhand (`UK`), Rajasthan (`RJ`), and Uttar Pradesh (`UP`) are now publicly live after clearing internal proof cycles and then completing explicit public rollout verification
 - Tamil Nadu (`TN`) has completed both an internal-only proof cycle and a later public rollout
-- Kerala (`KL`) and Meghalaya (`ML`) have now both completed internal-only live proof cycles for the south and north-east follow-on tracks
-- Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have now all completed internal-only live proof cycles after live NJDG source checks confirmed contract-compatible state pages
+- Kerala (`KL`) and Meghalaya (`ML`) have now both completed internal-only proof cycles, and both are now publicly live
+- Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have now all completed internal-only proof cycles and are now publicly live
 - Telangana (`TS`) is now publicly live after clearing public-route parity and live verification
-- Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) remain internal-only after clearing live proof cycles
-- Madhya Pradesh (`MP`), Maharashtra (`MH`), Bihar (`BR`), and Gujarat (`GJ`) have now also completed internal-only live proof cycles
-- Odisha (`OD`), West Bengal (`WB`), Jharkhand (`JH`), and Chhattisgarh (`CG`) have now completed internal-only live proof cycles
-- Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`) are now wired as the final internal-only prep wave and still need live proof cycles
-- the remaining public queue should now resume from the still-internal states in internal-proof order rather than adding fresh exceptions
+- Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) are now publicly live after clearing internal proof cycles and then completing explicit public rollout verification
+- Madhya Pradesh (`MP`), Maharashtra (`MH`), Bihar (`BR`), and Gujarat (`GJ`) have now also completed internal proof cycles and are publicly live
+- Odisha (`OD`), West Bengal (`WB`), Jharkhand (`JH`), and Chhattisgarh (`CG`) have now completed internal proof cycles and are publicly live
+- Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`) have now also completed public rollout verification and are publicly live
+- the supported-state public rollout program is complete for the current scope
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
 

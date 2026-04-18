@@ -1,82 +1,37 @@
 # Kerala Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Kerala before any live operator trial or public exposure.
+Historical internal-readiness record for Kerala.
 
-Kerala is a strong internal-only candidate for the next southern expansion track after Tamil Nadu. This document records live source evidence only. It does not approve public exposure.
+Kerala first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Kerala is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_4fff0bca-7b58-49d1-992d-a113c43f577a`.
 
-Historical note:
-
-- repo wiring for `KL` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
-- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
-
-## Review Basis
-
-Source checks run against the live NJDG Kerala district dashboard on `2026-04-17`.
-
-Observed Kerala source notes:
+## Current Status
 
 - `stateCode=KL`
 - `stateName=Kerala`
 - `stateSlug=kerala`
 - `njdgStateValue=32~4`
-- source page footer updated on `2026-04-16`
-- 14 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `18,01,417`
-- instituted last month shown on the live state page: `57,299`
-- disposed last month shown on the live state page: `77,311`
-- first visible district labels: `Kasaragod`, `Ernakulam`, `Kannur`, `Thrissur`, `Kozhikode`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown `dist_code=1` returned `200 OK`
+- current public publication id: `publication_4fff0bca-7b58-49d1-992d-a113c43f577a`
+- current public snapshot id: `snapshot_99d7ad98-ff3c-40e2-9922-e4661998e839`
+- rollback target from the prior internal proof cycle: `publication_dafbab89-af38-4a41-a006-9153f126e785`
+- current published source snapshot date: `2026-04-17`
+- current published district count: `14`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Kerala exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Kerala is not blocked on a missing metric class or a clearly different page family.
-
-### 2. Southern Continuity Value
-
-Kerala lets the internal expansion track keep building the southern operating story after Tamil Nadu without forcing another public-state decision first. Its 14-district footprint is lighter than Tamil Nadu, which makes it a good complementary internal proof candidate rather than another heavy run immediately.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## What Still Needs Explicit Work
-
-### 1. Repo Wiring
-
-Kerala is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
-
-### 2. Operating Evidence
-
-Kerala has now cleared:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-That closes the internal proof bar. Kerala is no longer only a source-viability candidate.
-
-### 3. Public Trust Review
-
-No Kerala-specific public-route parity, copy, or methodology review has been done yet. Public exposure should still lag the internal proof cycle.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/KERALA_PUBLIC_READINESS_REVIEW.md`
+- `docs/KERALA_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Kerala should now be treated as the validated southern follow-on internal baseline behind Tamil Nadu.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
-2. a deliberate public rollout slot is chosen after Tamil Nadu
+No further internal-only gating remains for Kerala. The state is already live on the public site through explicit `/states/kerala/...` routes, and this document should be read as historical rollout context rather than a current blocker.

@@ -1,82 +1,37 @@
 # Tripura Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Tripura before the first live operator trial or public exposure.
+Historical internal-readiness record for Tripura.
 
-Tripura is a strong internal-only candidate for the next north-east expansion track after Assam and Meghalaya. This document records live source evidence only. It does not approve public exposure.
+Tripura first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Tripura is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_a2308b8b-946e-4725-900e-14e638fe85dd`.
 
-Historical note:
-
-- repo wiring for `TR` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
-- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage
-
-## Review Basis
-
-Source checks run against the live NJDG Tripura district dashboard on `2026-04-17`.
-
-Observed Tripura source notes:
+## Current Status
 
 - `stateCode=TR`
 - `stateName=Tripura`
 - `stateSlug=tripura`
 - `njdgStateValue=16~20`
-- source page footer updated on `2026-04-16`
-- 8 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `63,981`
-- instituted last month shown on the live state page: `10,656`
-- disposed last month shown on the live state page: `15,663`
-- first visible district labels: `West Tripura`, `North Tripura`, `South Tripura`, `Unakoti`, `Gomati`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown `dist_code=1` returned `200 OK`
+- current public publication id: `publication_a2308b8b-946e-4725-900e-14e638fe85dd`
+- current public snapshot id: `snapshot_73cd7146-7d74-41e0-85a5-f352baa439df`
+- rollback target from the prior internal proof cycle: `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
+- current published source snapshot date: `2026-04-17`
+- current published district count: `8`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Tripura exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Tripura is not blocked on a missing metric class or a clearly different page family.
-
-### 2. North-East Continuity Value
-
-Tripura lets the internal expansion track deepen the north-east operating story after Assam and Meghalaya without widening the public site prematurely. Its 8-district footprint is light enough to make it a clean parallel proof candidate.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## What Still Needs Explicit Work
-
-### 1. Repo Wiring
-
-Tripura is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
-
-### 2. Operating Evidence
-
-Tripura has now cleared:
-
-- live `fetch` as `run_6b5e6751-0835-42b1-a89a-f3da080f5287`
-- live `inspect`
-- live `publish` as `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`
-- live `replay` as `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`
-- live `rollback` as `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
-
-That closes the internal proof bar. Tripura is no longer only a source-viability candidate.
-
-### 3. Public Trust Review
-
-No Tripura-specific public-route parity, copy, or methodology review has been done yet. Public exposure should still lag the internal proof cycle.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/TRIPURA_PUBLIC_READINESS_REVIEW.md`
+- `docs/TRIPURA_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Tripura should now be treated as the validated lighter north-east internal-only candidate after Meghalaya.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that the narrow state-scoped rollout is defensible
-2. the product makes an explicit post-Assam public-state decision
+No further internal-only gating remains for Tripura. The state is already live on the public site through explicit `/states/tripura/...` routes, and this document should be read as historical rollout context rather than a current blocker.

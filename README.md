@@ -27,11 +27,11 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
-- explicit state-scoped public routing for approved expansion states, with Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, and Arunachal Pradesh now live as additional state surfaces
+- explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Arunachal Pradesh is now live on the public site after Andhra Pradesh, and Manipur is next in the public rollout queue.
+Post-MVP work continues in this repo, but the currently supported state rollout set is now complete on the live site. Himachal Pradesh remains the default unscoped surface, and explicit `/states/:stateSlug/...` public routes are now live for Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram.
 
 ## Product Guardrails
 
@@ -144,9 +144,9 @@ Public routes:
 Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
-- additional approved states use explicit `/states/:stateSlug/...` routes
-- Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, and Nagaland are the current live state-scoped public surfaces
-- deployment docs still decide whether a given state is live on `https://nyaaywatch.in`
+- all other supported states now use explicit `/states/:stateSlug/...` routes
+- the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
 
 Public API:
 

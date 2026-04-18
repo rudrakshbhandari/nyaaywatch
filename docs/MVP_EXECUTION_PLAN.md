@@ -66,7 +66,7 @@ Main gap to MVP:
 
 MVP-critical phases are complete.
 
-Pull the next task from `TODOS.md` or from a deliberate post-MVP roadmap decision.
+There is no remaining approved-state rollout work inside the current roadmap. Pull any next task from `TODOS.md` only if it is maintenance or a deliberate expansion beyond the currently supported states.
 
 ## MVP Definition
 
@@ -279,3 +279,5 @@ Track those in `TODOS.md`, not here.
 - 2026-04-18: Promoted Arunachal Pradesh (`AR`) into the approved public-state set in repo config, added `docs/ARUNACHAL_PRADESH_PUBLIC_READINESS_REVIEW.md`, `docs/ARUNACHAL_PRADESH_GO_LIVE_CHECKLIST.md`, `tests/arunachal-pradesh-public-rollout.test.ts`, and `tests/arunachal-pradesh-test-snapshot.ts`, and checked the AR-specific public-route parity slice locally so the public rollout sequence can continue from Andhra Pradesh to Arunachal Pradesh without reopening source-shape questions.
 - 2026-04-18: Completed the Arunachal Pradesh public rollout after PR `#81` merged and deploy run `24599656003` rolled the live stack to task definition `:71`; Arunachal Pradesh fetch `run_d2dadaec-bda6-4639-8629-28201a562708` published as `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0`, `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug arunachal-pradesh` passed with `districtCount=27`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`, and stable Arunachal Pradesh page plus stats routes now return `200`.
 - 2026-04-18: Approved the remaining internally proven states (`MN`, `MP`, `MH`, `BR`, `GJ`, `OD`, `WB`, `JH`, `CG`, `GA`, `SK`, `MZ`, `UK`, `RJ`, and `UP`) into the repo-level public-prep set together, replaced one-off prep churn with a table-driven parity suite, and left the actual live rollout order to the same explicit operator-reviewed publish flow.
+
+- 2026-04-18: Completed the remaining supported-state public rollout window after PR `#83` merged and deploy run `24600208536` settled the live ECS service on task definition `:74`; Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram are now publicly live, which closes the current states-only rollout program.

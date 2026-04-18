@@ -1,79 +1,37 @@
 # Odisha Internal Readiness Review
 
-Internal readiness review for Odisha.
+Historical internal-readiness record for Odisha.
 
-Odisha is now a validated internal-only state after clearing the full live proof cycle. This document records the source notes plus the live operating evidence. It still does not approve public exposure.
+Odisha first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Odisha is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_bde17d21-e0fe-409a-9981-37ed7784e133`.
 
-Historical note:
-
-- repo wiring for `OD` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
-- use `docs/EXPANSION_REVIEW_LOG.md` for the full batch lineage
-
-## Review Basis
-
-Verified live-source checks against the NJDG Odisha district dashboard observed:
+## Current Status
 
 - `stateCode=OD`
 - `stateName=Odisha`
 - `stateSlug=odisha`
 - `njdgStateValue=21~11`
-- 30 districts exposed on the live NJDG state page
-- sample district checked during source review: `Cuttack`
-- no obvious source-shape caveat was observed during the read-only review
+- current public publication id: `publication_bde17d21-e0fe-409a-9981-37ed7784e133`
+- current public snapshot id: `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- rollback target from the prior internal proof cycle: `publication_0b8376be-33ae-4c60-a534-835ebb199b57`
+- current published source snapshot date: `2026-04-16`
+- current published district count: `30`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Basic Source Reachability
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Odisha clears the first viability bar for an internal-only candidate:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- the state selector resolves cleanly
-- the district list is present
-- a sample district path was reviewable without an obvious source exception
+For the complete rollout lineage, use:
 
-That is enough to justify moving from read-only review toward internal operator wiring and a first stored-evidence capture attempt.
-
-### 2. Expansion Value
-
-Odisha gives the next internal wave a meaningful eastern state without forcing another public-state decision. Its 30-district footprint is substantial enough to matter operationally while still fitting the current state-by-state internal qualification posture.
-
-## What Still Needs Explicit Work
-
-### 1. Metric-Parity Confirmation
-
-This read-only review does not yet record the full state metric surface. The first explicit capture pass should still confirm:
-
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- stable district drilldown behavior across stored evidence
-
-### 2. Repo Wiring
-
-Odisha is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
-
-### 3. Operating Evidence
-
-Odisha has now cleared:
-
-- live `fetch` as `run_eb64e8ff-b70b-4eda-be14-180441a38548`
-- live `publish` as `publication_24cc3461-c2e1-47b0-a870-907306ca183d`
-- live `replay` as `run_07c3627f-1f65-4915-9516-1d72d2ae9e18`
-- replay publication as `publication_3df28695-e014-44d2-9b36-4bb7bb95a9cb`
-- live `rollback` as `publication_0b8376be-33ae-4c60-a534-835ebb199b57`
-
-That closes the internal proof bar. Odisha is no longer only a source-viability candidate.
-
-### 4. Public Trust Review
-
-No Odisha-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/ODISHA_PUBLIC_READINESS_REVIEW.md`
+- `docs/ODISHA_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Odisha should now be treated as validated eastern internal operating evidence.
-
-It should remain internal-only until:
-
-1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
-2. a deliberate public rollout slot is chosen after the earlier cleared internal states already ahead of it in queue
+No further internal-only gating remains for Odisha. The state is already live on the public site through explicit `/states/odisha/...` routes, and this document should be read as historical rollout context rather than a current blocker.

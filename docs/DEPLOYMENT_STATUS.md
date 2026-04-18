@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:64`
+- ECS task definition: `nyaaywatch-staging:74`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
@@ -73,9 +73,29 @@ Operational notes:
   - explicit Telangana public routes at `/states/telangana` and `/v1/states/telangana/...`
   - explicit Kerala public routes at `/states/kerala` and `/v1/states/kerala/...`
   - explicit Meghalaya public routes at `/states/meghalaya` and `/v1/states/meghalaya/...`
-- Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
-- Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
-- Current Himachal source snapshot date: `2026-04-10`
+  - explicit Karnataka public routes at `/states/karnataka` and `/v1/states/karnataka/...`
+  - explicit Tripura public routes at `/states/tripura` and `/v1/states/tripura/...`
+  - explicit Nagaland public routes at `/states/nagaland` and `/v1/states/nagaland/...`
+  - explicit Andhra Pradesh public routes at `/states/andhra-pradesh` and `/v1/states/andhra-pradesh/...`
+  - explicit Arunachal Pradesh public routes at `/states/arunachal-pradesh` and `/v1/states/arunachal-pradesh/...`
+  - explicit Manipur public routes at `/states/manipur` and `/v1/states/manipur/...`
+  - explicit Uttarakhand public routes at `/states/uttarakhand` and `/v1/states/uttarakhand/...`
+  - explicit Rajasthan public routes at `/states/rajasthan` and `/v1/states/rajasthan/...`
+  - explicit Uttar Pradesh public routes at `/states/uttar-pradesh` and `/v1/states/uttar-pradesh/...`
+  - explicit Madhya Pradesh public routes at `/states/madhya-pradesh` and `/v1/states/madhya-pradesh/...`
+  - explicit Maharashtra public routes at `/states/maharashtra` and `/v1/states/maharashtra/...`
+  - explicit Bihar public routes at `/states/bihar` and `/v1/states/bihar/...`
+  - explicit Gujarat public routes at `/states/gujarat` and `/v1/states/gujarat/...`
+  - explicit Odisha public routes at `/states/odisha` and `/v1/states/odisha/...`
+  - explicit West Bengal public routes at `/states/west-bengal` and `/v1/states/west-bengal/...`
+  - explicit Jharkhand public routes at `/states/jharkhand` and `/v1/states/jharkhand/...`
+  - explicit Chhattisgarh public routes at `/states/chhattisgarh` and `/v1/states/chhattisgarh/...`
+  - explicit Goa public routes at `/states/goa` and `/v1/states/goa/...`
+  - explicit Sikkim public routes at `/states/sikkim` and `/v1/states/sikkim/...`
+  - explicit Mizoram public routes at `/states/mizoram` and `/v1/states/mizoram/...`
+- Current active Himachal Pradesh publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
+- Current active Himachal Pradesh published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
+- Current Himachal Pradesh source snapshot date: `2026-04-10`
 - Current active Punjab publication: `publication_8a5ddc6e-f520-4344-8161-76dc4dead033`
 - Current active Punjab published snapshot: `snapshot_35226b6d-2fac-49d6-9d53-7aa24b9387e5`
 - Current Punjab source snapshot date: `2026-04-16`
@@ -97,6 +117,66 @@ Operational notes:
 - Current active Meghalaya publication: `publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5`
 - Current active Meghalaya published snapshot: `snapshot_4b2e5621-0336-41aa-a492-3163e57cad1a`
 - Current Meghalaya source snapshot date: `2026-04-16`
+- Current active Karnataka publication: `publication_c58870a4-f378-4848-a8ce-ae38fb62f885`
+- Current active Karnataka published snapshot: `snapshot_87bd1945-6b36-415f-965e-8c06cf60a989`
+- Current Karnataka source snapshot date: `2026-04-16`
+- Current active Tripura publication: `publication_a2308b8b-946e-4725-900e-14e638fe85dd`
+- Current active Tripura published snapshot: `snapshot_73cd7146-7d74-41e0-85a5-f352baa439df`
+- Current Tripura source snapshot date: `2026-04-17`
+- Current active Nagaland publication: `publication_b01df802-1d04-409b-b608-55500e1b47a9`
+- Current active Nagaland published snapshot: `snapshot_f73774d4-0f6f-473f-9eda-21e5cd454050`
+- Current Nagaland source snapshot date: `2026-04-17`
+- Current active Andhra Pradesh publication: `publication_b090f61a-3762-4bf5-8529-36b331b6e362`
+- Current active Andhra Pradesh published snapshot: `snapshot_e0ec4181-cc09-46e5-a606-39a8c54bd815`
+- Current Andhra Pradesh source snapshot date: `2026-04-16`
+- Current active Arunachal Pradesh publication: `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0`
+- Current active Arunachal Pradesh published snapshot: `snapshot_0daffe74-e0ec-46f0-89b1-bc3e4177392f`
+- Current Arunachal Pradesh source snapshot date: `2026-04-16`
+- Current active Manipur publication: `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02`
+- Current active Manipur published snapshot: `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`
+- Current Manipur source snapshot date: `2026-04-16`
+- Current active Uttarakhand publication: `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343`
+- Current active Uttarakhand published snapshot: `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`
+- Current Uttarakhand source snapshot date: `2026-04-16`
+- Current active Rajasthan publication: `publication_fe0f7c25-a719-4120-bab4-8427163cd311`
+- Current active Rajasthan published snapshot: `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`
+- Current Rajasthan source snapshot date: `2026-04-16`
+- Current active Uttar Pradesh publication: `publication_c05f662d-560f-4849-8750-37d92aa00e98`
+- Current active Uttar Pradesh published snapshot: `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`
+- Current Uttar Pradesh source snapshot date: `2026-04-16`
+- Current active Madhya Pradesh publication: `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678`
+- Current active Madhya Pradesh published snapshot: `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`
+- Current Madhya Pradesh source snapshot date: `2026-04-16`
+- Current active Maharashtra publication: `publication_7a82419f-059a-456c-8797-bb33dbf5ab89`
+- Current active Maharashtra published snapshot: `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`
+- Current Maharashtra source snapshot date: `2026-04-16`
+- Current active Bihar publication: `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86`
+- Current active Bihar published snapshot: `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`
+- Current Bihar source snapshot date: `2026-04-16`
+- Current active Gujarat publication: `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583`
+- Current active Gujarat published snapshot: `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`
+- Current Gujarat source snapshot date: `2026-04-16`
+- Current active Odisha publication: `publication_bde17d21-e0fe-409a-9981-37ed7784e133`
+- Current active Odisha published snapshot: `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- Current Odisha source snapshot date: `2026-04-16`
+- Current active West Bengal publication: `publication_df487011-4eaa-4b43-b127-166efd0866f7`
+- Current active West Bengal published snapshot: `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`
+- Current West Bengal source snapshot date: `2026-04-18`
+- Current active Jharkhand publication: `publication_5c30543e-2094-4616-aff3-b17ade4254a2`
+- Current active Jharkhand published snapshot: `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- Current Jharkhand source snapshot date: `2026-04-16`
+- Current active Chhattisgarh publication: `publication_2400d34a-2320-483e-866d-f529b4b81172`
+- Current active Chhattisgarh published snapshot: `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
+- Current Chhattisgarh source snapshot date: `2026-04-18`
+- Current active Goa publication: `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4`
+- Current active Goa published snapshot: `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
+- Current Goa source snapshot date: `2026-04-16`
+- Current active Sikkim publication: `publication_257083da-bd8c-4efc-93f1-6837905c177f`
+- Current active Sikkim published snapshot: `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`
+- Current Sikkim source snapshot date: `2026-04-16`
+- Current active Mizoram publication: `publication_468cfd50-4661-43e5-b4a4-bce047b46618`
+- Current active Mizoram published snapshot: `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- Current Mizoram source snapshot date: `2026-04-16`
 - Public methodology version: `2026.04-alpha`
 
 ## How To Retrieve The AWS Staging URL
@@ -128,27 +208,11 @@ curl -fsSL <base-url>/health
 curl -fsSL <base-url>/v1/stats/himachal
 curl -fsSL <base-url>/v1/districts
 curl -fsSL <base-url>/v1/trends
-curl -fsSL <base-url>/v1/states/punjab/stats
-curl -fsSL <base-url>/v1/states/punjab/districts
-curl -fsSL <base-url>/v1/states/punjab/trends
-curl -fsSL <base-url>/v1/states/haryana/stats
-curl -fsSL <base-url>/v1/states/haryana/districts
-curl -fsSL <base-url>/v1/states/haryana/trends
-curl -fsSL <base-url>/v1/states/tamil-nadu/stats
-curl -fsSL <base-url>/v1/states/tamil-nadu/districts
-curl -fsSL <base-url>/v1/states/tamil-nadu/trends
-curl -fsSL <base-url>/v1/states/assam/stats
-curl -fsSL <base-url>/v1/states/assam/districts
-curl -fsSL <base-url>/v1/states/assam/trends
-curl -fsSL <base-url>/v1/states/telangana/stats
-curl -fsSL <base-url>/v1/states/telangana/districts
-curl -fsSL <base-url>/v1/states/telangana/trends
-curl -fsSL <base-url>/v1/states/kerala/stats
-curl -fsSL <base-url>/v1/states/kerala/districts
-curl -fsSL <base-url>/v1/states/kerala/trends
-curl -fsSL <base-url>/v1/states/meghalaya/stats
-curl -fsSL <base-url>/v1/states/meghalaya/districts
-curl -fsSL <base-url>/v1/states/meghalaya/trends
+for state in punjab haryana tamil-nadu assam telangana kerala meghalaya karnataka tripura nagaland andhra-pradesh arunachal-pradesh manipur uttarakhand rajasthan uttar-pradesh madhya-pradesh maharashtra bihar gujarat odisha west-bengal jharkhand chhattisgarh goa sikkim mizoram; do
+  curl -fsSL <base-url>/v1/states/$state/stats
+  curl -fsSL <base-url>/v1/states/$state/districts
+  curl -fsSL <base-url>/v1/states/$state/trends
+done
 ```
 
 Expected:
@@ -168,6 +232,10 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Remaining approved-state public rollouts completed on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the ECS service on task definition `:74`
+  - public launches completed for Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+  - the rollout window used fetch runs `run_d8eee45f-ad4d-490e-b779-362a1737b2d6`, `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b`, `run_692dc19a-c8a9-4061-a22b-2f0631475baa`, `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293`, `run_466f100f-22b9-4c16-8dbd-1584e462e181`, `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c`, `run_154efd48-8963-44d2-8606-b5877145e26f`, `run_baf67425-5948-4e43-828c-b37b274ecfa5`, `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3`, `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0`, `run_a64b3f23-836b-4f4e-b7e6-7693d035283e`, `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d`, `run_f07af2ea-5cf4-4943-a602-bf673744c9e4`, `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f`, and `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0`
+  - stable route verification returned `200` for all newly exposed `/states/:stateSlug` and `/v1/states/:stateSlug/stats` endpoints, with release verification confirming metadata parity and cache protection for every launch in the window
 - Fresh alpha review cycle completed on 2026-04-15:
   - fetch run `run_0d2b486b-91fd-4592-9507-629076e8cd83`
   - publish `publication_60a42984-3fd2-4e59-88c6-230e0801d78e`

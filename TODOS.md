@@ -10,21 +10,134 @@ Use this file for:
 
 ## Next Up
 
-### Next Public State Decision
+### Supported-State Rollout Status
 
-- Arunachal Pradesh is now live, and Manipur is the next public state in the internal-proof order
-- current remaining public queue after Manipur: Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- the remaining internally proven states are being approved together in repo config so the live rollout chain can continue without one prep PR per state
-- Madhya Pradesh remains the next already-cleared internal candidate behind Manipur once the current continuous rollout chain reaches it
-- done only when the remaining states complete live publish and stable-URL verification without widening national scaffolding beyond the already supported set
-
-### Next Internal Expansion Batch
-
-- all currently planned states are now covered by both repo support and live internal proof
-- there is no remaining unsupported-state prep wave inside the current states-only roadmap
-- any additional internal expansion work would be maintenance or a deliberate scope increase, not missing state coverage
+- all currently supported states are now publicly live on `https://nyaaywatch.in`
+- the 2026-04-18 rollout window completed public launch for Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- there is no remaining approved-state internal wave or public queue inside the current roadmap
+- any next geography work would be a deliberate scope increase beyond the currently supported states, not unfinished rollout work
 
 ## Completed
+
+### All Remaining Supported-State Public Rollouts
+
+- completed live on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the live ECS service on task definition `:74`
+- Manipur fetch `run_d8eee45f-ad4d-490e-b779-362a1737b2d6` published as `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02` with snapshot `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`
+- Uttarakhand fetch `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b` published as `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343` with snapshot `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`
+- Rajasthan fetch `run_692dc19a-c8a9-4061-a22b-2f0631475baa` published as `publication_fe0f7c25-a719-4120-bab4-8427163cd311` with snapshot `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`
+- Uttar Pradesh fetch `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293` published as `publication_c05f662d-560f-4849-8750-37d92aa00e98` with snapshot `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`
+- Madhya Pradesh fetch `run_466f100f-22b9-4c16-8dbd-1584e462e181` published as `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678` with snapshot `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`
+- Maharashtra fetch `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c` published as `publication_7a82419f-059a-456c-8797-bb33dbf5ab89` with snapshot `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`
+- Bihar fetch `run_154efd48-8963-44d2-8606-b5877145e26f` published as `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86` with snapshot `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`
+- Gujarat fetch `run_baf67425-5948-4e43-828c-b37b274ecfa5` published as `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583` with snapshot `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`
+- Odisha fetch `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3` published as `publication_bde17d21-e0fe-409a-9981-37ed7784e133` with snapshot `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- West Bengal fetch `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0` published as `publication_df487011-4eaa-4b43-b127-166efd0866f7` with snapshot `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`
+- Jharkhand fetch `run_a64b3f23-836b-4f4e-b7e6-7693d035283e` published as `publication_5c30543e-2094-4616-aff3-b17ade4254a2` with snapshot `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- Chhattisgarh fetch `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d` published as `publication_2400d34a-2320-483e-866d-f529b4b81172` with snapshot `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
+- Goa fetch `run_f07af2ea-5cf4-4943-a602-bf673744c9e4` published as `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4` with snapshot `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
+- Sikkim fetch `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f` published as `publication_257083da-bd8c-4efc-93f1-6837905c177f` with snapshot `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`
+- Mizoram fetch `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0` published as `publication_468cfd50-4661-43e5-b4a4-bce047b46618` with snapshot `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- stable route verification passed for all 15 state families with `200` responses on `/states/:stateSlug`, and the rollout chain leaves no remaining approved state dark on the public site
+
+### All Remaining Supported-State Public Rollouts
+
+- completed live on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the live ECS service on task definition `:74`
+- Manipur fetch `run_d8eee45f-ad4d-490e-b779-362a1737b2d6` published as `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02` with snapshot `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`
+- Uttarakhand fetch `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b` published as `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343` with snapshot `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`
+- Rajasthan fetch `run_692dc19a-c8a9-4061-a22b-2f0631475baa` published as `publication_fe0f7c25-a719-4120-bab4-8427163cd311` with snapshot `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`
+- Uttar Pradesh fetch `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293` published as `publication_c05f662d-560f-4849-8750-37d92aa00e98` with snapshot `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`
+- Madhya Pradesh fetch `run_466f100f-22b9-4c16-8dbd-1584e462e181` published as `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678` with snapshot `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`
+- Maharashtra fetch `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c` published as `publication_7a82419f-059a-456c-8797-bb33dbf5ab89` with snapshot `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`
+- Bihar fetch `run_154efd48-8963-44d2-8606-b5877145e26f` published as `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86` with snapshot `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`
+- Gujarat fetch `run_baf67425-5948-4e43-828c-b37b274ecfa5` published as `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583` with snapshot `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`
+- Odisha fetch `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3` published as `publication_bde17d21-e0fe-409a-9981-37ed7784e133` with snapshot `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- West Bengal fetch `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0` published as `publication_df487011-4eaa-4b43-b127-166efd0866f7` with snapshot `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`
+- Jharkhand fetch `run_a64b3f23-836b-4f4e-b7e6-7693d035283e` published as `publication_5c30543e-2094-4616-aff3-b17ade4254a2` with snapshot `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- Chhattisgarh fetch `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d` published as `publication_2400d34a-2320-483e-866d-f529b4b81172` with snapshot `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
+- Goa fetch `run_f07af2ea-5cf4-4943-a602-bf673744c9e4` published as `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4` with snapshot `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
+- Sikkim fetch `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f` published as `publication_257083da-bd8c-4efc-93f1-6837905c177f` with snapshot `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`
+- Mizoram fetch `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0` published as `publication_468cfd50-4661-43e5-b4a4-bce047b46618` with snapshot `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- stable route verification passed for all 15 state families with `200` responses on `/states/:stateSlug`, and the rollout chain leaves no remaining approved state dark on the public site
+
+### All Remaining Supported-State Public Rollouts
+
+- completed live on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the live ECS service on task definition `:74`
+- Manipur fetch `run_d8eee45f-ad4d-490e-b779-362a1737b2d6` published as `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02` with snapshot `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`
+- Uttarakhand fetch `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b` published as `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343` with snapshot `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`
+- Rajasthan fetch `run_692dc19a-c8a9-4061-a22b-2f0631475baa` published as `publication_fe0f7c25-a719-4120-bab4-8427163cd311` with snapshot `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`
+- Uttar Pradesh fetch `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293` published as `publication_c05f662d-560f-4849-8750-37d92aa00e98` with snapshot `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`
+- Madhya Pradesh fetch `run_466f100f-22b9-4c16-8dbd-1584e462e181` published as `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678` with snapshot `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`
+- Maharashtra fetch `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c` published as `publication_7a82419f-059a-456c-8797-bb33dbf5ab89` with snapshot `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`
+- Bihar fetch `run_154efd48-8963-44d2-8606-b5877145e26f` published as `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86` with snapshot `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`
+- Gujarat fetch `run_baf67425-5948-4e43-828c-b37b274ecfa5` published as `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583` with snapshot `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`
+- Odisha fetch `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3` published as `publication_bde17d21-e0fe-409a-9981-37ed7784e133` with snapshot `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- West Bengal fetch `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0` published as `publication_df487011-4eaa-4b43-b127-166efd0866f7` with snapshot `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`
+- Jharkhand fetch `run_a64b3f23-836b-4f4e-b7e6-7693d035283e` published as `publication_5c30543e-2094-4616-aff3-b17ade4254a2` with snapshot `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- Chhattisgarh fetch `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d` published as `publication_2400d34a-2320-483e-866d-f529b4b81172` with snapshot `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
+- Goa fetch `run_f07af2ea-5cf4-4943-a602-bf673744c9e4` published as `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4` with snapshot `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
+- Sikkim fetch `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f` published as `publication_257083da-bd8c-4efc-93f1-6837905c177f` with snapshot `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`
+- Mizoram fetch `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0` published as `publication_468cfd50-4661-43e5-b4a4-bce047b46618` with snapshot `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- stable route verification passed for all 15 state families with `200` responses on `/states/:stateSlug`, and the rollout chain leaves no remaining approved state dark on the public site
+
+### All Remaining Supported-State Public Rollouts
+
+- completed live on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the live ECS service on task definition `:74`
+- Manipur fetch `run_d8eee45f-ad4d-490e-b779-362a1737b2d6` published as `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02` with snapshot `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`
+- Uttarakhand fetch `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b` published as `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343` with snapshot `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`
+- Rajasthan fetch `run_692dc19a-c8a9-4061-a22b-2f0631475baa` published as `publication_fe0f7c25-a719-4120-bab4-8427163cd311` with snapshot `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`
+- Uttar Pradesh fetch `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293` published as `publication_c05f662d-560f-4849-8750-37d92aa00e98` with snapshot `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`
+- Madhya Pradesh fetch `run_466f100f-22b9-4c16-8dbd-1584e462e181` published as `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678` with snapshot `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`
+- Maharashtra fetch `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c` published as `publication_7a82419f-059a-456c-8797-bb33dbf5ab89` with snapshot `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`
+- Bihar fetch `run_154efd48-8963-44d2-8606-b5877145e26f` published as `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86` with snapshot `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`
+- Gujarat fetch `run_baf67425-5948-4e43-828c-b37b274ecfa5` published as `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583` with snapshot `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`
+- Odisha fetch `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3` published as `publication_bde17d21-e0fe-409a-9981-37ed7784e133` with snapshot `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- West Bengal fetch `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0` published as `publication_df487011-4eaa-4b43-b127-166efd0866f7` with snapshot `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`
+- Jharkhand fetch `run_a64b3f23-836b-4f4e-b7e6-7693d035283e` published as `publication_5c30543e-2094-4616-aff3-b17ade4254a2` with snapshot `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- Chhattisgarh fetch `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d` published as `publication_2400d34a-2320-483e-866d-f529b4b81172` with snapshot `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
+- Goa fetch `run_f07af2ea-5cf4-4943-a602-bf673744c9e4` published as `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4` with snapshot `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
+- Sikkim fetch `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f` published as `publication_257083da-bd8c-4efc-93f1-6837905c177f` with snapshot `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`
+- Mizoram fetch `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0` published as `publication_468cfd50-4661-43e5-b4a4-bce047b46618` with snapshot `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- stable route verification passed for all 15 state families with `200` responses on `/states/:stateSlug`, and the rollout chain leaves no remaining approved state dark on the public site
+
+### All Remaining Supported-State Public Rollouts
+
+- completed live on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the live ECS service on task definition `:74`
+- Manipur fetch `run_d8eee45f-ad4d-490e-b779-362a1737b2d6` published as `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02` with snapshot `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`
+- Uttarakhand fetch `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b` published as `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343` with snapshot `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`
+- Rajasthan fetch `run_692dc19a-c8a9-4061-a22b-2f0631475baa` published as `publication_fe0f7c25-a719-4120-bab4-8427163cd311` with snapshot `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`
+- Uttar Pradesh fetch `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293` published as `publication_c05f662d-560f-4849-8750-37d92aa00e98` with snapshot `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`
+- Madhya Pradesh fetch `run_466f100f-22b9-4c16-8dbd-1584e462e181` published as `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678` with snapshot `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`
+- Maharashtra fetch `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c` published as `publication_7a82419f-059a-456c-8797-bb33dbf5ab89` with snapshot `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`
+- Bihar fetch `run_154efd48-8963-44d2-8606-b5877145e26f` published as `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86` with snapshot `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`
+- Gujarat fetch `run_baf67425-5948-4e43-828c-b37b274ecfa5` published as `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583` with snapshot `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`
+- Odisha fetch `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3` published as `publication_bde17d21-e0fe-409a-9981-37ed7784e133` with snapshot `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- West Bengal fetch `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0` published as `publication_df487011-4eaa-4b43-b127-166efd0866f7` with snapshot `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`
+- Jharkhand fetch `run_a64b3f23-836b-4f4e-b7e6-7693d035283e` published as `publication_5c30543e-2094-4616-aff3-b17ade4254a2` with snapshot `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- Chhattisgarh fetch `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d` published as `publication_2400d34a-2320-483e-866d-f529b4b81172` with snapshot `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
+- Goa fetch `run_f07af2ea-5cf4-4943-a602-bf673744c9e4` published as `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4` with snapshot `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
+- Sikkim fetch `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f` published as `publication_257083da-bd8c-4efc-93f1-6837905c177f` with snapshot `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`
+- Mizoram fetch `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0` published as `publication_468cfd50-4661-43e5-b4a4-bce047b46618` with snapshot `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- stable route verification passed for all 15 state families with `200` responses on `/states/:stateSlug`, and the rollout chain leaves no remaining approved state dark on the public site
+
+### All Remaining Supported-State Public Rollouts
+
+- completed live on 2026-04-18 after PR `#83` merged and GitHub deploy run `24600208536` settled the live ECS service on task definition `:74`
+- Manipur fetch `run_d8eee45f-ad4d-490e-b779-362a1737b2d6` published as `publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02` with snapshot `snapshot_6fe0c465-2714-4134-ad30-33ada9b559a5`
+- Uttarakhand fetch `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b` published as `publication_5463d029-d19a-4ed4-8271-57bb3dfc5343` with snapshot `snapshot_e4914e8d-061f-4d10-93d0-728c201dbef8`
+- Rajasthan fetch `run_692dc19a-c8a9-4061-a22b-2f0631475baa` published as `publication_fe0f7c25-a719-4120-bab4-8427163cd311` with snapshot `snapshot_eede344a-7518-48ec-b5f0-adbadddd5805`
+- Uttar Pradesh fetch `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293` published as `publication_c05f662d-560f-4849-8750-37d92aa00e98` with snapshot `snapshot_4047739c-44a3-4100-abfc-59baa6dfaa92`
+- Madhya Pradesh fetch `run_466f100f-22b9-4c16-8dbd-1584e462e181` published as `publication_fb5fccde-e81a-4c14-ad07-e91a810eb678` with snapshot `snapshot_8f56eec9-10ec-48a2-bac5-b2a8fe589665`
+- Maharashtra fetch `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c` published as `publication_7a82419f-059a-456c-8797-bb33dbf5ab89` with snapshot `snapshot_fc9ed37f-a226-4abe-98e7-ed2e2d025be3`
+- Bihar fetch `run_154efd48-8963-44d2-8606-b5877145e26f` published as `publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86` with snapshot `snapshot_cf06d451-ccb0-414f-b5ce-de087d531577`
+- Gujarat fetch `run_baf67425-5948-4e43-828c-b37b274ecfa5` published as `publication_b6092d4c-e9e4-483d-bb7e-2669adb52583` with snapshot `snapshot_bbfa098b-3bc4-4170-8042-76fbdab832b6`
+- Odisha fetch `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3` published as `publication_bde17d21-e0fe-409a-9981-37ed7784e133` with snapshot `snapshot_f4c1c022-7977-4051-896c-8271e52fc3e1`
+- West Bengal fetch `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0` published as `publication_df487011-4eaa-4b43-b127-166efd0866f7` with snapshot `snapshot_cecd7183-b7e6-440e-8f85-f477b73b5acf`
+- Jharkhand fetch `run_a64b3f23-836b-4f4e-b7e6-7693d035283e` published as `publication_5c30543e-2094-4616-aff3-b17ade4254a2` with snapshot `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
+- Chhattisgarh fetch `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d` published as `publication_2400d34a-2320-483e-866d-f529b4b81172` with snapshot `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
+- Goa fetch `run_f07af2ea-5cf4-4943-a602-bf673744c9e4` published as `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4` with snapshot `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
+- Sikkim fetch `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f` published as `publication_257083da-bd8c-4efc-93f1-6837905c177f` with snapshot `snapshot_dccb153e-60f9-4c6a-8ece-88fa426a7a37`
+- Mizoram fetch `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0` published as `publication_468cfd50-4661-43e5-b4a4-bce047b46618` with snapshot `snapshot_054aff0e-a39d-4583-8af8-f1a60194f7d9`
+- stable route verification passed for all 15 state families with `200` responses on `/states/:stateSlug`, and the rollout chain leaves no remaining approved state dark on the public site
 
 ### Arunachal Pradesh Public Rollout
 

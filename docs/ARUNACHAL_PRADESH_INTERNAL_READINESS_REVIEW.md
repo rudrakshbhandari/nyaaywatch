@@ -1,70 +1,37 @@
 # Arunachal Pradesh Internal Readiness Review
 
-Source-viability and internal-readiness review for Arunachal Pradesh, with the first live internal proof cycle now completed.
+Historical internal-readiness record for Arunachal Pradesh.
 
-Arunachal Pradesh is now validated operating evidence for the north-east expansion track after Assam, Meghalaya, Tripura, and Nagaland. This document records the source review plus the completed live internal proof cycle that later supported public rollout.
+Arunachal Pradesh first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Arunachal Pradesh is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0`.
 
-## Review Basis
-
-Verified live-source checks against the NJDG Arunachal Pradesh district dashboard observed:
+## Current Status
 
 - `stateCode=AR`
 - `stateName=Arunachal Pradesh`
 - `stateSlug=arunachal-pradesh`
 - `njdgStateValue=12~36`
-- source page footer updated on `2026-04-16`
-- 27 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `15,539`
-- instituted last month shown on the live state page: `572`
-- disposed last month shown on the live state page: `678`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown for `Lohit` returned `200 OK`
+- current public publication id: `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0`
+- current public snapshot id: `snapshot_0daffe74-e0ec-46f0-89b1-bc3e4177392f`
+- rollback target from the prior internal proof cycle: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
+- current published source snapshot date: `2026-04-16`
+- current published district count: `27`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Arunachal Pradesh exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Arunachal Pradesh is not blocked on a missing metric class or a clearly different page family.
-
-### 2. North-East Continuity Value
-
-Arunachal Pradesh deepens the north-east operating story without forcing another public-state decision first. Its 27-district footprint is materially larger than Tripura, Nagaland, and Meghalaya, which makes it useful additional internal operating evidence rather than only another light-state proof.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and the verified `Lohit` district request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## Live Internal Trial Outcome
-
-Arunachal Pradesh has now cleared the full internal proof bar on the live AWS stack.
-
-### Live Trial Evidence
-
-- deployed task definition during proof cycle: `nyaaywatch-staging:58`
-- first live fetch run: `run_330e608c-890c-47e2-a585-3171c3c44c42`
-- source snapshot date: `2026-04-16`
-- candidate quality state: `complete`
-- district count captured: `27`
-- statewide pending cases captured: `15539`
-- first live publication: `publication_316b931a-30e2-418f-ae8b-ade91f1b4fa9`
-- first live snapshot: `snapshot_6f5e32be-6e04-4917-9baa-b7ac7b200915`
-- replay run from stored evidence: `run_7067210b-fe7f-4366-a6a7-e0788824e727`
-- replay publication: `publication_6fa73859-0fff-44be-99ae-17140d41678a`
-- rollback publication: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
-- operator validation: `GET /operator/publications?stateCode=AR` showed the rollback publication active after replay plus rollback
-- public-surface validation: `https://nyaaywatch.in/states/arunachal-pradesh` and `https://nyaaywatch.in/v1/states/arunachal-pradesh/stats` both returned `404`, so Arunachal Pradesh remained internal-only throughout the trial
-
-### Later Public Outcome
-
-Arunachal Pradesh later cleared a separate public-readiness review, public-route parity, stable-URL verification, and a deliberate public rollout. See `docs/ARUNACHAL_PRADESH_PUBLIC_READINESS_REVIEW.md` for the public-state evidence.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/ARUNACHAL_PRADESH_PUBLIC_READINESS_REVIEW.md`
+- `docs/ARUNACHAL_PRADESH_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Arunachal Pradesh should now be treated as validated north-east operating evidence whose internal proof path is complete and later public rollout is also complete.
+No further internal-only gating remains for Arunachal Pradesh. The state is already live on the public site through explicit `/states/arunachal-pradesh/...` routes, and this document should be read as historical rollout context rather than a current blocker.

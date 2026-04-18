@@ -1,83 +1,37 @@
 # Tamil Nadu Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Tamil Nadu before the first live operator trial or public exposure.
+Historical internal-readiness record for Tamil Nadu.
 
-Tamil Nadu is a strong internal-only candidate for the southern expansion track. This document records live source evidence only. It does not approve public exposure.
+Tamil Nadu first cleared the internal proof bar before public launch. This document is now retained as a historical record of that qualification stage. Tamil Nadu is no longer internal-only; the public rollout completed on 2026-04-18 or earlier, and the current public publication is `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`.
 
-Historical note:
-
-- repo wiring for `TN` is now complete
-- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
-- use `docs/EXPANSION_REVIEW_LOG.md` for the actual live proof lineage and `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md` for the current public recommendation
-
-## Review Basis
-
-Source checks run against the live NJDG Tamil Nadu district dashboard on `2026-04-17`.
-
-Observed Tamil Nadu source notes:
+## Current Status
 
 - `stateCode=TN`
 - `stateName=Tamil Nadu`
 - `stateSlug=tamil-nadu`
 - `njdgStateValue=33~10`
-- source page footer updated on `2026-04-16`
-- 38 districts exposed on the live NJDG state page
-- statewide pending cases shown on the live state page: `17,46,162`
-- instituted last month shown on the live state page: `1,20,781`
-- disposed last month shown on the live state page: `1,44,236`
-- first visible district labels: `Dharmapuri`, `Pudukkottai`, `Tirunelveli`, `Theni`, `Namakkal`
-- all five age-bucket widgets were present on the live state page
-- sample district drilldown `dist_code=1` returned `200 OK`
+- current public publication id: `publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04`
+- current public snapshot id: `snapshot_7307527d-f5d1-4449-bba0-a3f21beafc97`
+- rollback target from the prior internal proof cycle: `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
+- current published source snapshot date: `2026-04-16`
+- current published district count: `38`
+- methodology version: `2026.04-alpha`
 
-## What Already Looks Good
+## Historical Meaning Of This Document
 
-### 1. Source Shape Parity
+This file now exists to preserve the earlier internal-proof stage that came before public exposure:
 
-Tamil Nadu exposes the same metric families the current extractor and normalizer already expect:
+- source viability was checked before public rollout
+- stored-evidence fetch, publish, replay, and rollback succeeded before public rollout
+- the state stayed dark publicly until stable-URL verification and a deliberate rollout slot were complete
 
-- total pending cases
-- instituted and disposed counts for the last month
-- all five age-bucket groupings
-- district-level drilldown through the state page selector
+For the complete rollout lineage, use:
 
-That means Tamil Nadu is not blocked on a missing metric class or a clearly different page family.
-
-### 2. Scale Value
-
-Tamil Nadu gives the internal expansion track a serious southern state without jumping immediately to a new public rollout. Its 38-district surface is meaningfully larger than Haryana and Uttarakhand while still staying below Uttar Pradesh's heavier stress profile.
-
-### 3. Drilldown Reachability
-
-The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
-
-## What Still Needs Explicit Work
-
-### 1. Repo Wiring
-
-Tamil Nadu is now wired into the repo as a supported public state, and the live hostname rollout has completed.
-
-### 2. Operating Evidence
-
-Tamil Nadu has now cleared:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-That closes the internal proof bar. Tamil Nadu is no longer only a source-viability candidate.
-
-### 3. Public Trust Review
-
-Tamil Nadu-specific live hostname verification is complete. Public exposure is now evidenced in the narrower go-live artifacts rather than in this initial source-viability note.
+- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md`
+- `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
+- `docs/RELEASE_HISTORY.md`
 
 ## Recommendation
 
-Tamil Nadu should now be treated as the validated southern baseline and a completed public rollout.
-
-Its follow-on step is:
-
-1. keep later internal expansion narrower than nationwide theater even though Tamil Nadu is now live
-2. treat Kerala as an internal-only southern follow-on unless a later public-readiness review says otherwise
-3. keep the next public-state decision explicit instead of widening by implication
+No further internal-only gating remains for Tamil Nadu. The state is already live on the public site through explicit `/states/tamil-nadu/...` routes, and this document should be read as historical rollout context rather than a current blocker.
