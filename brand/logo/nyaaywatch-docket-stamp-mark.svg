@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">NyaayWatch docket stamp mark</title>
+  <desc id="desc">A square archival stamp mark with a file-tab corner and a subtle watch-crown accent.</desc>
+  <rect width="256" height="256" fill="#f5f1e8"/>
+  <path d="M52 42h116l36 36v136H52z" fill="none" stroke="#12100e" stroke-width="10" stroke-linejoin="miter"/>
+  <path d="M168 42v36h36" fill="none" stroke="#12100e" stroke-width="10"/>
+  <circle cx="216" cy="128" r="10" fill="#a12a1e"/>
+  <line x1="206" y1="128" x2="196" y2="128" stroke="#12100e" stroke-width="6" stroke-linecap="square"/>
+  <g fill="#12100e">
+    <rect x="89" y="82" width="14" height="92" rx="2"/>
+    <rect x="153" y="82" width="14" height="92" rx="2"/>
+    <rect x="101" y="90" width="14" height="95" rx="2" transform="rotate(-33 108 137.5)"/>
+  </g>
+  <path d="M70 196h96" stroke="#d2c8b8" stroke-width="8" stroke-linecap="square"/>
+</svg>
