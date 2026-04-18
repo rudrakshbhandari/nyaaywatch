@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">NyaayWatch archive seal mark</title>
+  <desc id="desc">A circular evidence-seal style mark with sparse watch ticks and a geometric N monogram.</desc>
+  <rect width="256" height="256" fill="#f5f1e8"/>
+  <circle cx="128" cy="128" r="102" fill="none" stroke="#12100e" stroke-width="10"/>
+  <circle cx="128" cy="128" r="76" fill="none" stroke="#d2c8b8" stroke-width="6"/>
+  <g fill="#12100e">
+    <rect x="124" y="18" width="8" height="22"/>
+    <rect x="124" y="216" width="8" height="22"/>
+    <rect x="18" y="124" width="22" height="8"/>
+    <rect x="216" y="124" width="22" height="8"/>
+    <rect x="60.2" y="44.6" width="8" height="18" transform="rotate(-45 64.2 53.6)"/>
+    <rect x="188.8" y="193.4" width="8" height="18" transform="rotate(-45 192.8 202.4)"/>
+    <rect x="193.4" y="60.2" width="18" height="8" transform="rotate(-45 202.4 64.2)"/>
+    <rect x="44.6" y="188.8" width="18" height="8" transform="rotate(-45 53.6 192.8)"/>
+  </g>
+  <g fill="#12100e">
+    <rect x="89" y="82" width="14" height="92" rx="2"/>
+    <rect x="153" y="82" width="14" height="92" rx="2"/>
+    <rect x="101" y="90" width="14" height="95" rx="2" transform="rotate(-33 108 137.5)"/>
+  </g>
+  <circle cx="128" cy="128" r="7" fill="#a12a1e"/>
+</svg>
