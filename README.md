@@ -31,7 +31,7 @@ What is shipped now:
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Telangana is now live on the public site after Assam, Madhya Pradesh, Maharashtra, Bihar, and Gujarat have all cleared internal-only live proof cycles, the remaining public queue now resumes from the still-internal states in internal-proof order, and the remaining unsupported-state waves are Odisha, West Bengal, Jharkhand, and Chhattisgarh, then Goa, Sikkim, and Mizoram.
+Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Telangana is now live on the public site after Assam, Kerala is the next public rollout slice in repo prep, Odisha, West Bengal, Jharkhand, and Chhattisgarh are the next internal-only batch, and the final unsupported-state wave is Goa, Sikkim, and Mizoram.
 
 ## Product Guardrails
 
@@ -238,6 +238,8 @@ Internal or post-MVP planning:
 - [Assam public readiness review](docs/ASSAM_PUBLIC_READINESS_REVIEW.md)
 - [Assam go-live checklist](docs/ASSAM_GO_LIVE_CHECKLIST.md)
 - [Assam internal readiness review](docs/ASSAM_INTERNAL_READINESS_REVIEW.md)
+- [Kerala public readiness review](docs/KERALA_PUBLIC_READINESS_REVIEW.md)
+- [Kerala go-live checklist](docs/KERALA_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu public readiness review](docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md)
 - [Tamil Nadu go-live checklist](docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu internal readiness review](docs/TAMIL_NADU_INTERNAL_READINESS_REVIEW.md)
