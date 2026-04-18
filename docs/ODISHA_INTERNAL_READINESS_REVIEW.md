@@ -1,8 +1,14 @@
 # Odisha Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Odisha before the first live operator trial or public exposure.
+Internal readiness review for Odisha.
 
-Odisha is a strong internal-only candidate for the next eastern expansion wave after the current south-plus-north-east batch. This document records the verified source notes currently available. It does not approve public exposure.
+Odisha is now a validated internal-only state after clearing the full live proof cycle. This document records the source notes plus the live operating evidence. It still does not approve public exposure.
+
+Historical note:
+
+- repo wiring for `OD` is now complete
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the full batch lineage
 
 ## Review Basis
 
@@ -45,19 +51,19 @@ This read-only review does not yet record the full state metric surface. The fir
 
 ### 2. Repo Wiring
 
-Odisha still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
+Odisha is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
 
 ### 3. Operating Evidence
 
-Odisha has not yet cleared the full internal proof bar. It still needs:
+Odisha has now cleared:
 
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+- live `fetch` as `run_eb64e8ff-b70b-4eda-be14-180441a38548`
+- live `publish` as `publication_24cc3461-c2e1-47b0-a870-907306ca183d`
+- live `replay` as `run_07c3627f-1f65-4915-9516-1d72d2ae9e18`
+- replay publication as `publication_3df28695-e014-44d2-9b36-4bb7bb95a9cb`
+- live `rollback` as `publication_0b8376be-33ae-4c60-a534-835ebb199b57`
 
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
+That closes the internal proof bar. Odisha is no longer only a source-viability candidate.
 
 ### 4. Public Trust Review
 
@@ -65,10 +71,9 @@ No Odisha-specific public-route parity, copy, or methodology review has been don
 
 ## Recommendation
 
-Odisha should be treated as a viable next internal-only candidate for the eastern expansion wave.
+Odisha should now be treated as validated eastern internal operating evidence.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. a deliberate public rollout slot is chosen after the earlier cleared internal states already ahead of it in queue

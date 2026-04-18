@@ -6,6 +6,25 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_4fff0bca-7b58-49d1-992d-a113c43f577a:start -->
+## publication_4fff0bca-7b58-49d1-992d-a113c43f577a
+
+- Reviewed at: `2026-04-18T02:32:28.735Z`
+- Reviewer: `Codex Kerala public rollout`
+- Public URL: `https://nyaaywatch.in/states/kerala`
+- Action: `publish`
+- Source snapshot date: `2026-04-17T00:00:00.000Z`
+- Published at: `2026-04-18T02:31:19.802Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_e4ce54db-1dd6-473e-8ea6-318856c3f1f5`
+- Rollback target: `publication_dafbab89-af38-4a41-a006-9153f126e785`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Kerala became the sixth additional public state after task definition `:62` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/kerala`, including the expected Kerala title and heading on the public page.
+
+<!-- release:publication_4fff0bca-7b58-49d1-992d-a113c43f577a:end -->
+
 <!-- release:publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b:start -->
 ## publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b
 

@@ -1,8 +1,14 @@
 # West Bengal Internal Readiness Review
 
-Initial source-viability and internal-readiness review for West Bengal before the first live operator trial or public exposure.
+Internal readiness review for West Bengal.
 
-West Bengal is a strong internal-only candidate for the next eastern expansion wave after the current south-plus-north-east batch. This document records the verified source notes currently available. It does not approve public exposure.
+West Bengal is now a validated internal-only state after clearing the full live proof cycle. This document records the source notes plus the live operating evidence. It still does not approve public exposure.
+
+Historical note:
+
+- repo wiring for `WB` is now complete
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the full batch lineage
 
 ## Review Basis
 
@@ -45,19 +51,19 @@ This read-only review does not yet record the full state metric surface. The fir
 
 ### 2. Repo Wiring
 
-West Bengal still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
+West Bengal is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
 
 ### 3. Operating Evidence
 
-West Bengal has not yet cleared the full internal proof bar. It still needs:
+West Bengal has now cleared:
 
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+- live `fetch` as `run_4af4d3ee-db7f-4570-995b-361d99bb6bcf`
+- live `publish` as `publication_4b085772-5b96-402c-81fb-2bc5a9b12060`
+- live `replay` as `run_3e45e064-d1b8-41ea-aefe-f1c7372d3a8f`
+- replay publication as `publication_68fe225e-1270-412c-8472-551ec957a8d3`
+- live `rollback` as `publication_09fd4895-3a75-4c8f-97aa-5222e4137541`
 
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
+That closes the internal proof bar. West Bengal is no longer only a source-viability candidate.
 
 ### 4. Public Trust Review
 
@@ -65,10 +71,9 @@ No West Bengal-specific public-route parity, copy, or methodology review has bee
 
 ## Recommendation
 
-West Bengal should be treated as a viable next internal-only candidate for the eastern expansion wave.
+West Bengal should now be treated as validated eastern internal operating evidence.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. a deliberate public rollout slot is chosen after the earlier cleared internal states already ahead of it in queue

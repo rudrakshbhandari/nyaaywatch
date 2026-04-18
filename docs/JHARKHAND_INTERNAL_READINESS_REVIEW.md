@@ -1,8 +1,14 @@
 # Jharkhand Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Jharkhand before the first live operator trial or public exposure.
+Internal readiness review for Jharkhand.
 
-Jharkhand is a strong internal-only candidate for the next eastern expansion wave after the current south-plus-north-east batch. This document records the verified source notes currently available. It does not approve public exposure.
+Jharkhand is now a validated internal-only state after clearing the full live proof cycle. This document records the source notes plus the live operating evidence. It still does not approve public exposure.
+
+Historical note:
+
+- repo wiring for `JH` is now complete
+- the live `fetch -> inspect -> publish -> replay -> rollback` proof cycle is now complete
+- use `docs/EXPANSION_REVIEW_LOG.md` for the full batch lineage
 
 ## Review Basis
 
@@ -45,19 +51,19 @@ This read-only review does not yet record the full state metric surface. The fir
 
 ### 2. Repo Wiring
 
-Jharkhand still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
+Jharkhand is now wired into the repo as an internal-only state profile with tests that keep it dark on the public site.
 
 ### 3. Operating Evidence
 
-Jharkhand has not yet cleared the full internal proof bar. It still needs:
+Jharkhand has now cleared:
 
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
+- live `fetch` as `run_9555324e-3416-4c6d-8287-e666982f8bec`
+- live `publish` as `publication_ff13fc7e-1d39-44ad-ad17-c45f2515f159`
+- live `replay` as `run_ad91c0c0-59f9-4c50-be1c-26f387539e47`
+- replay publication as `publication_12072ce8-33b1-4349-b13d-63516900d091`
+- live `rollback` as `publication_12683d90-942c-4050-b5f7-7ccca8932b07`
 
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
+That closes the internal proof bar. Jharkhand is no longer only a source-viability candidate.
 
 ### 4. Public Trust Review
 
@@ -65,10 +71,9 @@ No Jharkhand-specific public-route parity, copy, or methodology review has been 
 
 ## Recommendation
 
-Jharkhand should be treated as a viable next internal-only candidate for the eastern expansion wave.
+Jharkhand should now be treated as validated eastern internal operating evidence.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. a deliberate public rollout slot is chosen after the earlier cleared internal states already ahead of it in queue

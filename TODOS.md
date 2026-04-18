@@ -12,18 +12,33 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Telangana is now live, so the remaining public rollout order should resume from the still-internal states in internal-proof order
-- current remaining public queue: Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, and Gujarat
+- Kerala is now live, so the remaining public rollout order should resume from the still-internal states in internal-proof order
+- current remaining public queue: Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh
 - done only when the next chosen state completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 
 ### Next Internal Expansion Batch
 
-- Odisha, West Bengal, Jharkhand, and Chhattisgarh are the recommended next internal-only batch
-- the final remaining unsupported wave after that is Goa, Sikkim, and Mizoram
+- Goa, Sikkim, and Mizoram are the final remaining unsupported wave
 - after that batch, all currently unsupported states should be internally covered
 - done only when repo wiring plus each live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds while keeping public routes dark with `404`
 
 ## Completed
+
+### Kerala Public Rollout
+
+- completed live on 2026-04-18 after PR `#72` merged and deploy run `24594772675` rolled the live stack to task definition `:62`
+- Kerala fetch `run_e4ce54db-1dd6-473e-8ea6-318856c3f1f5` published as `publication_4fff0bca-7b58-49d1-992d-a113c43f577a` with snapshot `snapshot_99d7ad98-ff3c-40e2-9922-e4661998e839`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug kerala` passed with `districtCount=14`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route and HTML verification confirmed `https://nyaaywatch.in/states/kerala` and `https://nyaaywatch.in/v1/states/kerala/stats` return `200`, with the expected Kerala title and `How long is the wait for justice in Kerala?` heading
+
+### Odisha, West Bengal, Jharkhand, And Chhattisgarh Internal Proof Cycles
+
+- completed live on 2026-04-18 after PR `#72` merged and deploy run `24594772675` rolled the live stack to task definition `:62`
+- Odisha completed fetch `run_eb64e8ff-b70b-4eda-be14-180441a38548`, publication `publication_24cc3461-c2e1-47b0-a870-907306ca183d`, replay `run_07c3627f-1f65-4915-9516-1d72d2ae9e18`, replay publication `publication_3df28695-e014-44d2-9b36-4bb7bb95a9cb`, and rollback `publication_0b8376be-33ae-4c60-a534-835ebb199b57`
+- West Bengal completed fetch `run_4af4d3ee-db7f-4570-995b-361d99bb6bcf`, publication `publication_4b085772-5b96-402c-81fb-2bc5a9b12060`, replay `run_3e45e064-d1b8-41ea-aefe-f1c7372d3a8f`, replay publication `publication_68fe225e-1270-412c-8472-551ec957a8d3`, and rollback `publication_09fd4895-3a75-4c8f-97aa-5222e4137541`
+- Jharkhand completed fetch `run_9555324e-3416-4c6d-8287-e666982f8bec`, publication `publication_ff13fc7e-1d39-44ad-ad17-c45f2515f159`, replay `run_ad91c0c0-59f9-4c50-be1c-26f387539e47`, replay publication `publication_12072ce8-33b1-4349-b13d-63516900d091`, and rollback `publication_12683d90-942c-4050-b5f7-7ccca8932b07`
+- Chhattisgarh completed fetch `run_3deffe82-3ee7-477f-ae37-e70b93d544e6`, publication `publication_301acf9a-e2d2-46b2-940c-42a2cd989ece`, replay `run_d60f4c4b-8385-4193-9a63-efc5dcc3dcda`, replay publication `publication_e4502b2d-9466-434a-903e-53ff22426428`, and rollback `publication_412a4d67-73fe-4bdd-b149-24c05cbaf973`
+- public routes for Odisha, West Bengal, Jharkhand, and Chhattisgarh all remained dark with `404` responses throughout
 
 ### Telangana Public Rollout
 
