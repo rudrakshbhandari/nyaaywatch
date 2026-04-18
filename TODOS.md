@@ -13,10 +13,10 @@ Use this file for:
 ### Next Public State Decision
 
 - Arunachal Pradesh is now live, and Manipur is the next public state in the internal-proof order
-- current remaining public queue after Manipur: Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- Arunachal Pradesh has completed both public-prep and live rollout evidence, so the next repo-prep slice is Manipur public parity
-- Madhya Pradesh remains the next already-cleared internal candidate behind Manipur once its explicit public-route parity slice lands
-- done only when Manipur completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
+- current remaining public queue after Manipur: Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- the remaining internally proven states are being approved together in repo config so the live rollout chain can continue without one prep PR per state
+- Madhya Pradesh remains the next already-cleared internal candidate behind Manipur once the current continuous rollout chain reaches it
+- done only when the remaining states complete live publish and stable-URL verification without widening national scaffolding beyond the already supported set
 
 ### Next Internal Expansion Batch
 
