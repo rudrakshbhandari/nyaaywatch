@@ -1,8 +1,8 @@
 # Telangana Public Readiness Review
 
-Review of what Telangana now requires before exposing any public Telangana route family.
+Review of the public-readiness work that preceded Telangana's first public rollout.
 
-Telangana has already cleared the internal proof bar on the live stack. This review records why the remaining public question is narrow: Telangana no longer needs extractor invention or source-shape debate, but it still needs explicit public-route parity, stable-URL verification, and a deliberate rollout decision before any public exposure.
+Telangana had already cleared the internal proof bar on the live stack before public exposure. This review recorded why the remaining public question was narrow, and the rollout is now complete on the public hostname.
 
 ## Review Basis
 
@@ -97,14 +97,15 @@ That gate is satisfied for Telangana because Haryana, Tamil Nadu, and Assam are 
 
 ## Outcome
 
-Telangana should now be treated as a viable next narrow public candidate, not as a state that still needs basic source or operator validation.
+Telangana is now publicly live and no longer belongs in the "next narrow public candidate" bucket.
 
-Before launch, the remaining conditions are:
+The rollout completed on `2026-04-18` with:
 
-1. Telangana is deliberately promoted into the approved public-state set rather than exposed by implication
-2. the Telangana-specific public-route parity artifacts are green under that configuration
-3. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug telangana` and a live browser pass both succeed on the stable hostname
-4. rollout docs record the actual public publication lineage after launch
+1. deliberate promotion into the approved public-state set
+2. green Telangana-specific route-parity artifacts in repo validation
+3. passing `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug telangana`
+4. a live browser pass on `https://nyaaywatch.in/states/telangana`
+5. rollout evidence recorded in `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, and `docs/RELEASE_HISTORY.md`
 
 ## Useful Work Completed By This Review
 

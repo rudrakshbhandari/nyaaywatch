@@ -6,6 +6,25 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b:start -->
+## publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b
+
+- Reviewed at: `2026-04-18T01:49:07.895Z`
+- Reviewer: `Codex Telangana public rollout`
+- Public URL: `https://nyaaywatch.in/states/telangana`
+- Action: `publish`
+- Source snapshot date: `2026-04-17T00:00:00.000Z`
+- Published at: `2026-04-18T01:48:11.183Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_79ae11fb-75fa-460d-a47d-929d0889657c`
+- Rollback target: `publication_83bbcec4-3402-4f8c-9014-6646255a64a0`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Telangana became the fifth additional public state after task definition `:60` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/telangana`, and the live browser check confirmed the expected trust metadata plus supported-state navigation.
+
+<!-- release:publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b:end -->
+
 <!-- release:publication_111cc225-f1a6-455d-8d7e-fd6af06ed597:start -->
 ## publication_111cc225-f1a6-455d-8d7e-fd6af06ed597
 

@@ -12,18 +12,34 @@ Use this file for:
 
 ### Next Public State Decision
 
-- public promotion now follows internal-proof order for the cleared post-Assam batch
-- current public queue: Telangana, Andhra Pradesh, Arunachal Pradesh, then Manipur
-- done only when Telangana completes public-route parity, live publish, and stable-URL verification, and the queue is then advanced to Andhra Pradesh
+- Telangana is now live, so the remaining public rollout order should resume from the still-internal states in internal-proof order
+- current remaining public queue: Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, and Gujarat
+- done only when the next chosen state completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 
 ### Next Internal Expansion Batch
 
-- Madhya Pradesh, Maharashtra, Bihar, and Gujarat are the recommended next internal-only batch after read-only source review
-- remaining queued internal-only waves after that: Odisha, West Bengal, Jharkhand, and Chhattisgarh, then Goa, Sikkim, and Mizoram
-- after that batch, keep going until the remaining unsupported states are internally covered in subsequent waves rather than stopping at one more quartet
-- done only when repo wiring plus all four live `fetch -> inspect -> publish -> replay -> rollback` cycles succeed while keeping public routes dark with `404`
+- Odisha, West Bengal, Jharkhand, and Chhattisgarh are the recommended next internal-only batch
+- the final remaining unsupported wave after that is Goa, Sikkim, and Mizoram
+- after that batch, all currently unsupported states should be internally covered
+- done only when repo wiring plus each live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds while keeping public routes dark with `404`
 
 ## Completed
+
+### Telangana Public Rollout
+
+- completed live on 2026-04-18 after PR `#70` merged and deploy run `24593998269` rolled the live stack to task definition `:60`
+- Telangana fetch `run_79ae11fb-75fa-460d-a47d-929d0889657c` published as `publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b` with snapshot `snapshot_c350559b-947a-40ac-9dd4-daea74f64218`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug telangana` passed with `districtCount=33`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live browser verification loaded `https://nyaaywatch.in/states/telangana` with the expected Telangana title, published-snapshot trust text, and supported-state navigation for Punjab, Haryana, Tamil Nadu, Assam, and Telangana
+
+### Madhya Pradesh, Maharashtra, Bihar, And Gujarat Internal Proof Cycles
+
+- completed live on 2026-04-18 after PR `#70` merged and deploy run `24593998269` rolled the live stack to task definition `:60`
+- Madhya Pradesh completed fetch `run_14520fbf-0fea-4bd9-95cb-e77b100a807f`, publication `publication_18e27b87-5922-40da-a084-8af808be3ecb`, replay `run_bfdce54a-47ac-4a5f-854d-fcd744fd9513`, replay publication `publication_d37491d5-5714-4590-a542-ebda13b14b03`, and rollback `publication_3f08b92a-ac96-4a4a-9041-c02d90b1a2f2`
+- Maharashtra completed fetch `run_cfdf23ca-aa24-4dd4-b954-6b07d5c9701a`, publication `publication_e19586db-da7e-4db7-a3f2-4fe484e05598`, replay `run_7e93efa9-aafc-4ca0-8948-d3eb29d44a31`, replay publication `publication_dd6d8431-409e-401c-9320-9ab6c2ea8884`, and rollback `publication_f000da6a-79d1-4683-8acf-2a1b235611b4`
+- Bihar completed fetch `run_0e7317c9-2774-481f-88a9-3c52c8e1b49d`, publication `publication_07d2e083-c592-4017-b1a5-5a4ce03075ae`, replay `run_af0583ea-ef66-48d0-9b21-f582697061ce`, replay publication `publication_7e723234-8fa1-4d61-ad81-bfd4c39c49be`, and rollback `publication_3319a11d-16fd-4a40-ad4a-cb4869f41d31`
+- Gujarat completed fetch `run_18386bb6-ac8a-4217-9d76-b9ad169678d3`, publication `publication_9f3892de-ed4b-4ccb-822f-5cce3c9372b8`, replay `run_ad51cf0d-5760-4913-b979-14d75cf80d32`, replay publication `publication_46ab606a-4f3d-4d93-a60e-66dc7c13e978`, and rollback `publication_82c79b8b-aa07-4733-802e-12bd65e1c897`
+- public routes for Madhya Pradesh, Maharashtra, Bihar, and Gujarat all remained dark with `404` responses throughout
 
 ### Tamil Nadu Public Rollout
 

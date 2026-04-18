@@ -688,9 +688,9 @@ Those next-slice decisions are now made:
 - source boundary: NJDG Telangana district dashboard aggregate pages
 - methodology version: `2026.04-alpha`
 - first successful capture date: 2026-04-17
-- latest successful validation date: 2026-04-17 live replay and rollback validation
+- latest successful validation date: 2026-04-18 live public rollout verification
 - reviewer: Codex
-- decision: `internal trial completed`
+- decision: `public rollout completed`
 
 ### Source Viability Notes
 
@@ -725,10 +725,21 @@ Those next-slice decisions are now made:
 - operator validation: `GET /operator/publications?stateCode=TS` showed the rollback publication active after replay plus rollback
 - public-surface validation: `https://nyaaywatch.in/states/telangana` and `https://nyaaywatch.in/v1/states/telangana/stats` both returned `404`, so Telangana remained internal-only throughout the trial
 
+### Public Rollout Evidence
+
+- deploy run: `24593998269`
+- deployed task definition during public rollout: `nyaaywatch-staging:60`
+- public rollout fetch run: `run_79ae11fb-75fa-460d-a47d-929d0889657c`
+- public rollout publication: `publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b`
+- public rollout snapshot: `snapshot_c350559b-947a-40ac-9dd4-daea74f64218`
+- rollback target retained from the internal trial: `publication_83bbcec4-3402-4f8c-9014-6646255a64a0`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug telangana` passed with `districtCount=33`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- browser validation: `https://nyaaywatch.in/states/telangana` loaded with the expected Telangana title, published-snapshot trust text, and supported-state navigation for Punjab, Haryana, Tamil Nadu, Assam, and Telangana
+
 ### Next Required Work
 
-- keep Telangana internal-only until a separate public-readiness review exists
-- use Telangana as a deliberate public-candidate option only if the next public-state decision explicitly chooses it
+- advance the remaining public queue from the still-internal states in internal-proof order rather than adding fresh public exceptions
+- keep the next unsupported-state batch internal-only while Telangana settles as a public state
 
 ## Andhra Pradesh (`AP`) Internal Trial
 
@@ -876,3 +887,27 @@ Those next-slice decisions are now made:
 
 - keep Manipur internal-only until a separate public-readiness review exists
 - use Manipur as a deliberate public-candidate option only if the next public-state decision explicitly chooses it
+
+## Madhya Pradesh (`MP`), Maharashtra (`MH`), Bihar (`BR`), And Gujarat (`GJ`) Internal Proof Batch
+
+- candidate geographies: Madhya Pradesh, Maharashtra, Bihar, and Gujarat
+- review date: 2026-04-18
+- source boundary: NJDG district dashboard aggregate pages for each state
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-18
+- latest successful validation date: 2026-04-18 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:60`
+- Madhya Pradesh fetch `run_14520fbf-0fea-4bd9-95cb-e77b100a807f`, publish `publication_18e27b87-5922-40da-a084-8af808be3ecb`, replay `run_bfdce54a-47ac-4a5f-854d-fcd744fd9513`, replay publication `publication_d37491d5-5714-4590-a542-ebda13b14b03`, and rollback `publication_3f08b92a-ac96-4a4a-9041-c02d90b1a2f2` all succeeded
+- Maharashtra fetch `run_cfdf23ca-aa24-4dd4-b954-6b07d5c9701a`, publish `publication_e19586db-da7e-4db7-a3f2-4fe484e05598`, replay `run_7e93efa9-aafc-4ca0-8948-d3eb29d44a31`, replay publication `publication_dd6d8431-409e-401c-9320-9ab6c2ea8884`, and rollback `publication_f000da6a-79d1-4683-8acf-2a1b235611b4` all succeeded
+- Bihar fetch `run_0e7317c9-2774-481f-88a9-3c52c8e1b49d`, publish `publication_07d2e083-c592-4017-b1a5-5a4ce03075ae`, replay `run_af0583ea-ef66-48d0-9b21-f582697061ce`, replay publication `publication_7e723234-8fa1-4d61-ad81-bfd4c39c49be`, and rollback `publication_3319a11d-16fd-4a40-ad4a-cb4869f41d31` all succeeded
+- Gujarat fetch `run_18386bb6-ac8a-4217-9d76-b9ad169678d3`, publish `publication_9f3892de-ed4b-4ccb-822f-5cce3c9372b8`, replay `run_ad51cf0d-5760-4913-b979-14d75cf80d32`, replay publication `publication_46ab606a-4f3d-4d93-a60e-66dc7c13e978`, and rollback `publication_82c79b8b-aa07-4733-802e-12bd65e1c897` all succeeded
+- public-surface validation: the page and stats routes for Madhya Pradesh, Maharashtra, Bihar, and Gujarat all returned `404`, so all four states remained internal-only throughout the batch
+
+### Recommendation
+
+This batch is now operating evidence, not source-only speculation. Public rollout should still lag that internal qualification, and the next unsupported-state work should move to Odisha, West Bengal, Jharkhand, and Chhattisgarh before the final Goa, Sikkim, and Mizoram wave.

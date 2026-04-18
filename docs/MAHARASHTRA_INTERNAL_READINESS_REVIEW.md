@@ -1,8 +1,8 @@
 # Maharashtra Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Maharashtra before the first live operator trial or public exposure.
+Internal-readiness review for Maharashtra after the first live operator trial and before any public exposure.
 
-Maharashtra is a strong internal-only candidate for the next central and western expansion wave after the current south-plus-north-east batch. This document records live source evidence only. It does not approve public exposure.
+Maharashtra has now cleared the full live internal proof bar. This document records both the source evidence and the completed internal-only operator cycle. It still does not approve public exposure.
 
 ## Review Basis
 
@@ -44,34 +44,32 @@ Maharashtra is the most operationally significant state in this next read-only b
 
 The live state page exposes district drilldowns, and a sample district page request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
 
+## Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:60`
+- first live fetch run: `run_cfdf23ca-aa24-4dd4-b954-6b07d5c9701a`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `42`
+- statewide pending cases captured: `6022450`
+- first live publication: `publication_e19586db-da7e-4db7-a3f2-4fe484e05598`
+- first live snapshot: `snapshot_4afad27d-e8ee-44f7-8637-d67415c6e17b`
+- replay run from stored evidence: `run_7e93efa9-aafc-4ca0-8948-d3eb29d44a31`
+- replay publication: `publication_dd6d8431-409e-401c-9320-9ab6c2ea8884`
+- rollback publication: `publication_f000da6a-79d1-4683-8acf-2a1b235611b4`
+- public-surface validation: `https://nyaaywatch.in/states/maharashtra` and `https://nyaaywatch.in/v1/states/maharashtra/stats` both returned `404`, so Maharashtra remained internal-only throughout the trial
+
 ## What Still Needs Explicit Work
 
-### 1. Repo Wiring
-
-Maharashtra still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
-
-### 2. Operating Evidence
-
-Maharashtra has not yet cleared the full internal proof bar. It still needs:
-
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
-
-### 3. Public Trust Review
+### 1. Public Trust Review
 
 No Maharashtra-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope.
 
 ## Recommendation
 
-Maharashtra should be treated as a viable heavy-state internal-only candidate for the next post-Telangana wave.
+Maharashtra should now be treated as validated internal operating evidence rather than a source-only candidate.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. it reaches the front of the deliberate public queue instead of being exposed implicitly
