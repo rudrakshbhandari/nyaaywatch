@@ -12,14 +12,14 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Assam is now live, so the next public state should be an explicit new decision rather than an implied continuation of the previous queue
+- Assam is now live, and Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur have all cleared internal-only proof cycles
 - internal completion order can seed that queue, but public promotion should still remain a deliberate decision after a narrow public-readiness review
-- done only when one internal-only state is deliberately chosen for public-readiness review and stable-URL parity planning
+- done only when one state from the newly cleared internal-only batch is deliberately chosen for public-readiness review and stable-URL parity planning
 
 ### Next Internal Expansion Batch
 
-- Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur are the next internal-only candidates after live source review
-- done only when all four states clear real `fetch -> inspect -> publish -> replay -> rollback` cycles while keeping public routes dark with `404`
+- Madhya Pradesh, Maharashtra, Bihar, and Gujarat are the recommended next internal-only batch after read-only source review
+- done only when repo wiring plus all four live `fetch -> inspect -> publish -> replay -> rollback` cycles succeed while keeping public routes dark with `404`
 
 ## Completed
 
@@ -44,6 +44,15 @@ Use this file for:
 - Tripura completed fetch `run_6b5e6751-0835-42b1-a89a-f3da080f5287`, publication `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`, replay `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`, and rollback `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
 - Nagaland completed fetch `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`, publication `publication_abc433b9-1db4-4661-902e-ffd8861e35af`, replay `run_d3d5a492-1515-4e77-ab25-27135054b787`, and rollback `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
 - public routes for Karnataka, Tripura, and Nagaland all remained dark with `404` responses throughout
+
+### Telangana, Andhra Pradesh, Arunachal Pradesh, And Manipur Internal Proof Cycles
+
+- completed live on 2026-04-17 after PR `#68` merged and deploy run `24591817588` rolled the live stack to task definition `:58`
+- Telangana completed fetch `run_b48f6632-d59e-4bf9-9cdf-30125e045538`, publication `publication_eebf7779-60ed-4f91-967e-ab8dd6006fb8`, replay `run_e350d3ba-98d9-4d55-b073-638e69a8039d`, and rollback `publication_83bbcec4-3402-4f8c-9014-6646255a64a0`
+- Andhra Pradesh completed fetch `run_4cb87c2a-1c31-4437-98ef-dc7d082ad6ef`, publication `publication_337af32e-4f9c-45ab-a4a4-52d43a2028b4`, replay `run_ce2ec512-176a-483e-ba9c-309054a0fff6`, and rollback `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+- Arunachal Pradesh completed fetch `run_330e608c-890c-47e2-a585-3171c3c44c42`, publication `publication_316b931a-30e2-418f-ae8b-ade91f1b4fa9`, replay `run_7067210b-fe7f-4366-a6a7-e0788824e727`, and rollback `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
+- Manipur completed fetch `run_ce3e086f-84f5-40d7-9540-366fe1c40a25`, publication `publication_d747187e-cc5e-4071-9fba-75a73e96058c`, replay `run_bdfe0d4a-770d-49cb-9f04-952999686779`, and rollback `publication_29505d10-5434-4237-8b0d-89a9dfcf08cf`
+- public routes for Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur all remained dark with `404` responses throughout
 
 ### Haryana Public Rollout
 

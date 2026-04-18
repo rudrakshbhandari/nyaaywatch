@@ -680,3 +680,199 @@ Those next-slice decisions are now made:
 
 - keep Nagaland internal-only until a separate public-readiness review exists
 - use Nagaland as additional north-east operating evidence rather than as an implied next public slot
+
+## Telangana (`TS`) Internal Trial
+
+- candidate geography: Telangana
+- review date: 2026-04-17
+- source boundary: NJDG Telangana district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `36~29`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `33`
+- statewide pending cases shown on the live state page: `9,84,793`
+- instituted in last month: `49,090`
+- disposed in last month: `60,884`
+- leading district names captured in the normalized snapshot: `Hyderabad`, `Rangareddy`, `Medchal Malkajgiri`, `Nalgonda`, `Karimnagar`
+- all five age-bucket widgets were present on the live state page
+
+### Why Telangana Was The Right Next Southern Baseline
+
+- Telangana keeps the southern expansion story moving with a heavier state surface after Tamil Nadu, Kerala, and Karnataka.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 33-district footprint adds meaningful operating evidence before any further public-state decision.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:58`
+- first live fetch run: `run_b48f6632-d59e-4bf9-9cdf-30125e045538`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `33`
+- statewide pending cases captured: `984793`
+- first live publication: `publication_eebf7779-60ed-4f91-967e-ab8dd6006fb8`
+- first live snapshot: `snapshot_16dda47e-b151-4528-810c-fecc6b0eacbd`
+- replay run from stored evidence: `run_e350d3ba-98d9-4d55-b073-638e69a8039d`
+- replay publication: `publication_64116adc-188e-4753-8cdb-a6a21d114e61`
+- rollback publication: `publication_83bbcec4-3402-4f8c-9014-6646255a64a0`
+- operator validation: `GET /operator/publications?stateCode=TS` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/telangana` and `https://nyaaywatch.in/v1/states/telangana/stats` both returned `404`, so Telangana remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Telangana internal-only until a separate public-readiness review exists
+- use Telangana as a deliberate public-candidate option only if the next public-state decision explicitly chooses it
+
+## Andhra Pradesh (`AP`) Internal Trial
+
+- candidate geography: Andhra Pradesh
+- review date: 2026-04-17
+- source boundary: NJDG Andhra Pradesh district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `28~2`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `13`
+- statewide pending cases shown on the live state page: `9,29,470`
+- instituted in last month: `94,380`
+- disposed in last month: `1,05,140`
+- leading district names captured in the normalized snapshot: `Guntur`, `Chittoor`, `Krishna`, `Visakapatnam`, `East Godavari`
+- all five age-bucket widgets were present on the live state page
+
+### Why Andhra Pradesh Was The Right Companion Southern Proof
+
+- Andhra Pradesh adds another southern source surface without widening the public site.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 13-district footprint complements Telangana by adding a lighter but still meaningful southern proof state.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:58`
+- first live fetch run: `run_4cb87c2a-1c31-4437-98ef-dc7d082ad6ef`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `13`
+- statewide pending cases captured: `929470`
+- first live publication: `publication_337af32e-4f9c-45ab-a4a4-52d43a2028b4`
+- first live snapshot: `snapshot_95c7f026-6db2-46a8-a0d2-2641512df02f`
+- replay run from stored evidence: `run_ce2ec512-176a-483e-ba9c-309054a0fff6`
+- replay publication: `publication_89c24d14-008d-4ede-a6e8-2728976b8579`
+- rollback publication: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+- operator validation: `GET /operator/publications?stateCode=AP` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` both returned `404`, so Andhra Pradesh remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Andhra Pradesh internal-only until a separate public-readiness review exists
+- use Andhra Pradesh as a deliberate public-candidate option only if the next public-state decision explicitly chooses it
+
+## Arunachal Pradesh (`AR`) Internal Trial
+
+- candidate geography: Arunachal Pradesh
+- review date: 2026-04-17
+- source boundary: NJDG Arunachal Pradesh district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `12~36`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `27`
+- statewide pending cases shown on the live state page: `15,539`
+- instituted in last month: `572`
+- disposed in last month: `678`
+- leading district names captured in the normalized snapshot: `Papum Pare`, `East Siang`, `West Siang`, `Lohit`, `West Kameng`
+- all five age-bucket widgets were present on the live state page
+
+### Why Arunachal Pradesh Was The Right Heavier North-East Proof
+
+- Arunachal Pradesh materially deepens the north-east operating story after Assam, Meghalaya, Tripura, and Nagaland.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 27-district footprint gives the north-east queue another larger baseline before any new public-state decision.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:58`
+- first live fetch run: `run_330e608c-890c-47e2-a585-3171c3c44c42`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `27`
+- statewide pending cases captured: `15539`
+- first live publication: `publication_316b931a-30e2-418f-ae8b-ade91f1b4fa9`
+- first live snapshot: `snapshot_6f5e32be-6e04-4917-9baa-b7ac7b200915`
+- replay run from stored evidence: `run_7067210b-fe7f-4366-a6a7-e0788824e727`
+- replay publication: `publication_6fa73859-0fff-44be-99ae-17140d41678a`
+- rollback publication: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
+- operator validation: `GET /operator/publications?stateCode=AR` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/arunachal-pradesh` and `https://nyaaywatch.in/v1/states/arunachal-pradesh/stats` both returned `404`, so Arunachal Pradesh remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Arunachal Pradesh internal-only until a separate public-readiness review exists
+- use Arunachal Pradesh as a deliberate public-candidate option only if the next public-state decision explicitly chooses it
+
+## Manipur (`MN`) Internal Trial
+
+- candidate geography: Manipur
+- review date: 2026-04-17
+- source boundary: NJDG Manipur district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- first successful capture date: 2026-04-17
+- latest successful validation date: 2026-04-17 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Source Viability Notes
+
+- NJDG state code value: `14~25`
+- source page footer updated on: `2026-04-16`
+- district count exposed on the live state page: `9`
+- statewide pending cases shown on the live state page: `14,860`
+- instituted in last month: `1,174`
+- disposed in last month: `869`
+- leading district names captured in the normalized snapshot: `Imphal West`, `Imphal East`, `Thoubal`, `Bishnupur`, `Churachandpur`
+- all five age-bucket widgets were present on the live state page
+
+### Why Manipur Was The Right Additional North-East Follow-On
+
+- Manipur adds another distinct north-east source surface without widening the public site.
+- The live source shape matches the current extractor and normalizer contract without new metric exceptions.
+- Its 9-district footprint makes it a practical lighter companion proof behind Assam, Meghalaya, and Arunachal Pradesh.
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:58`
+- first live fetch run: `run_ce3e086f-84f5-40d7-9540-366fe1c40a25`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `9`
+- statewide pending cases captured: `14860`
+- first live publication: `publication_d747187e-cc5e-4071-9fba-75a73e96058c`
+- first live snapshot: `snapshot_8dbdd101-5f56-4d56-92ac-887c4028f64a`
+- replay run from stored evidence: `run_bdfe0d4a-770d-49cb-9f04-952999686779`
+- replay publication: `publication_bf0bd251-57dd-4807-b084-bbbac79e106e`
+- rollback publication: `publication_29505d10-5434-4237-8b0d-89a9dfcf08cf`
+- operator validation: `GET /operator/publications?stateCode=MN` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/manipur` and `https://nyaaywatch.in/v1/states/manipur/stats` both returned `404`, so Manipur remained internal-only throughout the trial
+
+### Next Required Work
+
+- keep Manipur internal-only until a separate public-readiness review exists
+- use Manipur as a deliberate public-candidate option only if the next public-state decision explicitly chooses it

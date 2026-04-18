@@ -1,8 +1,8 @@
 # Telangana Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Telangana before the first live operator trial or public exposure.
+Source-viability and internal-readiness review for Telangana, with the first live internal proof cycle now completed.
 
-Telangana is a strong internal-only candidate for the next southern expansion track after Tamil Nadu, Kerala, and Karnataka. This document records live source evidence only. It does not approve public exposure.
+Telangana is now validated internal-only operating evidence for the southern expansion track after Tamil Nadu, Kerala, and Karnataka. This document records both the source review and the completed live internal proof cycle. It does not approve public exposure.
 
 ## Review Basis
 
@@ -41,34 +41,36 @@ Telangana adds another meaningful southern source boundary without forcing anoth
 
 The live state page exposes district drilldowns, and the verified `Adilabad` district request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
 
-## What Still Needs Explicit Work
+## Live Internal Trial Outcome
 
-### 1. Repo Wiring
+Telangana has now cleared the full internal proof bar on the live AWS stack.
 
-Telangana still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
+### Live Trial Evidence
 
-### 2. Operating Evidence
+- deployed task definition during proof cycle: `nyaaywatch-staging:58`
+- first live fetch run: `run_b48f6632-d59e-4bf9-9cdf-30125e045538`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `33`
+- statewide pending cases captured: `984793`
+- first live publication: `publication_eebf7779-60ed-4f91-967e-ab8dd6006fb8`
+- first live snapshot: `snapshot_16dda47e-b151-4528-810c-fecc6b0eacbd`
+- replay run from stored evidence: `run_e350d3ba-98d9-4d55-b073-638e69a8039d`
+- replay publication: `publication_64116adc-188e-4753-8cdb-a6a21d114e61`
+- rollback publication: `publication_83bbcec4-3402-4f8c-9014-6646255a64a0`
+- operator validation: `GET /operator/publications?stateCode=TS` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/telangana` and `https://nyaaywatch.in/v1/states/telangana/stats` both returned `404`, so Telangana remained internal-only throughout the trial
 
-Telangana has not yet cleared the full internal proof bar. It still needs:
+### Remaining Constraint
 
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
-
-### 3. Public Trust Review
-
-No Telangana-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope.
+No Telangana-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope until a separate public-readiness review is complete.
 
 ## Recommendation
 
-Telangana should be treated as a viable next southern internal-only candidate.
+Telangana should now be treated as validated southern internal-only operating evidence.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. explicit public-route parity, trust-copy review, and stable-URL verification are in place
+3. the next public-state decision deliberately chooses Telangana rather than promoting it automatically
