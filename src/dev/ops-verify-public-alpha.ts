@@ -8,13 +8,18 @@ import { readFlag } from "./cli-flags.js";
 async function main() {
   const args = process.argv.slice(2);
   const baseUrl = readFlag(args, "--base-url") ?? process.env.BASE_URL;
+  const operatorToken = process.env.OPERATOR_API_TOKEN;
   if (!baseUrl) {
     throw new Error("Usage: tsx src/dev/ops-verify-public-alpha.ts --base-url <https://nyaaywatch.in> [--daily-fetch-lag-days <2>]");
+  }
+  if (!operatorToken) {
+    throw new Error("ops:verify-public-alpha requires OPERATOR_API_TOKEN so daily internal fetch cadence is checked from operator run history.");
   }
 
   const dailyFetchLagThresholdDays = readNumberFlag(args, "--daily-fetch-lag-days") ?? DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS;
   const summary = await verifyPublicAlphaOperations(baseUrl, {
     dailyFetchLagThresholdDays,
+    operatorToken,
   });
   console.log(JSON.stringify(summary, null, 2));
   assertPublicAlphaOperationsHealthy(summary);
