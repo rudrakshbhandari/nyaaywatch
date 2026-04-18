@@ -153,7 +153,7 @@ Default schedule:
 
 - scope: all implemented states
 - cadence: every day at `8:00 AM Asia/Kolkata`
-- behavior: runs `fetch` only inside a one-off ECS task and leaves public publication unchanged
+- behavior: launches a one-off ECS task that runs sequential `fetch` operations for every implemented state and leaves public publication unchanged
 
 Manual reconcile command:
 
