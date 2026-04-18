@@ -6,9 +6,9 @@ test("citizen flow loads the homepage, district workspace, and district permalin
 
   await expect(page.getByRole("heading", { name: "How long is the wait for justice in Himachal Pradesh?" })).toBeVisible();
   await expect(page.getByText(/Numbers published/i)).toBeVisible();
-  await expect(page.getByRole("link", { name: /See the worst districts/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Inspect the districts/i })).toBeVisible();
 
-  await page.getByRole("link", { name: /See the worst districts/i }).click();
+  await page.getByRole("link", { name: /Inspect the districts/i }).click();
   await expect(page).toHaveURL(/\/districts$/);
   await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
   await expect(page.getByLabel("View")).toBeVisible();

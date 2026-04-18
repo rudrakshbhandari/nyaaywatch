@@ -33,13 +33,13 @@ export function renderMethodologyPage(
       ${renderSectionHead({ headline: "Scope and posture" })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Alpha scope</h3>
-          <p>${escapeHtml(context.profile.stateName)} only on this page. NyaayWatch is snapshot-based and evidence-first: it publishes dated aggregates after operator review and keeps unpublished run state private.</p>
-          <p>Historical context is built from prior published snapshots, not from raw captured pages shown directly to the public.</p>
+          <h3>Current public scope</h3>
+          <p>${escapeHtml(context.publicScopeDescription)} NyaayWatch publishes dated aggregates after operator review and keeps unpublished run state private.</p>
+          <p>Historical context comes from earlier published snapshots, not from raw captured pages shown directly to the public.</p>
         </article>
         <article class="card">
           <h3>What the site does not do</h3>
-          <p>It does not predict, rank officials, or assign blame. The public surface is a descriptive, citeable view of court-published aggregates.</p>
+          <p>It does not predict outcomes, rank officials, or assign blame. The public surface is a descriptive, citeable view of court-published aggregates.</p>
           <p>If a newer source run is incomplete or fails review, the site remains on the last safe publication rather than slipping into partial data.</p>
         </article>
       </div>

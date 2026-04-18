@@ -2,6 +2,7 @@ import request from "supertest";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  buildHaryanaTestSnapshot,
   buildPunjabTestSnapshot,
   createTestApp,
   createTestContext,
@@ -29,15 +30,26 @@ describe("public copy guardrails", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
+    await insertPublishedSnapshot(context.pool, {
+      publicationId: "publication_pb_guardrails_default",
+      snapshotId: "snapshot_pb_guardrails_default",
+      runId: "run_pb_guardrails_default",
+      stateCode: "PB",
+      payload: buildPunjabTestSnapshot(),
+    });
+    await insertPublishedSnapshot(context.pool, {
+      publicationId: "publication_hr_guardrails_default",
+      snapshotId: "snapshot_hr_guardrails_default",
+      runId: "run_hr_guardrails_default",
+      stateCode: "HR",
+      payload: buildHaryanaTestSnapshot(),
+    });
 
     const app = createTestApp(context.config, context.service, context.publicServices);
     const routes = [
       {
-        // Citation posture on the homepage is carried by the colophon + the
-        // "source" info popover, not a hero sentence. The info-popover body is
-        // always in the HTML so this phrase is load-bearing for the guardrail.
         path: "/",
-        requiredText: "All numbers on this site come from the NJDG public district dashboards",
+        requiredText: "The public site stays centered on Himachal Pradesh on the main routes",
       },
       {
         path: "/districts",
@@ -53,7 +65,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/methodology",
-        requiredText: "publishes dated aggregates after operator review",
+        requiredText: "Current public scope",
       },
       {
         path: "/api",
@@ -65,11 +77,18 @@ describe("public copy guardrails", () => {
       const response = await request(app).get(route.path);
       expect(response.status, route.path).toBe(200);
       expect(response.text, route.path).toContain(route.requiredText);
+      expect(response.text, `${route.path} should not dump a joined state list`).not.toContain(
+        "Himachal Pradesh and Punjab and Haryana",
+      );
 
       for (const pattern of disallowedPublicPhrases) {
         expect(response.text, `${route.path} should not match ${pattern}`).not.toMatch(pattern);
       }
     }
+
+    const methodology = await request(app).get("/methodology");
+    expect(methodology.text).not.toContain("Alpha scope");
+    expect(methodology.text).not.toContain("Himachal Pradesh only on this page");
   });
 
   it("keeps Punjab state-scoped public routes inside the same trust posture", async () => {
