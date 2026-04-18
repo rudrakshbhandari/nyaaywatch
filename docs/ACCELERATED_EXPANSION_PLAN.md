@@ -98,7 +98,7 @@ The realistic end goal is three distinct coverage tracks:
 2. **High Courts**
 3. **Supreme Court**
 
-These should not be treated as one pipeline or one methodology. They are related products sharing infrastructure and trust rules.
+These should not be treated as one pipeline or one methodology. They should ship inside one NyaayWatch product shell while keeping tier-specific source, normalization, and methodology tracks.
 
 ## Recommended Execution Order
 

@@ -211,6 +211,7 @@ Start here:
 - [Design system](DESIGN.md)
 - [Brand system](brand/BRAND.md)
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
+- [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
 - [TODO backlog](TODOS.md)
