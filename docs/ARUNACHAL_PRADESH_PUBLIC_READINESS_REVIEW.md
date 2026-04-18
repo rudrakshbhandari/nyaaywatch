@@ -1,17 +1,20 @@
 # Arunachal Pradesh Public Readiness Review
 
-Review of what Arunachal Pradesh now requires before exposing the public Arunachal Pradesh route family.
+Review of what Arunachal Pradesh required before exposing the public Arunachal Pradesh route family.
 
-Arunachal Pradesh has already cleared the internal proof bar on the live stack. This review records why the remaining public question is narrow: Arunachal Pradesh no longer needs extractor invention or source-shape debate, but it still needs stable-URL verification and a deliberate public rollout before exposure on the live hostname.
+Arunachal Pradesh had already cleared the internal proof bar on the live stack before launch. This review records why the remaining public question was narrow: Arunachal Pradesh no longer needed extractor invention or source-shape debate, but it still needed stable-URL verification and a deliberate public rollout before exposure on the live hostname.
 
 ## Review Basis
 
-Based on the live Arunachal Pradesh internal proof cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`:
+Based on the live Arunachal Pradesh internal proof cycle and public rollout recorded in `docs/EXPANSION_REVIEW_LOG.md`:
 
 - first live fetch run id: `run_330e608c-890c-47e2-a585-3171c3c44c42`
 - first live publication id: `publication_316b931a-30e2-418f-ae8b-ade91f1b4fa9`
 - replay run id: `run_7067210b-fe7f-4366-a6a7-e0788824e727`
 - rollback publication id: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
+- public rollout fetch run id: `run_d2dadaec-bda6-4639-8629-28201a562708`
+- public rollout publication id: `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0`
+- public rollout snapshot id: `snapshot_0daffe74-e0ec-46f0-89b1-bc3e4177392f`
 
 Observed Arunachal Pradesh source notes:
 
@@ -66,14 +69,14 @@ Nothing observed in the Arunachal Pradesh candidate suggests we need a looser tr
 
 ### 1. Stable-URL Public Verification
 
-Arunachal Pradesh is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still need to verify:
+Arunachal Pradesh was wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still needed to verify:
 
 - `/states/arunachal-pradesh`
 - `/v1/states/arunachal-pradesh/...`
 - `/states/arunachal-pradesh/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Andhra Pradesh provides the immediate rollout pattern. Arunachal Pradesh does not need broader repo-level public-surface invention here, but it still needs the actual state-scoped verification pass before launch.
+Andhra Pradesh provided the immediate rollout pattern. Arunachal Pradesh did not need broader repo-level public-surface invention here, but it did need the actual state-scoped verification pass before launch.
 
 The Arunachal Pradesh-specific artifacts for that pass are:
 
@@ -96,19 +99,20 @@ That gate is satisfied for Arunachal Pradesh because Haryana, Tamil Nadu, Assam,
 
 ## Outcome
 
-Arunachal Pradesh should now be treated as the next viable narrow public candidate after Andhra Pradesh, not as a state that still needs basic source or operator validation.
+Arunachal Pradesh is now live on the public site as the twelfth additional public state.
 
-Before launch, the remaining conditions are:
+The launch conditions that cleared were:
 
-1. the Arunachal Pradesh-specific public-route parity artifacts stay green under the approved public-state configuration
-2. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug arunachal-pradesh` and a live browser pass both succeed on the stable hostname
-3. rollout docs record the actual public publication lineage after launch
+1. Arunachal Pradesh was deliberately promoted into the approved public-state set rather than exposed by implication
+2. the Arunachal Pradesh-specific public-route parity artifacts went green under that configuration
+3. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug arunachal-pradesh` and a live HTML verification pass both succeeded on the stable hostname
+4. rollout docs now record the actual public publication lineage after launch
 
 ## Useful Work Completed By This Review
 
-This review closes the Arunachal Pradesh trust question at the pre-launch level:
+This review now closes the Arunachal Pradesh trust question at the launched-public-state level:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: Arunachal Pradesh is a viable next narrow public candidate
-- remaining blockers are rollout-specific rather than extractor- or source-specific
+- public rollout: completed
+- remaining blockers: none for Arunachal Pradesh itself; the queue now advances to Manipur

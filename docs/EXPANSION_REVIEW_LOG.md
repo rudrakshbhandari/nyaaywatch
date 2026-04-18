@@ -1090,6 +1090,31 @@ Nagaland is now the tenth additional public state. The next public rollout shoul
 
 Andhra Pradesh is now the eleventh additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Arunachal Pradesh.
 
+## Arunachal Pradesh (`AR`) Public Rollout
+
+- review date: 2026-04-18
+- source boundary: NJDG Arunachal Pradesh district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest successful validation date: 2026-04-18 live public rollout verification
+- reviewer: Codex
+- decision: `public rollout completed`
+
+### Public Rollout Evidence
+
+- deployed task definition during rollout: `nyaaywatch-staging:71`
+- deploy run: `24599656003`
+- public rollout fetch run: `run_d2dadaec-bda6-4639-8629-28201a562708`
+- public rollout publication: `publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0`
+- public rollout snapshot: `snapshot_0daffe74-e0ec-46f0-89b1-bc3e4177392f`
+- rollback target retained from the prior internal proof cycle: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug arunachal-pradesh` passed with `districtCount=27`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route validation: `https://nyaaywatch.in/states/arunachal-pradesh` and `https://nyaaywatch.in/v1/states/arunachal-pradesh/stats` both returned `200`
+- live HTML validation: the public page title resolved to `NyaayWatch — How long is the wait for justice in Arunachal Pradesh?` and the page heading resolved to `How long is the wait for justice in Arunachal Pradesh?`
+
+### Recommendation
+
+Arunachal Pradesh is now the twelfth additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Manipur.
+
 ## Goa (`GA`), Sikkim (`SK`), And Mizoram (`MZ`) Internal Proof Batch
 
 - candidate geographies: Goa, Sikkim, and Mizoram
