@@ -31,7 +31,7 @@ What is shipped now:
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Kerala is now live on the public site after Telangana, Meghalaya is the next public rollout slice in repo prep, Odisha, West Bengal, Jharkhand, and Chhattisgarh have cleared internal-only proof, and the final unsupported-state wave is Goa, Sikkim, and Mizoram.
+Post-MVP work continues in this repo, but live rollout still happens state by state with explicit evidence. Kerala is now live on the public site after Telangana, Meghalaya is the next public rollout slice in repo prep, Odisha, West Bengal, Jharkhand, and Chhattisgarh have cleared internal-only proof, and Goa, Sikkim, and Mizoram are now wired as the final internal-only prep wave before live qualification.
 
 ## Product Guardrails
 
@@ -240,6 +240,8 @@ Internal or post-MVP planning:
 - [Assam internal readiness review](docs/ASSAM_INTERNAL_READINESS_REVIEW.md)
 - [Kerala public readiness review](docs/KERALA_PUBLIC_READINESS_REVIEW.md)
 - [Kerala go-live checklist](docs/KERALA_GO_LIVE_CHECKLIST.md)
+- [Meghalaya public readiness review](docs/MEGHALAYA_PUBLIC_READINESS_REVIEW.md)
+- [Meghalaya go-live checklist](docs/MEGHALAYA_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu public readiness review](docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md)
 - [Tamil Nadu go-live checklist](docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu internal readiness review](docs/TAMIL_NADU_INTERNAL_READINESS_REVIEW.md)
@@ -252,6 +254,9 @@ Internal or post-MVP planning:
 - [Manipur internal readiness review](docs/MANIPUR_INTERNAL_READINESS_REVIEW.md)
 - [Kerala internal readiness review](docs/KERALA_INTERNAL_READINESS_REVIEW.md)
 - [Meghalaya internal readiness review](docs/MEGHALAYA_INTERNAL_READINESS_REVIEW.md)
+- [Goa internal readiness review](docs/GOA_INTERNAL_READINESS_REVIEW.md)
+- [Sikkim internal readiness review](docs/SIKKIM_INTERNAL_READINESS_REVIEW.md)
+- [Mizoram internal readiness review](docs/MIZORAM_INTERNAL_READINESS_REVIEW.md)
 - [Judiciary public data landscape](docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md)
 - [AWS dev resources](infra/aws/dev/README.md)
 

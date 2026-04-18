@@ -84,7 +84,8 @@ As of `2026-04-17`:
 - Telangana (`TS`) is now publicly live after clearing public-route parity and live verification
 - Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) remain internal-only after clearing live proof cycles
 - Madhya Pradesh (`MP`), Maharashtra (`MH`), Bihar (`BR`), and Gujarat (`GJ`) have now also completed internal-only live proof cycles
-- the remaining unsupported-state queue is Odisha (`OD`), West Bengal (`WB`), Jharkhand (`JH`), and Chhattisgarh (`CG`), then Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`)
+- Odisha (`OD`), West Bengal (`WB`), Jharkhand (`JH`), and Chhattisgarh (`CG`) have now completed internal-only live proof cycles
+- Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`) are now wired as the final internal-only prep wave and still need live proof cycles
 - the remaining public queue should now resume from the still-internal states in internal-proof order rather than adding fresh exceptions
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
@@ -159,8 +160,8 @@ Output:
 - Kerala (`KL`) and Meghalaya (`ML`) have both completed their internal-only proof cycles for the south and north-east follow-on tracks
 - Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have also completed their internal-only proof cycles after the Kerala plus Meghalaya wave
 - Telangana (`TS`), Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) have all completed their internal-only proof cycles and remain dark publicly
-- recommended next internal-only batch: Odisha (`OD`), West Bengal (`WB`), Jharkhand (`JH`), and Chhattisgarh (`CG`)
-- remaining internal-only queue after that batch: Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`)
+- most recent internal-only proof batch: Odisha (`OD`), West Bengal (`WB`), Jharkhand (`JH`), and Chhattisgarh (`CG`)
+- remaining internal-only proof queue after repo prep: Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`)
 - public rollout after Telangana now resumes from the still-internal states in internal-proof order
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
 - Punjab, Haryana, Tamil Nadu, and Assam have all completed their public rollout evidence, and the updated south-plus-north-east sequencing is now recorded in the repo docs

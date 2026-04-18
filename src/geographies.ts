@@ -6,7 +6,7 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ", "OD", "WB", "JH", "CG"] as const;
+export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ", "OD", "WB", "JH", "CG", "GA", "SK", "MZ"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -86,7 +86,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Meghalaya",
     stateSlug: "meghalaya",
     njdgStateValue: "17~21",
-    publicAlpha: false,
+    publicAlpha: true,
   },
   KA: {
     stateCode: "KA",
@@ -184,6 +184,27 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Chhattisgarh",
     stateSlug: "chhattisgarh",
     njdgStateValue: "22~18",
+    publicAlpha: false,
+  },
+  GA: {
+    stateCode: "GA",
+    stateName: "Goa",
+    stateSlug: "goa",
+    njdgStateValue: "30~30",
+    publicAlpha: false,
+  },
+  SK: {
+    stateCode: "SK",
+    stateName: "Sikkim",
+    stateSlug: "sikkim",
+    njdgStateValue: "11~24",
+    publicAlpha: false,
+  },
+  MZ: {
+    stateCode: "MZ",
+    stateName: "Mizoram",
+    stateSlug: "mizoram",
+    njdgStateValue: "15~19",
     publicAlpha: false,
   },
 };

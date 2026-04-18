@@ -588,3 +588,74 @@ export function buildKeralaTestSnapshot(): PublishedSnapshot {
     ],
   };
 }
+
+export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "ML",
+      stateName: "Meghalaya",
+      sourceName: "NJDG Meghalaya district dashboard",
+      sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+      publishedAt: "2026-04-18T04:30:00.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Meghalaya",
+      publishedFromRunId: "run_3dd14fff-0791-45b4-9bd7-27ce798cc850",
+    },
+    stats: {
+      pendingCases: 18450,
+      disposalRate: 53.4,
+      medianCaseAgeDays: 183,
+      flaggedDistricts: 3,
+    },
+    districts: [
+      {
+        districtId: "east-khasi-hills",
+        districtName: "East Khasi Hills",
+        rank: 1,
+        backlogCases: 6214,
+        disposalRate: 47.8,
+        medianAgeDays: 183,
+        filingVsDisposalGap: 52.2,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already among Meghalaya's biggest.",
+        summary:
+          "East Khasi Hills has 6,214 cases waiting. A typical pending case falls around 183 days old, and the district cleared 47.8% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "west-garo-hills",
+        districtName: "West Garo Hills",
+        rank: 2,
+        backlogCases: 4217,
+        disposalRate: 61.2,
+        medianAgeDays: 730,
+        filingVsDisposalGap: 38.8,
+        flagReason:
+          "People appear to be waiting longer here than in much of Meghalaya, based on the latest published snapshot.",
+        summary:
+          "West Garo Hills has 4,217 cases waiting. A typical pending case falls around 730 days old, and the district cleared 61.2% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "west-jaintia-hills",
+        districtName: "West Jaintia Hills",
+        rank: 3,
+        backlogCases: 2984,
+        disposalRate: 58.7,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 41.3,
+        flagReason:
+          "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
+        summary:
+          "West Jaintia Hills has 2,984 cases waiting. A typical pending case falls around 365 days old, and the district cleared 58.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-16T00:00:00.000Z",
+        pendingCases: 18450,
+        disposalRate: 53.4,
+      },
+    ],
+  };
+}

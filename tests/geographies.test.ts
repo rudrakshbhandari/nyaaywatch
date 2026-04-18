@@ -80,7 +80,7 @@ describe("state profiles", () => {
       stateName: "Meghalaya",
       stateSlug: "meghalaya",
       njdgStateValue: "17~21",
-      publicAlpha: false,
+      publicAlpha: true,
     });
 
     expect(getStateProfile("KA")).toMatchObject({
@@ -195,6 +195,30 @@ describe("state profiles", () => {
       publicAlpha: false,
     });
 
+    expect(getStateProfile("GA")).toMatchObject({
+      stateCode: "GA",
+      stateName: "Goa",
+      stateSlug: "goa",
+      njdgStateValue: "30~30",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("SK")).toMatchObject({
+      stateCode: "SK",
+      stateName: "Sikkim",
+      stateSlug: "sikkim",
+      njdgStateValue: "11~24",
+      publicAlpha: false,
+    });
+
+    expect(getStateProfile("MZ")).toMatchObject({
+      stateCode: "MZ",
+      stateName: "Mizoram",
+      stateSlug: "mizoram",
+      njdgStateValue: "15~19",
+      publicAlpha: false,
+    });
+
     expect(listStateProfiles().map((profile) => profile.stateCode)).toEqual([
       "HP",
       "PB",
@@ -221,8 +245,11 @@ describe("state profiles", () => {
       "WB",
       "JH",
       "CG",
+      "GA",
+      "SK",
+      "MZ",
     ]);
-    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN", "AS", "TS", "KL"]);
+    expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual(["HP", "PB", "HR", "TN", "AS", "TS", "KL", "ML"]);
     expect(getStateProfileByCode("hr")?.stateName).toBe("Haryana");
     expect(getStateProfileByCode("tn")?.stateName).toBe("Tamil Nadu");
     expect(getStateProfileByCode("as")?.stateName).toBe("Assam");
@@ -246,6 +273,9 @@ describe("state profiles", () => {
     expect(getStateProfileByCode("wb")?.stateName).toBe("West Bengal");
     expect(getStateProfileByCode("jh")?.stateName).toBe("Jharkhand");
     expect(getStateProfileByCode("cg")?.stateName).toBe("Chhattisgarh");
+    expect(getStateProfileByCode("ga")?.stateName).toBe("Goa");
+    expect(getStateProfileByCode("sk")?.stateName).toBe("Sikkim");
+    expect(getStateProfileByCode("mz")?.stateName).toBe("Mizoram");
     expect(getStateProfileByCodeOrSlug("haryana")?.stateCode).toBe("HR");
     expect(getStateProfileByCodeOrSlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getStateProfileByCodeOrSlug("assam")?.stateCode).toBe("AS");
@@ -269,6 +299,9 @@ describe("state profiles", () => {
     expect(getStateProfileByCodeOrSlug("west-bengal")?.stateCode).toBe("WB");
     expect(getStateProfileByCodeOrSlug("jharkhand")?.stateCode).toBe("JH");
     expect(getStateProfileByCodeOrSlug("chhattisgarh")?.stateCode).toBe("CG");
+    expect(getStateProfileByCodeOrSlug("goa")?.stateCode).toBe("GA");
+    expect(getStateProfileByCodeOrSlug("sikkim")?.stateCode).toBe("SK");
+    expect(getStateProfileByCodeOrSlug("mizoram")?.stateCode).toBe("MZ");
     expect(getPublicStateProfileBySlug("haryana")?.stateCode).toBe("HR");
     expect(getPublicStateProfileBySlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getPublicStateProfileBySlug("assam")?.stateCode).toBe("AS");
@@ -277,7 +310,7 @@ describe("state profiles", () => {
     expect(getPublicStateProfileBySlug("arunachal-pradesh")).toBeNull();
     expect(getPublicStateProfileBySlug("manipur")).toBeNull();
     expect(getPublicStateProfileBySlug("kerala")?.stateCode).toBe("KL");
-    expect(getPublicStateProfileBySlug("meghalaya")).toBeNull();
+    expect(getPublicStateProfileBySlug("meghalaya")?.stateCode).toBe("ML");
     expect(getPublicStateProfileBySlug("karnataka")).toBeNull();
     expect(getPublicStateProfileBySlug("tripura")).toBeNull();
     expect(getPublicStateProfileBySlug("nagaland")).toBeNull();
@@ -292,5 +325,8 @@ describe("state profiles", () => {
     expect(getPublicStateProfileBySlug("west-bengal")).toBeNull();
     expect(getPublicStateProfileBySlug("jharkhand")).toBeNull();
     expect(getPublicStateProfileBySlug("chhattisgarh")).toBeNull();
+    expect(getPublicStateProfileBySlug("goa")).toBeNull();
+    expect(getPublicStateProfileBySlug("sikkim")).toBeNull();
+    expect(getPublicStateProfileBySlug("mizoram")).toBeNull();
   });
 });
