@@ -7,6 +7,7 @@ import { PublishedSnapshotService } from "../services/published-snapshot-service
 import { S3ArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
 import { recordReleaseHistory } from "./release-ops.js";
+import { readFlag } from "./cli-flags.js";
 
 async function main() {
   const args = parseArgs();
@@ -49,11 +50,6 @@ function parseArgs() {
   }
 
   return { publicationId, baseUrl, reviewer, note, outputPath, historyPath, stateCode };
-}
-
-function readFlag(args: string[], flag: string) {
-  const index = args.findIndex((value) => value === flag);
-  return index >= 0 ? args[index + 1] : undefined;
 }
 
 function resolveStateCode(args: string[]) {

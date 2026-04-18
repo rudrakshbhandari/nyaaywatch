@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { SnapshotMetadataSchema, StateStatsSchema, TrendPointSchema, type QualityState } from "../domain/snapshot-schema.js";
 import { getPublicStateProfileBySlug } from "../geographies.js";
+import { freshnessDays } from "../lib/time.js";
 
 const HealthResponseSchema = z.object({
   ok: z.literal(true),
@@ -52,6 +53,8 @@ export interface ReleaseVerificationSummary {
   snapshot: {
     sourceSnapshotAt: string;
     publishedAt: string;
+    freshnessDaysAtPublish: number;
+    currentFreshnessDays: number;
     methodologyVersion: string;
     qualityState: QualityState;
     publishedFromRunId: string | null;
@@ -72,10 +75,12 @@ export async function verifyPublicRelease(
   baseUrl: string,
   options: {
     stateSlug?: string;
+    now?: Date;
   } = {},
 ): Promise<ReleaseVerificationSummary> {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
   const target = resolveReleaseTarget(options.stateSlug);
+  const checkedAt = options.now ?? new Date();
   const [health, statsPayload, districtsPayload, trendsPayload, operatorAuthResult, dataPage, districtsCsv] =
     await Promise.all([
       fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
@@ -93,14 +98,17 @@ export async function verifyPublicRelease(
   assertCacheProtection("public data page", dataPage.response);
   assertCacheProtection("district CSV", districtsCsv.response);
   assertCsvMetadataParity(districtsCsv.body, statsPayload.snapshot);
+  const currentFreshnessDays = freshnessDays(statsPayload.snapshot.sourceSnapshotAt, checkedAt);
 
   return {
     baseUrl: normalizedBaseUrl,
-    checkedAt: new Date().toISOString(),
+    checkedAt: checkedAt.toISOString(),
     target,
     snapshot: {
       sourceSnapshotAt: statsPayload.snapshot.sourceSnapshotAt,
       publishedAt: statsPayload.snapshot.publishedAt,
+      freshnessDaysAtPublish: statsPayload.snapshot.freshnessDays,
+      currentFreshnessDays,
       methodologyVersion: statsPayload.snapshot.methodologyVersion,
       qualityState: statsPayload.snapshot.qualityState,
       publishedFromRunId: statsPayload.snapshot.publishedFromRunId ?? null,

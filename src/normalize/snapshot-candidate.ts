@@ -1,7 +1,7 @@
 import type { PublishedSnapshot } from "../domain/snapshot-schema.js";
 import { SnapshotCandidateSchema, type SnapshotCandidate } from "../domain/snapshot-candidate-schema.js";
 import type { ExtractedNjdgSnapshot } from "../extract/njdg-html.js";
-import { freshnessDays } from "../lib/time.js";
+import { freshnessDays, STALE_SNAPSHOT_THRESHOLD_DAYS } from "../lib/time.js";
 
 const DISTRICT_FLAG_LIMIT = 3;
 const METHODOLOGY_VERSION = "2026.04-alpha";
@@ -22,7 +22,7 @@ export function buildSnapshotCandidate(
   const stateMedianAgeDays = inferMedianAgeDays(extracted.state.ageBuckets);
   const stateFreshnessDays = freshnessDays(extracted.sourceSnapshotAt, new Date(extracted.capturedAt));
   const qualityState =
-    extracted.districts.length === extracted.expectedDistrictCount && stateFreshnessDays > 14
+    extracted.districts.length === extracted.expectedDistrictCount && stateFreshnessDays > STALE_SNAPSHOT_THRESHOLD_DAYS
       ? "stale"
       : extracted.districts.length === extracted.expectedDistrictCount
         ? "complete"

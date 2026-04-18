@@ -1,3 +1,5 @@
+export const STALE_SNAPSHOT_THRESHOLD_DAYS = 14;
+
 export function toIsoString(value: string | Date): string {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 }
