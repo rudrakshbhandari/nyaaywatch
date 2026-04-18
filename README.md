@@ -122,7 +122,7 @@ npm run release:record -- --state-slug=<state-slug> --publication-id=<publicatio
 
 Use `npm run operator:remote` for live remote operator access from a local terminal. Use `npm run operator:staging` as the default heavy-state lane on the live AWS stack when long-running fetches should execute inside a one-off ECS task instead of through the Cloudflare-fronted public operator path.
 
-The live stack also supports a weekday internal raw-fetch schedule. Reconcile it against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`. Public publishes remain operator-reviewed and manual.
+The live stack also supports a daily internal raw-fetch schedule at `8:00 AM Asia/Kolkata` across all implemented states. Reconcile it against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the schedule launches one ECS task that runs sequential `fetch` operations for every implemented state without changing the public snapshot. Public publishes remain operator-reviewed and manual on their existing cadence.
 
 ## Public Surface
 

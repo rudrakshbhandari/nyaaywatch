@@ -3,14 +3,13 @@ set -euo pipefail
 
 if [[ $# -gt 1 ]]; then
   echo "Usage: $0 [stack-name]" >&2
-  echo "Env overrides: INTERNAL_FETCH_STATE_CODE, INTERNAL_FETCH_SCHEDULE_EXPRESSION, INTERNAL_FETCH_SCHEDULE_TIMEZONE, INTERNAL_FETCH_SCHEDULE_STATE" >&2
+  echo "Env overrides: INTERNAL_FETCH_SCHEDULE_EXPRESSION, INTERNAL_FETCH_SCHEDULE_TIMEZONE, INTERNAL_FETCH_SCHEDULE_STATE, INTERNAL_FETCH_SCHEDULE_NAME" >&2
   exit 1
 fi
 
 stack_name="${1:-nyaaywatch-staging}"
 region="${AWS_REGION:-ap-south-1}"
-state_code="${INTERNAL_FETCH_STATE_CODE:-HP}"
-schedule_expression="${INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(0 8 ? * MON-FRI *)}"
+schedule_expression="${INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(0 8 * * ? *)}"
 schedule_timezone="${INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
 schedule_state="${INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
 schedule_name="${INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-weekday-internal-fetch}"
@@ -19,7 +18,7 @@ role_policy_name="${INTERNAL_FETCH_SCHEDULER_POLICY_NAME:-${stack_name}-internal
 role_arn_override="${INTERNAL_FETCH_SCHEDULER_ROLE_ARN:-}"
 manage_iam_mode="${INTERNAL_FETCH_MANAGE_IAM:-auto}"
 schedule_group_name="${INTERNAL_FETCH_SCHEDULE_GROUP_NAME:-default}"
-note_prefix="${INTERNAL_FETCH_NOTE_PREFIX:-Scheduled weekday internal raw fetch}"
+note_prefix="${INTERNAL_FETCH_NOTE_PREFIX:-Scheduled daily internal raw fetch}"
 
 tmpdir="$(mktemp -d)"
 cleanup() {
@@ -273,7 +272,6 @@ python3 - \
   "$schedule_expression" \
   "$schedule_timezone" \
   "$schedule_state" \
-  "$state_code" \
   "$note_prefix" \
   "$role_arn" <<'PY'
 import json
@@ -288,7 +286,6 @@ import sys
     schedule_expression,
     schedule_timezone,
     schedule_state,
-    state_code,
     note_prefix,
     role_arn,
 ) = sys.argv[1:]
@@ -302,15 +299,16 @@ with open(task_definition_path, "r", encoding="utf-8") as handle:
 container_name = task_definition["containerDefinitions"][0]["name"]
 network = service["networkConfiguration"]["awsvpcConfiguration"]
 
-command = ["node", "dist/src/dev/ecs-operator-entrypoint.js"]
-if state_code:
-    command.extend(["--state", state_code])
-command.extend(["fetch", f"{note_prefix} (<aws.scheduler.scheduled-time>)"])
+command = [
+    "node",
+    "dist/src/dev/ecs-scheduled-fetch-entrypoint.js",
+    f"{note_prefix} (<aws.scheduler.scheduled-time>)",
+]
 
 request = {
     "Name": schedule_name,
     "GroupName": schedule_group_name,
-    "Description": "Weekday internal raw fetch only. This schedule does not publish public snapshots.",
+    "Description": "Daily internal raw fetch across all implemented states. This schedule does not publish public snapshots.",
     "FlexibleTimeWindow": {"Mode": "OFF"},
     "ScheduleExpression": schedule_expression,
     "ScheduleExpressionTimezone": schedule_timezone,
