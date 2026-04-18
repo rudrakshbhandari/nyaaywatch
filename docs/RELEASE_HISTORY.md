@@ -176,3 +176,22 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Note: Meghalaya became the seventh additional public state after task definition `:64` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/meghalaya`.
 
 <!-- release:publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5:end -->
+
+<!-- release:publication_c58870a4-f378-4848-a8ce-ae38fb62f885:start -->
+## publication_c58870a4-f378-4848-a8ce-ae38fb62f885
+
+- Reviewed at: `2026-04-18T03:53:43.082Z`
+- Reviewer: `Codex Karnataka public rollout`
+- Public URL: `https://nyaaywatch.in/states/karnataka`
+- Action: `publish`
+- Source snapshot date: `2026-04-16T00:00:00.000Z`
+- Published at: `2026-04-18T03:53:06.297Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_79131eaf-bd31-4c4e-a95f-fc84b065a261`
+- Rollback target: `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Karnataka became the eighth additional public state after task definition `:66` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/karnataka`.
+
+<!-- release:publication_c58870a4-f378-4848-a8ce-ae38fb62f885:end -->

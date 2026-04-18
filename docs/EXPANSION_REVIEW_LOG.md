@@ -988,6 +988,32 @@ This batch is now operating evidence, not source-only speculation. The final uns
 
 Meghalaya is now the seventh additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Karnataka.
 
+## Karnataka (`KA`) Public Rollout
+
+- candidate geography: Karnataka
+- review date: 2026-04-18
+- source boundary: NJDG Karnataka district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest successful validation date: 2026-04-18 live public rollout verification
+- reviewer: Codex
+- decision: `public rollout completed`
+
+### Public Rollout Evidence
+
+- deployed task definition during rollout: `nyaaywatch-staging:66`
+- deploy run: `24596186779`
+- public rollout fetch run: `run_79131eaf-bd31-4c4e-a95f-fc84b065a261`
+- public rollout publication: `publication_c58870a4-f378-4848-a8ce-ae38fb62f885`
+- public rollout snapshot: `snapshot_87bd1945-6b36-415f-965e-8c06cf60a989`
+- rollback target retained from the prior internal proof cycle: `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug karnataka` passed with `districtCount=31`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route validation: `https://nyaaywatch.in/states/karnataka` and `https://nyaaywatch.in/v1/states/karnataka/stats` both returned `200`
+- live HTML validation: the public page title resolved to `NyaayWatch — How long is the wait for justice in Karnataka?` and the page heading resolved to `How long is the wait for justice in Karnataka?`
+
+### Recommendation
+
+Karnataka is now the eighth additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Tripura.
+
 ## Goa (`GA`), Sikkim (`SK`), And Mizoram (`MZ`) Internal Proof Batch
 
 - candidate geographies: Goa, Sikkim, and Mizoram

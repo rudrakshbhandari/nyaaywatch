@@ -12,10 +12,10 @@ Use this file for:
 
 ### Next Public State Decision
 
-- Meghalaya is now live, and Karnataka is the next public state in the internal-proof order
-- current remaining public queue after Karnataka: Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- Karnataka, Tripura, and Nagaland now all have dedicated public-readiness reviews, go-live checklists, and targeted parity suites in repo config
-- done only when Karnataka completes live publish and stable-URL verification without widening national scaffolding, after which the queue advances to Tripura and then Nagaland
+- Karnataka is now live, and Tripura is the next public state in the internal-proof order
+- current remaining public queue after Tripura: Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- Tripura and Nagaland already have dedicated public-readiness reviews, go-live checklists, and targeted parity suites in repo config
+- done only when Tripura completes live publish and stable-URL verification without widening national scaffolding, after which the queue advances to Nagaland
 
 ### Next Internal Expansion Batch
 
@@ -103,8 +103,15 @@ Use this file for:
 ### Karnataka, Tripura, And Nagaland Public Preflight
 
 - completed in repo prep on 2026-04-18 with `docs/*_PUBLIC_READINESS_REVIEW.md`, `docs/*_GO_LIVE_CHECKLIST.md`, targeted state-scoped rollout tests, and approved public-state wiring for all three states
-- Karnataka is the next live rollout in the internal-proof order, with Tripura and Nagaland queued immediately behind it once each earlier rollout is complete
-- remaining work for this trio is live publication evidence and stable-URL verification, not additional extractor or source-shape debate
+- Karnataka has now completed the first live rollout from this trio, with Tripura and Nagaland queued immediately behind it once each earlier rollout is complete
+- remaining work for this trio is now the Tripura and Nagaland live publication evidence, not additional extractor or source-shape debate
+
+### Karnataka Public Rollout
+
+- completed live on 2026-04-18 after PR `#76` merged and deploy run `24596186779` rolled the live stack to task definition `:66`
+- Karnataka fetch `run_79131eaf-bd31-4c4e-a95f-fc84b065a261` published as `publication_c58870a4-f378-4848-a8ce-ae38fb62f885` with snapshot `snapshot_87bd1945-6b36-415f-965e-8c06cf60a989`
+- `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug karnataka` passed with `districtCount=31`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route and HTML verification confirmed `https://nyaaywatch.in/states/karnataka` and `https://nyaaywatch.in/v1/states/karnataka/stats` return `200`, with the expected Karnataka title and `How long is the wait for justice in Karnataka?` heading
 
 ### Telangana, Andhra Pradesh, Arunachal Pradesh, And Manipur Internal Proof Cycles
 

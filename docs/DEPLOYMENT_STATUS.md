@@ -256,6 +256,14 @@ Latest confirmed operator validation:
   - Sikkim fetch `run_cbd239e8-ac46-44fd-bd7b-00e62e4c853f`, publish `publication_67ef880e-b6e6-4b84-8991-e0ff35f70f67`, replay `run_1861f08d-09df-4cfd-a440-c7e3d8e69add`, replay publication `publication_061c8ad2-e542-4d35-8740-08326b68ade0`, and rollback `publication_cde025be-6141-4f4c-8933-42844f5d0f0f` all succeeded
   - Mizoram fetch `run_b788b9fe-194f-496b-a546-df26e62dd920`, publish `publication_087ca72e-d021-4138-8933-37a227010631`, replay `run_1cd62bb2-cb1c-4780-a56e-726323045f78`, replay publication `publication_906406d3-585e-49bc-9b9d-5caf3ad6868d`, and rollback `publication_fbcca757-9039-4891-900f-98bc0889c481` all succeeded
   - the page and stats routes for Goa, Sikkim, and Mizoram all returned `404`, so all three states remained internal-only throughout the batch
+- Karnataka public rollout completed on 2026-04-18 after PR `#76` merged to `main`:
+  - GitHub deploy run `24596186779` rolled the live service to task definition `:66`
+  - live Karnataka fetch run `run_79131eaf-bd31-4c4e-a95f-fc84b065a261`
+  - live Karnataka publication `publication_c58870a4-f378-4848-a8ce-ae38fb62f885`
+  - live Karnataka snapshot `snapshot_87bd1945-6b36-415f-965e-8c06cf60a989`
+  - rollback target retained from the prior internal proof cycle: `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug karnataka` passed with `districtCount=31`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - `https://nyaaywatch.in/states/karnataka` and `https://nyaaywatch.in/v1/states/karnataka/stats` now return `200`, and live HTML verification confirmed the Karnataka title and `How long is the wait for justice in Karnataka?` heading
 - Tamil Nadu public rollout completed on 2026-04-17 after PR `#64` merged to `main`:
   - GitHub deploy run `24588602379` rolled the live service to task definition `:54`
   - live Tamil Nadu fetch run `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`

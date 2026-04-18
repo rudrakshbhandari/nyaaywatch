@@ -2,13 +2,13 @@
 
 Checklist for deciding whether Karnataka can move from approved public-prep state to soft public availability.
 
-This is narrower than a nationwide launch checklist. Karnataka has already cleared the internal proof bar and is now wired in repo config as an approved public state, but it should stay off the live site until the state-specific rollout gates below are complete.
+This is narrower than a nationwide launch checklist. Karnataka had already cleared the internal proof bar and was wired in repo config as an approved public state before launch.
 
 ## Release Metadata
 
 - Candidate state: `Karnataka`
 - State code: `KA`
-- Current decision: `approved in repo config; pending live rollout verification`
+- Current decision: `public rollout completed`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Readiness review: `docs/KARNATAKA_PUBLIC_READINESS_REVIEW.md`
 - Methodology version: `2026.04-alpha`
@@ -30,14 +30,14 @@ Why this gate exists:
 - [x] Karnataka public routes can be wired to read only from the active published snapshot in the state-scoped runtime.
 - [x] No public Karnataka route or download reads unpublished run state in local verification.
 - [x] Karnataka CSV, API, and UI can resolve to the same publication lineage in local verification.
-- [ ] Karnataka rollback target is recorded in live public release history after the first public publication.
+- [x] Karnataka rollback target is recorded in live public release history after the first public publication.
 
 ### 3. Trust Metadata And Caveats
 
 - [x] Karnataka entry, district index, and district detail surfaces can show source snapshot date, publication date, freshness, methodology version, and source attribution in local verification.
 - [x] Karnataka copy uses `published snapshot`, `flagged signal`, and `operator-published` semantics in local verification.
 - [x] Karnataka copy avoids live, predictive, or verdict-like framing in local verification.
-- [ ] Live hostname/browser checks confirm the same trust posture after rollout.
+- [x] Live hostname/browser checks confirm the same trust posture after rollout.
 
 ### 4. Product And IA Discipline
 
@@ -55,20 +55,20 @@ Why this gate exists:
 
 ### 6. Verification
 
-- [ ] `npm run typecheck`
-- [ ] `npm test -- tests/geographies.test.ts tests/karnataka-public-rollout.test.ts`
-- [ ] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug karnataka`
-- [ ] Browser verification on `https://nyaaywatch.in/states/karnataka`
+- [x] `npm run typecheck`
+- [x] `npm test -- tests/geographies.test.ts tests/karnataka-public-rollout.test.ts`
+- [x] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug karnataka`
+- [x] Browser verification on `https://nyaaywatch.in/states/karnataka`
 
 ### 7. Deployment
 
-- [ ] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
-- [ ] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
-- [ ] The first Karnataka public publication id and rollback posture are recorded explicitly.
+- [x] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
+- [x] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
+- [x] The first Karnataka public publication id and rollback posture are recorded explicitly.
 
 ## Decision
 
-- [ ] Ready for soft public availability
-- [x] Keep pending live rollout
+- [x] Ready for soft public availability
+- [ ] Keep pending live rollout
 
 If blocked, record the blocker and exact next action in `docs/EXPANSION_REVIEW_LOG.md`.
