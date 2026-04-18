@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:56`
+- ECS task definition: `nyaaywatch-staging:62`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence: weekdays at `8:00 AM Asia/Kolkata`
@@ -70,6 +70,8 @@ Operational notes:
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
   - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
   - explicit Assam public routes at `/states/assam` and `/v1/states/assam/...`
+  - explicit Telangana public routes at `/states/telangana` and `/v1/states/telangana/...`
+  - explicit Kerala public routes at `/states/kerala` and `/v1/states/kerala/...`
 - Current active Himachal publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal source snapshot date: `2026-04-10`
@@ -85,6 +87,12 @@ Operational notes:
 - Current active Assam publication: `publication_111cc225-f1a6-455d-8d7e-fd6af06ed597`
 - Current active Assam published snapshot: `snapshot_f296e9bb-fc95-476e-9f79-1bcd3ff1f1c7`
 - Current Assam source snapshot date: `2026-04-17`
+- Current active Telangana publication: `publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b`
+- Current active Telangana published snapshot: `snapshot_c350559b-947a-40ac-9dd4-daea74f64218`
+- Current Telangana source snapshot date: `2026-04-17`
+- Current active Kerala publication: `publication_4fff0bca-7b58-49d1-992d-a113c43f577a`
+- Current active Kerala published snapshot: `snapshot_99d7ad98-ff3c-40e2-9922-e4661998e839`
+- Current Kerala source snapshot date: `2026-04-17`
 - Public methodology version: `2026.04-alpha`
 
 ## How To Retrieve The AWS Staging URL
@@ -125,6 +133,15 @@ curl -fsSL <base-url>/v1/states/haryana/trends
 curl -fsSL <base-url>/v1/states/tamil-nadu/stats
 curl -fsSL <base-url>/v1/states/tamil-nadu/districts
 curl -fsSL <base-url>/v1/states/tamil-nadu/trends
+curl -fsSL <base-url>/v1/states/assam/stats
+curl -fsSL <base-url>/v1/states/assam/districts
+curl -fsSL <base-url>/v1/states/assam/trends
+curl -fsSL <base-url>/v1/states/telangana/stats
+curl -fsSL <base-url>/v1/states/telangana/districts
+curl -fsSL <base-url>/v1/states/telangana/trends
+curl -fsSL <base-url>/v1/states/kerala/stats
+curl -fsSL <base-url>/v1/states/kerala/districts
+curl -fsSL <base-url>/v1/states/kerala/trends
 ```
 
 Expected:
@@ -262,6 +279,20 @@ Latest confirmed operator validation:
   - Bihar fetch `run_0e7317c9-2774-481f-88a9-3c52c8e1b49d`, publish `publication_07d2e083-c592-4017-b1a5-5a4ce03075ae`, replay `run_af0583ea-ef66-48d0-9b21-f582697061ce`, replay publication `publication_7e723234-8fa1-4d61-ad81-bfd4c39c49be`, and rollback `publication_3319a11d-16fd-4a40-ad4a-cb4869f41d31` all succeeded
   - Gujarat fetch `run_18386bb6-ac8a-4217-9d76-b9ad169678d3`, publish `publication_9f3892de-ed4b-4ccb-822f-5cce3c9372b8`, replay `run_ad51cf0d-5760-4913-b979-14d75cf80d32`, replay publication `publication_46ab606a-4f3d-4d93-a60e-66dc7c13e978`, and rollback `publication_82c79b8b-aa07-4733-802e-12bd65e1c897` all succeeded
   - `https://nyaaywatch.in/states/madhya-pradesh`, `https://nyaaywatch.in/v1/states/madhya-pradesh/stats`, `https://nyaaywatch.in/states/maharashtra`, `https://nyaaywatch.in/v1/states/maharashtra/stats`, `https://nyaaywatch.in/states/bihar`, `https://nyaaywatch.in/v1/states/bihar/stats`, `https://nyaaywatch.in/states/gujarat`, and `https://nyaaywatch.in/v1/states/gujarat/stats` all returned `404`, so all four states remained internal-only throughout
+- Kerala public rollout completed on 2026-04-18 after PR `#72` merged to `main`:
+  - GitHub deploy run `24594772675` rolled the live service to task definition `:62`
+  - live Kerala fetch run `run_e4ce54db-1dd6-473e-8ea6-318856c3f1f5`
+  - live Kerala publication `publication_4fff0bca-7b58-49d1-992d-a113c43f577a`
+  - live Kerala snapshot `snapshot_99d7ad98-ff3c-40e2-9922-e4661998e839`
+  - `GET /operator/publications?stateCode=KL` now shows the Kerala public publication active with rollback target `publication_dafbab89-af38-4a41-a006-9153f126e785`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug kerala` passed with `districtCount=14`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - `https://nyaaywatch.in/states/kerala` and `https://nyaaywatch.in/v1/states/kerala/stats` now return `200`, and live HTML verification confirmed the Kerala title and `How long is the wait for justice in Kerala?` heading
+- Odisha, West Bengal, Jharkhand, and Chhattisgarh internal proof cycles completed on 2026-04-18 on task definition `:62`:
+  - Odisha fetch `run_eb64e8ff-b70b-4eda-be14-180441a38548`, publish `publication_24cc3461-c2e1-47b0-a870-907306ca183d`, replay `run_07c3627f-1f65-4915-9516-1d72d2ae9e18`, replay publication `publication_3df28695-e014-44d2-9b36-4bb7bb95a9cb`, and rollback `publication_0b8376be-33ae-4c60-a534-835ebb199b57` all succeeded
+  - West Bengal fetch `run_4af4d3ee-db7f-4570-995b-361d99bb6bcf`, publish `publication_4b085772-5b96-402c-81fb-2bc5a9b12060`, replay `run_3e45e064-d1b8-41ea-aefe-f1c7372d3a8f`, replay publication `publication_68fe225e-1270-412c-8472-551ec957a8d3`, and rollback `publication_09fd4895-3a75-4c8f-97aa-5222e4137541` all succeeded
+  - Jharkhand fetch `run_9555324e-3416-4c6d-8287-e666982f8bec`, publish `publication_ff13fc7e-1d39-44ad-ad17-c45f2515f159`, replay `run_ad91c0c0-59f9-4c50-be1c-26f387539e47`, replay publication `publication_12072ce8-33b1-4349-b13d-63516900d091`, and rollback `publication_12683d90-942c-4050-b5f7-7ccca8932b07` all succeeded
+  - Chhattisgarh fetch `run_3deffe82-3ee7-477f-ae37-e70b93d544e6`, publish `publication_301acf9a-e2d2-46b2-940c-42a2cd989ece`, replay `run_d60f4c4b-8385-4193-9a63-efc5dcc3dcda`, replay publication `publication_e4502b2d-9466-434a-903e-53ff22426428`, and rollback `publication_412a4d67-73fe-4bdd-b149-24c05cbaf973` all succeeded
+  - `https://nyaaywatch.in/states/odisha`, `https://nyaaywatch.in/v1/states/odisha/stats`, `https://nyaaywatch.in/states/west-bengal`, `https://nyaaywatch.in/v1/states/west-bengal/stats`, `https://nyaaywatch.in/states/jharkhand`, `https://nyaaywatch.in/v1/states/jharkhand/stats`, `https://nyaaywatch.in/states/chhattisgarh`, and `https://nyaaywatch.in/v1/states/chhattisgarh/stats` all returned `404`, so all four states remained internal-only throughout
 - Weekday internal fetch deploy reconciliation hardened on 2026-04-17 after PRs `#60` and `#62` plus a deploy-role IAM update:
   - GitHub deploy run `24585688516` completed successfully on rerun after granting `scheduler:GetSchedule`, `scheduler:CreateSchedule`, `scheduler:UpdateSchedule`, and scheduler-role `iam:PassRole` to `nyaaywatch-github-deploy-role`
   - the live ECS service rolled to task definition `:52`

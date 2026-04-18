@@ -911,3 +911,53 @@ Those next-slice decisions are now made:
 ### Recommendation
 
 This batch is now operating evidence, not source-only speculation. Public rollout should still lag that internal qualification, and the next unsupported-state work should move to Odisha, West Bengal, Jharkhand, and Chhattisgarh before the final Goa, Sikkim, and Mizoram wave.
+
+## Kerala (`KL`) Public Rollout
+
+- candidate geography: Kerala
+- review date: 2026-04-18
+- source boundary: NJDG Kerala district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest successful validation date: 2026-04-18 live public rollout verification
+- reviewer: Codex
+- decision: `public rollout completed`
+
+### Public Rollout Evidence
+
+- deployed task definition during rollout: `nyaaywatch-staging:62`
+- deploy run: `24594772675`
+- public rollout fetch run: `run_e4ce54db-1dd6-473e-8ea6-318856c3f1f5`
+- public rollout publication: `publication_4fff0bca-7b58-49d1-992d-a113c43f577a`
+- public rollout snapshot: `snapshot_99d7ad98-ff3c-40e2-9922-e4661998e839`
+- rollback target retained from the prior internal proof cycle: `publication_dafbab89-af38-4a41-a006-9153f126e785`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug kerala` passed with `districtCount=14`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route validation: `https://nyaaywatch.in/states/kerala` and `https://nyaaywatch.in/v1/states/kerala/stats` both returned `200`
+- live HTML validation: the public page title resolved to `NyaayWatch — How long is the wait for justice in Kerala?` and the page heading resolved to `How long is the wait for justice in Kerala?`
+
+### Recommendation
+
+Kerala is now the sixth additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Meghalaya.
+
+## Odisha (`OD`), West Bengal (`WB`), Jharkhand (`JH`), And Chhattisgarh (`CG`) Internal Proof Batch
+
+- candidate geographies: Odisha, West Bengal, Jharkhand, and Chhattisgarh
+- review date: 2026-04-18
+- source boundary: NJDG district dashboard aggregate pages for each state
+- methodology version: `2026.04-alpha`
+- first successful capture date: `2026-04-18`
+- latest successful validation date: 2026-04-18 live replay and rollback validation
+- reviewer: Codex
+- decision: `internal trial completed`
+
+### Live Trial Evidence
+
+- deployed task definition during proof cycle: `nyaaywatch-staging:62`
+- Odisha fetch `run_eb64e8ff-b70b-4eda-be14-180441a38548`, publish `publication_24cc3461-c2e1-47b0-a870-907306ca183d`, replay `run_07c3627f-1f65-4915-9516-1d72d2ae9e18`, replay publication `publication_3df28695-e014-44d2-9b36-4bb7bb95a9cb`, and rollback `publication_0b8376be-33ae-4c60-a534-835ebb199b57` all succeeded
+- West Bengal fetch `run_4af4d3ee-db7f-4570-995b-361d99bb6bcf`, publish `publication_4b085772-5b96-402c-81fb-2bc5a9b12060`, replay `run_3e45e064-d1b8-41ea-aefe-f1c7372d3a8f`, replay publication `publication_68fe225e-1270-412c-8472-551ec957a8d3`, and rollback `publication_09fd4895-3a75-4c8f-97aa-5222e4137541` all succeeded
+- Jharkhand fetch `run_9555324e-3416-4c6d-8287-e666982f8bec`, publish `publication_ff13fc7e-1d39-44ad-ad17-c45f2515f159`, replay `run_ad91c0c0-59f9-4c50-be1c-26f387539e47`, replay publication `publication_12072ce8-33b1-4349-b13d-63516900d091`, and rollback `publication_12683d90-942c-4050-b5f7-7ccca8932b07` all succeeded
+- Chhattisgarh fetch `run_3deffe82-3ee7-477f-ae37-e70b93d544e6`, publish `publication_301acf9a-e2d2-46b2-940c-42a2cd989ece`, replay `run_d60f4c4b-8385-4193-9a63-efc5dcc3dcda`, replay publication `publication_e4502b2d-9466-434a-903e-53ff22426428`, and rollback `publication_412a4d67-73fe-4bdd-b149-24c05cbaf973` all succeeded
+- public-surface validation: the page and stats routes for Odisha, West Bengal, Jharkhand, and Chhattisgarh all returned `404`, so all four states remained internal-only throughout the batch
+
+### Recommendation
+
+This batch is now operating evidence, not source-only speculation. The final unsupported-state work should now move to Goa, Sikkim, and Mizoram, while public rollout continues in the already-cleared internal-proof order.
