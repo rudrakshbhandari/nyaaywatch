@@ -12,7 +12,7 @@ import {
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
-  const copy = buildCopy(model, context.supportedStatesLabel);
+  const copy = buildCopy(model, context.publicScopeDescription);
   const n = copy.bigNumbers;
 
   const trendBars = renderTrendChart(model);

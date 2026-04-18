@@ -53,7 +53,7 @@ export const GLOSSARY: Record<
     term: "freshness",
     short: "How many days old the source numbers are.",
     long:
-      "Court dashboards are not live. We pull a fresh pull on a regular schedule and publish it after review. Freshness tells you how many days have passed since the source numbers were captured.",
+      "Court dashboards are not live. We capture new source runs on a regular schedule and publish only after review. Freshness tells you how many days have passed since the source numbers were captured.",
   },
   quality: {
     term: "data quality",
@@ -65,7 +65,7 @@ export const GLOSSARY: Record<
     term: "where the numbers come from",
     short: "The National Judicial Data Grid public district aggregates.",
     long:
-      "All numbers on this site come from the NJDG public district dashboards \u2014 the same data the Supreme Court of India publishes for public use. We do not add, estimate, or adjust the underlying figures. We re-organize them so they are easier to read.",
+      "All numbers on this site come from the NJDG public district dashboards. We do not add, estimate, or adjust the underlying figures. We reorganize them so they are easier to read and compare.",
   },
   methodology: {
     term: "methodology",
@@ -84,7 +84,7 @@ export type GlossaryKey = keyof typeof GLOSSARY;
  *   - Numbers are rounded and framed in terms a non-expert reader recognizes.
  *   - Where technical terms appear, they get an info icon.
  */
-export function buildCopy(model: HomeViewModel, supportedStatesLabel: string) {
+export function buildCopy(model: HomeViewModel, publicScopeDescription: string) {
   // Districts where the median pending case has been waiting substantially
   // longer than a year. These drive the "some have waited two years" line
   // that makes the statewide median feel dishonest.
@@ -131,20 +131,20 @@ export function buildCopy(model: HomeViewModel, supportedStatesLabel: string) {
       },
     },
 
-    ctaPrimary: "See the worst districts",
-    ctaSecondary: "How we got these numbers",
+    ctaPrimary: "Inspect the districts",
+    ctaSecondary: "Read the methodology",
 
-    sectionWatchlist: "Three districts that need eyes on them",
+    sectionWatchlist: "Three districts to inspect first",
     sectionWatchlistLede:
-      "A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the state. Not villains \u2014 signals for closer inspection.",
+      "A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the state. These are signals for closer inspection, not judgments.",
 
     sectionTrend: "How the statewide pile has moved",
     sectionTrendLede:
-      "Every month we pull a fresh set of numbers from the public court dashboards. Here is what the statewide backlog has done, month by month.",
+      "Each bar is a previously published statewide snapshot. It shows how the backlog has moved across publication dates, not a continuously refreshed surface.",
 
     sectionWhat: "Why this site exists",
     sectionWhatBody:
-      `NyaayWatch is an independent, reader-first view of publicly available court numbers. Today it publishes reviewed snapshots for ${supportedStatesLabel}. We do not speed anything up or slow anything down. We just make the numbers impossible to ignore \u2014 so citizens, reporters, and civic groups can ask sharper questions, and demand sharper answers.`,
+      `NyaayWatch is an independent view of public court aggregates. ${publicScopeDescription} It publishes reviewed snapshots instead of a continuously refreshed surface, so citizens, reporters, and civic groups can inspect the numbers, cite them, and ask sharper questions.`,
   } as const;
 }
 

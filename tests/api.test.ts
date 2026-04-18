@@ -52,7 +52,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("How long is the wait for justice in Himachal Pradesh?");
     expect(homepage.text).toContain("pending cases");
     expect(homepage.text).toContain("Every one of these is a person waiting for their day in court.");
-    expect(homepage.text).toContain("Three districts that need eyes on them");
+    expect(homepage.text).toContain("Three districts to inspect first");
     // Glossary popovers still carry the methodology strings in a tooltip, but
     // not above the fold as dashboard jargon.
     expect(homepage.text).toContain("methodology");
@@ -91,6 +91,7 @@ describe("HTTP routes", () => {
 
     const methodologyPage = await request(app).get("/methodology");
     expect(methodologyPage.status).toBe(200);
+    expect(methodologyPage.text).toContain("Current public scope");
     expect(methodologyPage.text).toContain("How the public metrics are derived");
     expect(methodologyPage.text).toContain("Published methodology and snapshot lineage");
   });
@@ -258,7 +259,7 @@ describe("HTTP routes", () => {
 
     const punjabMethodology = await request(app).get("/states/punjab/methodology");
     expect(punjabMethodology.status).toBe(200);
-    expect(punjabMethodology.text).toContain("Punjab only on this page");
+    expect(punjabMethodology.text).toContain("This page covers Punjab.");
 
     const punjabApiPage = await request(app).get("/states/punjab/api");
     expect(punjabApiPage.status).toBe(200);
