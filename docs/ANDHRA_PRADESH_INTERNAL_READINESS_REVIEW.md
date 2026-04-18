@@ -1,8 +1,8 @@
 # Andhra Pradesh Internal Readiness Review
 
-Initial source-viability and internal-readiness review for Andhra Pradesh before the first live operator trial or public exposure.
+Source-viability and internal-readiness review for Andhra Pradesh, with the first live internal proof cycle now completed.
 
-Andhra Pradesh is a strong internal-only candidate for the next southern expansion track after Tamil Nadu, Kerala, and Karnataka. This document records live source evidence only. It does not approve public exposure.
+Andhra Pradesh is now validated internal-only operating evidence for the southern expansion track after Tamil Nadu, Kerala, and Karnataka. This document records both the source review and the completed live internal proof cycle. It does not approve public exposure.
 
 ## Review Basis
 
@@ -41,34 +41,36 @@ Andhra Pradesh extends the southern operating story into another meaningful stat
 
 The live state page exposes district drilldowns, and the verified `Ananthapur` district request returned `200 OK`. That is enough to justify internal operator wiring and the first stored-evidence capture attempt.
 
-## What Still Needs Explicit Work
+## Live Internal Trial Outcome
 
-### 1. Repo Wiring
+Andhra Pradesh has now cleared the full internal proof bar on the live AWS stack.
 
-Andhra Pradesh still needs explicit repo wiring as an internal-only state profile with tests that keep it dark on the public site.
+### Live Trial Evidence
 
-### 2. Operating Evidence
+- deployed task definition during proof cycle: `nyaaywatch-staging:58`
+- first live fetch run: `run_4cb87c2a-1c31-4437-98ef-dc7d082ad6ef`
+- source snapshot date: `2026-04-16`
+- candidate quality state: `complete`
+- district count captured: `13`
+- statewide pending cases captured: `929470`
+- first live publication: `publication_337af32e-4f9c-45ab-a4a4-52d43a2028b4`
+- first live snapshot: `snapshot_95c7f026-6db2-46a8-a0d2-2641512df02f`
+- replay run from stored evidence: `run_ce2ec512-176a-483e-ba9c-309054a0fff6`
+- replay publication: `publication_89c24d14-008d-4ede-a6e8-2728976b8579`
+- rollback publication: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
+- operator validation: `GET /operator/publications?stateCode=AP` showed the rollback publication active after replay plus rollback
+- public-surface validation: `https://nyaaywatch.in/states/andhra-pradesh` and `https://nyaaywatch.in/v1/states/andhra-pradesh/stats` both returned `404`, so Andhra Pradesh remained internal-only throughout the trial
 
-Andhra Pradesh has not yet cleared the full internal proof bar. It still needs:
+### Remaining Constraint
 
-- live `fetch`
-- live `inspect`
-- live `publish`
-- live `replay`
-- live `rollback`
-
-Until that happens, it should be treated as a source-viability candidate rather than validated internal operating evidence.
-
-### 3. Public Trust Review
-
-No Andhra Pradesh-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope.
+No Andhra Pradesh-specific public-route parity, copy, or methodology review has been done yet. Public exposure should remain out of scope until a separate public-readiness review is complete.
 
 ## Recommendation
 
-Andhra Pradesh should be treated as a viable next southern internal-only candidate.
+Andhra Pradesh should now be treated as validated southern internal-only operating evidence.
 
 It should remain internal-only until:
 
-1. repo wiring and internal-only regression coverage are in place
-2. a full live `fetch -> inspect -> publish -> replay -> rollback` cycle succeeds
-3. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+1. a separate public-readiness review concludes that a narrow state-scoped rollout is defensible
+2. explicit public-route parity, trust-copy review, and stable-URL verification are in place
+3. the next public-state decision deliberately chooses Andhra Pradesh rather than promoting it automatically

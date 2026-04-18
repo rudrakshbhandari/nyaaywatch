@@ -31,7 +31,7 @@ What is shipped now:
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision. Assam is now live on the public site, while Karnataka, Tripura, and Nagaland have completed internal-only proof cycles and remain dark on the public hostname. Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur are the next internal-only candidates after live source review.
+Post-MVP work continues in this repo, but live rollout still happens deliberately and state by state. Code support for an additional public state is not the same thing as a live deployment decision. Assam is now live on the public site, while Telangana, Andhra Pradesh, Arunachal Pradesh, and Manipur have now completed internal-only proof cycles and remain dark on the public hostname. Madhya Pradesh, Maharashtra, Bihar, and Gujarat are the recommended next internal-only batch after read-only source review.
 
 ## Product Guardrails
 

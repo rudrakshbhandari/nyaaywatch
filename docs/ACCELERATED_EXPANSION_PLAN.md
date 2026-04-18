@@ -81,7 +81,8 @@ As of `2026-04-17`:
 - Tamil Nadu (`TN`) has completed both an internal-only proof cycle and a later public rollout
 - Kerala (`KL`) and Meghalaya (`ML`) have now both completed internal-only live proof cycles for the south and north-east follow-on tracks
 - Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have now all completed internal-only live proof cycles after live NJDG source checks confirmed contract-compatible state pages
-- Telangana (`TS`), Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) are now the next internal-only candidates after live NJDG source checks confirmed contract-compatible state pages
+- Telangana (`TS`), Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) have now all completed internal-only live proof cycles and remain dark on the public hostname
+- Madhya Pradesh (`MP`), Maharashtra (`MH`), Bihar (`BR`), and Gujarat (`GJ`) are the recommended next internal-only batch after read-only source review
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
 - no High Court or Supreme Court tier has cleared source or methodology review
 
@@ -154,8 +155,9 @@ Output:
 - most recently launched public state: Assam (`AS`)
 - Kerala (`KL`) and Meghalaya (`ML`) have both completed their internal-only proof cycles for the south and north-east follow-on tracks
 - Karnataka (`KA`), Tripura (`TR`), and Nagaland (`NL`) have also completed their internal-only proof cycles after the Kerala plus Meghalaya wave
-- next internal-only batch: Telangana (`TS`), Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`)
-- next public state now requires a deliberate post-Assam decision rather than another pre-approved slot
+- Telangana (`TS`), Andhra Pradesh (`AP`), Arunachal Pradesh (`AR`), and Manipur (`MN`) have all completed their internal-only proof cycles and remain dark publicly
+- recommended next internal-only batch: Madhya Pradesh (`MP`), Maharashtra (`MH`), Bihar (`BR`), and Gujarat (`GJ`)
+- next public state should be a deliberate choice from the newly cleared internal-only batch rather than an automatic post-Assam promotion
 - explicit decision that High Courts and Supreme Court are deferred to separate tracks
 - Punjab, Haryana, Tamil Nadu, and Assam have all completed their public rollout evidence, and the updated south-plus-north-east sequencing is now recorded in the repo docs
 
