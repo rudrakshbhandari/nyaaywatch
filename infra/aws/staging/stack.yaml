@@ -36,9 +36,24 @@ Parameters:
     Type: String
     Default: ""
     Description: Optional email address to subscribe to staging alarms.
+  PublicBaseUrl:
+    Type: String
+    Default: ""
+    Description: Optional canonical public base URL used for release verification and cache invalidation.
+  CloudflareZoneName:
+    Type: String
+    Default: ""
+    Description: Optional Cloudflare zone name used for public cache invalidation.
+  CloudflareApiTokenSecretArn:
+    Type: String
+    Default: ""
+    Description: Optional Secrets Manager ARN containing the Cloudflare API token for cache invalidation.
 
 Conditions:
   HasAlarmEmail: !Not [!Equals [!Ref AlarmEmail, ""]]
+  HasPublicBaseUrl: !Not [!Equals [!Ref PublicBaseUrl, ""]]
+  HasCloudflareZoneName: !Not [!Equals [!Ref CloudflareZoneName, ""]]
+  HasCloudflareApiTokenSecretArn: !Not [!Equals [!Ref CloudflareApiTokenSecretArn, ""]]
 
 Resources:
   Vpc:
@@ -241,6 +256,20 @@ Resources:
       VPCSecurityGroups:
         - !Ref DatabaseSecurityGroup
 
+  DatabaseUrlSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}/database-url"
+      Description: !Sub "DATABASE_URL for ${ProjectName} ${EnvironmentName}"
+      SecretString: !Sub "postgresql://${DatabaseUsername}:${DatabasePassword}@${StagingDatabase.Endpoint.Address}:5432/${DatabaseName}?uselibpqcompat=true&sslmode=require"
+
+  OperatorApiTokenSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}/operator-api-token"
+      Description: !Sub "Operator API token for ${ProjectName} ${EnvironmentName}"
+      SecretString: !Ref OperatorApiToken
+
   Cluster:
     Type: AWS::ECS::Cluster
     Properties:
@@ -261,6 +290,18 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyName: !Sub "${ProjectName}-${EnvironmentName}-task-execution-secrets"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Ref DatabaseUrlSecret
+                  - !Ref OperatorApiTokenSecret
+                  - !If [HasCloudflareApiTokenSecretArn, !Ref CloudflareApiTokenSecretArn, !Ref AWS::NoValue]
 
   TaskRole:
     Type: AWS::IAM::Role
@@ -329,10 +370,26 @@ Resources:
               Value: nyaaywatch.in
             - Name: LEGACY_HOSTS
               Value: nyaaywatch.com,www.nyaaywatch.com
-            - Name: OPERATOR_API_TOKEN
-              Value: !Ref OperatorApiToken
+            - !If
+              - HasPublicBaseUrl
+              - Name: PUBLIC_BASE_URL
+                Value: !Ref PublicBaseUrl
+              - !Ref AWS::NoValue
+            - !If
+              - HasCloudflareZoneName
+              - Name: CLOUDFLARE_ZONE_NAME
+                Value: !Ref CloudflareZoneName
+              - !Ref AWS::NoValue
+          Secrets:
             - Name: DATABASE_URL
-              Value: !Sub "postgresql://${DatabaseUsername}:${DatabasePassword}@${StagingDatabase.Endpoint.Address}:5432/${DatabaseName}?uselibpqcompat=true&sslmode=require"
+              ValueFrom: !Ref DatabaseUrlSecret
+            - Name: OPERATOR_API_TOKEN
+              ValueFrom: !Ref OperatorApiTokenSecret
+            - !If
+              - HasCloudflareApiTokenSecretArn
+              - Name: CLOUDFLARE_API_TOKEN
+                ValueFrom: !Ref CloudflareApiTokenSecretArn
+              - !Ref AWS::NoValue
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -575,10 +632,14 @@ Outputs:
     Value: !Ref ArtifactsBucket
   DatabaseEndpoint:
     Value: !GetAtt StagingDatabase.Endpoint.Address
+  DatabaseUrlSecretArn:
+    Value: !Ref DatabaseUrlSecret
   LogGroupName:
     Value: !Ref ApplicationLogGroup
   ClusterName:
     Value: !Ref Cluster
+  OperatorApiTokenSecretArn:
+    Value: !Ref OperatorApiTokenSecret
   CertificateArn:
     Value: !Ref CertificateArn
   AlarmTopicArn:

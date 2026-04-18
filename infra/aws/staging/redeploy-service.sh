@@ -103,14 +103,25 @@ task_definition["containerDefinitions"][0]["image"] = image_uri
 
 environment = task_definition["containerDefinitions"][0].setdefault("environment", [])
 environment_map = {entry["name"]: entry.get("value", "") for entry in environment}
+secrets = task_definition["containerDefinitions"][0].setdefault("secrets", [])
+secret_map = {entry["name"]: entry.get("valueFrom", "") for entry in secrets}
 
-for env_name in ("CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ZONE_ID", "CLOUDFLARE_ZONE_NAME", "PUBLIC_BASE_URL"):
+environment_map.pop("CLOUDFLARE_API_TOKEN", None)
+
+for env_name in ("CLOUDFLARE_ZONE_ID", "CLOUDFLARE_ZONE_NAME", "PUBLIC_BASE_URL"):
     env_value = os.environ.get(env_name)
     if env_value:
         environment_map[env_name] = env_value
 
+cloudflare_secret_arn = os.environ.get("CLOUDFLARE_API_TOKEN_SECRET_ARN")
+if cloudflare_secret_arn:
+    secret_map["CLOUDFLARE_API_TOKEN"] = cloudflare_secret_arn
+
 task_definition["containerDefinitions"][0]["environment"] = [
     {"name": name, "value": value} for name, value in sorted(environment_map.items())
+]
+task_definition["containerDefinitions"][0]["secrets"] = [
+    {"name": name, "valueFrom": value} for name, value in sorted(secret_map.items()) if value
 ]
 
 with open(target_path, "w", encoding="utf-8") as target_file:

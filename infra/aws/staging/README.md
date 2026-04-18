@@ -60,6 +60,9 @@ You need:
 Optional:
 
 - an alarm email address to subscribe to the staging SNS topic
+- `PUBLIC_BASE_URL` if the runtime should emit stable public URLs for release verification and cache invalidation
+- `CLOUDFLARE_ZONE_NAME` if the runtime should resolve the Cloudflare zone by name
+- `CLOUDFLARE_API_TOKEN_SECRET_ARN` if publish / rollback should purge Cloudflare cache without storing the token in plaintext task-definition environment variables
 
 The stack creates its own isolated VPC with:
 
@@ -72,6 +75,7 @@ Application config constraints to preserve during staging validation:
 - `EnvironmentName` must remain `staging` so `DEPLOY_ENV` satisfies the app env schema.
 - `ProjectName` must stay `nyaaywatch`-prefixed so the derived `S3_BUCKET` passes env validation.
 - The generated `DATABASE_URL` now uses `uselibpqcompat=true&sslmode=require` because the app container must connect to RDS over TLS without assuming a bundled CA chain.
+- The stack now stores the generated `DATABASE_URL` and operator token in AWS Secrets Manager and injects them through ECS `secrets`, not plain environment variables.
 - The runtime image must include `dist/src/db/migrations/*.sql`; the container cannot rely on source-only migration files once compiled.
 - The task role must allow both `s3:GetBucketTagging` and `s3:PutBucketTagging`, and the app must not rewrite bucket tags when the desired app tags are already present on a CloudFormation-managed bucket.
 
@@ -99,6 +103,10 @@ Why the explicit platform:
 2. Deploy the CloudFormation stack:
 
 ```bash
+export PUBLIC_BASE_URL=https://nyaaywatch.in
+export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
+export CLOUDFLARE_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/cloudflare-api-token
+
 ./infra/aws/staging/deploy-stack.sh \
   nyaaywatch-staging \
   723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
@@ -115,10 +123,12 @@ Why the explicit platform:
    - `PrivateSubnetIds`
    - `ArtifactsBucketName`
    - `DatabaseEndpoint`
+   - `DatabaseUrlSecretArn`
    - `LogGroupName`
    - `AlarmTopicArn`
    - `DashboardName`
    - `CertificateArn`
+   - `OperatorApiTokenSecretArn`
 
 4. Copy the live values into `docs/DEPLOYMENT_STATUS.md` so the current staging URL and resource names are discoverable without re-querying AWS.
 
@@ -139,6 +149,7 @@ The deploy job:
 - builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`
 - discovers the live ECS service from the `nyaaywatch-staging` CloudFormation stack
 - registers a fresh task definition revision pinned to the commit-SHA image
+- preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
 - reconciles the internal raw-fetch schedule against the new live task definition
 - confirms the raw ALB `ServiceUrl` still answers `/health`
