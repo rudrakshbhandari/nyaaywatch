@@ -14,7 +14,7 @@ Use this file for:
 
 - Andhra Pradesh is now live, and Arunachal Pradesh is the next public state in the internal-proof order
 - current remaining public queue after Arunachal Pradesh: Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- Andhra Pradesh has completed both public-prep and live rollout evidence, so the next repo-prep slice is Arunachal Pradesh public parity
+- Arunachal Pradesh now has a dedicated public-readiness review, go-live checklist, and targeted parity suite in repo config
 - Manipur remains the next already-cleared internal candidate behind Arunachal Pradesh once its explicit public-route parity slice lands
 - done only when Arunachal Pradesh completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
 

@@ -250,6 +250,8 @@ Internal or post-MVP planning:
 - [Nagaland go-live checklist](docs/NAGALAND_GO_LIVE_CHECKLIST.md)
 - [Andhra Pradesh public readiness review](docs/ANDHRA_PRADESH_PUBLIC_READINESS_REVIEW.md)
 - [Andhra Pradesh go-live checklist](docs/ANDHRA_PRADESH_GO_LIVE_CHECKLIST.md)
+- [Arunachal Pradesh public readiness review](docs/ARUNACHAL_PRADESH_PUBLIC_READINESS_REVIEW.md)
+- [Arunachal Pradesh go-live checklist](docs/ARUNACHAL_PRADESH_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu public readiness review](docs/TAMIL_NADU_PUBLIC_READINESS_REVIEW.md)
 - [Tamil Nadu go-live checklist](docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md)
 - [Tamil Nadu internal readiness review](docs/TAMIL_NADU_INTERNAL_READINESS_REVIEW.md)
