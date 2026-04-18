@@ -264,6 +264,20 @@ Latest confirmed operator validation:
   - rollback target retained from the prior internal proof cycle: `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
   - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug karnataka` passed with `districtCount=31`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
   - `https://nyaaywatch.in/states/karnataka` and `https://nyaaywatch.in/v1/states/karnataka/stats` now return `200`, and live HTML verification confirmed the Karnataka title and `How long is the wait for justice in Karnataka?` heading
+- Tripura public rollout completed on 2026-04-18 on task definition `:66`:
+  - live Tripura fetch run `run_fa4c7a48-6536-4e32-9d3a-63f6eecec153`
+  - live Tripura publication `publication_a2308b8b-946e-4725-900e-14e638fe85dd`
+  - live Tripura snapshot `snapshot_73cd7146-7d74-41e0-85a5-f352baa439df`
+  - rollback target retained from the prior internal proof cycle: `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tripura` passed with `districtCount=8`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - `https://nyaaywatch.in/states/tripura` and `https://nyaaywatch.in/v1/states/tripura/stats` now return `200`, and live HTML verification confirmed the Tripura title and `How long is the wait for justice in Tripura?` heading
+- Nagaland public rollout completed on 2026-04-18 on task definition `:66`:
+  - live Nagaland fetch run `run_575e0ebe-fd32-4fda-88f2-1c6d69175d6c`
+  - live Nagaland publication `publication_b01df802-1d04-409b-b608-55500e1b47a9`
+  - live Nagaland snapshot `snapshot_f73774d4-0f6f-473f-9eda-21e5cd454050`
+  - rollback target retained from the prior internal proof cycle: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
+  - `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug nagaland` passed with `districtCount=11`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+  - `https://nyaaywatch.in/states/nagaland` and `https://nyaaywatch.in/v1/states/nagaland/stats` now return `200`, and live HTML verification confirmed the Nagaland title and `How long is the wait for justice in Nagaland?` heading
 - Tamil Nadu public rollout completed on 2026-04-17 after PR `#64` merged to `main`:
   - GitHub deploy run `24588602379` rolled the live service to task definition `:54`
   - live Tamil Nadu fetch run `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`

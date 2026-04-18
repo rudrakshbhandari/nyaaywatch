@@ -1,17 +1,20 @@
 # Tripura Public Readiness Review
 
-Review of what Tripura now requires before exposing the public Tripura route family.
+Review of what Tripura required before exposing the public Tripura route family.
 
-Tripura has already cleared the internal proof bar on the live stack. This review records why the remaining public question is narrow: Tripura no longer needs extractor invention or source-shape debate, but it still needs stable-URL verification and a deliberate public rollout before exposure on the live hostname.
+Tripura had already cleared the internal proof bar on the live stack before launch. This review records why the remaining public question was narrow: Tripura no longer needed extractor invention or source-shape debate, but it still needed stable-URL verification and a deliberate public rollout before exposure on the live hostname.
 
 ## Review Basis
 
-Based on the live Tripura internal proof cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`:
+Based on the live Tripura internal proof cycle and public rollout recorded in `docs/EXPANSION_REVIEW_LOG.md`:
 
 - first live fetch run id: `run_6b5e6751-0835-42b1-a89a-f3da080f5287`
 - first live publication id: `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`
 - replay run id: `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`
 - rollback publication id: `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
+- public rollout fetch run id: `run_fa4c7a48-6536-4e32-9d3a-63f6eecec153`
+- public rollout publication id: `publication_a2308b8b-946e-4725-900e-14e638fe85dd`
+- public rollout snapshot id: `snapshot_73cd7146-7d74-41e0-85a5-f352baa439df`
 
 Observed Tripura source notes:
 
@@ -66,14 +69,14 @@ Nothing observed in the Tripura candidate suggests we need a looser trust standa
 
 ### 1. Stable-URL Public Verification
 
-Tripura is now wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still need to verify:
+Tripura was wired into the approved public-state set in repo config with dedicated preflight coverage for the explicit state-scoped route family. Before launch on the live hostname we still needed to verify:
 
 - `/states/tripura`
 - `/v1/states/tripura/...`
 - `/states/tripura/data/districts.csv`
 - UI, API, and CSV metadata parity on the stable public URLs
 
-Meghalaya provides the immediate rollout pattern. Tripura does not need broader repo-level public-surface invention here, but it still needs the actual state-scoped verification pass before launch.
+Karnataka provided the immediate rollout pattern. Tripura did not need broader repo-level public-surface invention here, but it did need the actual state-scoped verification pass before launch.
 
 The Tripura-specific artifacts for that pass are:
 
@@ -92,23 +95,24 @@ The product is intentionally not nationwide. Tripura public exposure should keep
 
 The operational system is now good enough to qualify public-prep states in parallel. Public exposure should still lag stable-URL verification and a deliberate rollout slot.
 
-That gate is satisfied for Tripura because Haryana, Tamil Nadu, Assam, Telangana, and Kerala are already live publicly, Meghalaya is the active current rollout candidate, and Karnataka, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh provide surrounding operating evidence. Tripura no longer needs more internal-proof debate before public-route work can proceed.
+That gate is satisfied for Tripura because Haryana, Tamil Nadu, Assam, Telangana, Kerala, and Karnataka are already live publicly, while Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, and Chhattisgarh provide surrounding operating evidence. Tripura no longer needed more internal-proof debate before public-route work could proceed.
 
 ## Outcome
 
-Tripura should now be treated as the next viable narrow public candidate after Meghalaya, not as a state that still needs basic source or operator validation.
+Tripura is now live on the public site as the ninth additional public state.
 
-Before launch, the remaining conditions are:
+The launch conditions that cleared were:
 
-1. the Tripura-specific public-route parity artifacts stay green under the approved public-state configuration
-2. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tripura` and a live browser pass both succeed on the stable hostname
-3. rollout docs record the actual public publication lineage after launch
+1. Tripura was deliberately promoted into the approved public-state set rather than exposed by implication
+2. the Tripura-specific public-route parity artifacts went green under that configuration
+3. `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tripura` and a live HTML verification pass both succeeded on the stable hostname
+4. rollout docs now record the actual public publication lineage after launch
 
 ## Useful Work Completed By This Review
 
-This review closes the Tripura trust question at the pre-launch level:
+This review now closes the Tripura trust question at the launched-public-state level:
 
 - source-shape review: done
 - trust-surface review: done
-- public recommendation: Tripura is a viable next narrow public candidate
-- remaining blockers are rollout-specific rather than extractor- or source-specific
+- public rollout: completed
+- remaining blockers: none for Tripura itself; the queue now advances to Nagaland

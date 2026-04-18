@@ -2,13 +2,13 @@
 
 Checklist for deciding whether Tripura can move from approved public-prep state to soft public availability.
 
-This is narrower than a nationwide launch checklist. Tripura has already cleared the internal proof bar and is now wired in repo config as an approved public state, but it should stay off the live site until the state-specific rollout gates below are complete.
+This is narrower than a nationwide launch checklist. Tripura had already cleared the internal proof bar and was wired in repo config as an approved public state before launch.
 
 ## Release Metadata
 
 - Candidate state: `Tripura`
 - State code: `TR`
-- Current decision: `approved in repo config; pending live rollout verification`
+- Current decision: `public rollout completed`
 - Review log: `docs/EXPANSION_REVIEW_LOG.md`
 - Readiness review: `docs/TRIPURA_PUBLIC_READINESS_REVIEW.md`
 - Methodology version: `2026.04-alpha`
@@ -30,14 +30,14 @@ Why this gate exists:
 - [x] Tripura public routes can be wired to read only from the active published snapshot in the state-scoped runtime.
 - [x] No public Tripura route or download reads unpublished run state in local verification.
 - [x] Tripura CSV, API, and UI can resolve to the same publication lineage in local verification.
-- [ ] Tripura rollback target is recorded in live public release history after the first public publication.
+- [x] Tripura rollback target is recorded in live public release history after the first public publication.
 
 ### 3. Trust Metadata And Caveats
 
 - [x] Tripura entry, district index, and district detail surfaces can show source snapshot date, publication date, freshness, methodology version, and source attribution in local verification.
 - [x] Tripura copy uses `published snapshot`, `flagged signal`, and `operator-published` semantics in local verification.
 - [x] Tripura copy avoids live, predictive, or verdict-like framing in local verification.
-- [ ] Live hostname/browser checks confirm the same trust posture after rollout.
+- [x] Live hostname/browser checks confirm the same trust posture after rollout.
 
 ### 4. Product And IA Discipline
 
@@ -55,20 +55,20 @@ Why this gate exists:
 
 ### 6. Verification
 
-- [ ] `npm run typecheck`
-- [ ] `npm test -- tests/geographies.test.ts tests/tripura-public-rollout.test.ts`
-- [ ] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tripura`
-- [ ] Browser verification on `https://nyaaywatch.in/states/tripura`
+- [x] `npm run typecheck`
+- [x] `npm test -- tests/geographies.test.ts tests/tripura-public-rollout.test.ts`
+- [x] `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tripura`
+- [x] Browser verification on `https://nyaaywatch.in/states/tripura`
 
 ### 7. Deployment
 
-- [ ] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
-- [ ] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
-- [ ] The first Tripura public publication id and rollback posture are recorded explicitly.
+- [x] The AWS runtime configuration for the public stack is updated intentionally rather than ad hoc.
+- [x] `docs/DEPLOYMENT_STATUS.md`, `docs/EXPANSION_REVIEW_LOG.md`, `docs/RELEASE_HISTORY.md`, and `docs/MVP_EXECUTION_PLAN.md` are updated with the actual rollout result.
+- [x] The first Tripura public publication id and rollback posture are recorded explicitly.
 
 ## Decision
 
-- [ ] Ready for soft public availability
-- [x] Keep pending live rollout
+- [x] Ready for soft public availability
+- [ ] Keep pending live rollout
 
 If blocked, record the blocker and exact next action in `docs/EXPANSION_REVIEW_LOG.md`.

@@ -1014,6 +1014,56 @@ Meghalaya is now the seventh additional public state. The next public rollout sh
 
 Karnataka is now the eighth additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Tripura.
 
+## Tripura (`TR`) Public Rollout
+
+- candidate geography: Tripura
+- review date: 2026-04-18
+- source boundary: NJDG Tripura district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest successful validation date: 2026-04-18 live public rollout verification
+- reviewer: Codex
+- decision: `public rollout completed`
+
+### Public Rollout Evidence
+
+- deployed task definition during rollout: `nyaaywatch-staging:66`
+- public rollout fetch run: `run_fa4c7a48-6536-4e32-9d3a-63f6eecec153`
+- public rollout publication: `publication_a2308b8b-946e-4725-900e-14e638fe85dd`
+- public rollout snapshot: `snapshot_73cd7146-7d74-41e0-85a5-f352baa439df`
+- rollback target retained from the prior internal proof cycle: `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug tripura` passed with `districtCount=8`, `trendCount=2`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route validation: `https://nyaaywatch.in/states/tripura` and `https://nyaaywatch.in/v1/states/tripura/stats` both returned `200`
+- live HTML validation: the public page title resolved to `NyaayWatch — How long is the wait for justice in Tripura?` and the page heading resolved to `How long is the wait for justice in Tripura?`
+
+### Recommendation
+
+Tripura is now the ninth additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Nagaland.
+
+## Nagaland (`NL`) Public Rollout
+
+- candidate geography: Nagaland
+- review date: 2026-04-18
+- source boundary: NJDG Nagaland district dashboard aggregate pages
+- methodology version: `2026.04-alpha`
+- latest successful validation date: 2026-04-18 live public rollout verification
+- reviewer: Codex
+- decision: `public rollout completed`
+
+### Public Rollout Evidence
+
+- deployed task definition during rollout: `nyaaywatch-staging:66`
+- public rollout fetch run: `run_575e0ebe-fd32-4fda-88f2-1c6d69175d6c`
+- public rollout publication: `publication_b01df802-1d04-409b-b608-55500e1b47a9`
+- public rollout snapshot: `snapshot_f73774d4-0f6f-473f-9eda-21e5cd454050`
+- rollback target retained from the prior internal proof cycle: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
+- release verification: `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug nagaland` passed with `districtCount=11`, `trendCount=1`, `csvMetadataParity=true`, and `publicDataCacheProtected=true`
+- live route validation: `https://nyaaywatch.in/states/nagaland` and `https://nyaaywatch.in/v1/states/nagaland/stats` both returned `200`
+- live HTML validation: the public page title resolved to `NyaayWatch — How long is the wait for justice in Nagaland?` and the page heading resolved to `How long is the wait for justice in Nagaland?`
+
+### Recommendation
+
+Nagaland is now the tenth additional public state. The next public rollout should continue from the still-internal states already cleared earlier in the internal-proof queue, starting with Andhra Pradesh.
+
 ## Goa (`GA`), Sikkim (`SK`), And Mizoram (`MZ`) Internal Proof Batch
 
 - candidate geographies: Goa, Sikkim, and Mizoram
