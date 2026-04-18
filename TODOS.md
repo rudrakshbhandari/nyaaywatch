@@ -14,7 +14,8 @@ Use this file for:
 
 - Meghalaya is now live, and Karnataka is the next public state in the internal-proof order
 - current remaining public queue after Karnataka: Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
-- done only when Karnataka completes public-route parity, live publish, and stable-URL verification without widening national scaffolding
+- Karnataka, Tripura, and Nagaland now all have dedicated public-readiness reviews, go-live checklists, and targeted parity suites in repo config
+- done only when Karnataka completes live publish and stable-URL verification without widening national scaffolding, after which the queue advances to Tripura and then Nagaland
 
 ### Next Internal Expansion Batch
 
@@ -98,6 +99,12 @@ Use this file for:
 - Tripura completed fetch `run_6b5e6751-0835-42b1-a89a-f3da080f5287`, publication `publication_3936f6cd-c9fe-403a-84b2-ba22e3fdf39b`, replay `run_42e9b2bc-e00e-43b2-8f2b-f9c103ba2246`, and rollback `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
 - Nagaland completed fetch `run_8abb0436-80c5-4ce3-92c7-cf6049c55010`, publication `publication_abc433b9-1db4-4661-902e-ffd8861e35af`, replay `run_d3d5a492-1515-4e77-ab25-27135054b787`, and rollback `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
 - public routes for Karnataka, Tripura, and Nagaland all remained dark with `404` responses throughout
+
+### Karnataka, Tripura, And Nagaland Public Preflight
+
+- completed in repo prep on 2026-04-18 with `docs/*_PUBLIC_READINESS_REVIEW.md`, `docs/*_GO_LIVE_CHECKLIST.md`, targeted state-scoped rollout tests, and approved public-state wiring for all three states
+- Karnataka is the next live rollout in the internal-proof order, with Tripura and Nagaland queued immediately behind it once each earlier rollout is complete
+- remaining work for this trio is live publication evidence and stable-URL verification, not additional extractor or source-shape debate
 
 ### Telangana, Andhra Pradesh, Arunachal Pradesh, And Manipur Internal Proof Cycles
 
