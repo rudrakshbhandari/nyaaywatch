@@ -65,7 +65,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateName: "Arunachal Pradesh",
     stateSlug: "arunachal-pradesh",
     njdgStateValue: "12~36",
-    publicAlpha: false,
+    publicAlpha: true,
   },
   MN: {
     stateCode: "MN",
