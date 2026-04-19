@@ -1316,4 +1316,79 @@ Keep Himachal High Court public as the narrow proving ground for the High Court 
 
 ### Recommendation
 
-Supreme Court is now live as the narrow top-down public shell. The next public High Court wave should be chosen from the already-proven courts, with Uttar Pradesh and Rajasthan as the strongest current candidates.
+Supreme Court is now live as the narrow top-down public shell, and the first broader High Court public wave is now live too. The next deliberate High Court validation pair should be chosen from the remaining configured courts, with Gujarat and Madhya Pradesh as the strongest current candidates.
+
+## Uttar Pradesh And Rajasthan High Court Public Beta Rollout
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public rollout completed`
+- public URL family:
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh`
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh/data`
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh/methodology`
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh/api`
+  - `https://nyaaywatch.in/v1/high-courts/uttar-pradesh/stats`
+  - `https://nyaaywatch.in/v1/high-courts/uttar-pradesh/trends`
+  - `https://nyaaywatch.in/high-courts/rajasthan`
+  - `https://nyaaywatch.in/high-courts/rajasthan/data`
+  - `https://nyaaywatch.in/high-courts/rajasthan/methodology`
+  - `https://nyaaywatch.in/high-courts/rajasthan/api`
+  - `https://nyaaywatch.in/v1/high-courts/rajasthan/stats`
+  - `https://nyaaywatch.in/v1/high-courts/rajasthan/trends`
+
+### Public Rollout Evidence
+
+- public-rollout deploy run: `24636212237`
+- public-rollout settled ECS task definition after deploy: `nyaaywatch-staging:101`
+- stable public route status after launch:
+  - `200 /high-courts`
+  - `200 /high-courts/uttar-pradesh`
+  - `200 /high-courts/uttar-pradesh/data`
+  - `200 /high-courts/uttar-pradesh/methodology`
+  - `200 /high-courts/uttar-pradesh/api`
+  - `200 /v1/high-courts/uttar-pradesh/stats`
+  - `200 /v1/high-courts/uttar-pradesh/trends`
+  - `200 /high-courts/rajasthan`
+  - `200 /high-courts/rajasthan/data`
+  - `200 /high-courts/rajasthan/methodology`
+  - `200 /high-courts/rajasthan/api`
+  - `200 /v1/high-courts/rajasthan/stats`
+  - `200 /v1/high-courts/rajasthan/trends`
+- active Uttar Pradesh High Court publication after launch: `publication_91726f20-da84-4401-9da0-18c5ad711694`
+- active Uttar Pradesh High Court snapshot after launch: `snapshot_c0d74fe7-6755-467e-86be-90424446a514`
+- active Uttar Pradesh High Court publication action after launch: `rollback`
+- active Uttar Pradesh High Court published-from run: `run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
+- active Uttar Pradesh High Court reference date: `2026-04-19T03:38:57.761Z`
+- active Uttar Pradesh High Court reference-date kind: `captured_at`
+- active Uttar Pradesh High Court `sourceSnapshotAt`: `null`
+- active Uttar Pradesh High Court published at: `2026-04-19T03:40:31.468Z`
+- live Uttar Pradesh High Court stats:
+  - `pendingTotalCases=1223215`
+  - `institutedLastMonthTotalCases=26638`
+  - `disposedLastMonthTotalCases=28080`
+- live Uttar Pradesh High Court trends count: `1`
+- active Rajasthan High Court publication after launch: `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f`
+- active Rajasthan High Court snapshot after launch: `snapshot_03ac0bb4-ba77-4d92-9b96-478983aadfa9`
+- active Rajasthan High Court publication action after launch: `rollback`
+- active Rajasthan High Court published-from run: `run_bdc31094-2d40-4960-af99-13d2d803cf0c`
+- active Rajasthan High Court reference date: `2026-04-19T03:39:10.250Z`
+- active Rajasthan High Court reference-date kind: `captured_at`
+- active Rajasthan High Court `sourceSnapshotAt`: `null`
+- active Rajasthan High Court published at: `2026-04-19T03:40:34.582Z`
+- live Rajasthan High Court stats:
+  - `pendingTotalCases=678393`
+  - `institutedLastMonthTotalCases=18847`
+  - `disposedLastMonthTotalCases=12318`
+- live Rajasthan High Court trends count: `1`
+
+### What Cleared
+
+- the already-proven internal Allahabad High Court and Rajasthan High Court publication chains now serve real public beta route families
+- public HTML and JSON surfaces remain aligned with the same published snapshot contract and `captured_at` reference-date posture used in the internal proof cycles
+- the live product now exposes a real three-court High Court public beta set under one shared `/high-courts/...` shell
+- the live deployment settled on task definition `:101` without breaking the existing Himachal High Court or Supreme Court public surfaces
+
+### Recommendation
+
+The first broader High Court public wave is now live. The next deliberate High Court validation pair should be Gujarat and Madhya Pradesh, not a broad all-courts jump.
