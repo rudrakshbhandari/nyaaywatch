@@ -14,6 +14,7 @@ export interface HighCourtProfile {
   courtName: string;
   stateCode: SupportedStateCode;
   stateName: string;
+  hcNjdgStateValue: string;
   publicBeta: boolean;
   sourceUrls: HighCourtSourceUrls;
 }
@@ -29,6 +30,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Himachal Pradesh",
     stateCode: "HP",
     stateName: getStateProfile("HP").stateName,
+    hcNjdgStateValue: "2~5",
     publicBeta: false,
     sourceUrls: {
       hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
