@@ -81,6 +81,12 @@ describe("High Court source client", () => {
     );
   });
 
+  it("builds the Allahabad High Court NJDG URL for the Uttar Pradesh internal wave", () => {
+    expect(buildHighCourtPageUrl(getHighCourtProfile("UPHC"))).toBe(
+      "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=9~13",
+    );
+  });
+
   it("captures the selected High Court page and bench options", async () => {
     vi.stubGlobal(
       "fetch",
@@ -99,6 +105,28 @@ describe("High Court source client", () => {
     expect(bundle.courtCode).toBe("HPHC");
     expect(bundle.homePage.url).toBe("https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=2~5");
     expect(bundle.benchOptions).toEqual([{ benchCode: "1", benchName: "Principal Bench Himachal P" }]);
+  });
+
+  it("keeps the selected High Court metadata when another internal court uses the same source shape", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => ({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+        text: async () => HIMACHAL_HIGH_COURT_HTML,
+        url,
+      })),
+    );
+
+    const client = new HcNjdgSourceClient(getHighCourtProfile("UPHC"));
+    const bundle = await client.captureLatest();
+
+    expect(bundle.courtCode).toBe("UPHC");
+    expect(bundle.courtName).toBe("Allahabad High Court");
+    expect(bundle.stateCode).toBe("UP");
+    expect(bundle.stateName).toBe("Uttar Pradesh");
+    expect(bundle.homePage.url).toBe("https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=9~13");
   });
 });
 
