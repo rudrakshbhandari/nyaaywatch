@@ -1211,34 +1211,42 @@ The supported-state rollout program is complete for the current repo scope. Any 
 
 Keep Himachal High Court public as the narrow proving ground for the High Court tier, but treat Supreme Court as the next public top-down planning track before broad High Court UX expansion.
 
-## Supreme Court Internal Proof Cycle
+## Supreme Court Internal Proof Cycles
 
 - review date: 2026-04-19
 - reviewer: Codex
-- decision: `first live internal proof cycle complete`
-- deploy run: `24622868188`
-- settled ECS task definition after deploy: `nyaaywatch-staging:95`
+- decision: `repeated live internal proof bar satisfied`
 - methodology version: `2026.04-supreme-court-draft`
 
 ### Internal Proof Evidence
 
-- unauthenticated operator route status: `401 /operator/supreme-court`
-- public route status: `404 /supreme-court`
-- fetch run: `run_1eae4c35-6ed8-4e32-8d2e-a8b0b704df1e`
-- initial publication: `publication_e0e10038-e70c-4556-a972-df9f530d03de`
-- initial snapshot: `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81`
-- replay run: `run_06a8e66e-26ac-4de6-9182-561989b49e4c`
-- replay publication: `publication_dbcca7db-d563-4ba8-a0b1-3ea730c40ce5`
-- rollback publication: `publication_816712a1-56c7-4b2b-b49d-74d78f6a9bbd`
-- active publication action after rollback: `rollback`
-- active snapshot after rollback: `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81`
-- published-from run on the active snapshot: `run_1eae4c35-6ed8-4e32-8d2e-a8b0b704df1e`
-- replay evidence retained in history: `run_06a8e66e-26ac-4de6-9182-561989b49e4c`
-- reference date: `2026-04-19T06:41:34.634Z`
-- reference date kind: `captured_at`
-- published snapshot `sourceSnapshotAt`: `null`
-- published at: `2026-04-19T06:42:07.131Z`
-- active internal Supreme Court stats:
+- first-window deploy run: `24622868188`
+- first-window settled ECS task definition after deploy: `nyaaywatch-staging:95`
+- second-window deploy run: `24623340754`
+- second-window settled ECS task definition after deploy: `nyaaywatch-staging:96`
+- unauthenticated operator route status in both windows: `401 /operator/supreme-court`
+- authenticated operator route status in the second window: `200 /operator/supreme-court`
+- public route status in both windows: `404 /supreme-court`
+- first-window fetch run: `run_1eae4c35-6ed8-4e32-8d2e-a8b0b704df1e`
+- first-window initial publication: `publication_e0e10038-e70c-4556-a972-df9f530d03de`
+- first-window initial snapshot: `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81`
+- first-window replay run: `run_06a8e66e-26ac-4de6-9182-561989b49e4c`
+- first-window replay publication: `publication_dbcca7db-d563-4ba8-a0b1-3ea730c40ce5`
+- first-window rollback publication: `publication_816712a1-56c7-4b2b-b49d-74d78f6a9bbd`
+- second-window fetch run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- second-window publication: `publication_a4af147e-0495-40ae-8359-5d2775da3c8a`
+- second-window snapshot: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- second-window replay run: `run_e9572b2a-bb76-4318-885d-23b04d776eea`
+- second-window replay publication: `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
+- second-window rollback publication: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- active publication action after the second rollback: `rollback`
+- active snapshot after the second rollback: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- published-from run on the active snapshot: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- second-window reference date: `2026-04-19T07:06:34.049Z`
+- reference date kind in both windows: `captured_at`
+- published snapshot `sourceSnapshotAt` in both windows: `null`
+- second-window published at: `2026-04-19T07:06:42.130Z`
+- active internal Supreme Court stats after the second rollback:
   - `pendingRegisteredCases=71534`
   - `pendingUnregisteredCases=22624`
   - `pendingTotalCases=94158`
@@ -1252,14 +1260,15 @@ Keep Himachal High Court public as the narrow proving ground for the High Court 
 - the live stack now exposes the Supreme Court operator namespace under the same auth boundary as the rest of the operator surface
 - Supreme Court aggregate capture, publish, replay, and rollback work end to end against the deployed stack
 - the stored-evidence output uses the explicit `captured_at` reference-date contract instead of inventing an upstream snapshot timestamp
+- the repeated-window internal proof bar is now satisfied across two distinct live windows on task definitions `:95` and `:96`
+- the tier now has a written methodology draft in-repo at `docs/SUPREME_COURT_METHODOLOGY.md`
 
 ### What Did Not Clear Yet
 
-- this is still only one live proof-cycle window
-- the repeated-window gate for a public Supreme Court beta is not yet satisfied
 - the public `/supreme-court` route family remains intentionally dark
-- the public Supreme Court methodology page is still missing
+- the public Supreme Court route family is not yet implemented
+- the homepage still does not expose the Supreme Court top-of-funnel module
 
 ### Recommendation
 
-Treat this as the successful first internal Supreme Court proof cycle, not as public-beta readiness. Run at least one additional live proof cycle in a later window, then write the methodology page before exposing any public Supreme Court route.
+Treat Supreme Court as the next public implementation slice. The right follow-on is to wire the narrow `/supreme-court` route family and its API or methodology surfaces on top of the already-satisfied internal proof bar, not to spend more time proving the internal operator flow again.

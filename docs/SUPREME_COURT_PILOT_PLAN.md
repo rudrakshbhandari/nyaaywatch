@@ -46,13 +46,13 @@ The repo now has the internal Supreme Court scaffold:
 - Supreme Court snapshot-candidate and published-snapshot schemas
 - internal operator lifecycle under `/operator/supreme-court/...`
 - local and remote operator CLI support
-- the first live Supreme Court proof cycle recorded in `docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md`
+- repeated live Supreme Court proof cycles recorded in `docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md`
+- a repo-side Supreme Court methodology draft in `docs/SUPREME_COURT_METHODOLOGY.md`
 
 What it does **not** have yet:
 
-- repeated live Supreme Court proof cycles across separate windows on the deployed stack
 - a public `/supreme-court` route family
-- a finished public methodology page for the Supreme Court tier
+- the public Supreme Court HTML and JSON route surface wired to the published snapshot
 
 ## Product Position
 
@@ -296,6 +296,7 @@ Outcome:
 
 Tasks:
 
+- wire the published Supreme Court snapshot into `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`
 - expose the narrow public route family
 - keep the page published-only
 - surface methodology and trust metadata clearly
@@ -316,6 +317,12 @@ Before any public Supreme Court beta, require all of these:
 - public trust metadata parity across page, API, and export surfaces
 - tier-specific methodology reviewed
 - at least 2 successful internal cycles across distinct windows
+
+Current repo state:
+
+- satisfied
+
+The remaining work is public route implementation, not more internal proof gathering.
 
 ## Relationship To High Courts
 
