@@ -59,7 +59,9 @@ describe("high court snapshot schemas", () => {
       stateCode: "HP",
       stateName: "Himachal Pradesh",
       sourceName: "HC NJDG Himachal High Court dashboard",
-      sourceSnapshotAt: "2026-04-18T00:00:00.000Z",
+      sourceSnapshotAt: null,
+      referenceDateAt: "2026-04-18T09:00:00.000Z",
+      referenceDateKind: "captured_at",
       methodologyVersion: "2026.04-high-court-draft",
       qualityState: "complete",
       sourceAttribution: "High Courts of India NJDG for the High Court of Himachal Pradesh",
@@ -92,7 +94,8 @@ describe("high court snapshot schemas", () => {
     ],
     trends: [
       {
-        snapshotDate: "2026-04-18T00:00:00.000Z",
+        referenceDateAt: "2026-04-18T09:00:00.000Z",
+        referenceDateKind: "captured_at",
         pendingTotalCases: 16500,
         institutedLastMonthTotalCases: 700,
         disposedLastMonthTotalCases: 700,

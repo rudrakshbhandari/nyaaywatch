@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { QualityStateSchema } from "./snapshot-schema.js";
 
+export const HighCourtReferenceDateKindSchema = z.enum(["source_snapshot_at", "captured_at"]);
+
 export const HighCourtSnapshotMetadataSchema = z.object({
   courtTier: z.literal("high_court"),
   courtCode: z.string().min(1),
@@ -10,7 +12,9 @@ export const HighCourtSnapshotMetadataSchema = z.object({
   stateCode: z.string().min(1),
   stateName: z.string().min(1),
   sourceName: z.string().min(1),
-  sourceSnapshotAt: z.string().datetime(),
+  sourceSnapshotAt: z.string().datetime().nullable(),
+  referenceDateAt: z.string().datetime(),
+  referenceDateKind: HighCourtReferenceDateKindSchema,
   publishedAt: z.string().datetime(),
   methodologyVersion: z.string().min(1),
   qualityState: QualityStateSchema,
@@ -48,7 +52,8 @@ export const HighCourtCaseTypeBreakdownSchema = z.object({
 });
 
 export const HighCourtTrendPointSchema = z.object({
-  snapshotDate: z.string().datetime(),
+  referenceDateAt: z.string().datetime(),
+  referenceDateKind: HighCourtReferenceDateKindSchema,
   pendingTotalCases: z.number().int().nonnegative(),
   institutedLastMonthTotalCases: z.number().int().nonnegative(),
   disposedLastMonthTotalCases: z.number().int().nonnegative(),
