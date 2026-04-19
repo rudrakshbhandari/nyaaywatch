@@ -29,6 +29,12 @@ export function buildStagingOperatorCommand(invocation: OperatorInvocation): str
   if (invocation.stateCode) {
     command.push("--state", invocation.stateCode);
   }
+  if (invocation.highCourtCode) {
+    command.push("--high-court", invocation.highCourtCode);
+  }
+  if (invocation.supremeCourt) {
+    command.push("--supreme-court");
+  }
 
   command.push(invocation.command);
 

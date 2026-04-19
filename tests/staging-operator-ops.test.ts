@@ -27,6 +27,8 @@ describe("staging operator helpers", () => {
     expect(parsed.profile).toBe("sandbox");
     expect(parsed.invocation).toEqual({
       stateCode: "UP",
+      highCourtCode: undefined,
+      supremeCourt: false,
       command: "fetch",
       note: "Internal Uttar Pradesh fetch",
     });
@@ -48,6 +50,35 @@ describe("staging operator helpers", () => {
       "publish",
       "run_up_123",
       "Publish Uttar Pradesh proof cycle",
+    ]);
+  });
+
+  it("builds the ECS container command for Supreme Court and High Court targets", () => {
+    expect(
+      buildStagingOperatorCommand({
+        highCourtCode: "HPHC",
+        command: "publications",
+      }),
+    ).toEqual([
+      "node",
+      "dist/src/dev/ecs-operator-entrypoint.js",
+      "--high-court",
+      "HPHC",
+      "publications",
+    ]);
+
+    expect(
+      buildStagingOperatorCommand({
+        supremeCourt: true,
+        command: "fetch",
+        note: "Supreme Court proof cycle",
+      }),
+    ).toEqual([
+      "node",
+      "dist/src/dev/ecs-operator-entrypoint.js",
+      "--supreme-court",
+      "fetch",
+      "Supreme Court proof cycle",
     ]);
   });
 

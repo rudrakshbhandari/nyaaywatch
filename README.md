@@ -27,6 +27,8 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
+- narrow public Supreme Court beta routes under `/supreme-court`
+- narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Gujarat, High Court of Madhya Pradesh, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
@@ -110,6 +112,17 @@ npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --connect-host=<alb-dns> --state=UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal publications
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal fetch "Internal Himachal High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court andhra-pradesh fetch "Internal Andhra Pradesh High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court telangana fetch "Internal Telangana High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court gujarat fetch "Internal Gujarat High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court madhya-pradesh fetch "Internal Madhya Pradesh High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court uttar-pradesh fetch "Internal Allahabad High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal Supreme Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court publications
+npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=andhra-pradesh,telangana
 npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:reconcile-fetch-schedule
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -118,9 +131,14 @@ npm run release:postpublish -- --publication-id=<publication-id> --base-url=http
 npm run release:postpublish -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in
 npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 npm run release:record -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
+npm run release:purge-public-routes -- --supreme-court
+npm run release:purge-public-routes -- --high-court=andhra-pradesh,telangana
+npm run release:purge-public-routes -- --high-court=gujarat,madhya-pradesh
+npm run release:purge-public-routes -- --high-court=uttar-pradesh,rajasthan
 ```
 
 Use `npm run operator:remote` for live remote operator access from a local terminal. Use `npm run operator:staging` as the default heavy-state lane on the live AWS stack when long-running fetches should execute inside a one-off ECS task instead of through the Cloudflare-fronted public operator path.
+Use `npm run release:purge-public-routes` when a newly exposed Supreme Court or High Court public-beta route family needs an explicit Cloudflare purge after a deploy-only rollout.
 
 The live stack also supports a daily internal raw-fetch schedule at `8:00 AM Asia/Kolkata` across all implemented states. Reconcile it against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the schedule launches one ECS task that runs sequential `fetch` operations for every implemented state without changing the public snapshot. Public publishes remain operator-reviewed and manual on their existing cadence.
 
@@ -129,6 +147,39 @@ The live stack also supports a daily internal raw-fetch schedule at `8:00 AM Asi
 Public routes:
 
 - `/`
+- `/supreme-court`
+- `/supreme-court/data`
+- `/supreme-court/methodology`
+- `/supreme-court/api`
+- `/high-courts`
+- `/high-courts/himachal`
+- `/high-courts/himachal/data`
+- `/high-courts/himachal/methodology`
+- `/high-courts/himachal/api`
+- `/high-courts/andhra-pradesh`
+- `/high-courts/andhra-pradesh/data`
+- `/high-courts/andhra-pradesh/methodology`
+- `/high-courts/andhra-pradesh/api`
+- `/high-courts/telangana`
+- `/high-courts/telangana/data`
+- `/high-courts/telangana/methodology`
+- `/high-courts/telangana/api`
+- `/high-courts/gujarat`
+- `/high-courts/gujarat/data`
+- `/high-courts/gujarat/methodology`
+- `/high-courts/gujarat/api`
+- `/high-courts/madhya-pradesh`
+- `/high-courts/madhya-pradesh/data`
+- `/high-courts/madhya-pradesh/methodology`
+- `/high-courts/madhya-pradesh/api`
+- `/high-courts/uttar-pradesh`
+- `/high-courts/uttar-pradesh/data`
+- `/high-courts/uttar-pradesh/methodology`
+- `/high-courts/uttar-pradesh/api`
+- `/high-courts/rajasthan`
+- `/high-courts/rajasthan/data`
+- `/high-courts/rajasthan/methodology`
+- `/high-courts/rajasthan/api`
 - `/districts`
 - `/districts/:id`
 - `/data`
@@ -144,6 +195,8 @@ Public routes:
 Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
+- Supreme Court now has a narrow public beta route family under `/supreme-court`
+- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Gujarat, High Court of Madhya Pradesh, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
@@ -151,6 +204,22 @@ Current route posture:
 Public API:
 
 - `GET /v1/stats/himachal`
+- `GET /v1/supreme-court/stats`
+- `GET /v1/supreme-court/trends`
+- `GET /v1/high-courts/himachal/stats`
+- `GET /v1/high-courts/himachal/trends`
+- `GET /v1/high-courts/andhra-pradesh/stats`
+- `GET /v1/high-courts/andhra-pradesh/trends`
+- `GET /v1/high-courts/telangana/stats`
+- `GET /v1/high-courts/telangana/trends`
+- `GET /v1/high-courts/gujarat/stats`
+- `GET /v1/high-courts/gujarat/trends`
+- `GET /v1/high-courts/madhya-pradesh/stats`
+- `GET /v1/high-courts/madhya-pradesh/trends`
+- `GET /v1/high-courts/uttar-pradesh/stats`
+- `GET /v1/high-courts/uttar-pradesh/trends`
+- `GET /v1/high-courts/rajasthan/stats`
+- `GET /v1/high-courts/rajasthan/trends`
 - `GET /v1/districts`
 - `GET /v1/trends`
 - `GET /v1/states/:stateSlug/stats`
@@ -166,8 +235,26 @@ Operator endpoints require `x-operator-token`:
 - `POST /operator/runs/:runId/replay`
 - `GET /operator/publications`
 - `POST /operator/publications/:publicationId/rollback`
+- `GET /operator/high-courts`
+- `GET /operator/high-courts/:courtSlug`
+- `GET /operator/high-courts/:courtSlug/runs`
+- `GET /operator/high-courts/:courtSlug/runs/:runId`
+- `POST /operator/high-courts/:courtSlug/runs/fetch`
+- `POST /operator/high-courts/:courtSlug/runs/:runId/publish`
+- `POST /operator/high-courts/:courtSlug/runs/:runId/replay`
+- `GET /operator/high-courts/:courtSlug/publications`
+- `POST /operator/high-courts/:courtSlug/publications/:publicationId/rollback`
+- `GET /operator/supreme-court`
+- `GET /operator/supreme-court/runs`
+- `GET /operator/supreme-court/runs/:runId`
+- `POST /operator/supreme-court/runs/fetch`
+- `POST /operator/supreme-court/runs/:runId/publish`
+- `POST /operator/supreme-court/runs/:runId/replay`
+- `GET /operator/supreme-court/publications`
+- `POST /operator/supreme-court/publications/:publicationId/rollback`
 
 Operator routes default to the runtime's configured state, but they also accept explicit `stateCode` or `stateSlug` selectors on query params or JSON bodies for multi-state operations.
+High Court operator routes use the explicit `/operator/high-courts/:courtSlug/...` namespace so the internal read and publish surface stays tier-aware instead of pretending High Court data is just another state snapshot.
 
 For live remote operation from a local terminal, use `npm run operator:remote`. Add `--connect-host=<alb-dns>` for heavier internal states when you need to bypass Cloudflare but still preserve `nyaaywatch.in` as the HTTP and TLS host.
 
@@ -211,6 +298,19 @@ Start here:
 - [Design system](DESIGN.md)
 - [Brand system](brand/BRAND.md)
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
+- [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
+- [Himachal High Court pilot plan](docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md)
+- [Himachal High Court source review](docs/HIMACHAL_HIGH_COURT_SOURCE_REVIEW.md)
+- [Uttar Pradesh High Court source review](docs/UTTAR_PRADESH_HIGH_COURT_SOURCE_REVIEW.md)
+- [Rajasthan High Court source review](docs/RAJASTHAN_HIGH_COURT_SOURCE_REVIEW.md)
+- [Himachal High Court methodology draft](docs/HIMACHAL_HIGH_COURT_METHODOLOGY.md)
+- [Himachal High Court internal readiness review](docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md)
+- [Supreme Court internal readiness review](docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md)
+- [Supreme Court methodology draft](docs/SUPREME_COURT_METHODOLOGY.md)
+- [Supreme Court pilot plan](docs/SUPREME_COURT_PILOT_PLAN.md)
+- [Supreme Court source review](docs/SUPREME_COURT_SOURCE_REVIEW.md)
+- [High Court internal wave 1](docs/HIGH_COURT_INTERNAL_WAVE_1.md)
+- [High Court wave validation plan](docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
 - [TODO backlog](TODOS.md)

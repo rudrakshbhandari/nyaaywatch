@@ -1174,3 +1174,296 @@ All planned states are now covered by live internal proof. Public rollout should
 ### Recommendation
 
 The supported-state rollout program is complete for the current repo scope. Any next geography work should be treated as a deliberate scope increase rather than unfinished state rollout.
+
+## Himachal High Court Public Beta Exposure
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public beta live`
+- deploy run: `24621281752`
+- settled ECS task definition after deploy: `nyaaywatch-staging:93`
+- methodology version: `2026.04-high-court-draft`
+
+### Public Beta Evidence
+
+- active High Court publication: `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee`
+- active High Court publication action: `rollback`
+- active High Court snapshot: `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b`
+- active High Court rollback target: `publication_af21ed65-7a07-4c1c-93f8-e77ba054bef6`
+- published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+- replay evidence retained in publication history: `run_46c29931-2079-403c-a273-e8e062e4314b`
+- reference date: `2026-04-19T03:39:31.512Z`
+- reference date kind: `captured_at`
+- published at: `2026-04-19T03:40:28.731Z`
+- live route verification:
+  - `/high-courts/himachal` -> `200`
+  - `/high-courts/himachal/data` -> `200`
+  - `/high-courts/himachal/methodology` -> `200`
+  - `/high-courts/himachal/api` -> `200`
+  - `/v1/high-courts/himachal/stats` -> `200`
+  - `/v1/high-courts/himachal/trends` -> `200`
+- live public stats matched the active High Court snapshot:
+  - `pendingTotalCases=105599`
+  - `institutedLastMonthTotalCases=7046`
+  - `disposedLastMonthTotalCases=6528`
+
+### Recommendation
+
+Keep Himachal High Court public as the narrow proving ground for the High Court tier, and now use the live Supreme Court beta as the top-down public shell before widening the High Court wave.
+
+## Supreme Court Internal Proof Cycles
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `repeated live internal proof bar satisfied`
+- methodology version: `2026.04-supreme-court-draft`
+
+### Internal Proof Evidence
+
+- first-window deploy run: `24622868188`
+- first-window settled ECS task definition after deploy: `nyaaywatch-staging:95`
+- second-window deploy run: `24623340754`
+- second-window settled ECS task definition after deploy: `nyaaywatch-staging:96`
+- unauthenticated operator route status in both windows: `401 /operator/supreme-court`
+- authenticated operator route status in the second window: `200 /operator/supreme-court`
+- public route status in both windows: `404 /supreme-court`
+- first-window fetch run: `run_1eae4c35-6ed8-4e32-8d2e-a8b0b704df1e`
+- first-window initial publication: `publication_e0e10038-e70c-4556-a972-df9f530d03de`
+- first-window initial snapshot: `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81`
+- first-window replay run: `run_06a8e66e-26ac-4de6-9182-561989b49e4c`
+- first-window replay publication: `publication_dbcca7db-d563-4ba8-a0b1-3ea730c40ce5`
+- first-window rollback publication: `publication_816712a1-56c7-4b2b-b49d-74d78f6a9bbd`
+- second-window fetch run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- second-window publication: `publication_a4af147e-0495-40ae-8359-5d2775da3c8a`
+- second-window snapshot: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- second-window replay run: `run_e9572b2a-bb76-4318-885d-23b04d776eea`
+- second-window replay publication: `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
+- second-window rollback publication: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- active publication action after the second rollback: `rollback`
+- active snapshot after the second rollback: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- published-from run on the active snapshot: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- second-window reference date: `2026-04-19T07:06:34.049Z`
+- reference date kind in both windows: `captured_at`
+- published snapshot `sourceSnapshotAt` in both windows: `null`
+- second-window published at: `2026-04-19T07:06:42.130Z`
+- active internal Supreme Court stats after the second rollback:
+  - `pendingRegisteredCases=71534`
+  - `pendingUnregisteredCases=22624`
+  - `pendingTotalCases=94158`
+  - `institutedLastMonthTotalCases=6148`
+  - `disposedLastMonthTotalCases=4552`
+  - `institutedCurrentYearTotalCases=23743`
+  - `disposedCurrentYearTotalCases=21407`
+
+### What Cleared
+
+- the live stack now exposes the Supreme Court operator namespace under the same auth boundary as the rest of the operator surface
+- Supreme Court aggregate capture, publish, replay, and rollback work end to end against the deployed stack
+- the stored-evidence output uses the explicit `captured_at` reference-date contract instead of inventing an upstream snapshot timestamp
+- the repeated-window internal proof bar is now satisfied across two distinct live windows on task definitions `:95` and `:96`
+- the tier now has a written methodology draft in-repo at `docs/SUPREME_COURT_METHODOLOGY.md`
+
+### What Did Not Clear Yet
+
+- the homepage still does not expose the Supreme Court top-of-funnel module
+- broader High Court public rollout is still pending
+
+## Supreme Court Public Beta Rollout
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public rollout completed`
+- public URL family:
+  - `https://nyaaywatch.in/supreme-court`
+  - `https://nyaaywatch.in/supreme-court/data`
+  - `https://nyaaywatch.in/supreme-court/methodology`
+  - `https://nyaaywatch.in/supreme-court/api`
+  - `https://nyaaywatch.in/v1/supreme-court/stats`
+  - `https://nyaaywatch.in/v1/supreme-court/trends`
+
+### Public Rollout Evidence
+
+- public-rollout deploy run: `24624392748`
+- public-rollout settled ECS task definition after deploy: `nyaaywatch-staging:98`
+- unauthenticated operator route status after public launch: `401 /operator/supreme-court`
+- stable public route status after launch:
+  - `200 /supreme-court`
+  - `200 /supreme-court/data`
+  - `200 /supreme-court/methodology`
+  - `200 /supreme-court/api`
+  - `200 /v1/supreme-court/stats`
+  - `200 /v1/supreme-court/trends`
+- active public publication after launch: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- active public snapshot after launch: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- active publication action after launch: `rollback`
+- published-from run on the active public snapshot: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- active public reference date: `2026-04-19T07:06:34.049Z`
+- active public reference-date kind: `captured_at`
+- active public `sourceSnapshotAt`: `null`
+- active public published at: `2026-04-19T07:06:42.130Z`
+- live public stats:
+  - `pendingTotalCases=94158`
+  - `institutedLastMonthTotalCases=6148`
+  - `disposedLastMonthTotalCases=4552`
+- live public trends count: `2`
+
+### What Cleared
+
+- the already-proven internal Supreme Court publication chain now serves a real public beta route family
+- public HTML and JSON surfaces remain aligned with the same published snapshot contract and `captured_at` reference-date posture used in the internal proof cycles
+- the operator surface remains auth-protected after public launch
+- Supreme Court now exists as a real public top-down tier inside NyaayWatch instead of only as an internal planning track
+
+### Recommendation
+
+Supreme Court is now live as the narrow top-down public shell, and the first broader High Court public wave is now live too. The next deliberate High Court validation pair should be chosen from the remaining configured courts, with Gujarat and Madhya Pradesh as the strongest current candidates.
+
+## Uttar Pradesh And Rajasthan High Court Public Beta Rollout
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public rollout completed`
+- public URL family:
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh`
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh/data`
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh/methodology`
+  - `https://nyaaywatch.in/high-courts/uttar-pradesh/api`
+  - `https://nyaaywatch.in/v1/high-courts/uttar-pradesh/stats`
+  - `https://nyaaywatch.in/v1/high-courts/uttar-pradesh/trends`
+  - `https://nyaaywatch.in/high-courts/rajasthan`
+  - `https://nyaaywatch.in/high-courts/rajasthan/data`
+  - `https://nyaaywatch.in/high-courts/rajasthan/methodology`
+  - `https://nyaaywatch.in/high-courts/rajasthan/api`
+  - `https://nyaaywatch.in/v1/high-courts/rajasthan/stats`
+  - `https://nyaaywatch.in/v1/high-courts/rajasthan/trends`
+
+### Public Rollout Evidence
+
+- public-rollout deploy run: `24636212237`
+- public-rollout settled ECS task definition after deploy: `nyaaywatch-staging:101`
+- stable public route status after launch:
+  - `200 /high-courts`
+  - `200 /high-courts/uttar-pradesh`
+  - `200 /high-courts/uttar-pradesh/data`
+  - `200 /high-courts/uttar-pradesh/methodology`
+  - `200 /high-courts/uttar-pradesh/api`
+  - `200 /v1/high-courts/uttar-pradesh/stats`
+  - `200 /v1/high-courts/uttar-pradesh/trends`
+  - `200 /high-courts/rajasthan`
+  - `200 /high-courts/rajasthan/data`
+  - `200 /high-courts/rajasthan/methodology`
+  - `200 /high-courts/rajasthan/api`
+  - `200 /v1/high-courts/rajasthan/stats`
+  - `200 /v1/high-courts/rajasthan/trends`
+- active Uttar Pradesh High Court publication after launch: `publication_91726f20-da84-4401-9da0-18c5ad711694`
+- active Uttar Pradesh High Court snapshot after launch: `snapshot_c0d74fe7-6755-467e-86be-90424446a514`
+- active Uttar Pradesh High Court publication action after launch: `rollback`
+- active Uttar Pradesh High Court published-from run: `run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
+- active Uttar Pradesh High Court reference date: `2026-04-19T03:38:57.761Z`
+- active Uttar Pradesh High Court reference-date kind: `captured_at`
+- active Uttar Pradesh High Court `sourceSnapshotAt`: `null`
+- active Uttar Pradesh High Court published at: `2026-04-19T03:40:31.468Z`
+- live Uttar Pradesh High Court stats:
+  - `pendingTotalCases=1223215`
+  - `institutedLastMonthTotalCases=26638`
+  - `disposedLastMonthTotalCases=28080`
+- live Uttar Pradesh High Court trends count: `1`
+- active Rajasthan High Court publication after launch: `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f`
+- active Rajasthan High Court snapshot after launch: `snapshot_03ac0bb4-ba77-4d92-9b96-478983aadfa9`
+- active Rajasthan High Court publication action after launch: `rollback`
+- active Rajasthan High Court published-from run: `run_bdc31094-2d40-4960-af99-13d2d803cf0c`
+- active Rajasthan High Court reference date: `2026-04-19T03:39:10.250Z`
+- active Rajasthan High Court reference-date kind: `captured_at`
+- active Rajasthan High Court `sourceSnapshotAt`: `null`
+- active Rajasthan High Court published at: `2026-04-19T03:40:34.582Z`
+- live Rajasthan High Court stats:
+  - `pendingTotalCases=678393`
+  - `institutedLastMonthTotalCases=18847`
+  - `disposedLastMonthTotalCases=12318`
+- live Rajasthan High Court trends count: `1`
+
+### What Cleared
+
+- the already-proven internal Allahabad High Court and Rajasthan High Court publication chains now serve real public beta route families
+- public HTML and JSON surfaces remain aligned with the same published snapshot contract and `captured_at` reference-date posture used in the internal proof cycles
+- the live product now exposes a real three-court High Court public beta set under one shared `/high-courts/...` shell
+- the live deployment settled on task definition `:101` without breaking the existing Himachal High Court or Supreme Court public surfaces
+
+### Recommendation
+
+The first broader High Court public wave is now live. Gujarat and Madhya Pradesh should be the immediate next public wave only if their live public rollout evidence closes cleanly first, and there is still no case for jumping straight to an all-courts launch.
+
+## Gujarat And Madhya Pradesh High Court Public Beta Rollout
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public rollout completed`
+- public URL family:
+  - `https://nyaaywatch.in/high-courts/gujarat`
+  - `https://nyaaywatch.in/high-courts/gujarat/data`
+  - `https://nyaaywatch.in/high-courts/gujarat/methodology`
+  - `https://nyaaywatch.in/high-courts/gujarat/api`
+  - `https://nyaaywatch.in/v1/high-courts/gujarat/stats`
+  - `https://nyaaywatch.in/v1/high-courts/gujarat/trends`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh/data`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh/methodology`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh/api`
+  - `https://nyaaywatch.in/v1/high-courts/madhya-pradesh/stats`
+  - `https://nyaaywatch.in/v1/high-courts/madhya-pradesh/trends`
+
+### Public Rollout Evidence
+
+- public-rollout deploy run: `24637168455`
+- public-rollout settled ECS task definition after deploy: `nyaaywatch-staging:103`
+- stable public route status after launch:
+  - `200 /high-courts`
+  - `200 /high-courts/gujarat`
+  - `200 /high-courts/gujarat/data`
+  - `200 /high-courts/gujarat/methodology`
+  - `200 /high-courts/gujarat/api`
+  - `200 /v1/high-courts/gujarat/stats`
+  - `200 /v1/high-courts/gujarat/trends`
+  - `200 /high-courts/madhya-pradesh`
+  - `200 /high-courts/madhya-pradesh/data`
+  - `200 /high-courts/madhya-pradesh/methodology`
+  - `200 /high-courts/madhya-pradesh/api`
+  - `200 /v1/high-courts/madhya-pradesh/stats`
+  - `200 /v1/high-courts/madhya-pradesh/trends`
+- active Gujarat High Court publication after launch: `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7`
+- active Gujarat High Court snapshot after launch: `snapshot_b114637b-e1cc-4550-a44b-66af2f14eaff`
+- active Gujarat High Court publication action after launch: `rollback`
+- active Gujarat High Court published-from run: `run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+- active Gujarat High Court reference date: `2026-04-19T18:59:11.819Z`
+- active Gujarat High Court reference-date kind: `captured_at`
+- active Gujarat High Court `sourceSnapshotAt`: `null`
+- active Gujarat High Court published at: `2026-04-19T18:59:57.944Z`
+- live Gujarat High Court stats:
+  - `pendingTotalCases=174777`
+  - `institutedLastMonthTotalCases=7305`
+  - `disposedLastMonthTotalCases=8085`
+- live Gujarat High Court trends count: `1`
+- active Madhya Pradesh High Court publication after launch: `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4`
+- active Madhya Pradesh High Court snapshot after launch: `snapshot_636a67c4-a5bc-4841-9b45-4e306d8cb3d0`
+- active Madhya Pradesh High Court publication action after launch: `rollback`
+- active Madhya Pradesh High Court published-from run: `run_8526bedf-df11-46a0-a394-9379ae4d1547`
+- active Madhya Pradesh High Court reference date: `2026-04-19T18:59:11.663Z`
+- active Madhya Pradesh High Court reference-date kind: `captured_at`
+- active Madhya Pradesh High Court `sourceSnapshotAt`: `null`
+- active Madhya Pradesh High Court published at: `2026-04-19T18:59:58.343Z`
+- live Madhya Pradesh High Court stats:
+  - `pendingTotalCases=476385`
+  - `institutedLastMonthTotalCases=12726`
+  - `disposedLastMonthTotalCases=15012`
+- live Madhya Pradesh High Court trends count: `1`
+
+### What Cleared
+
+- the already-proven internal Gujarat High Court and Madhya Pradesh High Court publication chains now serve real public beta route families
+- public HTML and JSON surfaces remain aligned with the same published snapshot contract and `captured_at` reference-date posture used in the internal proof cycles
+- the live product now exposes a real five-court High Court public beta set under one shared `/high-courts/...` shell
+- the live deployment settled on task definition `:103` without breaking the existing Himachal High Court, Uttar Pradesh High Court, Rajasthan High Court, or Supreme Court public surfaces
+
+### Recommendation
+
+The second High Court public wave is now live. The next deliberate High Court pair should come from the remaining queued single-jurisdiction courts, and that decision should be made explicitly instead of implying that all remaining High Courts are now ready for public exposure.

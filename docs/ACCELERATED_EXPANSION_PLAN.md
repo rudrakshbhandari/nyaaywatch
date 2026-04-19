@@ -88,7 +88,8 @@ As of `2026-04-18`:
 - Goa (`GA`), Sikkim (`SK`), and Mizoram (`MZ`) have now also completed public rollout verification and are publicly live
 - the supported-state public rollout program is complete for the current scope
 - the next operational bottleneck is large-state operator-path durability behind Cloudflare, not state-profile wiring
-- no High Court or Supreme Court tier has cleared source or methodology review
+- Himachal High Court is now publicly live as a narrow beta route under `/high-courts/himachal`
+- Supreme Court source viability is now strong enough to become the next public top-down planning track
 
 ## End Goal
 
@@ -98,7 +99,7 @@ The realistic end goal is three distinct coverage tracks:
 2. **High Courts**
 3. **Supreme Court**
 
-These should not be treated as one pipeline or one methodology. They are related products sharing infrastructure and trust rules.
+These should not be treated as one pipeline or one methodology. They should ship inside one NyaayWatch product shell while keeping tier-specific source, normalization, and methodology tracks.
 
 ## Recommended Execution Order
 
@@ -127,7 +128,7 @@ Phases:
 
 ### Track C: Supreme Court
 
-This is last, because it is a distinct court tier with its own source and methodology profile.
+This should now become the next public top-down planning and implementation track, because it is the apex layer the final product should open with.
 
 Phases:
 
@@ -322,25 +323,25 @@ Decision:
 
 Current status:
 
-- Source viability: `unknown`
-- Extract / normalize reliability: `unknown`
-- Methodology defensibility: `unknown`
+- Source viability: `partially established at the public-source level, but not yet captured in repo-native stored-evidence form`
+- Extract / normalize reliability: `unknown in code`
+- Methodology defensibility: `not yet written as a tier-specific NyaayWatch contract`
 
 Decision:
 
-- `blocked for now`
+- `next pilot track after the current lower-court operating loop is stable`
 
 ### Supreme Court
 
 Current status:
 
-- Source viability: `unknown`
-- Extract / normalize reliability: `unknown`
-- Methodology defensibility: `unknown`
+- Source viability: `viable for planning`
+- Extract / normalize reliability: `not implemented yet`
+- Methodology defensibility: `needs a tier-specific contract`
 
 Decision:
 
-- `blocked for now`
+- `approved as the next public top-down planning track`
 
 ## Concrete Next-State Selection Criteria
 
@@ -365,16 +366,18 @@ Instead:
 
 ### High Court Plan
 
-1. pick one High Court for internal source review
-2. define what the public metrics should be at that tier
-3. validate whether those metrics can be tied back to stored evidence with the same rigor
-4. only then build a pilot pipeline
+1. use Himachal High Court as the first tier pilot inside the national NyaayWatch shell
+2. follow `docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md` for source review, data contract, operator flow, and public-beta gates
+3. define what the public metrics should be at that tier before implementation drifts into case-level scope
+4. validate that those metrics can be tied back to stored evidence with the same rigor as the lower-court layer
+5. only then expand into a small multi-High-Court wave
 
 ### Supreme Court Plan
 
-1. do the same source and metric review independently
-2. assume the product framing will differ from state subordinate-court observability
-3. launch only after the tier-specific methodology is defensible
+1. treat Supreme Court as the next public top-down tier inside the one-product national shell
+2. do the source and metric review independently through `docs/SUPREME_COURT_SOURCE_REVIEW.md`
+3. follow `docs/SUPREME_COURT_PILOT_PLAN.md` for route shape, homepage integration, data contract, and methodology gates
+4. launch only after the tier-specific methodology is defensible
 
 ## Non-Negotiables
 
@@ -391,10 +394,9 @@ Even in the accelerated plan:
 Do this now:
 
 1. keep Himachal public
-2. run 2 more Himachal publish windows spaced at least 2 hours apart
-3. pick one next subordinate-court state
-4. clear that state for internal trial in 48-72 hours
-5. if it clears, launch that one state or a tiny cohort publicly
-6. defer High Courts and Supreme Court until subordinate multi-state is stable
+2. keep Himachal High Court public and boring through a few more operator windows
+3. treat Supreme Court as the next public top-down tier planning track
+4. use Supreme Court planning to define the eventual homepage shell
+5. keep broader High Court UX expansion behind that top-down shell decision
 
 That is the fastest realistic route from the current repo state to the long-term national goal.

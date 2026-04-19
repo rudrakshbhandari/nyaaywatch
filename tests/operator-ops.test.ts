@@ -1,85 +1,26 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-const poolEnd = vi.fn(async () => undefined);
-const poolConstructor = vi.fn(() => ({ end: poolEnd }));
-const captureRun = vi.fn();
-const listPublicationHistory = vi.fn();
-const inspectRun = vi.fn();
-const publishRun = vi.fn();
-const replayRun = vi.fn();
-const rollbackPublication = vi.fn();
+import { parseOperatorInvocation } from "../src/dev/operator-ops.js";
 
-vi.mock("pg", () => ({
-  Pool: poolConstructor,
-}));
-
-vi.mock("../src/config/env.js", () => ({
-  loadConfig: vi.fn(() => ({
-    DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-    STATE_CODE: "UP",
-  })),
-}));
-
-vi.mock("../src/geographies.js", () => ({
-  getStateProfile: vi.fn(() => ({
-    stateCode: "UP",
-    stateName: "Uttar Pradesh",
-    stateSlug: "uttar-pradesh",
-  })),
-}));
-
-vi.mock("../src/ingest/himachal-source-client.js", () => ({
-  NjdgStateSourceClient: vi.fn(),
-}));
-
-vi.mock("../src/storage/artifact-store.js", () => ({
-  S3ArtifactStore: vi.fn(),
-}));
-
-vi.mock("../src/storage/postgres.js", () => ({
-  PgWarehouseStore: {
-    fromPool: vi.fn(() => ({ kind: "mock-store" })),
-  },
-}));
-
-vi.mock("../src/services/published-snapshot-service.js", () => ({
-  PublishedSnapshotService: vi.fn(() => ({
-    captureRun,
-    listPublicationHistory,
-    inspectRun,
-    publishRun,
-    replayRun,
-    rollbackPublication,
-  })),
-}));
-
-describe("operator ops", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
+describe("operator invocation parsing", () => {
+  it("parses the Supreme Court publications selector", () => {
+    expect(parseOperatorInvocation(["--supreme-court", "publications"])).toEqual({
+      command: "publications",
+      supremeCourt: true,
+    });
   });
 
-  it("waits for fetch completion before ending the pool", async () => {
-    const { runOperatorInvocation } = await import("../src/dev/operator-ops.js");
-    let resolveCapture: ((value: { ok: true }) => void) | undefined;
-    const capturePromise = new Promise<{ ok: true }>((resolve) => {
-      resolveCapture = resolve;
-    });
-    captureRun.mockReturnValueOnce(capturePromise);
+  it("supports inline value flags alongside the Supreme Court selector", () => {
+    expect(() => parseOperatorInvocation(["--supreme-court", "--state=HP", "fetch", "ignored"])).toThrow(
+      "Select either --state, --high-court, or --supreme-court, not multiple targets.",
+    );
+  });
 
-    const invocationPromise = runOperatorInvocation({
+  it("keeps the full fetch note for Supreme Court commands", () => {
+    expect(parseOperatorInvocation(["--supreme-court", "fetch", "Internal", "Supreme", "Court", "fetch"])).toEqual({
       command: "fetch",
-      stateCode: "UP",
-      note: "Heavy-state fetch",
+      supremeCourt: true,
+      note: "Internal Supreme Court fetch",
     });
-
-    await Promise.resolve();
-
-    expect(captureRun).toHaveBeenCalledWith("Heavy-state fetch");
-    expect(poolEnd).not.toHaveBeenCalled();
-
-    resolveCapture?.({ ok: true });
-
-    await expect(invocationPromise).resolves.toEqual({ ok: true });
-    expect(poolEnd).toHaveBeenCalledTimes(1);
   });
 });

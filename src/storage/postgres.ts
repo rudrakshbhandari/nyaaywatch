@@ -1,6 +1,14 @@
 import type { Pool, PoolClient, QueryResultRow } from "pg";
 
+import {
+  HighCourtPublishedSnapshotSchema,
+  type HighCourtPublishedSnapshot,
+} from "../domain/high-court-snapshot-schema.js";
 import { PublishedSnapshotSchema, type PublishedSnapshot, type QualityState } from "../domain/snapshot-schema.js";
+import {
+  SupremeCourtPublishedSnapshotSchema,
+  type SupremeCourtPublishedSnapshot,
+} from "../domain/supreme-court-snapshot-schema.js";
 import { toIsoString } from "../lib/time.js";
 
 type Queryable = Pick<Pool, "query"> | PoolClient;
@@ -37,6 +45,26 @@ export interface PublishedSnapshotRecord {
   stateCode: string;
   payloadVersion: number;
   payload: PublishedSnapshot;
+  checksumSha256: string;
+  createdAt: string;
+}
+
+export interface HighCourtPublishedSnapshotRecord {
+  id: string;
+  runId: string;
+  stateCode: string;
+  payloadVersion: number;
+  payload: HighCourtPublishedSnapshot;
+  checksumSha256: string;
+  createdAt: string;
+}
+
+export interface SupremeCourtPublishedSnapshotRecord {
+  id: string;
+  runId: string;
+  stateCode: string;
+  payloadVersion: number;
+  payload: SupremeCourtPublishedSnapshot;
   checksumSha256: string;
   createdAt: string;
 }
@@ -86,6 +114,24 @@ interface PublishedSnapshotInsert {
   stateCode: string;
   payloadVersion: number;
   payload: PublishedSnapshot;
+  checksumSha256: string;
+}
+
+interface HighCourtPublishedSnapshotInsert {
+  id: string;
+  runId: string;
+  stateCode: string;
+  payloadVersion: number;
+  payload: HighCourtPublishedSnapshot;
+  checksumSha256: string;
+}
+
+interface SupremeCourtPublishedSnapshotInsert {
+  id: string;
+  runId: string;
+  stateCode: string;
+  payloadVersion: number;
+  payload: SupremeCourtPublishedSnapshot;
   checksumSha256: string;
 }
 
@@ -209,6 +255,44 @@ export class PgWarehouseStore {
     return mapPublishedSnapshot(result.rows[0]);
   }
 
+  async insertHighCourtPublishedSnapshot(input: HighCourtPublishedSnapshotInsert): Promise<HighCourtPublishedSnapshotRecord> {
+    const result = await this.db.query(
+      `INSERT INTO published_snapshots (
+        id, run_id, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5::jsonb, $6)
+      RETURNING *`,
+      [
+        input.id,
+        input.runId,
+        input.stateCode,
+        input.payloadVersion,
+        JSON.stringify(input.payload),
+        input.checksumSha256,
+      ],
+    );
+
+    return mapHighCourtPublishedSnapshot(result.rows[0]);
+  }
+
+  async insertSupremeCourtPublishedSnapshot(input: SupremeCourtPublishedSnapshotInsert): Promise<SupremeCourtPublishedSnapshotRecord> {
+    const result = await this.db.query(
+      `INSERT INTO published_snapshots (
+        id, run_id, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5::jsonb, $6)
+      RETURNING *`,
+      [
+        input.id,
+        input.runId,
+        input.stateCode,
+        input.payloadVersion,
+        JSON.stringify(input.payload),
+        input.checksumSha256,
+      ],
+    );
+
+    return mapSupremeCourtPublishedSnapshot(result.rows[0]);
+  }
+
   async insertPublication(input: PublicationInsert): Promise<PublicationRecord> {
     const result = await this.db.query(
       `INSERT INTO publication_history (
@@ -262,6 +346,11 @@ export class PgWarehouseStore {
     return result.rows[0] ? mapPublishedSnapshot(result.rows[0]) : null;
   }
 
+  async getHighCourtPublishedSnapshotById(snapshotId: string): Promise<HighCourtPublishedSnapshotRecord | null> {
+    const result = await this.db.query("SELECT * FROM published_snapshots WHERE id = $1", [snapshotId]);
+    return result.rows[0] ? mapHighCourtPublishedSnapshot(result.rows[0]) : null;
+  }
+
   async getLatestPublishedSnapshot(stateCode: string): Promise<PublishedSnapshotRecord | null> {
     const result = await this.db.query(
       `SELECT ps.*
@@ -274,6 +363,34 @@ export class PgWarehouseStore {
     );
 
     return result.rows[0] ? mapPublishedSnapshot(result.rows[0]) : null;
+  }
+
+  async getLatestHighCourtPublishedSnapshot(stateCode: string): Promise<HighCourtPublishedSnapshotRecord | null> {
+    const result = await this.db.query(
+      `SELECT ps.*
+      FROM publication_history ph
+      JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
+      WHERE ph.state_code = $1
+      ORDER BY ph.created_at DESC
+      LIMIT 1`,
+      [stateCode],
+    );
+
+    return result.rows[0] ? mapHighCourtPublishedSnapshot(result.rows[0]) : null;
+  }
+
+  async getLatestSupremeCourtPublishedSnapshot(stateCode: string): Promise<SupremeCourtPublishedSnapshotRecord | null> {
+    const result = await this.db.query(
+      `SELECT ps.*
+      FROM publication_history ph
+      JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
+      WHERE ph.state_code = $1
+      ORDER BY ph.created_at DESC
+      LIMIT 1`,
+      [stateCode],
+    );
+
+    return result.rows[0] ? mapSupremeCourtPublishedSnapshot(result.rows[0]) : null;
   }
 
   async getLatestPublication(stateCode: string): Promise<PublicationRecord | null> {
@@ -300,6 +417,27 @@ export class PgWarehouseStore {
       [stateCode],
     );
     return result.rows.map(mapPublication);
+  }
+
+  async getHighCourtSnapshotForRun(runId: string): Promise<HighCourtPublishedSnapshotRecord | null> {
+    const result = await this.db.query(
+      "SELECT * FROM published_snapshots WHERE run_id = $1 ORDER BY created_at DESC LIMIT 1",
+      [runId],
+    );
+    return result.rows[0] ? mapHighCourtPublishedSnapshot(result.rows[0]) : null;
+  }
+
+  async getSupremeCourtPublishedSnapshotById(snapshotId: string): Promise<SupremeCourtPublishedSnapshotRecord | null> {
+    const result = await this.db.query("SELECT * FROM published_snapshots WHERE id = $1", [snapshotId]);
+    return result.rows[0] ? mapSupremeCourtPublishedSnapshot(result.rows[0]) : null;
+  }
+
+  async getSupremeCourtSnapshotForRun(runId: string): Promise<SupremeCourtPublishedSnapshotRecord | null> {
+    const result = await this.db.query(
+      "SELECT * FROM published_snapshots WHERE run_id = $1 ORDER BY created_at DESC LIMIT 1",
+      [runId],
+    );
+    return result.rows[0] ? mapSupremeCourtPublishedSnapshot(result.rows[0]) : null;
   }
 }
 
@@ -341,6 +479,32 @@ function mapPublishedSnapshot(row: QueryResultRow): PublishedSnapshotRecord {
     stateCode: row.state_code,
     payloadVersion: Number(row.payload_version),
     payload: PublishedSnapshotSchema.parse(payload),
+    checksumSha256: row.checksum_sha256,
+    createdAt: toIsoString(row.created_at),
+  };
+}
+
+function mapHighCourtPublishedSnapshot(row: QueryResultRow): HighCourtPublishedSnapshotRecord {
+  const payload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  return {
+    id: row.id,
+    runId: row.run_id,
+    stateCode: row.state_code,
+    payloadVersion: Number(row.payload_version),
+    payload: HighCourtPublishedSnapshotSchema.parse(payload),
+    checksumSha256: row.checksum_sha256,
+    createdAt: toIsoString(row.created_at),
+  };
+}
+
+function mapSupremeCourtPublishedSnapshot(row: QueryResultRow): SupremeCourtPublishedSnapshotRecord {
+  const payload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  return {
+    id: row.id,
+    runId: row.run_id,
+    stateCode: row.state_code,
+    payloadVersion: Number(row.payload_version),
+    payload: SupremeCourtPublishedSnapshotSchema.parse(payload),
     checksumSha256: row.checksum_sha256,
     createdAt: toIsoString(row.created_at),
   };

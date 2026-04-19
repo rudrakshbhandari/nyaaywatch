@@ -6,6 +6,132 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7:start -->
+## publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7
+
+- Reviewed at: `2026-04-19T19:33:00.000Z`
+- Reviewer: `Codex Gujarat High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/gujarat`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T18:59:11.819Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T18:59:57.944Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+- Rollback target: `publication_2e42c23c-9162-4fc6-8597-3e3a0bb8307a`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Gujarat High Court became publicly reachable on `2026-04-19` after PR `#115` merged and deploy run `24637168455` settled the ECS service on task definition `:103`. Stable public verification passed for `/high-courts/gujarat`, `/high-courts/gujarat/data`, `/high-courts/gujarat/methodology`, `/high-courts/gujarat/api`, `/v1/high-courts/gujarat/stats`, and `/v1/high-courts/gujarat/trends`.
+
+<!-- release:publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7:end -->
+
+<!-- release:publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4:start -->
+## publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4
+
+- Reviewed at: `2026-04-19T19:33:00.000Z`
+- Reviewer: `Codex Madhya Pradesh High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/madhya-pradesh`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T18:59:11.663Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T18:59:58.343Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_8526bedf-df11-46a0-a394-9379ae4d1547`
+- Rollback target: `publication_4ef80b3a-2f6c-45ec-9424-3064ed8d6e44`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Madhya Pradesh High Court became publicly reachable on `2026-04-19` after PR `#115` merged and deploy run `24637168455` settled the ECS service on task definition `:103`. Stable public verification passed for `/high-courts/madhya-pradesh`, `/high-courts/madhya-pradesh/data`, `/high-courts/madhya-pradesh/methodology`, `/high-courts/madhya-pradesh/api`, `/v1/high-courts/madhya-pradesh/stats`, and `/v1/high-courts/madhya-pradesh/trends`.
+
+<!-- release:publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4:end -->
+
+<!-- release:publication_91726f20-da84-4401-9da0-18c5ad711694:start -->
+## publication_91726f20-da84-4401-9da0-18c5ad711694
+
+- Reviewed at: `2026-04-19T18:45:15.000Z`
+- Reviewer: `Codex Uttar Pradesh High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/uttar-pradesh`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T03:38:57.761Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T03:40:31.468Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
+- Rollback target: `publication_1ad99435-9427-475e-b8b9-cddd8b798270`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Allahabad High Court became publicly reachable on `2026-04-19` after PR `#113` merged and deploy run `24636212237` settled the ECS service on task definition `:101`. Stable public verification passed for `/high-courts/uttar-pradesh`, `/high-courts/uttar-pradesh/data`, `/high-courts/uttar-pradesh/methodology`, `/high-courts/uttar-pradesh/api`, `/v1/high-courts/uttar-pradesh/stats`, and `/v1/high-courts/uttar-pradesh/trends`.
+
+<!-- release:publication_91726f20-da84-4401-9da0-18c5ad711694:end -->
+
+<!-- release:publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f:start -->
+## publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f
+
+- Reviewed at: `2026-04-19T18:45:15.000Z`
+- Reviewer: `Codex Rajasthan High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/rajasthan`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T03:39:10.250Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T03:40:34.582Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_bdc31094-2d40-4960-af99-13d2d803cf0c`
+- Rollback target: `publication_83827636-ed3a-4dff-9b98-a14d0106e09e`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Rajasthan High Court became publicly reachable on `2026-04-19` after PR `#113` merged and deploy run `24636212237` settled the ECS service on task definition `:101`. Stable public verification passed for `/high-courts/rajasthan`, `/high-courts/rajasthan/data`, `/high-courts/rajasthan/methodology`, `/high-courts/rajasthan/api`, `/v1/high-courts/rajasthan/stats`, and `/v1/high-courts/rajasthan/trends`.
+
+<!-- release:publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f:end -->
+
+<!-- release:publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a:start -->
+## publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a
+
+- Reviewed at: `2026-04-19T08:24:22.000Z`
+- Reviewer: `Codex Supreme Court public beta`
+- Public URL: `https://nyaaywatch.in/supreme-court`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream Supreme Court NJDG`
+- Reference date: `2026-04-19T07:06:34.049Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T07:06:42.130Z`
+- Methodology version: `2026.04-supreme-court-draft`
+- Quality state: `complete`
+- Published from run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- Rollback target: `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Supreme Court became publicly reachable on `2026-04-19` after PR `#110` merged and deploy run `24624392748` settled the ECS service on task definition `:98`. Stable public HTML and JSON verification passed for `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`.
+
+<!-- release:publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a:end -->
+
+<!-- release:publication_e66cb2f9-b307-46d6-b00c-51b01e901fee:start -->
+## publication_e66cb2f9-b307-46d6-b00c-51b01e901fee
+
+- Reviewed at: `2026-04-19T04:58:21.000Z`
+- Reviewer: `Codex Himachal High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/himachal`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T03:39:31.512Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T03:40:28.731Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+- Rollback target: `publication_af21ed65-7a07-4c1c-93f8-e77ba054bef6`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Himachal High Court became publicly reachable on `2026-04-19` after PR `#105` merged and deploy run `24621281752` settled the ECS service on task definition `:93`. The live public beta exposes the already-reviewed active High Court publication under `/high-courts/himachal`, with the public HTML and JSON routes all returning `200`.
+
+<!-- release:publication_e66cb2f9-b307-46d6-b00c-51b01e901fee:end -->
+
 <!-- release:publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02:start -->
 ## publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02
 

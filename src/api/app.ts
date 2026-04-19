@@ -3,6 +3,14 @@ import express, { type NextFunction, type Request, type Response } from "express
 import type { AppConfig } from "../config/env.js";
 import type { SupportedStateCode, NjdgStateProfile } from "../geographies.js";
 import { getPublicStateProfileBySlug, getStateProfile, getStateProfileByCodeOrSlug, listPublicStateProfiles } from "../geographies.js";
+import {
+  getHighCourtProfileBySlug,
+  getPublicHighCourtProfileBySlug,
+  listHighCourtProfiles,
+  listPublicHighCourtProfiles,
+  type HighCourtProfile,
+  type SupportedHighCourtCode,
+} from "../high-courts.js";
 import { logError, logInfo } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
 import { renderApiPage } from "./pages/api.js";
@@ -10,11 +18,27 @@ import { renderDataPage } from "./pages/data.js";
 import { renderDistrictPage } from "./pages/district-detail.js";
 import { renderDistrictsPage } from "./pages/districts.js";
 import { renderEmptyState } from "./pages/empty.js";
+import { renderHighCourtApiPage } from "./pages/high-court-api.js";
+import { renderHighCourtDataPage } from "./pages/high-court-data.js";
+import { renderHighCourtMethodologyPage } from "./pages/high-court-methodology.js";
+import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
+import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
+import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
+import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
+import { renderSupremeCourtMethodologyPage } from "./pages/supreme-court-methodology.js";
+import { renderSupremeCourtOverviewPage } from "./pages/supreme-court-overview.js";
+import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
+import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
+import { buildPublicHighCourtPageContext } from "./public-high-court.js";
+import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
 import { buildPublicPageContext } from "./public-state.js";
+import { getSupremeCourtProfile } from "../supreme-court.js";
 
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
+type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
+type SupremeCourtService = PublishedSupremeCourtSnapshotService | undefined;
 
 const DEFAULT_PUBLIC_STATE_CODE: SupportedStateCode = "HP";
 
@@ -22,6 +46,8 @@ export function createApp(
   config: AppConfig,
   service: PublishedSnapshotService,
   publicServices: PublicServiceMap = { [config.STATE_CODE]: service },
+  highCourtServices: HighCourtServiceMap = {},
+  supremeCourtService?: PublishedSupremeCourtSnapshotService,
 ) {
   const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
@@ -152,6 +178,82 @@ export function createApp(
         response.status(404).json({ error: "No published snapshot available." });
         return;
       }
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/high-courts/:courtSlug/stats",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
+      if (!resolved) {
+        response.status(404).json({ error: "High Court not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getStats();
+      if (!payload) {
+        response.status(404).json({ error: "No published High Court snapshot available." });
+        return;
+      }
+
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/high-courts/:courtSlug/trends",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
+      if (!resolved) {
+        response.status(404).json({ error: "High Court not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getTrends();
+      if (!payload) {
+        response.status(404).json({ error: "No published High Court snapshot available." });
+        return;
+      }
+
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/supreme-court/stats",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).json({ error: "Supreme Court not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getStats();
+      if (!payload) {
+        response.status(404).json({ error: "No published Supreme Court snapshot available." });
+        return;
+      }
+
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/supreme-court/trends",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).json({ error: "Supreme Court not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getTrends();
+      if (!payload) {
+        response.status(404).json({ error: "No published Supreme Court snapshot available." });
+        return;
+      }
+
       response.json(payload);
     }),
   );
@@ -478,7 +580,501 @@ export function createApp(
     }),
   );
 
+  app.get(
+    "/supreme-court",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Supreme Court Not Available Yet", "No published Supreme Court snapshot is available yet."));
+        return;
+      }
+
+      response.send(
+        renderSupremeCourtOverviewPage(
+          resolved.profile,
+          snapshot.payload,
+          buildPublicSupremeCourtPageContext(resolved.profile),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/supreme-court/data",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Supreme Court Data", "No published Supreme Court snapshot is available yet."));
+        return;
+      }
+
+      response.send(renderSupremeCourtDataPage(snapshot.payload, buildPublicSupremeCourtPageContext(resolved.profile)));
+    }),
+  );
+
+  app.get(
+    "/supreme-court/methodology",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      const history = await resolved.service.listPublicationHistory();
+      response.send(
+        renderSupremeCourtMethodologyPage(
+          snapshot?.payload.snapshot ?? null,
+          history,
+          buildPublicSupremeCourtPageContext(resolved.profile),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/supreme-court/api",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      response.send(renderSupremeCourtApiPage(buildPublicSupremeCourtPageContext(resolved.profile)));
+    }),
+  );
+
+  app.get(
+    "/high-courts",
+    asyncRoute(async (_request, response) => {
+      const available = await listAvailablePublicHighCourtEntries(highCourtServices);
+      if (available.length === 0) {
+        response.status(404).send(renderEmptyState("High Courts", "No public High Court page is available yet."));
+        return;
+      }
+
+      const current = available[0];
+      response.send(
+        renderHighCourtsIndexPage(
+          available,
+          buildPublicHighCourtPageContext(current.profile, available.map((entry) => entry.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/high-courts/:courtSlug",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("High Court Not Found", "This High Court is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("High Court Not Available Yet", "No published High Court snapshot is available yet."));
+        return;
+      }
+
+      response.send(
+        renderHighCourtOverviewPage(
+          resolved.profile,
+          snapshot.payload,
+          buildPublicHighCourtPageContext(resolved.profile, await listAvailablePublicHighCourtProfiles(highCourtServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/high-courts/:courtSlug/data",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("High Court Not Found", "This High Court is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("High Court Data", "No published High Court snapshot is available yet."));
+        return;
+      }
+
+      response.send(
+        renderHighCourtDataPage(
+          resolved.profile,
+          snapshot.payload,
+          buildPublicHighCourtPageContext(resolved.profile, await listAvailablePublicHighCourtProfiles(highCourtServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/high-courts/:courtSlug/methodology",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("High Court Not Found", "This High Court is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      const history = await resolved.service.listPublicationHistory();
+      response.send(
+        renderHighCourtMethodologyPage(
+          resolved.profile,
+          snapshot?.payload.snapshot ?? null,
+          history,
+          buildPublicHighCourtPageContext(resolved.profile, await listAvailablePublicHighCourtProfiles(highCourtServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/high-courts/:courtSlug/api",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("High Court Not Found", "This High Court is not available on the public site."));
+        return;
+      }
+
+      response.send(
+        renderHighCourtApiPage(
+          buildPublicHighCourtPageContext(resolved.profile, await listAvailablePublicHighCourtProfiles(highCourtServices, resolved.profile)),
+        ),
+      );
+    }),
+  );
+
   if (config.ENABLE_OPERATOR_ROUTES) {
+    app.get(
+      "/operator/supreme-court",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const snapshot = await resolved.service.getPublishedSnapshot();
+        response.json({
+          court: resolved.profile,
+          snapshot,
+          stats: snapshot?.payload.stats ?? null,
+          trends: snapshot?.payload.trends ?? null,
+          publications: await resolved.service.listPublicationHistory(),
+        });
+      }),
+    );
+
+    app.get(
+      "/operator/supreme-court/runs",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, runs: await resolved.service.listRuns() });
+      }),
+    );
+
+    app.get(
+      "/operator/supreme-court/publications",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, publications: await resolved.service.listPublicationHistory() });
+      }),
+    );
+
+    app.get(
+      "/operator/supreme-court/runs/:runId",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const inspection = await resolved.service.inspectRun(readRouteParam(request.params.runId));
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        response.json(inspection);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/runs/fetch",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const result = await resolved.service.captureRun(request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/runs/:runId/publish",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.publishRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/runs/:runId/replay",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.replayRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/publications/:publicationId/rollback",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const publicationId = readRouteParam(request.params.publicationId);
+        const publication = (await resolved.service.listPublicationHistory()).find((entry) => entry.publication.id === publicationId);
+        if (!publication) {
+          response.status(404).json({ error: "Publication not found." });
+          return;
+        }
+
+        const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        response.json({ highCourts: await listConfiguredHighCourtServices(highCourtServices) });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const snapshot = await resolved.service.getPublishedSnapshot();
+        response.json({
+          court: resolved.profile,
+          snapshot,
+          stats: snapshot?.payload.stats ?? null,
+          trends: snapshot?.payload.trends ?? null,
+          publications: await resolved.service.listPublicationHistory(),
+        });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug/runs",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, runs: await resolved.service.listRuns() });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug/publications",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, publications: await resolved.service.listPublicationHistory() });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug/runs/:runId",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const inspection = await resolved.service.inspectRun(readRouteParam(request.params.runId));
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        response.json(inspection);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/runs/fetch",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const result = await resolved.service.captureRun(request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/runs/:runId/publish",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.publishRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/runs/:runId/replay",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.replayRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/publications/:publicationId/rollback",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const publicationId = readRouteParam(request.params.publicationId);
+        const publication = (await resolved.service.listPublicationHistory()).find((entry) => entry.publication.id === publicationId);
+        if (!publication) {
+          response.status(404).json({ error: "Publication not found." });
+          return;
+        }
+
+        const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
     app.get(
       "/operator/runs",
       operatorOnly(config),
@@ -618,6 +1214,30 @@ function resolvePublicStateRequest(request: Request, publicServices: PublicServi
   return { profile, service };
 }
 
+function resolvePublicHighCourtRequest(request: Request, services: HighCourtServiceMap) {
+  const courtSlug = readRouteParam(request.params.courtSlug);
+  const profile = getPublicHighCourtProfileBySlug(courtSlug);
+  if (!profile) {
+    return null;
+  }
+
+  const service = services[profile.courtCode];
+  if (!service) {
+    return null;
+  }
+
+  return { profile, service };
+}
+
+function resolvePublicSupremeCourtRequest(service: SupremeCourtService) {
+  const profile = getSupremeCourtProfile();
+  if (!service || !profile.publicBeta) {
+    return null;
+  }
+
+  return { profile, service };
+}
+
 async function listAvailablePublicProfiles(publicServices: PublicServiceMap, currentProfile: NjdgStateProfile) {
   const profiles = await Promise.all(
     listPublicStateProfiles().map(async (profile) => {
@@ -638,6 +1258,42 @@ async function listAvailablePublicProfiles(publicServices: PublicServiceMap, cur
   return profiles.filter((profile): profile is NjdgStateProfile => profile !== null);
 }
 
+async function listAvailablePublicHighCourtProfiles(highCourtServices: HighCourtServiceMap, currentProfile: HighCourtProfile) {
+  const profiles = await Promise.all(
+    listPublicHighCourtProfiles().map(async (profile) => {
+      const service = highCourtServices[profile.courtCode];
+      if (!service) {
+        return null;
+      }
+
+      if (profile.courtCode === currentProfile.courtCode) {
+        return profile;
+      }
+
+      const snapshot = await service.getPublishedSnapshot();
+      return snapshot ? profile : null;
+    }),
+  );
+
+  return profiles.filter((profile): profile is HighCourtProfile => profile !== null);
+}
+
+async function listAvailablePublicHighCourtEntries(highCourtServices: HighCourtServiceMap) {
+  const entries = await Promise.all(
+    listPublicHighCourtProfiles().map(async (profile) => {
+      const service = highCourtServices[profile.courtCode];
+      if (!service) {
+        return null;
+      }
+
+      const snapshot = await service.getPublishedSnapshot();
+      return snapshot ? { profile, snapshot: snapshot.payload } : null;
+    }),
+  );
+
+  return entries.filter((entry): entry is { profile: HighCourtProfile; snapshot: NonNullable<typeof entry>["snapshot"] } => entry !== null);
+}
+
 function resolveOperatorServiceRequest(
   request: Request,
   services: PublicServiceMap,
@@ -652,6 +1308,32 @@ function resolveOperatorServiceRequest(
   }
 
   return { profile, service };
+}
+
+function resolveHighCourtOperatorRequest(request: Request, services: HighCourtServiceMap) {
+  const courtSlug = readRouteParam(request.params.courtSlug);
+  const profile = getHighCourtProfileBySlug(courtSlug);
+  if (!profile) {
+    return null;
+  }
+
+  const service = services[profile.courtCode];
+  if (!service) {
+    return null;
+  }
+
+  return { profile, service };
+}
+
+function resolveSupremeCourtOperatorRequest(service: SupremeCourtService) {
+  if (!service) {
+    return null;
+  }
+
+  return {
+    profile: getSupremeCourtProfile(),
+    service,
+  };
 }
 
 function readOperatorRequestedProfile(request: Request) {
@@ -721,6 +1403,26 @@ async function findPublicationServiceAcrossServices(publicationId: string, servi
   }
 
   return null;
+}
+
+async function listConfiguredHighCourtServices(highCourtServices: HighCourtServiceMap) {
+  const entries = await Promise.all(
+    listHighCourtProfiles().map(async (profile) => {
+      const service = highCourtServices[profile.courtCode];
+      if (!service) {
+        return null;
+      }
+
+      const snapshot = await service.getPublishedSnapshot();
+      return {
+        court: profile,
+        hasPublishedSnapshot: snapshot !== null,
+        snapshot: snapshot?.payload.snapshot ?? null,
+      };
+    }),
+  );
+
+  return entries.filter((entry) => entry !== null);
 }
 
 function readRequestHost(request: Request) {

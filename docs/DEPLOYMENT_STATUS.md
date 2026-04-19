@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:74`
+- ECS task definition: `nyaaywatch-staging:103`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
@@ -67,6 +67,12 @@ Operational notes:
 - Release path: verified `main` merges auto-roll the live ECS service through GitHub Actions
 - Current public coverage:
   - unscoped default routes for Himachal Pradesh
+  - narrow Supreme Court beta routes at `/supreme-court` and `/v1/supreme-court/...`
+  - narrow Himachal High Court beta routes at `/high-courts/himachal` and `/v1/high-courts/himachal/...`
+  - narrow Gujarat High Court beta routes at `/high-courts/gujarat` and `/v1/high-courts/gujarat/...`
+  - narrow Madhya Pradesh High Court beta routes at `/high-courts/madhya-pradesh` and `/v1/high-courts/madhya-pradesh/...`
+  - narrow Allahabad High Court beta routes at `/high-courts/uttar-pradesh` and `/v1/high-courts/uttar-pradesh/...`
+  - narrow Rajasthan High Court beta routes at `/high-courts/rajasthan` and `/v1/high-courts/rajasthan/...`
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
   - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
@@ -97,6 +103,48 @@ Operational notes:
 - Current active Himachal Pradesh publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal Pradesh published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal Pradesh source snapshot date: `2026-04-10`
+- Current active Himachal High Court publication: `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee`
+- Current active Himachal High Court published snapshot: `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b`
+- Current Himachal High Court publication action: `rollback`
+- Current Himachal High Court reference date: `2026-04-19T03:39:31.512Z`
+- Current Himachal High Court reference-date kind: `captured_at`
+- Current Himachal High Court published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+- Current Himachal High Court methodology version: `2026.04-high-court-draft`
+- Current active Gujarat High Court publication: `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7`
+- Current active Gujarat High Court published snapshot: `snapshot_b114637b-e1cc-4550-a44b-66af2f14eaff`
+- Current Gujarat High Court publication action: `rollback`
+- Current Gujarat High Court reference date: `2026-04-19T18:59:11.819Z`
+- Current Gujarat High Court reference-date kind: `captured_at`
+- Current Gujarat High Court published-from run: `run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+- Current Gujarat High Court methodology version: `2026.04-high-court-draft`
+- Current active Madhya Pradesh High Court publication: `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4`
+- Current active Madhya Pradesh High Court published snapshot: `snapshot_636a67c4-a5bc-4841-9b45-4e306d8cb3d0`
+- Current Madhya Pradesh High Court publication action: `rollback`
+- Current Madhya Pradesh High Court reference date: `2026-04-19T18:59:11.663Z`
+- Current Madhya Pradesh High Court reference-date kind: `captured_at`
+- Current Madhya Pradesh High Court published-from run: `run_8526bedf-df11-46a0-a394-9379ae4d1547`
+- Current Madhya Pradesh High Court methodology version: `2026.04-high-court-draft`
+- Current active Uttar Pradesh High Court publication: `publication_91726f20-da84-4401-9da0-18c5ad711694`
+- Current active Uttar Pradesh High Court published snapshot: `snapshot_c0d74fe7-6755-467e-86be-90424446a514`
+- Current Uttar Pradesh High Court publication action: `rollback`
+- Current Uttar Pradesh High Court reference date: `2026-04-19T03:38:57.761Z`
+- Current Uttar Pradesh High Court reference-date kind: `captured_at`
+- Current Uttar Pradesh High Court published-from run: `run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
+- Current Uttar Pradesh High Court methodology version: `2026.04-high-court-draft`
+- Current active Rajasthan High Court publication: `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f`
+- Current active Rajasthan High Court published snapshot: `snapshot_03ac0bb4-ba77-4d92-9b96-478983aadfa9`
+- Current Rajasthan High Court publication action: `rollback`
+- Current Rajasthan High Court reference date: `2026-04-19T03:39:10.250Z`
+- Current Rajasthan High Court reference-date kind: `captured_at`
+- Current Rajasthan High Court published-from run: `run_bdc31094-2d40-4960-af99-13d2d803cf0c`
+- Current Rajasthan High Court methodology version: `2026.04-high-court-draft`
+- Current active Supreme Court publication: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- Current active Supreme Court published snapshot: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- Current Supreme Court publication action: `rollback`
+- Current Supreme Court reference date: `2026-04-19T07:06:34.049Z`
+- Current Supreme Court reference-date kind: `captured_at`
+- Current Supreme Court published-from run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- Current Supreme Court methodology version: `2026.04-supreme-court-draft`
 - Current active Punjab publication: `publication_8a5ddc6e-f520-4344-8161-76dc4dead033`
 - Current active Punjab published snapshot: `snapshot_35226b6d-2fac-49d6-9d53-7aa24b9387e5`
 - Current Punjab source snapshot date: `2026-04-16`
@@ -236,6 +284,56 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Supreme Court public beta exposure completed on 2026-04-19 after PR `#110` merged and GitHub deploy run `24624392748` rolled the live service to task definition `:98`:
+  - the already-proven active Supreme Court publication `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` became publicly reachable under `/supreme-court`
+  - live route verification returned `200` for `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`
+  - `GET /operator/supreme-court` still returned `401` without a token, preserving the operator auth boundary after the public launch
+  - authenticated `GET /operator/supreme-court/publications` showed `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` active with `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486` and `publishedFromRunId=run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+  - the active public Supreme Court snapshot now carries `referenceDateAt=2026-04-19T07:06:34.049Z`, `referenceDateKind=captured_at`, `sourceSnapshotAt=null`, and `publishedAt=2026-04-19T07:06:42.130Z`
+  - active public Supreme Court stats are `pendingTotalCases=94158`, `institutedLastMonthTotalCases=6148`, `disposedLastMonthTotalCases=4552`, and the live trends API reports `trendCount=2`
+- Supreme Court second internal proof cycle completed on 2026-04-19 after PR `#108` merged and GitHub deploy run `24623340754` rolled the live service to task definition `:96`:
+  - the internal Supreme Court operator namespace remained auth-protected under `/operator/supreme-court/...`
+  - `GET /operator/supreme-court` returned `401` without a token and `200` with the operator token
+  - `GET /supreme-court` still returned `404`, confirming the public route family remained dark after the second window
+  - live Supreme Court fetch run `run_92990afc-1acd-4d37-b6d5-69dc95a1d933` completed successfully
+  - live Supreme Court publication `publication_a4af147e-0495-40ae-8359-5d2775da3c8a` created `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+  - live Supreme Court replay run `run_e9572b2a-bb76-4318-885d-23b04d776eea` created publication `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
+  - live Supreme Court rollback `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` restored the second-window publication chain and left `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486` active
+  - the active internal Supreme Court snapshot now carries `referenceDateAt=2026-04-19T07:06:34.049Z`, `referenceDateKind=captured_at`, `sourceSnapshotAt=null`, and `publishedAt=2026-04-19T07:06:42.130Z`
+  - active internal Supreme Court stats remain `pendingRegisteredCases=71534`, `pendingUnregisteredCases=22624`, `pendingTotalCases=94158`, `institutedLastMonthTotalCases=6148`, and `disposedLastMonthTotalCases=4552`
+- Supreme Court methodology draft completed on 2026-04-19:
+  - `docs/SUPREME_COURT_METHODOLOGY.md` now records the sourced-versus-derived metric contract, the registered or unregistered pending treatment, the explicit `captured_at` fallback date policy, and the cross-tier comparison limits that should hold before any public `/supreme-court` route ships
+- Supreme Court internal proof cycle completed on 2026-04-19 after PR `#107` merged and GitHub deploy run `24622868188` rolled the live service to task definition `:95`:
+  - the internal Supreme Court operator namespace is now live and auth-protected under `/operator/supreme-court/...`
+  - `GET /operator/supreme-court` returned `401` without a token
+  - `GET /supreme-court` still returned `404`, confirming the public route family remains dark
+  - live Supreme Court fetch run `run_1eae4c35-6ed8-4e32-8d2e-a8b0b704df1e` completed successfully
+  - live Supreme Court publication `publication_e0e10038-e70c-4556-a972-df9f530d03de` created `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81`
+  - live Supreme Court replay run `run_06a8e66e-26ac-4de6-9182-561989b49e4c` created publication `publication_dbcca7db-d563-4ba8-a0b1-3ea730c40ce5`
+  - live Supreme Court rollback `publication_816712a1-56c7-4b2b-b49d-74d78f6a9bbd` restored the original publication chain and left `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81` active
+  - the active internal Supreme Court snapshot carries `referenceDateAt=2026-04-19T06:41:34.634Z`, `referenceDateKind=captured_at`, `sourceSnapshotAt=null`, and `publishedAt=2026-04-19T06:42:07.131Z`
+  - active internal Supreme Court stats are `pendingRegisteredCases=71534`, `pendingUnregisteredCases=22624`, `pendingTotalCases=94158`, `institutedLastMonthTotalCases=6148`, and `disposedLastMonthTotalCases=4552`
+- Himachal High Court public beta exposure completed on 2026-04-19 after PR `#105` merged and GitHub deploy run `24621281752` rolled the live service to task definition `:93`:
+  - the already-reviewed active High Court publication `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee` became publicly reachable under `/high-courts/himachal`
+  - the active High Court snapshot remained `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:28.731Z`, and `publishedFromRunId=run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+  - live route verification returned `200` for `/high-courts/himachal`, `/high-courts/himachal/data`, `/high-courts/himachal/methodology`, `/high-courts/himachal/api`, `/v1/high-courts/himachal/stats`, and `/v1/high-courts/himachal/trends`
+  - public stats on the live route matched the internal proof-cycle numbers: `pendingTotalCases=105599`, `institutedLastMonthTotalCases=7046`, `disposedLastMonthTotalCases=6528`
+- Gujarat and Madhya Pradesh High Court public beta exposure completed on 2026-04-19 after PR `#115` merged and GitHub deploy run `24637168455` rolled the live service to task definition `:103`:
+  - the already-reviewed active Gujarat High Court publication `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7` became publicly reachable under `/high-courts/gujarat`
+  - the already-reviewed active Madhya Pradesh High Court publication `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4` became publicly reachable under `/high-courts/madhya-pradesh`
+  - live route verification returned `200` for `/high-courts`, `/high-courts/gujarat`, `/high-courts/gujarat/data`, `/high-courts/gujarat/methodology`, `/high-courts/gujarat/api`, `/v1/high-courts/gujarat/stats`, `/v1/high-courts/gujarat/trends`, `/high-courts/madhya-pradesh`, `/high-courts/madhya-pradesh/data`, `/high-courts/madhya-pradesh/methodology`, `/high-courts/madhya-pradesh/api`, `/v1/high-courts/madhya-pradesh/stats`, and `/v1/high-courts/madhya-pradesh/trends`
+  - the active Gujarat High Court snapshot remains `snapshot_b114637b-e1cc-4550-a44b-66af2f14eaff` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T18:59:57.944Z`, and `publishedFromRunId=run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+  - the active Madhya Pradesh High Court snapshot remains `snapshot_636a67c4-a5bc-4841-9b45-4e306d8cb3d0` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T18:59:58.343Z`, and `publishedFromRunId=run_8526bedf-df11-46a0-a394-9379ae4d1547`
+  - live Gujarat High Court stats are `pendingTotalCases=174777`, `institutedLastMonthTotalCases=7305`, and `disposedLastMonthTotalCases=8085`
+  - live Madhya Pradesh High Court stats are `pendingTotalCases=476385`, `institutedLastMonthTotalCases=12726`, and `disposedLastMonthTotalCases=15012`
+- Uttar Pradesh and Rajasthan High Court public beta exposure completed on 2026-04-19 after PR `#113` merged and GitHub deploy run `24636212237` rolled the live service to task definition `:101`:
+  - the already-reviewed active Allahabad High Court publication `publication_91726f20-da84-4401-9da0-18c5ad711694` became publicly reachable under `/high-courts/uttar-pradesh`
+  - the already-reviewed active Rajasthan High Court publication `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f` became publicly reachable under `/high-courts/rajasthan`
+  - live route verification returned `200` for `/high-courts`, `/high-courts/uttar-pradesh`, `/high-courts/uttar-pradesh/data`, `/high-courts/uttar-pradesh/methodology`, `/high-courts/uttar-pradesh/api`, `/v1/high-courts/uttar-pradesh/stats`, `/v1/high-courts/uttar-pradesh/trends`, `/high-courts/rajasthan`, `/high-courts/rajasthan/data`, `/high-courts/rajasthan/methodology`, `/high-courts/rajasthan/api`, `/v1/high-courts/rajasthan/stats`, and `/v1/high-courts/rajasthan/trends`
+  - the active Uttar Pradesh High Court snapshot remains `snapshot_c0d74fe7-6755-467e-86be-90424446a514` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:31.468Z`, and `publishedFromRunId=run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
+  - the active Rajasthan High Court snapshot remains `snapshot_03ac0bb4-ba77-4d92-9b96-478983aadfa9` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:34.582Z`, and `publishedFromRunId=run_bdc31094-2d40-4960-af99-13d2d803cf0c`
+  - live Allahabad High Court stats are `pendingTotalCases=1223215`, `institutedLastMonthTotalCases=26638`, and `disposedLastMonthTotalCases=28080`
+  - live Rajasthan High Court stats are `pendingTotalCases=678393`, `institutedLastMonthTotalCases=18847`, and `disposedLastMonthTotalCases=12318`
 - Broad public-alpha ops sweep logic corrected on 2026-04-18:
   - the original Himachal daily-fetch alert was a false positive caused by comparing internal cadence against the older published Himachal snapshot date instead of the latest internal operator run
   - live AWS staging logs already showed the scheduled Himachal fetch `run_337a80ae-4980-415a-8585-d670e413dfed` completed on `2026-04-17T20:10:06Z` with `sourceSnapshotAt=2026-04-16T00:00:00.000Z`

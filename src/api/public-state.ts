@@ -31,7 +31,7 @@ export interface PublicPageContext {
   stateLinks: PublicStateLink[];
   brandHref: string;
   brandTag: string;
-  supportedStatesLabel: string;
+  publicScopeDescription: string;
 }
 
 const DEFAULT_PUBLIC_STATE_CODE = "HP";
@@ -59,7 +59,7 @@ export function buildPublicPageContext(
     })),
     brandHref: routes.home,
     brandTag: `Court transparency, ${currentProfile.stateName}`,
-    supportedStatesLabel: visibleProfiles.map((profile) => profile.stateName).join(" and "),
+    publicScopeDescription: buildPublicScopeDescription(currentProfile, visibleProfiles),
   };
 }
 
@@ -95,4 +95,28 @@ export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRo
 
 function isDefaultPublicState(profile: NjdgStateProfile) {
   return profile.stateCode === DEFAULT_PUBLIC_STATE_CODE;
+}
+
+function buildPublicScopeDescription(
+  currentProfile: NjdgStateProfile,
+  visibleProfiles: NjdgStateProfile[],
+): string {
+  const otherStateCount = Math.max(visibleProfiles.length - 1, 0);
+  const otherStatePages = `${otherStateCount} other approved state page${otherStateCount === 1 ? "" : "s"}`;
+
+  if (isDefaultPublicState(currentProfile)) {
+    if (otherStateCount === 0) {
+      return "The public site is currently centered on Himachal Pradesh.";
+    }
+
+    return `The public site stays centered on Himachal Pradesh on the main routes, with ${otherStateCount} additional approved state page${
+      otherStateCount === 1 ? "" : "s"
+    } in the switcher.`;
+  }
+
+  if (otherStateCount === 0) {
+    return `This page covers ${currentProfile.stateName}.`;
+  }
+
+  return `This page covers ${currentProfile.stateName}. The unscoped routes stay centered on Himachal Pradesh, and the switcher links ${otherStatePages}.`;
 }
