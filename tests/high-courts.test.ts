@@ -46,22 +46,48 @@ describe("high court profiles", () => {
         officialSite: "https://www.allahabadhighcourt.in/",
       },
     });
+
+    expect(getHighCourtProfile("GJHC")).toMatchObject({
+      courtCode: "GJHC",
+      courtSlug: "gujarat",
+      courtName: "High Court of Gujarat",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://gujarathighcourt.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("MPHC")).toMatchObject({
+      courtCode: "MPHC",
+      courtSlug: "madhya-pradesh",
+      courtName: "High Court of Madhya Pradesh",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://mphc.gov.in/",
+      },
+    });
   });
 
   it("resolves high court profiles by slug", () => {
     expect(getHighCourtProfileBySlug("himachal")?.courtCode).toBe("HPHC");
     expect(getHighCourtProfileBySlug("HIMACHAL")?.courtCode).toBe("HPHC");
     expect(getHighCourtProfileBySlug("uttar-pradesh")?.courtCode).toBe("UPHC");
+    expect(getHighCourtProfileBySlug("gujarat")?.courtCode).toBe("GJHC");
+    expect(getHighCourtProfileBySlug("madhya-pradesh")?.courtCode).toBe("MPHC");
     expect(getHighCourtProfileBySlug("bihar")?.courtCode).toBe("BRHC");
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
     expect(listHighCourtProfiles()).toHaveLength(17);
     expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
       "himachal",
+      "gujarat",
+      "madhya-pradesh",
       "rajasthan",
       "uttar-pradesh",
     ]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(3);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(5);
   });
 });
 
