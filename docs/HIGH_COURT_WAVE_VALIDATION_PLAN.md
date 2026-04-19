@@ -56,6 +56,35 @@ The batch command reuses the existing High Court readiness verifier for each sel
 - explicit High Court reference-date posture
 - aggregate ready / not-ready totals across the selected set
 
+## Current Live Evidence
+
+Latest recorded live check against `https://nyaaywatch.in` on **April 19, 2026**:
+
+- `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
+- result: both courts were present on the live internal operator namespace, but both still had `runCount=0`, `publicationCount=0`, and no replay or rollback evidence
+
+First live fetch attempt on the same date:
+
+- Uttar Pradesh: `POST /operator/high-courts/uttar-pradesh/runs/fetch` returned `500 {"error":"Could not extract disposal in last month values from High Court HTML."}`
+- Rajasthan: `POST /operator/high-courts/rajasthan/runs/fetch` returned the same `500` error
+
+Root cause from the official HC NJDG HTML:
+
+- the `Disposal in last month` row for both courts includes malformed markup in the criminal column, with the visible numeric value rendered without a closing `</a>`
+- the original extractor assumed well-formed anchors and therefore missed the third numeric cell when parsing live HTML
+
+Repo state after that finding:
+
+- the extractor is now hardened to parse metric row values from cell text instead of requiring perfectly closed anchors
+- regression coverage now includes this malformed-markup shape
+- a local live-source parse check now succeeds for both Uttar Pradesh and Rajasthan
+
+What still remains after this repo-side fix:
+
+- deploy the parser hardening to the live stack
+- rerun the Uttar Pradesh and Rajasthan High Court fetches
+- only then decide whether publish, replay, and rollback proof should begin for this pair
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:

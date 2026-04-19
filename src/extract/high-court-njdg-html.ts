@@ -105,9 +105,10 @@ function extractMetricBreakdown(html: string, label: string): HighCourtMetricBre
     `${label} section`,
   );
 
-  const values = [...sectionHtml.matchAll(/<td>[\s\S]*?<a[^>]*>([\d,]+)<\/a>[\s\S]*?<\/td>/g)].map((match) =>
-    parseIndianNumber(match[1] ?? ""),
-  );
+  const values = [...stripHtmlComments(sectionHtml).matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)]
+    .map((match) => stripTags(match[1] ?? "").trim())
+    .filter((value) => /[\d,]+/.test(value))
+    .map((value) => parseIndianNumber(value));
 
   if (values.length < 3) {
     throw new Error(`Could not extract ${label.toLowerCase()} values from High Court HTML.`);
@@ -159,6 +160,10 @@ function parseIndianNumber(value: string): number {
 
 function stripTags(value: string): string {
   return value.replace(/<[^>]+>/g, "");
+}
+
+function stripHtmlComments(value: string): string {
+  return value.replace(/<!--[\s\S]*?-->/g, "");
 }
 
 function escapeLabelForRegex(value: string) {
