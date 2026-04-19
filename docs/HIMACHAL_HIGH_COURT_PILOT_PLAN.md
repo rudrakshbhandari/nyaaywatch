@@ -358,7 +358,7 @@ Do these next:
 3. scaffold the High Court route and data namespaces
 4. implement the High Court capture / extract pipeline
 5. codify the High Court date contract so publication semantics remain defensible even when HC NJDG only exposes capture time
-6. only then prove internal publication and rollback
+6. prove the internal read surface and operator entrypoints on top of the High Court operator lifecycle
 7. only then decide on public beta timing
 
 ## Definition Of Done

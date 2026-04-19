@@ -30,13 +30,14 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
-- [ ] Add the High Court internal run-inspection, publish, replay, and rollback path now that the Himachal High Court date contract is explicit even without an official HC NJDG source snapshot date.
+- [ ] Add the internal High Court read surface and operator entrypoints on top of the new Himachal High Court operator service before touching any public High Court route.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
 ## Recently Completed
 
 - [x] Fixed the false-positive Himachal daily-fetch lag in `npm run ops:verify-public-alpha`: the sweep now reads each state's latest successful internal operator run instead of inferring internal cadence from the older published snapshot date. Live AWS evidence already showed Himachal's scheduled fetch `run_337a80ae-4980-415a-8585-d670e413dfed` completed on `2026-04-17` with `sourceSnapshotAt=2026-04-16`, and the corrected live sweep is now green across all 28 public states.
+- [x] Implemented the Himachal High Court internal operator lifecycle on top of the explicit High Court date contract: capture, inspect, publish, replay, and rollback now work through a dedicated High Court service with warehouse round-tripping and focused regression coverage.
 - [x] Resolved the Himachal High Court source-date contract at the methodology level: official HC NJDG HTML plus official AJAX responses did not expose a trustworthy source snapshot date on `2026-04-18`, so the High Court tier now adopts an explicit `captured_at` fallback trust label instead of faking `sourceSnapshotAt`.
 - [x] Implemented the first real Himachal High Court HC NJDG capture and extract path: the repo now has a High Court source client, capture schema, deterministic aggregate parser coverage, and the source-review evidence that forced the High Court date-contract decision.
 - [x] All currently supported states are publicly live on `https://nyaaywatch.in`; there is no remaining approved-state internal or public rollout queue in the current roadmap.
