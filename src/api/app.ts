@@ -24,10 +24,15 @@ import { renderHighCourtMethodologyPage } from "./pages/high-court-methodology.j
 import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
+import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
+import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
+import { renderSupremeCourtMethodologyPage } from "./pages/supreme-court-methodology.js";
+import { renderSupremeCourtOverviewPage } from "./pages/supreme-court-overview.js";
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 import { buildPublicHighCourtPageContext } from "./public-high-court.js";
+import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
 import { buildPublicPageContext } from "./public-state.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
 
@@ -208,6 +213,44 @@ export function createApp(
       const payload = await resolved.service.getTrends();
       if (!payload) {
         response.status(404).json({ error: "No published High Court snapshot available." });
+        return;
+      }
+
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/supreme-court/stats",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).json({ error: "Supreme Court not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getStats();
+      if (!payload) {
+        response.status(404).json({ error: "No published Supreme Court snapshot available." });
+        return;
+      }
+
+      response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/supreme-court/trends",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).json({ error: "Supreme Court not found." });
+        return;
+      }
+
+      const payload = await resolved.service.getTrends();
+      if (!payload) {
+        response.status(404).json({ error: "No published Supreme Court snapshot available." });
         return;
       }
 
@@ -534,6 +577,84 @@ export function createApp(
           buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
         ),
       );
+    }),
+  );
+
+  app.get(
+    "/supreme-court",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Supreme Court Not Available Yet", "No published Supreme Court snapshot is available yet."));
+        return;
+      }
+
+      response.send(
+        renderSupremeCourtOverviewPage(
+          resolved.profile,
+          snapshot.payload,
+          buildPublicSupremeCourtPageContext(resolved.profile),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/supreme-court/data",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Supreme Court Data", "No published Supreme Court snapshot is available yet."));
+        return;
+      }
+
+      response.send(renderSupremeCourtDataPage(snapshot.payload, buildPublicSupremeCourtPageContext(resolved.profile)));
+    }),
+  );
+
+  app.get(
+    "/supreme-court/methodology",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      const history = await resolved.service.listPublicationHistory();
+      response.send(
+        renderSupremeCourtMethodologyPage(
+          snapshot?.payload.snapshot ?? null,
+          history,
+          buildPublicSupremeCourtPageContext(resolved.profile),
+        ),
+      );
+    }),
+  );
+
+  app.get(
+    "/supreme-court/api",
+    asyncRoute(async (_request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      response.send(renderSupremeCourtApiPage(buildPublicSupremeCourtPageContext(resolved.profile)));
     }),
   );
 
@@ -1102,6 +1223,15 @@ function resolvePublicHighCourtRequest(request: Request, services: HighCourtServ
 
   const service = services[profile.courtCode];
   if (!service) {
+    return null;
+  }
+
+  return { profile, service };
+}
+
+function resolvePublicSupremeCourtRequest(service: SupremeCourtService) {
+  const profile = getSupremeCourtProfile();
+  if (!service || !profile.publicBeta) {
     return null;
   }
 

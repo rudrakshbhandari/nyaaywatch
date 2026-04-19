@@ -1,0 +1,157 @@
+import type { SupremeCourtPublishedSnapshot } from "../../domain/supreme-court-snapshot-schema.js";
+import type { SupremeCourtProfile } from "../../supreme-court.js";
+import { renderPageShell } from "../design/shell.js";
+import { renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
+import type { PublicSupremeCourtPageContext } from "../public-supreme-court.js";
+import { formatDate } from "../home/view-model.js";
+
+export function renderSupremeCourtOverviewPage(
+  profile: SupremeCourtProfile,
+  snapshot: SupremeCourtPublishedSnapshot,
+  context: PublicSupremeCourtPageContext,
+): string {
+  const referenceLabel = describeReferenceDate(snapshot.snapshot);
+
+  const body = `
+    ${renderSectionHead({
+      eyebrow: "SUPREME COURT BETA",
+      headline: "The apex court in the latest published snapshot.",
+      lede:
+        "This page shows one published aggregate Supreme Court snapshot with explicit freshness, methodology, and official source links. It is an apex-court observability surface, not a case-search tool and not a national all-courts ranking layer.",
+      isHero: true,
+    })}
+
+    <section class="stat-grid">
+      ${renderStatTile({
+        label: "Pending total",
+        value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
+        note: "Registered and unregistered pending matters combined in the active publication.",
+      })}
+      ${renderStatTile({
+        label: "Pending registered",
+        value: snapshot.stats.pendingRegisteredCases.toLocaleString("en-IN"),
+        note: "Registered pending matters in the same published source window.",
+      })}
+      ${renderStatTile({
+        label: "Pending unregistered",
+        value: snapshot.stats.pendingUnregisteredCases.toLocaleString("en-IN"),
+        note: "Unregistered pending matters remain visible instead of being folded away.",
+      })}
+      ${renderStatTile({
+        label: "Disposed last month",
+        value: snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"),
+        note: "Civil and criminal matters cleared in the latest published snapshot.",
+        tone: "accent",
+      })}
+    </section>
+
+    <section class="sc-section">
+      ${renderSectionHead({
+        headline: "Trust boundary",
+        lede:
+          "The first public Supreme Court beta is intentionally narrow: published aggregate observability only, with tier-specific caveats and no hidden leap into all-courts comparability.",
+      })}
+      <div class="card-grid card-grid--2">
+        <article class="card">
+          <h3>Publication posture</h3>
+          <p>Supreme Court data is snapshot-based, not live. Every public number comes from a stored published artifact and stays pinned until a later reviewed publication replaces it.</p>
+          <p>${renderBadge({ label: snapshot.snapshot.qualityState, tone: snapshot.snapshot.qualityState === "complete" ? "complete" : "flag" })}</p>
+        </article>
+        <article class="card">
+          <h3>Reference date</h3>
+          <p>${referenceLabel}</p>
+          <p>${
+            snapshot.snapshot.referenceDateKind === "captured_at"
+              ? "The official aggregate page did not expose a defensible source snapshot timestamp, so NyaayWatch shows the page capture time instead of inventing one."
+              : "The official source exposed a usable source snapshot timestamp, so that source date is shown directly."
+          }</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="sc-section">
+      ${renderSectionHead({
+        headline: "Movement in the current publication",
+        lede:
+          "The first public beta keeps registered and unregistered backlog visible, while showing month and year movement directly from the aggregate source boundary.",
+      })}
+      <div class="card-grid card-grid--2">
+        <article class="card">
+          <h3>Last month</h3>
+          <p><strong>Instituted:</strong> ${snapshot.stats.institutedLastMonthTotalCases.toLocaleString("en-IN")}</p>
+          <p><strong>Disposed:</strong> ${snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN")}</p>
+          <p>Those totals are published as sourced values, not inferred from downstream case records.</p>
+        </article>
+        <article class="card">
+          <h3>Current year</h3>
+          <p><strong>Instituted:</strong> ${snapshot.stats.institutedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
+          <p><strong>Disposed:</strong> ${snapshot.stats.disposedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
+          <p>The beta exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="sc-section">
+      ${renderSectionHead({
+        headline: "Official source links",
+        lede:
+          "NyaayWatch uses Supreme Court aggregates for observability and links out to the official court surfaces for case status, orders, judgments, and institutional material.",
+      })}
+      <div class="card-grid card-grid--4">
+        <article class="card">
+          <h3>Supreme Court NJDG</h3>
+          <p>Official aggregate pendency, institution, and disposal surface for the apex court.</p>
+          <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.scNjdg}">Open Supreme Court NJDG</a></p>
+        </article>
+        <article class="card">
+          <h3>Official court site</h3>
+          <p>Case status, orders, judgments, cause lists, and institutional material remain on the official Supreme Court site.</p>
+          <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.officialSite}">Open official site</a></p>
+        </article>
+        <article class="card">
+          <h3>Onboarding note</h3>
+          <p>The court's own note on Supreme Court onboarding to NJDG and its three-tier position inside the wider system.</p>
+          <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.onboardingNote}">Open onboarding note</a></p>
+        </article>
+        <article class="card">
+          <h3>FAQ / ready reckoner</h3>
+          <p>Official guidance for obtaining Supreme Court information without pretending this beta replaces those record-level workflows.</p>
+          <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.faq}">Open FAQ</a></p>
+        </article>
+      </div>
+    </section>
+  `;
+
+  return renderPageShell({
+    title: "Supreme Court — NyaayWatch",
+    body,
+    activeNav: "home",
+    brandHref: context.brandHref,
+    brandTag: context.brandTag,
+    navLinks: context.navLinks,
+    ticker: `SUPREME COURT · ${referenceLabel.toUpperCase()} · ${snapshot.snapshot.methodologyVersion}`,
+    pageCss: SUPREME_COURT_OVERVIEW_CSS,
+    footer: {
+      sourceDateLabel: referenceLabel,
+      methodologyVersion: snapshot.snapshot.methodologyVersion,
+      sourceAttribution: snapshot.snapshot.sourceAttribution,
+    },
+  });
+}
+
+function describeReferenceDate(snapshot: SupremeCourtPublishedSnapshot["snapshot"]) {
+  return snapshot.referenceDateKind === "captured_at"
+    ? `Captured ${formatDate(snapshot.referenceDateAt)}`
+    : `Source snapshot ${formatDate(snapshot.referenceDateAt)}`;
+}
+
+const SUPREME_COURT_OVERVIEW_CSS = `
+  .sc-section { margin-bottom: 72px; }
+  .card-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 1100px) {
+    .card-grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .card-grid--4 { grid-template-columns: 1fr; }
+  }
+`;

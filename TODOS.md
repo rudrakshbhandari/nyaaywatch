@@ -30,13 +30,15 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
-- [ ] Implement the public Supreme Court route family under `/supreme-court`, now that the internal proof bar is satisfied and the methodology draft exists in-repo.
+- [ ] Verify the live public Supreme Court beta after the route-family rollout merges and deploys, then record the release evidence in deployment, readiness, and expansion docs.
+- [ ] Decide which already-proven High Courts should become the next public wave now that the Supreme Court public shell exists.
 - [ ] Decide how the homepage should stage Supreme Court, High Courts, and district/subordinate courts in one scroll without implying fake cross-tier comparability.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
 ## Recently Completed
 
+- [x] Implemented the public Supreme Court route family in repo code under `/supreme-court` and `/v1/supreme-court/...`, reusing the published-snapshot contract plus the in-repo Supreme Court methodology draft instead of inventing a new public data path.
 - [x] Verified the live public Himachal High Court beta after PR `#105` merged and deploy run `24621281752` settled the live ECS service on task definition `:93`; `/high-courts/himachal`, `/high-courts/himachal/data`, `/high-courts/himachal/methodology`, `/high-courts/himachal/api`, `/v1/high-courts/himachal/stats`, and `/v1/high-courts/himachal/trends` all returned `200`, and the release evidence is now recorded in the High Court readiness review, deployment status, expansion log, and release history docs.
 - [x] Completed the second live Supreme Court operator proof cycle after PR `#108` merged and deploy run `24623340754` settled the live ECS service on task definition `:96`; a second `fetch -> publish -> replay -> rollback` window now exists on the live `/operator/supreme-court/...` namespace, the methodology draft is in-repo, the public `/supreme-court` route still returns `404`, and the repeated-window internal proof bar is now recorded as satisfied.
 - [x] Completed the first live Supreme Court operator proof cycle after PR `#107` merged and deploy run `24622868188` settled the live ECS service on task definition `:95`; the internal `/operator/supreme-court/...` namespace is now live behind auth, `fetch -> publish -> replay -> rollback` succeeded with real Supreme Court NJDG evidence, the public `/supreme-court` route still returns `404`, and the first live evidence is now recorded in the Supreme Court internal readiness review, deployment status, and expansion log.

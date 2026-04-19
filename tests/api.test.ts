@@ -8,6 +8,7 @@ import {
   insertPublishedSnapshot,
   insertHistoricalPublishedSnapshot,
   seedTestHighCourtSnapshot,
+  seedTestSupremeCourtSnapshot,
   seedTestSnapshot,
 } from "./helpers.js";
 
@@ -409,6 +410,51 @@ describe("HTTP routes", () => {
 
     const queuedCourt = await request(app).get("/high-courts/uttar-pradesh");
     expect(queuedCourt.status).toBe(404);
+  });
+
+  it("serves Supreme Court through the public beta namespace once a published Supreme Court snapshot exists", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSupremeCourtSnapshot(context.supremeCourtService);
+
+    const app = createTestApp(
+      context.config,
+      context.service,
+      context.publicServices,
+      context.highCourtServices,
+      context.supremeCourtService,
+    );
+
+    const overview = await request(app).get("/supreme-court");
+    expect(overview.status).toBe(200);
+    expect(overview.text).toContain("SUPREME COURT BETA");
+    expect(overview.text).toContain("The apex court in the latest published snapshot.");
+    expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
+
+    const data = await request(app).get("/supreme-court/data");
+    expect(data.status).toBe(200);
+    expect(data.text).toContain("/v1/supreme-court/stats");
+    expect(data.text).toContain("This first public Supreme Court beta ships the JSON surface before adding download formats.");
+
+    const methodology = await request(app).get("/supreme-court/methodology");
+    expect(methodology.status).toBe(200);
+    expect(methodology.text).toContain("Every public Supreme Court number comes from one published aggregate snapshot.");
+    expect(methodology.text).toContain("captured_at");
+
+    const api = await request(app).get("/supreme-court/api");
+    expect(api.status).toBe(200);
+    expect(api.text).toContain("/v1/supreme-court/trends");
+
+    const stats = await request(app).get("/v1/supreme-court/stats");
+    expect(stats.status).toBe(200);
+    expect(stats.body.snapshot.courtCode).toBe("SCI");
+    expect(stats.body.stats.pendingTotalCases).toBeGreaterThan(0);
+    expect(stats.body.stats.pendingRegisteredCases).toBeGreaterThan(0);
+
+    const trends = await request(app).get("/v1/supreme-court/trends");
+    expect(trends.status).toBe(200);
+    expect(trends.body.snapshot.referenceDateKind).toBe("captured_at");
+    expect(trends.body.trends.length).toBeGreaterThan(0);
   });
 
   it("serves Punjab through explicit state-scoped public routes once Punjab has a published snapshot", async () => {
