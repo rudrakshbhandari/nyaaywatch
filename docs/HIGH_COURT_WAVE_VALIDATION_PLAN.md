@@ -10,10 +10,17 @@ This document answers one narrow question:
 
 Do **not** try to validate the whole internal High Court wave at once.
 
-Validate this pair first:
+The first validation pair was:
 
 - Uttar Pradesh via Allahabad High Court
 - Rajasthan via High Court of Rajasthan
+
+That pair has now cleared both the internal proof bar and the public rollout bar.
+
+Validate this pair next:
+
+- Gujarat
+- Madhya Pradesh
 
 This is a product and operations recommendation from current repo state, not an official source fact.
 
@@ -23,24 +30,25 @@ These two courts are the best next internal validation pair because they are:
 
 - already inside the new single-jurisdiction High Court registry
 - already aligned with supported lower-court state profiles
-- clearly distinct in scale and operational risk
+- still internal-only instead of already public beta
+- materially meaningful without jumping straight to multi-jurisdiction courts
 - still simple enough to fit the current one-state-per-High-Court snapshot contract
 
 The point of this pair is not representativeness theater.
 
-The point is to pressure-test the internal High Court lane on:
+The point is to widen evidence for the next deliberate public-wave decision on:
 
-- a very large court with obvious operational weight: Uttar Pradesh
-- a still-substantial but less extreme court: Rajasthan
+- a large western court with its own source-review needs: Gujarat
+- a central court that is already aligned with the current lower-court state shell: Madhya Pradesh
 
-If both hold up, the repo will have much better evidence that the internal wave setup is real rather than merely configured.
+If both hold up, the repo will have much better evidence that the next High Court wave can widen responsibly without skipping straight to the multi-jurisdiction court problem.
 
 ## Validation Command
 
 Use the batch readiness sweep:
 
 ```bash
-npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=gujarat,madhya-pradesh
 ```
 
 Requires:
@@ -79,12 +87,6 @@ Repo state after that finding:
 - regression coverage now includes this malformed-markup shape
 - a local live-source parse check now succeeds for both Uttar Pradesh and Rajasthan
 
-What still remains after this repo-side fix:
-
-- deploy the parser hardening to the live stack
-- rerun the Uttar Pradesh and Rajasthan High Court fetches
-- only then decide whether publish, replay, and rollback proof should begin for this pair
-
 Follow-up live check on the same date after deploy and rerun:
 
 - `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
@@ -109,7 +111,15 @@ Current conclusion from live evidence:
 
 - the recommended Uttar Pradesh and Rajasthan pair has now cleared the internal High Court proof bar
 - Supreme Court is already the live public top-down shell
-- Uttar Pradesh and Rajasthan are now the correct next public High Court wave after Himachal
+- Uttar Pradesh and Rajasthan were the correct next public High Court wave after Himachal
+
+Follow-up live check after PR `#113` merged and deploy run `24636212237` settled the live service on task definition `:101`:
+
+- the public `/high-courts` index returned `200`
+- `/high-courts/uttar-pradesh`, `/high-courts/uttar-pradesh/data`, `/high-courts/uttar-pradesh/methodology`, `/high-courts/uttar-pradesh/api`, `/v1/high-courts/uttar-pradesh/stats`, and `/v1/high-courts/uttar-pradesh/trends` all returned `200`
+- `/high-courts/rajasthan`, `/high-courts/rajasthan/data`, `/high-courts/rajasthan/methodology`, `/high-courts/rajasthan/api`, `/v1/high-courts/rajasthan/stats`, and `/v1/high-courts/rajasthan/trends` all returned `200`
+- live operator publication history showed Uttar Pradesh active on `publication_91726f20-da84-4401-9da0-18c5ad711694` and Rajasthan active on `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f`
+- the public High Court beta set is now Himachal, Uttar Pradesh, and Rajasthan
 
 ## What Counts As Success
 
@@ -135,7 +145,7 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Uttar Pradesh and Rajasthan have cleared the internal proof bar, the next likely internal validation candidates should be:
+Now that Uttar Pradesh and Rajasthan have cleared both the internal proof bar and the public rollout bar, the next likely internal validation candidates should be:
 
 - Gujarat
 - Madhya Pradesh
