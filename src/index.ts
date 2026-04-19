@@ -5,12 +5,15 @@ import { getStateProfile, listStateProfiles, type SupportedStateCode } from "./g
 import { listHighCourtProfiles, type SupportedHighCourtCode } from "./high-courts.js";
 import { NjdgStateSourceClient } from "./ingest/himachal-source-client.js";
 import { createHighCourtSourceClient } from "./ingest/high-court-source-client.js";
+import { createSupremeCourtSourceClient } from "./ingest/supreme-court-source-client.js";
 import { logError, logInfo } from "./lib/logger.js";
 import { createPreviewRuntime, type AppRuntime } from "./preview/runtime.js";
 import { PublishedHighCourtSnapshotService } from "./services/published-high-court-snapshot-service.js";
+import { PublishedSupremeCourtSnapshotService } from "./services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "./services/published-snapshot-service.js";
 import { S3ArtifactStore } from "./storage/artifact-store.js";
 import { PgWarehouseStore } from "./storage/postgres.js";
+import { getSupremeCourtProfile } from "./supreme-court.js";
 import { Pool } from "pg";
 
 const runtime = process.env.APP_MODE === "preview" ? await createPreviewRuntime() : await createRuntime();
@@ -81,9 +84,16 @@ async function createRuntime(): Promise<AppRuntime> {
       ),
     ]),
   ) as Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
+  const supremeCourtService = new PublishedSupremeCourtSnapshotService(
+    config,
+    getSupremeCourtProfile(),
+    store,
+    artifactStore,
+    createSupremeCourtSourceClient(),
+  );
 
   return {
-    app: createApp(config, service, publicServices, highCourtServices),
+    app: createApp(config, service, publicServices, highCourtServices, supremeCourtService),
     config,
     async close() {
       await pool.end();

@@ -130,6 +130,39 @@ describe("remote operator client", () => {
       token: "remote-operator-token",
     });
   });
+
+  it("targets the Supreme Court operator namespace when the Supreme Court selector is enabled", async () => {
+    let requestSummary: { host: string; path: string; token: string } | null = null;
+    const server = createServer((request, response) => {
+      requestSummary = summarizeRequest(request);
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ publications: [] }));
+    });
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected a TCP address.");
+    }
+
+    const result = await runRemoteOperatorCommand(
+      { name: "publications", supremeCourt: true },
+      {
+        baseUrl: "http://nyaaywatch.in",
+        operatorToken: "remote-operator-token",
+        connectHost: "127.0.0.1",
+        connectPort: address.port,
+      },
+    );
+
+    expect(result).toEqual({ publications: [] });
+    expect(requestSummary).toEqual({
+      host: "nyaaywatch.in",
+      path: "/operator/supreme-court/publications",
+      token: "remote-operator-token",
+    });
+  });
 });
 
 function summarizeRequest(request: IncomingMessage) {

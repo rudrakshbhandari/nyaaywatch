@@ -9,16 +9,21 @@ import { loadConfig, type AppConfig } from "../src/config/env.js";
 import { runMigrations } from "../src/db/migrate.js";
 import { createFixtureSourceClient } from "../src/dev/fixtures.js";
 import type { HighCourtCaptureBundle } from "../src/domain/high-court-capture-schema.js";
+import type { SupremeCourtCaptureBundle } from "../src/domain/supreme-court-capture-schema.js";
 import { getHighCourtProfile, listHighCourtProfiles, type SupportedHighCourtCode } from "../src/high-courts.js";
 import type { HighCourtSourceClient } from "../src/ingest/high-court-source-client.js";
+import type { SupremeCourtSourceClient } from "../src/ingest/supreme-court-source-client.js";
 import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../src/geographies.js";
 import { createApp } from "../src/api/app.js";
 import { PublishedHighCourtSnapshotService } from "../src/services/published-high-court-snapshot-service.js";
+import { PublishedSupremeCourtSnapshotService } from "../src/services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../src/storage/artifact-store.js";
 import { PgWarehouseStore } from "../src/storage/postgres.js";
+import { getSupremeCourtProfile } from "../src/supreme-court.js";
 import { buildHighCourtCaptureBundle } from "./fixtures/high-court.js";
+import { buildSupremeCourtCaptureBundle } from "./fixtures/supreme-court.js";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -67,8 +72,15 @@ export async function createTestContext(options: { stateCode?: SupportedStateCod
       ),
     ]),
   ) as Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
+  const supremeCourtService = new PublishedSupremeCourtSnapshotService(
+    config,
+    getSupremeCourtProfile(),
+    store,
+    artifactStore,
+    createFixtureSupremeCourtSourceClient(),
+  );
 
-  return { pool, config, service, publicServices, highCourtServices };
+  return { pool, config, service, publicServices, highCourtServices, supremeCourtService };
 }
 
 export async function seedTestSnapshot(service: PublishedSnapshotService) {
@@ -79,6 +91,11 @@ export async function seedTestSnapshot(service: PublishedSnapshotService) {
 export async function seedTestHighCourtSnapshot(service: PublishedHighCourtSnapshotService) {
   const captured = await service.captureRun("Test High Court fixture capture.");
   return service.publishRun(captured.run.id, "Test High Court fixture publish.");
+}
+
+export async function seedTestSupremeCourtSnapshot(service: PublishedSupremeCourtSnapshotService) {
+  const captured = await service.captureRun("Test Supreme Court fixture capture.");
+  return service.publishRun(captured.run.id, "Test Supreme Court fixture publish.");
 }
 
 export async function insertHistoricalPublishedSnapshot(
@@ -214,8 +231,9 @@ export function createTestApp(
   service: PublishedSnapshotService,
   publicServices?: Partial<Record<SupportedStateCode, PublishedSnapshotService>>,
   highCourtServices?: Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>,
+  supremeCourtService?: PublishedSupremeCourtSnapshotService,
 ) {
-  return createApp(config, service, publicServices, highCourtServices);
+  return createApp(config, service, publicServices, highCourtServices, supremeCourtService);
 }
 
 export function createScopedTestService(
@@ -263,6 +281,14 @@ function createFixtureHighCourtSourceClient(courtCode: SupportedHighCourtCode): 
   return {
     async captureLatest(): Promise<HighCourtCaptureBundle> {
       return buildHighCourtCaptureBundle(profile);
+    },
+  };
+}
+
+function createFixtureSupremeCourtSourceClient(): SupremeCourtSourceClient {
+  return {
+    async captureLatest(): Promise<SupremeCourtCaptureBundle> {
+      return buildSupremeCourtCaptureBundle();
     },
   };
 }

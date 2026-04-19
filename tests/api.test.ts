@@ -42,7 +42,7 @@ describe("HTTP routes", () => {
       },
     });
     await seedTestSnapshot(context.service);
-    const app = createTestApp(context.config, context.service, context.publicServices);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
     const statsResponse = await request(app).get("/v1/stats/himachal");
     expect(statsResponse.status).toBe(200);
@@ -101,7 +101,7 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
-    const app = createTestApp(context.config, context.service, context.publicServices);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
     const response = await request(app)
       .get("/districts?view=flagged")
@@ -116,7 +116,7 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
-    const app = createTestApp(context.config, context.service, context.publicServices);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
     const infoSpy = vi.spyOn(console, "log").mockImplementation(() => {});
 
     await request(app).get("/");
@@ -132,7 +132,7 @@ describe("HTTP routes", () => {
   it("protects operator endpoints and exposes fetch, publish, replay, and rollback flows", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
-    const app = createTestApp(context.config, context.service, context.publicServices);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
     const unauthorized = await request(app).get("/operator/publications");
     expect(unauthorized.status).toBe(401);
@@ -291,12 +291,86 @@ describe("HTTP routes", () => {
     expect(rollback.body.action).toBe("rollback");
   });
 
+  it("exposes the internal Supreme Court read surface and operator lifecycle on the dedicated namespace", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    const app = createTestApp(
+      context.config,
+      context.service,
+      context.publicServices,
+      context.highCourtServices,
+      context.supremeCourtService,
+    );
+
+    const unauthorized = await request(app).get("/operator/supreme-court");
+    expect(unauthorized.status).toBe(401);
+
+    const fetched = await request(app)
+      .post("/operator/supreme-court/runs/fetch")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Fetch Supreme Court via HTTP" });
+
+    expect(fetched.status).toBe(201);
+    expect(fetched.body.run.stateCode).toBe("SCI");
+    expect(fetched.body.candidate.snapshot.courtTier).toBe("supreme_court");
+    expect(fetched.body.candidate.snapshot.referenceDateKind).toBe("captured_at");
+    expect(fetched.body.candidate.stats.pendingRegisteredCases).toBe(70351);
+
+    const runs = await request(app)
+      .get("/operator/supreme-court/runs")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(runs.status).toBe(200);
+    expect(runs.body.court.courtCode).toBe("SCI");
+    expect(runs.body.runs).toHaveLength(1);
+
+    const inspected = await request(app)
+      .get(`/operator/supreme-court/runs/${fetched.body.run.id}`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(inspected.status).toBe(200);
+    expect(inspected.body.run.id).toBe(fetched.body.run.id);
+
+    const published = await request(app)
+      .post(`/operator/supreme-court/runs/${fetched.body.run.id}/publish`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Publish Supreme Court via HTTP" });
+
+    expect(published.status).toBe(201);
+    expect(published.body.snapshot.payload.snapshot.courtCode).toBe("SCI");
+
+    const detail = await request(app)
+      .get("/operator/supreme-court")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(detail.status).toBe(200);
+    expect(detail.body.court.courtSlug).toBe("supreme-court");
+    expect(detail.body.stats.pendingTotalCases).toBe(92245);
+    expect(detail.body.publications[0].publication.stateCode).toBe("SCI");
+
+    const replay = await request(app)
+      .post(`/operator/supreme-court/runs/${published.body.run.id}/replay`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Replay Supreme Court via HTTP" });
+
+    expect(replay.status).toBe(201);
+    expect(replay.body.run.replayOfRunId).toBe(published.body.run.id);
+
+    const rollback = await request(app)
+      .post(`/operator/supreme-court/publications/${published.body.publication.id}/rollback`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Rollback Supreme Court via HTTP" });
+
+    expect(rollback.status).toBe(201);
+    expect(rollback.body.action).toBe("rollback");
+  });
+
   it("serves Himachal High Court through the public beta namespace once a published High Court snapshot exists", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
 
-    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
     const index = await request(app).get("/high-courts");
     expect(index.status).toBe(200);
@@ -349,7 +423,7 @@ describe("HTTP routes", () => {
       payload: buildPunjabTestSnapshot(),
     });
 
-    const app = createTestApp(context.config, context.service, context.publicServices);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);

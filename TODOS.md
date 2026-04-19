@@ -30,7 +30,8 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
-- [ ] Implement the Supreme Court internal pilot scaffold under a dedicated `/supreme-court` namespace, keeping it tier-aware instead of overloading lower-court or High Court routes.
+- [ ] Run repeated live Supreme Court operator proof cycles through the new internal `/operator/supreme-court/...` namespace and record the evidence before any public Supreme Court route ships.
+- [ ] Expose the public Supreme Court route family under `/supreme-court` only after the internal proof bar is satisfied and the methodology draft is written down.
 - [ ] Write the Supreme Court methodology draft and explicit data contract before any public Supreme Court page ships.
 - [ ] Decide how the homepage should stage Supreme Court, High Courts, and district/subordinate courts in one scroll without implying fake cross-tier comparability.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
@@ -39,6 +40,7 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 ## Recently Completed
 
 - [x] Verified the live public Himachal High Court beta after PR `#105` merged and deploy run `24621281752` settled the live ECS service on task definition `:93`; `/high-courts/himachal`, `/high-courts/himachal/data`, `/high-courts/himachal/methodology`, `/high-courts/himachal/api`, `/v1/high-courts/himachal/stats`, and `/v1/high-courts/himachal/trends` all returned `200`, and the release evidence is now recorded in the High Court readiness review, deployment status, expansion log, and release history docs.
+- [x] Implemented the internal Supreme Court scaffold: repo config, capture schema, deterministic NJDG extractor, normalized snapshot candidate and published snapshot contracts, runtime bootstrapping, operator CLI/remote support, and the dedicated `/operator/supreme-court/...` lifecycle for fetch, inspect, publish, replay, and rollback.
 - [x] Decided that Supreme Court should be the next public top-down tier before any broader High Court UX expansion, and wrote the source-review plus pilot-plan docs that define the source boundary, route family, shared-vs-tier-specific data contract, and homepage integration rules.
 - [x] Designed the first homepage IA for a Supreme Court-first product shell inside `docs/SUPREME_COURT_PILOT_PLAN.md`, so the next implementation slice can begin with a concrete top-down route and UX contract instead of open-ended product debate.
 - [x] Enabled the narrow public Himachal High Court beta surface in repo code under `/high-courts/himachal`, with published-only HTML and JSON routes plus tier-specific methodology, data, and API pages.

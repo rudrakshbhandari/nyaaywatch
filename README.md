@@ -114,6 +114,8 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --connect-host=<alb-
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal fetch "Internal Himachal High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court uttar-pradesh fetch "Internal Allahabad High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal Supreme Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court publications
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal
 npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan
 npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
@@ -189,6 +191,14 @@ Operator endpoints require `x-operator-token`:
 - `POST /operator/high-courts/:courtSlug/runs/:runId/replay`
 - `GET /operator/high-courts/:courtSlug/publications`
 - `POST /operator/high-courts/:courtSlug/publications/:publicationId/rollback`
+- `GET /operator/supreme-court`
+- `GET /operator/supreme-court/runs`
+- `GET /operator/supreme-court/runs/:runId`
+- `POST /operator/supreme-court/runs/fetch`
+- `POST /operator/supreme-court/runs/:runId/publish`
+- `POST /operator/supreme-court/runs/:runId/replay`
+- `GET /operator/supreme-court/publications`
+- `POST /operator/supreme-court/publications/:publicationId/rollback`
 
 Operator routes default to the runtime's configured state, but they also accept explicit `stateCode` or `stateSlug` selectors on query params or JSON bodies for multi-state operations.
 High Court operator routes use the explicit `/operator/high-courts/:courtSlug/...` namespace so the internal read and publish surface stays tier-aware instead of pretending High Court data is just another state snapshot.
