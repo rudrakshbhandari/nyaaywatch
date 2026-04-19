@@ -34,6 +34,7 @@
     "release:record": "tsx src/dev/release-record.ts",
     "release:verify": "tsx src/dev/release-verify.ts",
     "high-court:readiness": "tsx src/dev/high-court-readiness.ts",
+    "high-court:wave-readiness": "tsx src/dev/high-court-wave-readiness.ts",
     "ops:verify-public-alpha": "tsx src/dev/ops-verify-public-alpha.ts",
     "docker:up": "docker compose up -d --wait postgres localstack",
     "docker:down": "docker compose down -v"

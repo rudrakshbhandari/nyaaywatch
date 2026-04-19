@@ -114,6 +114,7 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himacha
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal fetch "Internal Himachal High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court uttar-pradesh fetch "Internal Allahabad High Court fetch"
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan
 npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:reconcile-fetch-schedule
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -231,6 +232,7 @@ Start here:
 - [Himachal High Court methodology draft](docs/HIMACHAL_HIGH_COURT_METHODOLOGY.md)
 - [Himachal High Court internal readiness review](docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md)
 - [High Court internal wave 1](docs/HIGH_COURT_INTERNAL_WAVE_1.md)
+- [High Court wave validation plan](docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md)
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md)
 - [MVP execution plan](docs/MVP_EXECUTION_PLAN.md)
 - [TODO backlog](TODOS.md)
