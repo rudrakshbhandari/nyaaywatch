@@ -71,6 +71,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Andhra Pradesh",
     stateCode: "AP",
     hcNjdgStateValue: "28~2",
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://aphc.gov.in/",
+    },
   }),
   TSHC: buildHighCourtProfile({
     courtCode: "TSHC",
@@ -78,6 +84,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court for State of Telangana",
     stateCode: "TS",
     hcNjdgStateValue: "36~29",
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://tshc.gov.in/",
+    },
   }),
   CGHC: buildHighCourtProfile({
     courtCode: "CGHC",

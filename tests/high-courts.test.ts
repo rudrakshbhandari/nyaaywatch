@@ -68,6 +68,28 @@ describe("high court profiles", () => {
         officialSite: "https://mphc.gov.in/",
       },
     });
+
+    expect(getHighCourtProfile("APHC")).toMatchObject({
+      courtCode: "APHC",
+      courtSlug: "andhra-pradesh",
+      courtName: "High Court of Andhra Pradesh",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://aphc.gov.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("TSHC")).toMatchObject({
+      courtCode: "TSHC",
+      courtSlug: "telangana",
+      courtName: "High Court for State of Telangana",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://tshc.gov.in/",
+      },
+    });
   });
 
   it("resolves high court profiles by slug", () => {
@@ -76,18 +98,21 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("uttar-pradesh")?.courtCode).toBe("UPHC");
     expect(getHighCourtProfileBySlug("gujarat")?.courtCode).toBe("GJHC");
     expect(getHighCourtProfileBySlug("madhya-pradesh")?.courtCode).toBe("MPHC");
+    expect(getHighCourtProfileBySlug("andhra-pradesh")?.courtCode).toBe("APHC");
     expect(getHighCourtProfileBySlug("bihar")?.courtCode).toBe("BRHC");
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
     expect(listHighCourtProfiles()).toHaveLength(17);
     expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
       "himachal",
+      "andhra-pradesh",
+      "telangana",
       "gujarat",
       "madhya-pradesh",
       "rajasthan",
       "uttar-pradesh",
     ]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(5);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(7);
   });
 });
 
