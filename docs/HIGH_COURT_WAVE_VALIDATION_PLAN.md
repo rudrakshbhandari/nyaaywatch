@@ -108,8 +108,8 @@ Live operator proof-cycle evidence now recorded:
 Current conclusion from live evidence:
 
 - the recommended Uttar Pradesh and Rajasthan pair has now cleared the internal High Court proof bar
-- they remain internal-only even after clearing it
-- the next product decision is no longer "can the queued-court wave work?" but "what should the next public top-down tier be?"
+- Supreme Court is already the live public top-down shell
+- Uttar Pradesh and Rajasthan are now the correct next public High Court wave after Himachal
 
 ## What Counts As Success
 
@@ -130,13 +130,12 @@ For the pair as a whole, success means:
 
 Do not:
 
-- promote these courts into public beta just because the internal wave is configured
 - start multi-jurisdiction High Court validation before the schema is widened intentionally
 - treat one clean fetch as equivalent to operational readiness
 
 ## Follow-Up After This Pair
 
-If Uttar Pradesh and Rajasthan clear the internal proof bar, the next likely internal validation candidates should be:
+Now that Uttar Pradesh and Rajasthan have cleared the internal proof bar, the next likely internal validation candidates should be:
 
 - Gujarat
 - Madhya Pradesh
@@ -144,4 +143,4 @@ If Uttar Pradesh and Rajasthan clear the internal proof bar, the next likely int
 Only after that should the repo revisit:
 
 - whether a broader queued-court batch should be run automatically
-- whether any second public High Court beta is methodologically defensible
+- whether any second broader public High Court wave is methodologically defensible

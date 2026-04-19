@@ -6,7 +6,7 @@ import { HighCourtSnapshotCandidateSchema } from "../src/domain/high-court-snaps
 import { getHighCourtProfile, getHighCourtProfileBySlug, listHighCourtProfiles, listPublicHighCourtProfiles } from "../src/high-courts.js";
 
 describe("high court profiles", () => {
-  it("defines Himachal High Court as the first reviewed pilot profile with official source URLs", () => {
+  it("defines the currently public High Court beta profiles with reviewed source metadata", () => {
     expect(getHighCourtProfile("HPHC")).toEqual({
       courtCode: "HPHC",
       courtSlug: "himachal",
@@ -24,6 +24,28 @@ describe("high court profiles", () => {
         annualReport2023_24: "https://hphighcourt.nic.in/pdf/AnnualReport23092024.pdf",
       },
     });
+
+    expect(getHighCourtProfile("RJHC")).toMatchObject({
+      courtCode: "RJHC",
+      courtSlug: "rajasthan",
+      courtName: "High Court of Rajasthan",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://hcraj.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("UPHC")).toMatchObject({
+      courtCode: "UPHC",
+      courtSlug: "uttar-pradesh",
+      courtName: "Allahabad High Court",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://www.allahabadhighcourt.in/",
+      },
+    });
   });
 
   it("resolves high court profiles by slug", () => {
@@ -34,16 +56,21 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
     expect(listHighCourtProfiles()).toHaveLength(17);
-    expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual(["himachal"]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(1);
+    expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
+      "himachal",
+      "rajasthan",
+      "uttar-pradesh",
+    ]);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(3);
   });
 });
 
 describe("high court routes", () => {
-  it("builds the reserved public route namespace for the Himachal High Court pilot", () => {
-    const routes = buildPublicHighCourtRoutes(getHighCourtProfile("HPHC"));
+  it("builds the public route namespace for each reviewed High Court beta page", () => {
+    const himachalRoutes = buildPublicHighCourtRoutes(getHighCourtProfile("HPHC"));
+    const uttarPradeshRoutes = buildPublicHighCourtRoutes(getHighCourtProfile("UPHC"));
 
-    expect(routes).toEqual({
+    expect(himachalRoutes).toEqual({
       index: "/high-courts",
       home: "/high-courts/himachal",
       methodology: "/high-courts/himachal/methodology",
@@ -51,6 +78,16 @@ describe("high court routes", () => {
       data: "/high-courts/himachal/data",
       statsApi: "/v1/high-courts/himachal/stats",
       trendsApi: "/v1/high-courts/himachal/trends",
+    });
+
+    expect(uttarPradeshRoutes).toEqual({
+      index: "/high-courts",
+      home: "/high-courts/uttar-pradesh",
+      methodology: "/high-courts/uttar-pradesh/methodology",
+      api: "/high-courts/uttar-pradesh/api",
+      data: "/high-courts/uttar-pradesh/data",
+      statsApi: "/v1/high-courts/uttar-pradesh/stats",
+      trendsApi: "/v1/high-courts/uttar-pradesh/trends",
     });
   });
 });

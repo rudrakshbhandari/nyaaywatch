@@ -141,6 +141,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Rajasthan",
     stateCode: "RJ",
     hcNjdgStateValue: "8~9",
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://hcraj.nic.in/",
+    },
   }),
   SKHC: buildHighCourtProfile({
     courtCode: "SKHC",
@@ -176,6 +182,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "Allahabad High Court",
     stateCode: "UP",
     hcNjdgStateValue: "9~13",
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.allahabadhighcourt.in/",
+    },
   }),
 };
 
