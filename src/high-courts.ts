@@ -92,6 +92,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Gujarat",
     stateCode: "GJ",
     hcNjdgStateValue: "24~17",
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://gujarathighcourt.nic.in/",
+    },
   }),
   JHHC: buildHighCourtProfile({
     courtCode: "JHHC",
@@ -113,6 +119,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Madhya Pradesh",
     stateCode: "MP",
     hcNjdgStateValue: "23~23",
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://mphc.gov.in/",
+    },
   }),
   MNHC: buildHighCourtProfile({
     courtCode: "MNHC",

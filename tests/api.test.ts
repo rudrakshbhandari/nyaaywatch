@@ -370,6 +370,8 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.GJHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.MPHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.RJHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.UPHC!);
 
@@ -379,6 +381,8 @@ describe("HTTP routes", () => {
     expect(index.status).toBe(200);
     expect(index.text).toContain("Public High Court observability is now live in a narrow beta.");
     expect(index.text).toContain("High Court of Himachal Pradesh");
+    expect(index.text).toContain("High Court of Gujarat");
+    expect(index.text).toContain("High Court of Madhya Pradesh");
     expect(index.text).toContain("High Court of Rajasthan");
     expect(index.text).toContain("Allahabad High Court");
 
@@ -415,11 +419,27 @@ describe("HTTP routes", () => {
     const uttarPradeshOverview = await request(app).get("/high-courts/uttar-pradesh");
     expect(uttarPradeshOverview.status).toBe(200);
     expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
-    expect(uttarPradeshOverview.text).toContain("This page covers Allahabad High Court. 2 other public High Court pages are linked in the switcher.");
+    expect(uttarPradeshOverview.text).toContain("This page covers Allahabad High Court. 4 other public High Court pages are linked in the switcher.");
+
+    const gujaratOverview = await request(app).get("/high-courts/gujarat");
+    expect(gujaratOverview.status).toBe(200);
+    expect(gujaratOverview.text).toContain("High Court of Gujarat");
+
+    const madhyaPradeshOverview = await request(app).get("/high-courts/madhya-pradesh");
+    expect(madhyaPradeshOverview.status).toBe(200);
+    expect(madhyaPradeshOverview.text).toContain("High Court of Madhya Pradesh");
 
     const rajasthanOverview = await request(app).get("/high-courts/rajasthan");
     expect(rajasthanOverview.status).toBe(200);
     expect(rajasthanOverview.text).toContain("High Court of Rajasthan");
+
+    const gujaratStats = await request(app).get("/v1/high-courts/gujarat/stats");
+    expect(gujaratStats.status).toBe(200);
+    expect(gujaratStats.body.snapshot.courtCode).toBe("GJHC");
+
+    const madhyaPradeshTrends = await request(app).get("/v1/high-courts/madhya-pradesh/trends");
+    expect(madhyaPradeshTrends.status).toBe(200);
+    expect(madhyaPradeshTrends.body.snapshot.courtCode).toBe("MPHC");
 
     const uttarPradeshStats = await request(app).get("/v1/high-courts/uttar-pradesh/stats");
     expect(uttarPradeshStats.status).toBe(200);

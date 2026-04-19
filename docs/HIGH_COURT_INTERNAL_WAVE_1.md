@@ -38,9 +38,9 @@ The internal High Court registry now includes:
 
 Current posture:
 
-- `sourceReviewStatus=reviewed`: Himachal Pradesh, Rajasthan, and Uttar Pradesh
+- `sourceReviewStatus=reviewed`: Himachal Pradesh, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
 - `sourceReviewStatus=queued`: every other configured court in this wave
-- `publicBeta=true`: Himachal Pradesh, Rajasthan, and Uttar Pradesh
+- `publicBeta=true`: Himachal Pradesh, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
 - `publicBeta=false`: every other configured court in this wave
 
 ## Why These Courts
@@ -83,7 +83,7 @@ After this slice, the repo still does **not** claim:
 
 ## Next Decision After Setup
 
-Use this wave to choose the next one or two post-Uttar-Pradesh-and-Rajasthan courts for real operator-cycle validation.
+Use this wave to choose the next one or two post-Gujarat-and-Madhya-Pradesh courts for real operator-cycle validation.
 
 The next serious gate is still operational evidence:
 
@@ -92,8 +92,8 @@ The next serious gate is still operational evidence:
 - source-review writeups for the next court(s)
 - a methodologically honest reason to expose any public High Court beta beyond the current three-court set
 
-The repo now makes that first recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
+The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
 
-- validate Gujarat and Madhya Pradesh next
+- validate the next deliberate internal pair after Gujarat and Madhya Pradesh
 - keep using `npm run high-court:wave-readiness` for each deliberate pair
 - treat each additional pair as an internal proof step, not automatic public-beta approval

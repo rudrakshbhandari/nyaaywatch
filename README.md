@@ -28,7 +28,7 @@ What is shipped now:
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
 - narrow public Supreme Court beta routes under `/supreme-court`
-- narrow public High Court beta routes for Himachal High Court, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- narrow public High Court beta routes for Himachal High Court, High Court of Gujarat, High Court of Madhya Pradesh, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
@@ -114,11 +114,13 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --connect-host=<alb-dns> --state=UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal fetch "Internal Himachal High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court gujarat fetch "Internal Gujarat High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court madhya-pradesh fetch "Internal Madhya Pradesh High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court uttar-pradesh fetch "Internal Allahabad High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal Supreme Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court publications
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal
-npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=gujarat,madhya-pradesh
 npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:reconcile-fetch-schedule
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -128,6 +130,7 @@ npm run release:postpublish -- --state-slug=<state-slug> --publication-id=<publi
 npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 npm run release:record -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 npm run release:purge-public-routes -- --supreme-court
+npm run release:purge-public-routes -- --high-court=gujarat,madhya-pradesh
 npm run release:purge-public-routes -- --high-court=uttar-pradesh,rajasthan
 ```
 
@@ -150,6 +153,14 @@ Public routes:
 - `/high-courts/himachal/data`
 - `/high-courts/himachal/methodology`
 - `/high-courts/himachal/api`
+- `/high-courts/gujarat`
+- `/high-courts/gujarat/data`
+- `/high-courts/gujarat/methodology`
+- `/high-courts/gujarat/api`
+- `/high-courts/madhya-pradesh`
+- `/high-courts/madhya-pradesh/data`
+- `/high-courts/madhya-pradesh/methodology`
+- `/high-courts/madhya-pradesh/api`
 - `/high-courts/uttar-pradesh`
 - `/high-courts/uttar-pradesh/data`
 - `/high-courts/uttar-pradesh/methodology`
@@ -174,7 +185,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - Supreme Court now has a narrow public beta route family under `/supreme-court`
-- the public High Court beta currently covers Himachal High Court, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- the public High Court beta currently covers Himachal High Court, High Court of Gujarat, High Court of Madhya Pradesh, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
@@ -186,6 +197,10 @@ Public API:
 - `GET /v1/supreme-court/trends`
 - `GET /v1/high-courts/himachal/stats`
 - `GET /v1/high-courts/himachal/trends`
+- `GET /v1/high-courts/gujarat/stats`
+- `GET /v1/high-courts/gujarat/trends`
+- `GET /v1/high-courts/madhya-pradesh/stats`
+- `GET /v1/high-courts/madhya-pradesh/trends`
 - `GET /v1/high-courts/uttar-pradesh/stats`
 - `GET /v1/high-courts/uttar-pradesh/trends`
 - `GET /v1/high-courts/rajasthan/stats`
