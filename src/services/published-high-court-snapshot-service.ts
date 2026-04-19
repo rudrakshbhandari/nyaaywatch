@@ -15,6 +15,7 @@ import {
   buildHighCourtSnapshotCandidate,
   materializeHighCourtPublishedSnapshot,
 } from "../normalize/high-court-snapshot-candidate.js";
+import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
 import type { ArtifactStore } from "../storage/artifact-store.js";
 import {
   PgWarehouseStore,
@@ -43,13 +44,17 @@ export interface HighCourtPublicationHistoryEntry {
 }
 
 export class PublishedHighCourtSnapshotService {
+  private readonly cacheInvalidation: PublicCacheInvalidationService;
+
   constructor(
     private readonly config: AppConfig,
     private readonly profile: HighCourtProfile,
     private readonly store: PgWarehouseStore,
     private readonly artifactStore: ArtifactStore,
     private readonly sourceClient: HighCourtSourceClient,
-  ) {}
+  ) {
+    this.cacheInvalidation = new PublicCacheInvalidationService(config);
+  }
 
   async getPublishedSnapshot(): Promise<HighCourtPublishedSnapshotRecord | null> {
     return this.store.getLatestHighCourtPublishedSnapshot(this.profile.courtCode);
@@ -235,7 +240,7 @@ export class PublishedHighCourtSnapshotService {
       inspection.run.replayOfRunId ?? undefined,
     );
 
-    return this.store.withTransaction(async (tx) => {
+    const result = await this.store.withTransaction(async (tx) => {
       const snapshot = await tx.insertHighCourtPublishedSnapshot({
         id: createId("snapshot"),
         runId,
@@ -270,6 +275,10 @@ export class PublishedHighCourtSnapshotService {
 
       return { run, publication, snapshot };
     });
+
+    await this.cacheInvalidation.invalidateHighCourtRoutes(this.profile);
+
+    return result;
   }
 
   async replayRun(
@@ -385,6 +394,8 @@ export class PublishedHighCourtSnapshotService {
       restoredSnapshotId: rollback.publishedSnapshotId,
       previousPublicationId: rollback.previousPublicationId,
     });
+
+    await this.cacheInvalidation.invalidateHighCourtRoutes(this.profile);
 
     return rollback;
   }

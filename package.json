@@ -32,6 +32,7 @@
     "release:prepublish": "tsx src/dev/release-prepublish.ts",
     "release:postpublish": "tsx src/dev/release-postpublish.ts",
     "release:record": "tsx src/dev/release-record.ts",
+    "release:purge-public-routes": "tsx src/dev/release-purge-public-routes.ts",
     "release:verify": "tsx src/dev/release-verify.ts",
     "high-court:readiness": "tsx src/dev/high-court-readiness.ts",
     "high-court:wave-readiness": "tsx src/dev/high-court-wave-readiness.ts",

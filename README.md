@@ -127,9 +127,12 @@ npm run release:postpublish -- --publication-id=<publication-id> --base-url=http
 npm run release:postpublish -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in
 npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
 npm run release:record -- --state-slug=<state-slug> --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"
+npm run release:purge-public-routes -- --supreme-court
+npm run release:purge-public-routes -- --high-court=uttar-pradesh,rajasthan
 ```
 
 Use `npm run operator:remote` for live remote operator access from a local terminal. Use `npm run operator:staging` as the default heavy-state lane on the live AWS stack when long-running fetches should execute inside a one-off ECS task instead of through the Cloudflare-fronted public operator path.
+Use `npm run release:purge-public-routes` when a newly exposed Supreme Court or High Court public-beta route family needs an explicit Cloudflare purge after a deploy-only rollout.
 
 The live stack also supports a daily internal raw-fetch schedule at `8:00 AM Asia/Kolkata` across all implemented states. Reconcile it against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the schedule launches one ECS task that runs sequential `fetch` operations for every implemented state without changing the public snapshot. Public publishes remain operator-reviewed and manual on their existing cadence.
 
