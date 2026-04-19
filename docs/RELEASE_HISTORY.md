@@ -6,6 +6,27 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a:start -->
+## publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a
+
+- Reviewed at: `2026-04-19T08:24:22.000Z`
+- Reviewer: `Codex Supreme Court public beta`
+- Public URL: `https://nyaaywatch.in/supreme-court`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream Supreme Court NJDG`
+- Reference date: `2026-04-19T07:06:34.049Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T07:06:42.130Z`
+- Methodology version: `2026.04-supreme-court-draft`
+- Quality state: `complete`
+- Published from run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- Rollback target: `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Supreme Court became publicly reachable on `2026-04-19` after PR `#110` merged and deploy run `24624392748` settled the ECS service on task definition `:98`. Stable public HTML and JSON verification passed for `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`.
+
+<!-- release:publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a:end -->
+
 <!-- release:publication_e66cb2f9-b307-46d6-b00c-51b01e901fee:start -->
 ## publication_e66cb2f9-b307-46d6-b00c-51b01e901fee
 

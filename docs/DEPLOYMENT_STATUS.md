@@ -67,6 +67,7 @@ Operational notes:
 - Release path: verified `main` merges auto-roll the live ECS service through GitHub Actions
 - Current public coverage:
   - unscoped default routes for Himachal Pradesh
+  - narrow Supreme Court beta routes at `/supreme-court` and `/v1/supreme-court/...`
   - narrow Himachal High Court beta routes at `/high-courts/himachal` and `/v1/high-courts/himachal/...`
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
@@ -105,13 +106,13 @@ Operational notes:
 - Current Himachal High Court reference-date kind: `captured_at`
 - Current Himachal High Court published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
 - Current Himachal High Court methodology version: `2026.04-high-court-draft`
-- Current active internal Supreme Court publication: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
-- Current active internal Supreme Court published snapshot: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
-- Current internal Supreme Court publication action: `rollback`
-- Current internal Supreme Court reference date: `2026-04-19T07:06:34.049Z`
-- Current internal Supreme Court reference-date kind: `captured_at`
-- Current internal Supreme Court published-from run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
-- Current internal Supreme Court methodology version: `2026.04-supreme-court-draft`
+- Current active Supreme Court publication: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- Current active Supreme Court published snapshot: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- Current Supreme Court publication action: `rollback`
+- Current Supreme Court reference date: `2026-04-19T07:06:34.049Z`
+- Current Supreme Court reference-date kind: `captured_at`
+- Current Supreme Court published-from run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- Current Supreme Court methodology version: `2026.04-supreme-court-draft`
 - Current active Punjab publication: `publication_8a5ddc6e-f520-4344-8161-76dc4dead033`
 - Current active Punjab published snapshot: `snapshot_35226b6d-2fac-49d6-9d53-7aa24b9387e5`
 - Current Punjab source snapshot date: `2026-04-16`
@@ -251,10 +252,17 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Supreme Court public beta exposure completed on 2026-04-19 after PR `#110` merged and GitHub deploy run `24624392748` rolled the live service to task definition `:98`:
+  - the already-proven active Supreme Court publication `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` became publicly reachable under `/supreme-court`
+  - live route verification returned `200` for `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`
+  - `GET /operator/supreme-court` still returned `401` without a token, preserving the operator auth boundary after the public launch
+  - authenticated `GET /operator/supreme-court/publications` showed `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` active with `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486` and `publishedFromRunId=run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+  - the active public Supreme Court snapshot now carries `referenceDateAt=2026-04-19T07:06:34.049Z`, `referenceDateKind=captured_at`, `sourceSnapshotAt=null`, and `publishedAt=2026-04-19T07:06:42.130Z`
+  - active public Supreme Court stats are `pendingTotalCases=94158`, `institutedLastMonthTotalCases=6148`, `disposedLastMonthTotalCases=4552`, and the live trends API reports `trendCount=2`
 - Supreme Court second internal proof cycle completed on 2026-04-19 after PR `#108` merged and GitHub deploy run `24623340754` rolled the live service to task definition `:96`:
   - the internal Supreme Court operator namespace remained auth-protected under `/operator/supreme-court/...`
   - `GET /operator/supreme-court` returned `401` without a token and `200` with the operator token
-  - `GET /supreme-court` still returned `404`, confirming the public route family remains dark after the second window too
+  - `GET /supreme-court` still returned `404`, confirming the public route family remained dark after the second window
   - live Supreme Court fetch run `run_92990afc-1acd-4d37-b6d5-69dc95a1d933` completed successfully
   - live Supreme Court publication `publication_a4af147e-0495-40ae-8359-5d2775da3c8a` created `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
   - live Supreme Court replay run `run_e9572b2a-bb76-4318-885d-23b04d776eea` created publication `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
