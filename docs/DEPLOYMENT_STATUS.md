@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:74`
+- ECS task definition: `nyaaywatch-staging:93`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
@@ -67,6 +67,7 @@ Operational notes:
 - Release path: verified `main` merges auto-roll the live ECS service through GitHub Actions
 - Current public coverage:
   - unscoped default routes for Himachal Pradesh
+  - narrow Himachal High Court beta routes at `/high-courts/himachal` and `/v1/high-courts/himachal/...`
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
   - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
@@ -97,6 +98,13 @@ Operational notes:
 - Current active Himachal Pradesh publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal Pradesh published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal Pradesh source snapshot date: `2026-04-10`
+- Current active Himachal High Court publication: `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee`
+- Current active Himachal High Court published snapshot: `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b`
+- Current Himachal High Court publication action: `rollback`
+- Current Himachal High Court reference date: `2026-04-19T03:39:31.512Z`
+- Current Himachal High Court reference-date kind: `captured_at`
+- Current Himachal High Court published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+- Current Himachal High Court methodology version: `2026.04-high-court-draft`
 - Current active Punjab publication: `publication_8a5ddc6e-f520-4344-8161-76dc4dead033`
 - Current active Punjab published snapshot: `snapshot_35226b6d-2fac-49d6-9d53-7aa24b9387e5`
 - Current Punjab source snapshot date: `2026-04-16`
@@ -236,6 +244,11 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Himachal High Court public beta exposure completed on 2026-04-19 after PR `#105` merged and GitHub deploy run `24621281752` rolled the live service to task definition `:93`:
+  - the already-reviewed active High Court publication `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee` became publicly reachable under `/high-courts/himachal`
+  - the active High Court snapshot remained `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:28.731Z`, and `publishedFromRunId=run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+  - live route verification returned `200` for `/high-courts/himachal`, `/high-courts/himachal/data`, `/high-courts/himachal/methodology`, `/high-courts/himachal/api`, `/v1/high-courts/himachal/stats`, and `/v1/high-courts/himachal/trends`
+  - public stats on the live route matched the internal proof-cycle numbers: `pendingTotalCases=105599`, `institutedLastMonthTotalCases=7046`, `disposedLastMonthTotalCases=6528`
 - Broad public-alpha ops sweep logic corrected on 2026-04-18:
   - the original Himachal daily-fetch alert was a false positive caused by comparing internal cadence against the older published Himachal snapshot date instead of the latest internal operator run
   - live AWS staging logs already showed the scheduled Himachal fetch `run_337a80ae-4980-415a-8585-d670e413dfed` completed on `2026-04-17T20:10:06Z` with `sourceSnapshotAt=2026-04-16T00:00:00.000Z`

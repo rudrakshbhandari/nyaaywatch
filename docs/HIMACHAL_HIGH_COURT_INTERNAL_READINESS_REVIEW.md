@@ -4,7 +4,7 @@ Current internal-readiness review for the Himachal High Court pilot.
 
 This document is the High Court-tier analogue of the earlier state internal-readiness reviews. It exists to answer one narrow question:
 
-- has Himachal High Court accumulated enough real internal operator evidence to justify a later public beta discussion?
+- had Himachal High Court accumulated enough real internal operator evidence to justify a public beta, and what live evidence exists now that the beta is exposed?
 
 Latest live verification referenced here was run against `https://nyaaywatch.in` on **April 19, 2026**.
 
@@ -24,11 +24,14 @@ What is true in repo state now:
 - local and remote operator tooling can target Himachal High Court explicitly
 - a live Himachal High Court internal proof cycle has now cleared `fetch -> publish -> replay -> rollback`
 - the narrow public Himachal High Court beta namespace is now implemented in repo code
+- the narrow public High Court beta route family is deployed and reachable
 
 What is still **not** yet true in repo evidence:
 
 - this repo does not yet record multiple separate public-release windows for the Himachal High Court beta
 - the Himachal High Court tier still depends on `captured_at` because the official HC NJDG surface does not expose a defensible source snapshot timestamp
+- this repo still has only one live Himachal High Court public-beta window
+- this repo does not yet record a second, later public High Court publication cycle after the beta route went live
 
 ## Readiness Command
 
@@ -54,7 +57,7 @@ The command verifies:
 
 ## Internal Proof Bar
 
-Himachal High Court should not be considered ready for public-beta review until all of the following are true in live operator evidence:
+Himachal High Court should not have been considered ready for public-beta review until all of the following were true in live operator evidence:
 
 1. an active published High Court snapshot exists
 2. at least one replayed High Court run exists from stored evidence
@@ -95,8 +98,42 @@ This means the repo has now recorded the first real Himachal High Court proof cy
 - one rollback publication
 - an explicit and defensible reference-date contract
 
+## Live Public Beta Evidence
+
+Verified on `2026-04-19` after PR `#105` merged and GitHub deploy run `24621281752` completed on `main`.
+
+- settled ECS task definition: `nyaaywatch-staging:93`
+- active High Court publication id: `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee`
+- active published snapshot id: `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b`
+- active publication action: `rollback`
+- active publication note: `Internal himachal High Court rollback 2026-04-19`
+- previous publication id: `publication_af21ed65-7a07-4c1c-93f8-e77ba054bef6`
+- published-from run id: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+- replay run id retained in history: `run_46c29931-2079-403c-a273-e8e062e4314b`
+- reference date: `2026-04-19T03:39:31.512Z`
+- reference date kind: `captured_at`
+- published at: `2026-04-19T03:40:28.731Z`
+- methodology version: `2026.04-high-court-draft`
+- public route verification:
+  - `200 /high-courts/himachal`
+  - `200 /high-courts/himachal/data`
+  - `200 /high-courts/himachal/methodology`
+  - `200 /high-courts/himachal/api`
+  - `200 /v1/high-courts/himachal/stats`
+  - `200 /v1/high-courts/himachal/trends`
+- active public snapshot metrics:
+  - pending total cases: `105,599`
+  - instituted last month total cases: `7,046`
+  - disposed last month total cases: `6,528`
+
+Important nuance:
+
+- the public beta route exposure happened during the PR `#105` deploy window
+- the currently visible High Court data itself comes from the already-reviewed active Himachal High Court publication chain, not from a brand-new public-only data publish
+
 ## Recommendation
 
+<<<<<<< HEAD
 Himachal High Court is now ready enough for a narrow public beta route.
 
 That does **not** mean:
@@ -109,3 +146,11 @@ The next concrete action is:
 
 - verify the live public Himachal High Court beta after deploy
 - then decide whether Supreme Court, not more High Courts, should be the next top-down product tier
+=======
+Himachal High Court has cleared the first public-beta gate and is now live as a narrow public High Court surface.
+
+The next concrete action is:
+
+- keep Himachal High Court public and boring through additional operator cycles
+- move the next public top-down planning track to Supreme Court before broadening the High Court UX layer
+>>>>>>> 1237465 (docs: plan supreme court tier after himachal beta)

@@ -30,14 +30,17 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
-- [ ] Verify the live public Himachal High Court beta route after deploy and record the release evidence alongside the existing internal proof-cycle evidence.
-- [ ] Decide whether Supreme Court should become the next public top-down tier before any broader High Court UX expansion, and write the source-review / pilot-plan docs accordingly.
-- [ ] If Supreme Court becomes the next tier, design the homepage IA so it opens with Supreme Court context while still linking naturally into High Courts and district/subordinate drilldowns.
+- [ ] Implement the Supreme Court internal pilot scaffold under a dedicated `/supreme-court` namespace, keeping it tier-aware instead of overloading lower-court or High Court routes.
+- [ ] Write the Supreme Court methodology draft and explicit data contract before any public Supreme Court page ships.
+- [ ] Decide how the homepage should stage Supreme Court, High Courts, and district/subordinate courts in one scroll without implying fake cross-tier comparability.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
 ## Recently Completed
 
+- [x] Verified the live public Himachal High Court beta after PR `#105` merged and deploy run `24621281752` settled the live ECS service on task definition `:93`; `/high-courts/himachal`, `/high-courts/himachal/data`, `/high-courts/himachal/methodology`, `/high-courts/himachal/api`, `/v1/high-courts/himachal/stats`, and `/v1/high-courts/himachal/trends` all returned `200`, and the release evidence is now recorded in the High Court readiness review, deployment status, expansion log, and release history docs.
+- [x] Decided that Supreme Court should be the next public top-down tier before any broader High Court UX expansion, and wrote the source-review plus pilot-plan docs that define the source boundary, route family, shared-vs-tier-specific data contract, and homepage integration rules.
+- [x] Designed the first homepage IA for a Supreme Court-first product shell inside `docs/SUPREME_COURT_PILOT_PLAN.md`, so the next implementation slice can begin with a concrete top-down route and UX contract instead of open-ended product debate.
 - [x] Enabled the narrow public Himachal High Court beta surface in repo code under `/high-courts/himachal`, with published-only HTML and JSON routes plus tier-specific methodology, data, and API pages.
 - [x] Ran `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` against the live stack after real Himachal operator proof cycles and recorded that Himachal now satisfies the internal High Court proof bar.
 - [x] Deployed the High Court parser hardening, reran `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`, and completed the first live Uttar Pradesh and Rajasthan High Court fetch/publish/replay/rollback proof cycles.

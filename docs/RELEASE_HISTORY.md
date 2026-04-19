@@ -6,6 +6,27 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_e66cb2f9-b307-46d6-b00c-51b01e901fee:start -->
+## publication_e66cb2f9-b307-46d6-b00c-51b01e901fee
+
+- Reviewed at: `2026-04-19T04:58:21.000Z`
+- Reviewer: `Codex Himachal High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/himachal`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T03:39:31.512Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T03:40:28.731Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+- Rollback target: `publication_af21ed65-7a07-4c1c-93f8-e77ba054bef6`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Himachal High Court became publicly reachable on `2026-04-19` after PR `#105` merged and deploy run `24621281752` settled the ECS service on task definition `:93`. The live public beta exposes the already-reviewed active High Court publication under `/high-courts/himachal`, with the public HTML and JSON routes all returning `200`.
+
+<!-- release:publication_e66cb2f9-b307-46d6-b00c-51b01e901fee:end -->
+
 <!-- release:publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02:start -->
 ## publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02
 
