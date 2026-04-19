@@ -91,24 +91,25 @@ Snapshot Observatory:
 
 - one state: Himachal Pradesh
 - one trust model: every number comes from a dated public snapshot
-- one public front door: scorecards and district comparisons
+- one public front door: a Supreme Court-first national overview with explicit lower-court drilldowns
 - one urgency layer: anomaly callouts
 - one enabling layer: public exports and developer-friendly API endpoints
 
-The alpha should be architected so the same model can expand state by state across India over time, but the user-facing product should remain explicitly Himachal-first until additional states clear the same trust, methodology, and operational readiness bar.
+The alpha should be architected so the same model can expand state by state across India over time. The public front door may now stage multiple court tiers, but lower-court evidence should stay explicit, tier-aware, and anchored to approved published snapshots rather than collapsing into one fake national scoreboard.
 
 ## Current Implementation Note
 
 The repository now ships a narrow alpha reference implementation of this architecture:
 
 - one Node/TypeScript service with an operator boundary and public boundary
-- server-rendered public pages for `/`, `/districts`, `/districts/:id`, `/data`, `/methodology`, and `/api`
+- server-rendered public pages for `/`, `/states/:stateSlug`, `/districts`, `/districts/:id`, `/data`, `/methodology`, and `/api`
 - public JSON for `GET /v1/stats/himachal`, `GET /v1/districts`, and `GET /v1/trends`
+- narrow public Supreme Court and High Court beta routes with tier-specific methodology, data, and API surfaces
 - explicit state-scoped public routes for additional approved states via `/states/:stateSlug/...` and `/v1/states/:stateSlug/...`
 - PostgreSQL-backed run, publication, and published-snapshot state plus S3-backed raw evidence artifacts
 - published district-history and CSV export surfaces that stay inside the active public snapshot lineage
 
-This does not change the intended production direction. It proves the public trust boundary first while keeping Himachal as the default unscoped alpha surface and forcing any additional state to use explicit state-scoped routes rather than empty national scaffolding.
+This does not change the intended production direction. It proves the public trust boundary first while letting `/` act as a tier-aware national front door, while Himachal remains the default lower-court proof surface through explicit state pages and the legacy unscoped lower-court routes.
 
 ## Credit-Aware Infrastructure Direction
 
@@ -122,19 +123,16 @@ The user has confirmed access to `AWS $10k` in startup/student credits plus addi
 
 Canonical homepage hero:
 
-> See how slow justice is, district by district.
+> Start at the Supreme Court. Then move down the system.
 
 The first public page should include:
 
-- Himachal topline scorecard
-- district ranking table
-- trend chart for backlog direction
-- anomaly callouts
-- visible trust metadata near headline metrics
-- lightweight public-action surfaces such as district permalinks, citation metadata, and CSV exports
-- methodology page
-- download CSV button
-- API docs link
+- Supreme Court headline plus apex-tier toplines
+- compact freshness/source/methodology metadata in a supporting position
+- High Courts beta section with only published-court entry cards
+- district/subordinate courts section that uses Himachal as the default proof surface
+- later state-coverage directory and drilldowns
+- lightweight trust-action surfaces such as methodology, data, and API links
 
 ## Public Information Architecture
 
@@ -148,33 +146,32 @@ NyaayWatch alpha should feel like a public evidence front page, not a generic an
 
 The homepage should prioritize content in this order:
 
-1. Investigative headline and one-sentence framing
-2. Trust strip showing snapshot date, freshness state, methodology version, and source attribution
-3. Three topline metrics for Himachal with short plain-language labels
-4. District ranking table as the main working surface
-5. Trend chart for backlog direction across snapshots
-6. Flagged district callouts with direct links to district evidence pages
-7. Supporting trust actions: methodology, CSV download, API docs
+1. Supreme Court headline and one-sentence framing
+2. Apex-tier toplines with a compact freshness/source/methodology line nearby
+3. High Courts beta directory
+4. District/subordinate courts handoff using Himachal as the default proof surface
+5. Lower-court state coverage directory and drilldowns
+6. Supporting trust actions: methodology, data, API docs
 
-The first viewport should not try to show the full table, chart, anomalies, and trust copy at once. It should behave like a calm poster for a public-interest investigation, with the evidence surfaces starting immediately below the fold.
+The first viewport should be dominated by the Supreme Court story. Trust metadata must remain visible, but it should support the hero rather than leading it. Lower-court discovery belongs below the fold and on explicit state pages, not as a chip wall at the top of `/`.
 
 ### Homepage Screen Structure
 
 ```text
 +---------------------------------------------------------------+
-| Header: NyaayWatch | Methodology | Data Download | API Docs   |
+| Header: NyaayWatch | Supreme Court | High Courts | Districts  |
 +---------------------------------------------------------------+
-| Investigative headline                                        |
+| Supreme Court headline                                        |
 | One-sentence framing                                          |
-| Trust strip: Updated as of | Snapshot | Methodology | Source  |
+| Compact accountability line: Snapshot | Methodology | Source  |
 | Topline metric 1 | Topline metric 2 | Topline metric 3        |
-| Primary action: Explore districts                            |
+| Primary actions: Open Supreme Court | Open High Courts        |
 +---------------------------------------------------------------+
-| District ranking table                                        |
+| High Courts beta directory                                    |
 +---------------------------------------------------------------+
-| Backlog trend chart                                           |
+| District/subordinate courts handoff                           |
 +---------------------------------------------------------------+
-| Flagged district callouts                                     |
+| Lower-court state coverage directory                          |
 +---------------------------------------------------------------+
 | Evidence / methodology / export support surfaces              |
 +---------------------------------------------------------------+
@@ -459,7 +456,7 @@ This plan should align with the existing repo context:
 
 The following design decisions were considered and intentionally deferred from alpha:
 
-- visible multi-state selector UI: deferred because the alpha should remain explicitly Himachal-first even though the architecture must scale nationally
+- a top-of-page state chip wall: deferred because state coverage belongs later in the national homepage scroll or on explicit state pages
 - map-first exploration: deferred because tables, trends, and evidence pages are the higher-trust surfaces for initial public accountability work
 - richer data visualization storytelling beyond the core trend and ranking surfaces: deferred to keep the alpha focused on legibility and citation
 - decorative brand campaigns or advocacy-style visual motifs: deferred because the public dossier posture is a better trust fit for alpha
@@ -531,7 +528,7 @@ Keep this document focused on the product-specific design decisions that are har
 - homepage and district-page composition
 - trust-surface behavior
 - tone progression
-- Himachal-first public IA discipline
+- tier-aware public IA discipline with explicit lower-court state pages
 
 ## Distribution Plan
 

@@ -65,6 +65,7 @@ export function buildPublicPageContext(
 
 export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRoutes {
   const htmlBase = isDefaultPublicState(profile) ? "" : `/states/${profile.stateSlug}`;
+  const home = isDefaultPublicState(profile) ? "/states/himachal" : `/states/${profile.stateSlug}`;
   const apiBase = isDefaultPublicState(profile)
     ? {
         stats: "/v1/stats/himachal",
@@ -78,7 +79,7 @@ export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRo
       };
 
   return {
-    home: htmlBase || "/",
+    home,
     districts: htmlBase ? `${htmlBase}/districts` : "/districts",
     district: (districtId) => `${htmlBase ? `${htmlBase}/districts` : "/districts"}/${districtId}`,
     data: htmlBase ? `${htmlBase}/data` : "/data",
@@ -106,17 +107,15 @@ function buildPublicScopeDescription(
 
   if (isDefaultPublicState(currentProfile)) {
     if (otherStateCount === 0) {
-      return "The public site is currently centered on Himachal Pradesh.";
+      return "This page covers Himachal Pradesh. The national homepage lives at /, and the lower-court shortcuts stay available on the unscoped district, data, methodology, and API routes.";
     }
 
-    return `The public site stays centered on Himachal Pradesh on the main routes, with ${otherStateCount} additional approved state page${
-      otherStateCount === 1 ? "" : "s"
-    } in the switcher.`;
+    return `This page covers Himachal Pradesh. The national homepage lives at /, and the switcher links ${otherStatePages}.`;
   }
 
   if (otherStateCount === 0) {
-    return `This page covers ${currentProfile.stateName}.`;
+    return `This page covers ${currentProfile.stateName}. The national homepage lives at /.`;
   }
 
-  return `This page covers ${currentProfile.stateName}. The unscoped routes stay centered on Himachal Pradesh, and the switcher links ${otherStatePages}.`;
+  return `This page covers ${currentProfile.stateName}. The national homepage lives at /, and the switcher links ${otherStatePages}.`;
 }

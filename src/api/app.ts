@@ -13,6 +13,7 @@ import {
 } from "../high-courts.js";
 import { logError, logInfo } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
+import { renderNationalHome } from "./home/national-home.js";
 import { renderApiPage } from "./pages/api.js";
 import { renderDataPage } from "./pages/data.js";
 import { renderDistrictPage } from "./pages/district-detail.js";
@@ -299,11 +300,18 @@ export function createApp(
         return;
       }
 
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, currentProfile);
+      const supremeCourtSnapshot = await supremeCourtService?.getPublishedSnapshot();
+      const highCourtEntries = await listAvailablePublicHighCourtEntries(highCourtServices);
+
       response.send(
-        renderHome(
-          snapshot.payload,
-          buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
-        ),
+        renderNationalHome({
+          supremeCourtSnapshot: supremeCourtSnapshot?.payload ?? null,
+          highCourtEntries,
+          lowerCourtSnapshot: snapshot.payload,
+          lowerCourtContext: buildPublicPageContext(currentProfile, availableProfiles),
+          availableStateProfiles: availableProfiles,
+        }),
       );
     }),
   );
@@ -1201,7 +1209,7 @@ function getRequiredPublicService(stateCode: SupportedStateCode, publicServices:
 
 function resolvePublicStateRequest(request: Request, publicServices: PublicServiceMap) {
   const stateSlug = readRouteParam(request.params.stateSlug);
-  const profile = getPublicStateProfileBySlug(stateSlug);
+  const profile = resolvePublicStateProfile(stateSlug);
   if (!profile) {
     return null;
   }
@@ -1212,6 +1220,15 @@ function resolvePublicStateRequest(request: Request, publicServices: PublicServi
   }
 
   return { profile, service };
+}
+
+function resolvePublicStateProfile(stateSlug: string) {
+  const normalized = stateSlug.trim().toLowerCase();
+  if (normalized === "himachal") {
+    return getStateProfile("HP");
+  }
+
+  return getPublicStateProfileBySlug(normalized);
 }
 
 function resolvePublicHighCourtRequest(request: Request, services: HighCourtServiceMap) {

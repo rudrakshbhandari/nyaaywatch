@@ -43,6 +43,9 @@ describe("HTTP routes", () => {
       },
     });
     await seedTestSnapshot(context.service);
+    await seedTestSupremeCourtSnapshot(context.supremeCourtService);
+    await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.APHC!);
     const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
     const statsResponse = await request(app).get("/v1/stats/himachal");
@@ -51,13 +54,16 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
-    expect(homepage.text).toContain("How long is the wait for justice in Himachal Pradesh?");
-    expect(homepage.text).toContain("pending cases");
-    expect(homepage.text).toContain("Every one of these is a person waiting for their day in court.");
-    expect(homepage.text).toContain("Three districts to inspect first");
-    // Glossary popovers still carry the methodology strings in a tooltip, but
-    // not above the fold as dashboard jargon.
-    expect(homepage.text).toContain("methodology");
+    expect(homepage.text).toContain("Start at the Supreme Court. Then move down the system.");
+    expect(homepage.text).toContain("Open Supreme Court beta");
+    expect(homepage.text).toContain("Most public case volume still sits below the apex court.");
+    expect(homepage.text).toContain("State lower-court pages stay visible, but later in the scroll.");
+    expect(homepage.text).not.toContain('aria-label="Supported states"');
+    expect(homepage.text).toContain("Open Himachal lower-court overview");
+
+    const himachalOverview = await request(app).get("/states/himachal");
+    expect(himachalOverview.status).toBe(200);
+    expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);

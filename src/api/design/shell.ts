@@ -6,13 +6,13 @@ export interface PageShellOptions {
   title: string;
   body: string;
   /** Which top-nav link should render as active. */
-  activeNav?: "home" | "districts" | "data" | "methodology" | "api";
+  activeNav?: string;
   /** Brand link for the current page scope. */
   brandHref?: string;
   /** Small brand tag shown in the footer. */
   brandTag?: string;
   /** State-aware nav links for the current public scope. */
-  navLinks?: Array<{ id: NonNullable<PageShellOptions["activeNav"]>; href: string; label: string }>;
+  navLinks?: Array<{ id: string; href: string; label: string }>;
   /** Supported public states that currently have published snapshots. */
   stateLinks?: Array<{ label: string; href: string; active: boolean }>;
   /** Small meta strip directly under the masthead. Optional. */
@@ -72,7 +72,7 @@ function renderNav(
   active: PageShellOptions["activeNav"] | null,
   navLinks: PageShellOptions["navLinks"],
 ): string {
-  const links: Array<{ id: NonNullable<PageShellOptions["activeNav"]>; href: string; label: string }> = navLinks ?? [
+  const links: Array<{ id: string; href: string; label: string }> = navLinks ?? [
     { id: "districts", href: "/districts", label: "Districts" },
     { id: "data", href: "/data", label: "Data" },
     { id: "methodology", href: "/methodology", label: "Method" },

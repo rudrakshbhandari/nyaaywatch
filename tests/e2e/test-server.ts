@@ -1,6 +1,13 @@
 import { createServer } from "node:http";
 
-import { createTestApp, createTestContext, insertHistoricalPublishedSnapshot, seedTestSnapshot } from "../helpers.js";
+import {
+  createTestApp,
+  createTestContext,
+  insertHistoricalPublishedSnapshot,
+  seedTestHighCourtSnapshot,
+  seedTestSnapshot,
+  seedTestSupremeCourtSnapshot,
+} from "../helpers.js";
 
 const port = Number(process.env.E2E_PORT ?? 4211);
 
@@ -23,8 +30,17 @@ await insertHistoricalPublishedSnapshot(context.pool, {
   },
 });
 await seedTestSnapshot(context.service);
+await seedTestSupremeCourtSnapshot(context.supremeCourtService);
+await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
+await seedTestHighCourtSnapshot(context.highCourtServices.APHC!);
 
-const app = createTestApp(context.config, context.service);
+const app = createTestApp(
+  context.config,
+  context.service,
+  context.publicServices,
+  context.highCourtServices,
+  context.supremeCourtService,
+);
 const server = createServer(app);
 
 server.listen(port, "127.0.0.1", () => {
