@@ -18,7 +18,7 @@ import { PublishedHighCourtSnapshotService } from "../src/services/published-hig
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../src/storage/artifact-store.js";
 import { PgWarehouseStore } from "../src/storage/postgres.js";
-import { buildHimachalHighCourtCaptureBundle } from "./fixtures/high-court.js";
+import { buildHighCourtCaptureBundle } from "./fixtures/high-court.js";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -258,13 +258,11 @@ function loadFixturePublishedSnapshot(): PublishedSnapshot {
 }
 
 function createFixtureHighCourtSourceClient(courtCode: SupportedHighCourtCode): HighCourtSourceClient {
-  if (courtCode !== "HPHC") {
-    throw new Error(`No checked-in High Court fixture set is available for ${courtCode}.`);
-  }
+  const profile = getHighCourtProfile(courtCode);
 
   return {
     async captureLatest(): Promise<HighCourtCaptureBundle> {
-      return buildHimachalHighCourtCaptureBundle();
+      return buildHighCourtCaptureBundle(profile);
     },
   };
 }

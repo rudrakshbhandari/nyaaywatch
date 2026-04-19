@@ -1,12 +1,13 @@
 import type { HighCourtCaptureBundle } from "../../src/domain/high-court-capture-schema.js";
+import type { HighCourtProfile } from "../../src/high-courts.js";
 
-export const HIMACHAL_HIGH_COURT_HTML = `
+export const BASE_HIGH_COURT_HTML = `
 <select class='form-select me-2 w-50' id='state_code' name='state_code'>
   <option value="2~5" selected>High Court of Himachal Pradesh</option>
 </select>
 <select class='form-select w-50' id='dist_code' name='dist_code'>
   <option value=''>Select Bench</option>
-  <option value="1">Principal Bench Himachal P</option>
+  <option value="1">Principal Bench Fixture</option>
 </select>
 <h4 class="card-title mb-0 d-inline">Civil Cases</h4><span class="float-end h2 m-0 "> 91,881</span>
 <h4 class="card-title mb-0 d-inline">Criminal Cases</h4><span class="float-end h2 m-0 ">13,718</span>
@@ -67,21 +68,43 @@ export const HIMACHAL_HIGH_COURT_HTML = `
 <p class="text-white rounded p-1">Version :2.0</p>
 `;
 
+export function buildHighCourtCaptureBundle(
+  profile: Pick<HighCourtProfile, "courtCode" | "courtName" | "stateCode" | "stateName" | "hcNjdgStateValue" | "sourceUrls">,
+  capturedAt = "2026-04-19T00:00:00.000Z",
+): HighCourtCaptureBundle {
+  const html = BASE_HIGH_COURT_HTML.replace('value="2~5" selected>High Court of Himachal Pradesh', `value="${profile.hcNjdgStateValue}" selected>${profile.courtName}`);
+
+  return {
+    capturedAt,
+    courtCode: profile.courtCode,
+    courtName: profile.courtName,
+    stateCode: profile.stateCode,
+    stateName: profile.stateName,
+    sourceName: `HC NJDG ${profile.courtName} dashboard`,
+    sourceAttribution: `High Courts of India National Judicial Data Grid for ${profile.courtName}`,
+    homePage: {
+      url: `${profile.sourceUrls.hcNjdg}?p=home&state_code=${profile.hcNjdgStateValue}`,
+      html,
+    },
+    benchOptions: [{ benchCode: "1", benchName: "Principal Bench Fixture" }],
+  };
+}
+
 export function buildHimachalHighCourtCaptureBundle(
   capturedAt = "2026-04-19T00:00:00.000Z",
 ): HighCourtCaptureBundle {
-  return {
-    capturedAt,
-    courtCode: "HPHC",
-    courtName: "High Court of Himachal Pradesh",
-    stateCode: "HP",
-    stateName: "Himachal Pradesh",
-    sourceName: "HC NJDG High Court of Himachal Pradesh dashboard",
-    sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Himachal Pradesh",
-    homePage: {
-      url: "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=2~5",
-      html: HIMACHAL_HIGH_COURT_HTML,
+  return buildHighCourtCaptureBundle(
+    {
+      courtCode: "HPHC",
+      courtName: "High Court of Himachal Pradesh",
+      stateCode: "HP",
+      stateName: "Himachal Pradesh",
+      hcNjdgStateValue: "2~5",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+      },
     },
-    benchOptions: [{ benchCode: "1", benchName: "Principal Bench Himachal P" }],
-  };
+    capturedAt,
+  );
 }

@@ -6,7 +6,7 @@ import { HighCourtSnapshotCandidateSchema } from "../src/domain/high-court-snaps
 import { getHighCourtProfile, getHighCourtProfileBySlug, listHighCourtProfiles } from "../src/high-courts.js";
 
 describe("high court profiles", () => {
-  it("defines Himachal High Court as the first pilot profile with official source URLs", () => {
+  it("defines Himachal High Court as the first reviewed pilot profile with official source URLs", () => {
     expect(getHighCourtProfile("HPHC")).toEqual({
       courtCode: "HPHC",
       courtSlug: "himachal",
@@ -15,6 +15,7 @@ describe("high court profiles", () => {
       stateName: "Himachal Pradesh",
       hcNjdgStateValue: "2~5",
       publicBeta: false,
+      sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
         hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
@@ -28,8 +29,13 @@ describe("high court profiles", () => {
   it("resolves high court profiles by slug", () => {
     expect(getHighCourtProfileBySlug("himachal")?.courtCode).toBe("HPHC");
     expect(getHighCourtProfileBySlug("HIMACHAL")?.courtCode).toBe("HPHC");
+    expect(getHighCourtProfileBySlug("uttar-pradesh")?.courtCode).toBe("UPHC");
+    expect(getHighCourtProfileBySlug("bihar")?.courtCode).toBe("BRHC");
+    expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
-    expect(listHighCourtProfiles()).toHaveLength(1);
+    expect(listHighCourtProfiles()).toHaveLength(17);
+    expect(listHighCourtProfiles().every((profile) => profile.publicBeta === false)).toBe(true);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(1);
   });
 });
 

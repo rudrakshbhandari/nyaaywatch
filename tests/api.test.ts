@@ -223,9 +223,13 @@ describe("HTTP routes", () => {
       .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
 
     expect(listedHighCourts.status).toBe(200);
-    expect(listedHighCourts.body.highCourts).toHaveLength(1);
-    expect(listedHighCourts.body.highCourts[0].court.courtSlug).toBe("himachal");
-    expect(listedHighCourts.body.highCourts[0].hasPublishedSnapshot).toBe(false);
+    expect(listedHighCourts.body.highCourts.length).toBeGreaterThan(1);
+    expect(listedHighCourts.body.highCourts.map((entry: { court: { courtSlug: string } }) => entry.court.courtSlug)).toContain("himachal");
+    expect(listedHighCourts.body.highCourts.map((entry: { court: { courtSlug: string } }) => entry.court.courtSlug)).toContain("uttar-pradesh");
+    const himachalListing = listedHighCourts.body.highCourts.find(
+      (entry: { court: { courtSlug: string } }) => entry.court.courtSlug === "himachal",
+    );
+    expect(himachalListing?.hasPublishedSnapshot).toBe(false);
 
     const fetched = await request(app)
       .post("/operator/high-courts/himachal/runs/fetch")

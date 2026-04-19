@@ -31,11 +31,13 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 ### 3. Deliberate Post-Rollout Scope Decisions
 
 - [ ] Run `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` across repeated real Himachal High Court operator cycles and record the live evidence in `docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md` before deciding whether any public High Court beta route is ready.
+- [ ] Choose one or two courts from `docs/HIGH_COURT_INTERNAL_WAVE_1.md` for the first post-Himachal live operator-cycle validation instead of trying to prove the whole internal wave at once.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
 ## Recently Completed
 
+- [x] Added a first internal multi-state High Court wave for the single-jurisdiction courts that already fit the current High Court snapshot contract, and documented the deliberate exclusions for multi-jurisdiction courts and Delhi in `docs/HIGH_COURT_INTERNAL_WAVE_1.md`.
 - [x] Added a Himachal High Court internal-readiness verifier plus a dedicated readiness review doc, so the “repeat internal proof cycles before beta” gate is now executable through `npm run high-court:readiness` instead of living only as prose.
 - [x] Added the internal Himachal High Court read surface and operator entrypoints on top of the High Court operator lifecycle: the app now exposes a dedicated `/operator/high-courts/:courtSlug/...` namespace plus local/remote operator support for High Court fetch, inspect, publish, replay, rollback, and publication/history reads without touching any public High Court route.
 - [x] Fixed the false-positive Himachal daily-fetch lag in `npm run ops:verify-public-alpha`: the sweep now reads each state's latest successful internal operator run instead of inferring internal cadence from the older published snapshot date. Live AWS evidence already showed Himachal's scheduled fetch `run_337a80ae-4980-415a-8585-d670e413dfed` completed on `2026-04-17` with `sourceSnapshotAt=2026-04-16`, and the corrected live sweep is now green across all 28 public states.
