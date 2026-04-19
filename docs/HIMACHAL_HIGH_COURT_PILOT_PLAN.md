@@ -365,6 +365,7 @@ Current repo state:
 
 - steps 1 through 6 are now complete
 - the next High Court decision is whether repeated internal operator cycles make a narrow public beta defensible
+- the repo now has a dedicated internal-readiness verifier and review doc for that stage: `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` and `docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md`
 
 ## Definition Of Done
 
