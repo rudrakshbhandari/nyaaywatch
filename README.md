@@ -13,7 +13,7 @@ This repository contains the public alpha implementation:
 
 The public product is intentionally:
 
-- Himachal-first, not nationwide on day one
+- Himachal-first as the lower-court proof surface, with a Supreme Court-first national homepage
 - snapshot-based, not live
 - transparency-first, not AI-forward
 - open source, but source-aware about raw upstream redistribution
@@ -26,14 +26,15 @@ What is shipped now:
 
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
-- public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
+- a national homepage at `/` that stages Supreme Court, High Courts, and district/subordinate courts in one scroll
+- explicit Himachal lower-court overview at `/states/himachal`, plus lower-court district, data, methodology, and API routes
 - narrow public Supreme Court beta routes under `/supreme-court`
 - narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Gujarat, High Court of Madhya Pradesh, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but the currently supported state rollout set is now complete on the live site. Himachal Pradesh remains the default unscoped surface, and explicit `/states/:stateSlug/...` public routes are now live for Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram.
+Post-MVP work continues in this repo, but the currently supported state rollout set is now complete on the live site. Himachal Pradesh remains the default lower-court proof surface through `/states/himachal` and the unscoped district-family routes, while explicit `/states/:stateSlug/...` public routes are now live for Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram.
 
 ## Product Guardrails
 

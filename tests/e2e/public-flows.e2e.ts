@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { formatLakh } from "../../src/api/home/view-model.js";
 
 test("citizen flow loads the homepage, district workspace, and district permalink", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "How long is the wait for justice in Himachal Pradesh?" })).toBeVisible();
-  await expect(page.getByText(/Numbers published/i)).toBeVisible();
-  await expect(page.getByRole("link", { name: /Inspect the districts/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Start at the Supreme Court. Then move down the system." })).toBeVisible();
+  await expect(page.getByText("Same-day source window")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open Supreme Court beta/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open Himachal lower-court overview/i })).toBeVisible();
 
-  await page.getByRole("link", { name: /Inspect the districts/i }).click();
+  await page.getByRole("link", { name: /Inspect districts/i }).click();
   await expect(page).toHaveURL(/\/districts$/);
   await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
   await expect(page.getByLabel("View")).toBeVisible();
@@ -38,13 +38,13 @@ test("reporter flow reaches methodology and public download surfaces from distri
 });
 
 test("developer parity flow matches homepage toplines to the published stats API", async ({ page, request }) => {
-  const statsResponse = await request.get("/v1/stats/himachal");
+  const statsResponse = await request.get("/v1/supreme-court/stats");
   expect(statsResponse.ok()).toBeTruthy();
   const statsPayload = await statsResponse.json();
 
   await page.goto("/");
 
-  await expect(page.getByText(formatLakh(statsPayload.stats.pendingCases))).toBeVisible();
-  await expect(page.getByText(`${statsPayload.stats.disposalRate.toFixed(0)}/ 100`)).toBeVisible();
-  await expect(page.getByText(`~${Math.round(statsPayload.stats.medianCaseAgeDays / 30)}mo`)).toBeVisible();
+  await expect(page.getByText(statsPayload.stats.pendingTotalCases.toLocaleString("en-IN"))).toBeVisible();
+  await expect(page.getByText(statsPayload.stats.pendingRegisteredCases.toLocaleString("en-IN"))).toBeVisible();
+  await expect(page.getByText(statsPayload.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"))).toBeVisible();
 });

@@ -7,6 +7,8 @@ import {
   createTestApp,
   createTestContext,
   insertPublishedSnapshot,
+  seedTestHighCourtSnapshot,
+  seedTestSupremeCourtSnapshot,
   seedTestSnapshot,
 } from "./helpers.js";
 
@@ -30,6 +32,8 @@ describe("public copy guardrails", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
+    await seedTestSupremeCourtSnapshot(context.supremeCourtService);
+    await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
     await insertPublishedSnapshot(context.pool, {
       publicationId: "publication_pb_guardrails_default",
       snapshotId: "snapshot_pb_guardrails_default",
@@ -45,11 +49,15 @@ describe("public copy guardrails", () => {
       payload: buildHaryanaTestSnapshot(),
     });
 
-    const app = createTestApp(context.config, context.service, context.publicServices);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
     const routes = [
       {
         path: "/",
-        requiredText: "The public site stays centered on Himachal Pradesh on the main routes",
+        requiredText: "The point is not to flatten the tiers into one fake ranking system",
+      },
+      {
+        path: "/states/himachal",
+        requiredText: "The national homepage lives at /",
       },
       {
         path: "/districts",
