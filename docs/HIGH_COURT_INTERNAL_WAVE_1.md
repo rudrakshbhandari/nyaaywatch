@@ -90,3 +90,9 @@ The next serious gate is still operational evidence:
 - replay and rollback proof
 - source-review writeups for the next court(s)
 - a methodologically honest reason to expose any public High Court beta beyond Himachal
+
+The repo now makes that first recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
+
+- validate Uttar Pradesh and Rajasthan first
+- use `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
+- treat that pair as an internal proof step, not a public-beta approval

@@ -367,6 +367,7 @@ Current repo state:
 - the next High Court decision is whether repeated internal operator cycles make a narrow public beta defensible
 - the repo now has a dedicated internal-readiness verifier and review doc for that stage: `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` and `docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md`
 - the repo now also has a first internal-only multi-state High Court registry for the single-jurisdiction courts that fit the current snapshot contract, documented in `docs/HIGH_COURT_INTERNAL_WAVE_1.md`
+- the repo now also has an explicit first queued-court validation recommendation for that wave in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`, using the batch verifier `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
 
 ## Definition Of Done
 
