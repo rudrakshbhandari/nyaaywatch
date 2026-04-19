@@ -27,6 +27,7 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
+- narrow public Supreme Court beta routes under `/supreme-court`
 - narrow public High Court beta routes for Himachal High Court under `/high-courts/himachal`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
@@ -137,6 +138,10 @@ The live stack also supports a daily internal raw-fetch schedule at `8:00 AM Asi
 Public routes:
 
 - `/`
+- `/supreme-court`
+- `/supreme-court/data`
+- `/supreme-court/methodology`
+- `/supreme-court/api`
 - `/high-courts`
 - `/high-courts/himachal`
 - `/high-courts/himachal/data`
@@ -157,6 +162,7 @@ Public routes:
 Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
+- Supreme Court now has a narrow public beta route family under `/supreme-court`
 - Himachal High Court now has a narrow public beta route family under `/high-courts/himachal`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
@@ -165,6 +171,8 @@ Current route posture:
 Public API:
 
 - `GET /v1/stats/himachal`
+- `GET /v1/supreme-court/stats`
+- `GET /v1/supreme-court/trends`
 - `GET /v1/high-courts/himachal/stats`
 - `GET /v1/high-courts/himachal/trends`
 - `GET /v1/districts`

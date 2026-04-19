@@ -22,7 +22,7 @@ const SUPREME_COURT_PROFILE: SupremeCourtProfile = {
   courtCode: "SCI",
   courtSlug: "supreme-court",
   courtName: "Supreme Court of India",
-  publicBeta: false,
+  publicBeta: true,
   sourceReviewStatus: "reviewed",
   sourceUrls: {
     scNjdg: "https://scdg.sci.gov.in/scnjdg/",

@@ -89,10 +89,16 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
     createPreviewSupremeCourtSourceClient(),
   );
   const existing = await service.getPublishedSnapshot();
+  const existingSupremeCourt = await supremeCourtService.getPublishedSnapshot();
 
   if (!existing) {
     const captured = await service.captureRun("Preview fixture capture.");
     await service.publishRun(captured.run.id, "Preview published snapshot.");
+  }
+
+  if (!existingSupremeCourt) {
+    const captured = await supremeCourtService.captureRun("Preview Supreme Court fixture capture.");
+    await supremeCourtService.publishRun(captured.run.id, "Preview Supreme Court published snapshot.");
   }
 
   return {
