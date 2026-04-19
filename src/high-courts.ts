@@ -56,6 +56,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Himachal Pradesh",
     stateCode: "HP",
     hcNjdgStateValue: "2~5",
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
@@ -186,9 +187,18 @@ export function listHighCourtProfiles(): HighCourtProfile[] {
   return [...SUPPORTED_HIGH_COURT_CODES].map((courtCode) => HIGH_COURT_PROFILES[courtCode]);
 }
 
+export function listPublicHighCourtProfiles(): HighCourtProfile[] {
+  return listHighCourtProfiles().filter((profile) => profile.publicBeta);
+}
+
 export function getHighCourtProfileBySlug(courtSlug: string): HighCourtProfile | null {
   const normalized = courtSlug.trim().toLowerCase();
   return listHighCourtProfiles().find((profile) => profile.courtSlug === normalized) ?? null;
+}
+
+export function getPublicHighCourtProfileBySlug(courtSlug: string): HighCourtProfile | null {
+  const profile = getHighCourtProfileBySlug(courtSlug);
+  return profile?.publicBeta ? profile : null;
 }
 
 function buildHighCourtProfile(input: {
@@ -197,6 +207,7 @@ function buildHighCourtProfile(input: {
   courtName: string;
   stateCode: SupportedStateCode;
   hcNjdgStateValue: string;
+  publicBeta?: boolean;
   sourceReviewStatus?: HighCourtSourceReviewStatus;
   sourceUrls?: HighCourtSourceUrls;
 }): HighCourtProfile {
@@ -207,7 +218,7 @@ function buildHighCourtProfile(input: {
     stateCode: input.stateCode,
     stateName: getStateProfile(input.stateCode).stateName,
     hcNjdgStateValue: input.hcNjdgStateValue,
-    publicBeta: false,
+    publicBeta: input.publicBeta ?? false,
     sourceReviewStatus: input.sourceReviewStatus ?? "queued",
     sourceUrls: input.sourceUrls ?? HIGH_COURT_SOURCE_BASE,
   };

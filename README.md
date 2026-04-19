@@ -27,6 +27,7 @@ What is shipped now:
 - PostgreSQL-backed canonical run, artifact, and publication state
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
+- narrow public High Court beta routes for Himachal High Court under `/high-courts/himachal`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
@@ -134,6 +135,11 @@ The live stack also supports a daily internal raw-fetch schedule at `8:00 AM Asi
 Public routes:
 
 - `/`
+- `/high-courts`
+- `/high-courts/himachal`
+- `/high-courts/himachal/data`
+- `/high-courts/himachal/methodology`
+- `/high-courts/himachal/api`
 - `/districts`
 - `/districts/:id`
 - `/data`
@@ -149,6 +155,7 @@ Public routes:
 Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
+- Himachal High Court now has a narrow public beta route family under `/high-courts/himachal`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
@@ -156,6 +163,8 @@ Current route posture:
 Public API:
 
 - `GET /v1/stats/himachal`
+- `GET /v1/high-courts/himachal/stats`
+- `GET /v1/high-courts/himachal/trends`
 - `GET /v1/districts`
 - `GET /v1/trends`
 - `GET /v1/states/:stateSlug/stats`

@@ -40,7 +40,8 @@ Current posture:
 
 - `sourceReviewStatus=reviewed`: Himachal Pradesh only
 - `sourceReviewStatus=queued`: every other configured court in this wave
-- `publicBeta=false`: every configured court in this wave
+- `publicBeta=true`: Himachal Pradesh only
+- `publicBeta=false`: every other configured court in this wave
 
 ## Why These Courts
 
@@ -78,7 +79,7 @@ After this slice, the repo still does **not** claim:
 - that every configured High Court has cleared source review
 - that cross-court methodology is public-ready
 - that multi-jurisdiction High Courts fit the current schema
-- that any new High Court public route should launch immediately
+- that every configured High Court should launch publicly just because Himachal now has a narrow beta route
 
 ## Next Decision After Setup
 
