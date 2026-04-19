@@ -1174,3 +1174,39 @@ All planned states are now covered by live internal proof. Public rollout should
 ### Recommendation
 
 The supported-state rollout program is complete for the current repo scope. Any next geography work should be treated as a deliberate scope increase rather than unfinished state rollout.
+
+## Himachal High Court Public Beta Exposure
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public beta live`
+- deploy run: `24621281752`
+- settled ECS task definition after deploy: `nyaaywatch-staging:93`
+- methodology version: `2026.04-high-court-draft`
+
+### Public Beta Evidence
+
+- active High Court publication: `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee`
+- active High Court publication action: `rollback`
+- active High Court snapshot: `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b`
+- active High Court rollback target: `publication_af21ed65-7a07-4c1c-93f8-e77ba054bef6`
+- published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
+- replay evidence retained in publication history: `run_46c29931-2079-403c-a273-e8e062e4314b`
+- reference date: `2026-04-19T03:39:31.512Z`
+- reference date kind: `captured_at`
+- published at: `2026-04-19T03:40:28.731Z`
+- live route verification:
+  - `/high-courts/himachal` -> `200`
+  - `/high-courts/himachal/data` -> `200`
+  - `/high-courts/himachal/methodology` -> `200`
+  - `/high-courts/himachal/api` -> `200`
+  - `/v1/high-courts/himachal/stats` -> `200`
+  - `/v1/high-courts/himachal/trends` -> `200`
+- live public stats matched the active High Court snapshot:
+  - `pendingTotalCases=105599`
+  - `institutedLastMonthTotalCases=7046`
+  - `disposedLastMonthTotalCases=6528`
+
+### Recommendation
+
+Keep Himachal High Court public as the narrow proving ground for the High Court tier, but treat Supreme Court as the next public top-down planning track before broad High Court UX expansion.

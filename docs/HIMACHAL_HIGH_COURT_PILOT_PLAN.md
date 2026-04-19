@@ -2,15 +2,15 @@
 
 Execution plan for the first High Court tier pilot inside NyaayWatch.
 
-This document turns the national product architecture into a concrete next implementation slice.
+This document turns the national product architecture into a concrete High Court implementation slice.
 
 Use this plan when the question is:
 
 - what exactly should we build next for High Courts?
 - how should Himachal High Court fit into the one-product national NyaayWatch shell?
-- what has to be true before any High Court public beta or multi-High-Court wave begins?
+- what had to be true before the first High Court public beta, and what remains true before any broader multi-High-Court wave begins?
 
-This plan assumes the current district/subordinate rollout is already live and that NyaayWatch remains one product with tier-specific methodology tracks.
+This plan assumes the current district/subordinate rollout is already live, the narrow public Himachal High Court beta is now exposed, and NyaayWatch remains one product with tier-specific methodology tracks.
 
 ## Why This Pilot Exists
 
