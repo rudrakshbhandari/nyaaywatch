@@ -6,6 +6,48 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7:start -->
+## publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7
+
+- Reviewed at: `2026-04-19T19:33:00.000Z`
+- Reviewer: `Codex Gujarat High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/gujarat`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T18:59:11.819Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T18:59:57.944Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+- Rollback target: `publication_2e42c23c-9162-4fc6-8597-3e3a0bb8307a`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Gujarat High Court became publicly reachable on `2026-04-19` after PR `#115` merged and deploy run `24637168455` settled the ECS service on task definition `:103`. Stable public verification passed for `/high-courts/gujarat`, `/high-courts/gujarat/data`, `/high-courts/gujarat/methodology`, `/high-courts/gujarat/api`, `/v1/high-courts/gujarat/stats`, and `/v1/high-courts/gujarat/trends`.
+
+<!-- release:publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7:end -->
+
+<!-- release:publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4:start -->
+## publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4
+
+- Reviewed at: `2026-04-19T19:33:00.000Z`
+- Reviewer: `Codex Madhya Pradesh High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/madhya-pradesh`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-19T18:59:11.663Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-19T18:59:58.343Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_8526bedf-df11-46a0-a394-9379ae4d1547`
+- Rollback target: `publication_4ef80b3a-2f6c-45ec-9424-3064ed8d6e44`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Madhya Pradesh High Court became publicly reachable on `2026-04-19` after PR `#115` merged and deploy run `24637168455` settled the ECS service on task definition `:103`. Stable public verification passed for `/high-courts/madhya-pradesh`, `/high-courts/madhya-pradesh/data`, `/high-courts/madhya-pradesh/methodology`, `/high-courts/madhya-pradesh/api`, `/v1/high-courts/madhya-pradesh/stats`, and `/v1/high-courts/madhya-pradesh/trends`.
+
+<!-- release:publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4:end -->
+
 <!-- release:publication_91726f20-da84-4401-9da0-18c5ad711694:start -->
 ## publication_91726f20-da84-4401-9da0-18c5ad711694
 
