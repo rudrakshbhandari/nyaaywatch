@@ -85,6 +85,32 @@ What still remains after this repo-side fix:
 - rerun the Uttar Pradesh and Rajasthan High Court fetches
 - only then decide whether publish, replay, and rollback proof should begin for this pair
 
+Follow-up live check on the same date after deploy and rerun:
+
+- `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
+- result: `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, `rollbackReadyCourts=2`
+
+Live operator proof-cycle evidence now recorded:
+
+- Uttar Pradesh:
+  - active publication `publication_91726f20-da84-4401-9da0-18c5ad711694`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+- Rajasthan:
+  - active publication `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+
+Current conclusion from live evidence:
+
+- the recommended Uttar Pradesh and Rajasthan pair has now cleared the internal High Court proof bar
+- they remain internal-only even after clearing it
+- the next product decision is no longer "can the queued-court wave work?" but "what should the next public top-down tier be?"
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:

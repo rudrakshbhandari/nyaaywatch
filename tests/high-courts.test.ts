@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildPublicHighCourtRoutes } from "../src/api/public-high-court.js";
 import { HighCourtPublishedSnapshotSchema } from "../src/domain/high-court-snapshot-schema.js";
 import { HighCourtSnapshotCandidateSchema } from "../src/domain/high-court-snapshot-candidate-schema.js";
-import { getHighCourtProfile, getHighCourtProfileBySlug, listHighCourtProfiles } from "../src/high-courts.js";
+import { getHighCourtProfile, getHighCourtProfileBySlug, listHighCourtProfiles, listPublicHighCourtProfiles } from "../src/high-courts.js";
 
 describe("high court profiles", () => {
   it("defines Himachal High Court as the first reviewed pilot profile with official source URLs", () => {
@@ -14,7 +14,7 @@ describe("high court profiles", () => {
       stateCode: "HP",
       stateName: "Himachal Pradesh",
       hcNjdgStateValue: "2~5",
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -34,7 +34,7 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
     expect(listHighCourtProfiles()).toHaveLength(17);
-    expect(listHighCourtProfiles().every((profile) => profile.publicBeta === false)).toBe(true);
+    expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual(["himachal"]);
     expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(1);
   });
 });

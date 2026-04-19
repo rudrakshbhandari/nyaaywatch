@@ -7,6 +7,7 @@ import {
   createTestContext,
   insertPublishedSnapshot,
   insertHistoricalPublishedSnapshot,
+  seedTestHighCourtSnapshot,
   seedTestSnapshot,
 } from "./helpers.js";
 
@@ -288,6 +289,52 @@ describe("HTTP routes", () => {
 
     expect(rollback.status).toBe(201);
     expect(rollback.body.action).toBe("rollback");
+  });
+
+  it("serves Himachal High Court through the public beta namespace once a published High Court snapshot exists", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
+
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices);
+
+    const index = await request(app).get("/high-courts");
+    expect(index.status).toBe(200);
+    expect(index.text).toContain("Public High Court observability is now live in a narrow beta.");
+    expect(index.text).toContain("High Court of Himachal Pradesh");
+
+    const overview = await request(app).get("/high-courts/himachal");
+    expect(overview.status).toBe(200);
+    expect(overview.text).toContain("HIGH COURT BETA");
+    expect(overview.text).toContain("High Court of Himachal Pradesh");
+    expect(overview.text).toContain("HC NJDG did not expose a trustworthy source snapshot timestamp");
+
+    const data = await request(app).get("/high-courts/himachal/data");
+    expect(data.status).toBe(200);
+    expect(data.text).toContain("/v1/high-courts/himachal/stats");
+    expect(data.text).toContain("This first public High Court beta ships the JSON surface before adding download formats.");
+
+    const methodology = await request(app).get("/high-courts/himachal/methodology");
+    expect(methodology.status).toBe(200);
+    expect(methodology.text).toContain("Every public High Court number comes from one published aggregate snapshot.");
+    expect(methodology.text).toContain("captured_at");
+
+    const api = await request(app).get("/high-courts/himachal/api");
+    expect(api.status).toBe(200);
+    expect(api.text).toContain("/v1/high-courts/himachal/trends");
+
+    const stats = await request(app).get("/v1/high-courts/himachal/stats");
+    expect(stats.status).toBe(200);
+    expect(stats.body.snapshot.courtCode).toBe("HPHC");
+    expect(stats.body.stats.pendingTotalCases).toBeGreaterThan(0);
+
+    const trends = await request(app).get("/v1/high-courts/himachal/trends");
+    expect(trends.status).toBe(200);
+    expect(trends.body.snapshot.referenceDateKind).toBe("captured_at");
+    expect(trends.body.trends.length).toBeGreaterThan(0);
+
+    const queuedCourt = await request(app).get("/high-courts/uttar-pradesh");
+    expect(queuedCourt.status).toBe(404);
   });
 
   it("serves Punjab through explicit state-scoped public routes once Punjab has a published snapshot", async () => {

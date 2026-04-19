@@ -37,6 +37,7 @@ export interface HighCourtRunInspection {
 export interface HighCourtPublicationHistoryEntry {
   publication: PublicationRecord;
   snapshot: HighCourtPublishedSnapshot["snapshot"] & { id: string };
+  stats: Pick<HighCourtPublishedSnapshot["stats"], "pendingTotalCases" | "disposedLastMonthTotalCases">;
   run: Pick<RunRecord, "id" | "status" | "replayOfRunId" | "sourceSnapshotAt" | "methodologyVersion" | "qualityState">;
   isActive: boolean;
 }
@@ -91,6 +92,10 @@ export class PublishedHighCourtSnapshotService {
           snapshot: {
             id: snapshot.id,
             ...snapshot.payload.snapshot,
+          },
+          stats: {
+            pendingTotalCases: snapshot.payload.stats.pendingTotalCases,
+            disposedLastMonthTotalCases: snapshot.payload.stats.disposedLastMonthTotalCases,
           },
           run: {
             id: run.id,

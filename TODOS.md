@@ -30,13 +30,17 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
-- [ ] Run `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` across repeated real Himachal High Court operator cycles and record the live evidence in `docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md` before deciding whether any public High Court beta route is ready.
-- [ ] Deploy the High Court parser hardening for malformed `Disposal in last month` markup, then rerun `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan` plus the first live Uttar Pradesh and Rajasthan fetches before widening the queued-court wave beyond the first recommended pair in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`.
+- [ ] Verify the live public Himachal High Court beta route after deploy and record the release evidence alongside the existing internal proof-cycle evidence.
+- [ ] Decide whether Supreme Court should become the next public top-down tier before any broader High Court UX expansion, and write the source-review / pilot-plan docs accordingly.
+- [ ] If Supreme Court becomes the next tier, design the homepage IA so it opens with Supreme Court context while still linking naturally into High Courts and district/subordinate drilldowns.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
 ## Recently Completed
 
+- [x] Enabled the narrow public Himachal High Court beta surface in repo code under `/high-courts/himachal`, with published-only HTML and JSON routes plus tier-specific methodology, data, and API pages.
+- [x] Ran `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` against the live stack after real Himachal operator proof cycles and recorded that Himachal now satisfies the internal High Court proof bar.
+- [x] Deployed the High Court parser hardening, reran `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`, and completed the first live Uttar Pradesh and Rajasthan High Court fetch/publish/replay/rollback proof cycles.
 - [x] Added a first internal multi-state High Court wave for the single-jurisdiction courts that already fit the current High Court snapshot contract, and documented the deliberate exclusions for multi-jurisdiction courts and Delhi in `docs/HIGH_COURT_INTERNAL_WAVE_1.md`.
 - [x] Added a batch High Court wave-readiness verifier plus `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`, so the first post-Himachal queued-court validation pair is now explicit: Uttar Pradesh and Rajasthan through `npm run high-court:wave-readiness`.
 - [x] Ran the first live Uttar Pradesh and Rajasthan High Court proof attempt on `2026-04-19` and confirmed the real blocker is an HC NJDG markup defect in the `Disposal in last month` row, not missing operator wiring or credentials.
