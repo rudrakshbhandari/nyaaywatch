@@ -361,6 +361,11 @@ Do these next:
 6. prove the internal read surface and operator entrypoints on top of the High Court operator lifecycle
 7. only then decide on public beta timing
 
+Current repo state:
+
+- steps 1 through 6 are now complete
+- the next High Court decision is whether repeated internal operator cycles make a narrow public beta defensible
+
 ## Definition Of Done
 
 This pilot is done only when:

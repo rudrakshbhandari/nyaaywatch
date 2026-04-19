@@ -2,7 +2,11 @@ import { createServer, type IncomingMessage, type Server } from "node:http";
 
 import { afterEach, describe, expect, it } from "vitest";
 
-import { parseRemoteOperatorCommand, runRemoteOperatorCommand } from "../src/dev/operator-remote-client.js";
+import {
+  parseRemoteOperatorCommand,
+  resolveRemoteOperatorHighCourtSlug,
+  runRemoteOperatorCommand,
+} from "../src/dev/operator-remote-client.js";
 
 describe("remote operator client", () => {
   const servers: Server[] = [];
@@ -90,6 +94,39 @@ describe("remote operator client", () => {
     expect(requestSummary).toEqual({
       host: "nyaaywatch.in",
       path: "/operator/publications?stateCode=UP",
+      token: "remote-operator-token",
+    });
+  });
+
+  it("targets the High Court operator namespace when a High Court slug is selected", async () => {
+    let requestSummary: { host: string; path: string; token: string } | null = null;
+    const server = createServer((request, response) => {
+      requestSummary = summarizeRequest(request);
+      response.setHeader("content-type", "application/json");
+      response.end(JSON.stringify({ publications: [] }));
+    });
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected a TCP address.");
+    }
+
+    const result = await runRemoteOperatorCommand(
+      { name: "publications", highCourtSlug: resolveRemoteOperatorHighCourtSlug("himachal")! },
+      {
+        baseUrl: "http://nyaaywatch.in",
+        operatorToken: "remote-operator-token",
+        connectHost: "127.0.0.1",
+        connectPort: address.port,
+      },
+    );
+
+    expect(result).toEqual({ publications: [] });
+    expect(requestSummary).toEqual({
+      host: "nyaaywatch.in",
+      path: "/operator/high-courts/himachal/publications",
       token: "remote-operator-token",
     });
   });

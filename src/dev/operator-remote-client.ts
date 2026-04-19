@@ -2,6 +2,7 @@ import { request as httpRequest } from "node:http";
 import { request as httpsRequest } from "node:https";
 
 import { getStateProfileByCodeOrSlug } from "../geographies.js";
+import { getHighCourtProfileBySlug } from "../high-courts.js";
 
 type RemoteOperatorCommand =
   | { name: "fetch"; targetId?: undefined; note?: string; stateCode?: string }
@@ -9,7 +10,13 @@ type RemoteOperatorCommand =
   | { name: "inspect"; targetId: string; note?: undefined; stateCode?: undefined }
   | { name: "publish"; targetId: string; note?: string; stateCode?: undefined }
   | { name: "replay"; targetId: string; note?: string; stateCode?: undefined }
-  | { name: "rollback"; targetId: string; note?: string; stateCode?: undefined };
+  | { name: "rollback"; targetId: string; note?: string; stateCode?: undefined }
+  | { name: "fetch"; targetId?: undefined; note?: string; highCourtSlug: string }
+  | { name: "publications"; targetId?: undefined; note?: undefined; highCourtSlug: string }
+  | { name: "inspect"; targetId: string; note?: undefined; highCourtSlug: string }
+  | { name: "publish"; targetId: string; note?: string; highCourtSlug: string }
+  | { name: "replay"; targetId: string; note?: string; highCourtSlug: string }
+  | { name: "rollback"; targetId: string; note?: string; highCourtSlug: string };
 
 export interface RemoteOperatorRequestOptions {
   baseUrl: string;
@@ -54,6 +61,20 @@ export function resolveRemoteOperatorStateCode(selected?: string) {
   return profile.stateCode;
 }
 
+export function resolveRemoteOperatorHighCourtSlug(selected?: string) {
+  const trimmed = selected?.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const profile = getHighCourtProfileBySlug(trimmed);
+  if (!profile) {
+    throw new Error(`Unsupported High Court selector: ${trimmed}`);
+  }
+
+  return profile.courtSlug;
+}
+
 export function parseRemoteOperatorCommand(args: string[]): RemoteOperatorCommand {
   const command = args[0];
   const targetId = args[1];
@@ -92,22 +113,28 @@ export function parseRemoteOperatorCommand(args: string[]): RemoteOperatorComman
 
 function buildOperatorRequestTarget(command: RemoteOperatorCommand, baseUrl: string): RemoteOperatorRequestTarget {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
+  const highCourtBase = "highCourtSlug" in command ? `${normalizedBaseUrl}/operator/high-courts/${encodeURIComponent(command.highCourtSlug)}` : null;
+  const stateCode = "stateCode" in command ? command.stateCode : undefined;
 
   if (command.name === "fetch") {
     return {
-      url: `${normalizedBaseUrl}/operator/runs/fetch`,
+      url: highCourtBase ? `${highCourtBase}/runs/fetch` : `${normalizedBaseUrl}/operator/runs/fetch`,
       method: "POST",
-      body: {
-        ...(command.note ? { note: command.note } : {}),
-        ...(command.stateCode ? { stateCode: command.stateCode } : {}),
-      },
+      body: highCourtBase
+        ? command.note
+          ? { note: command.note }
+          : undefined
+        : {
+            ...(command.note ? { note: command.note } : {}),
+            ...(stateCode ? { stateCode } : {}),
+          },
     };
   }
 
   if (command.name === "publications") {
-    const search = command.stateCode ? `?stateCode=${encodeURIComponent(command.stateCode)}` : "";
+    const search = highCourtBase ? "" : stateCode ? `?stateCode=${encodeURIComponent(stateCode)}` : "";
     return {
-      url: `${normalizedBaseUrl}/operator/publications${search}`,
+      url: highCourtBase ? `${highCourtBase}/publications` : `${normalizedBaseUrl}/operator/publications${search}`,
       method: "GET",
       body: undefined,
     };
@@ -115,7 +142,9 @@ function buildOperatorRequestTarget(command: RemoteOperatorCommand, baseUrl: str
 
   if (command.name === "inspect") {
     return {
-      url: `${normalizedBaseUrl}/operator/runs/${encodeURIComponent(command.targetId)}`,
+      url: highCourtBase
+        ? `${highCourtBase}/runs/${encodeURIComponent(command.targetId)}`
+        : `${normalizedBaseUrl}/operator/runs/${encodeURIComponent(command.targetId)}`,
       method: "GET",
       body: undefined,
     };
@@ -123,7 +152,9 @@ function buildOperatorRequestTarget(command: RemoteOperatorCommand, baseUrl: str
 
   if (command.name === "publish") {
     return {
-      url: `${normalizedBaseUrl}/operator/runs/${encodeURIComponent(command.targetId)}/publish`,
+      url: highCourtBase
+        ? `${highCourtBase}/runs/${encodeURIComponent(command.targetId)}/publish`
+        : `${normalizedBaseUrl}/operator/runs/${encodeURIComponent(command.targetId)}/publish`,
       method: "POST",
       body: command.note ? { note: command.note } : undefined,
     };
@@ -131,14 +162,18 @@ function buildOperatorRequestTarget(command: RemoteOperatorCommand, baseUrl: str
 
   if (command.name === "replay") {
     return {
-      url: `${normalizedBaseUrl}/operator/runs/${encodeURIComponent(command.targetId)}/replay`,
+      url: highCourtBase
+        ? `${highCourtBase}/runs/${encodeURIComponent(command.targetId)}/replay`
+        : `${normalizedBaseUrl}/operator/runs/${encodeURIComponent(command.targetId)}/replay`,
       method: "POST",
       body: command.note ? { note: command.note } : undefined,
     };
   }
 
   return {
-    url: `${normalizedBaseUrl}/operator/publications/${encodeURIComponent(command.targetId)}/rollback`,
+    url: highCourtBase
+      ? `${highCourtBase}/publications/${encodeURIComponent(command.targetId)}/rollback`
+      : `${normalizedBaseUrl}/operator/publications/${encodeURIComponent(command.targetId)}/rollback`,
     method: "POST",
     body: command.note ? { note: command.note } : undefined,
   };

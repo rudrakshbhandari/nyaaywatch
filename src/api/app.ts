@@ -3,6 +3,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import type { AppConfig } from "../config/env.js";
 import type { SupportedStateCode, NjdgStateProfile } from "../geographies.js";
 import { getPublicStateProfileBySlug, getStateProfile, getStateProfileByCodeOrSlug, listPublicStateProfiles } from "../geographies.js";
+import { getHighCourtProfileBySlug, listHighCourtProfiles, type HighCourtProfile, type SupportedHighCourtCode } from "../high-courts.js";
 import { logError, logInfo } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
 import { renderApiPage } from "./pages/api.js";
@@ -11,10 +12,12 @@ import { renderDistrictPage } from "./pages/district-detail.js";
 import { renderDistrictsPage } from "./pages/districts.js";
 import { renderEmptyState } from "./pages/empty.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
+import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 import { buildPublicPageContext } from "./public-state.js";
 
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
+type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
 
 const DEFAULT_PUBLIC_STATE_CODE: SupportedStateCode = "HP";
 
@@ -22,6 +25,7 @@ export function createApp(
   config: AppConfig,
   service: PublishedSnapshotService,
   publicServices: PublicServiceMap = { [config.STATE_CODE]: service },
+  highCourtServices: HighCourtServiceMap = {},
 ) {
   const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
@@ -480,6 +484,164 @@ export function createApp(
 
   if (config.ENABLE_OPERATOR_ROUTES) {
     app.get(
+      "/operator/high-courts",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        response.json({ highCourts: await listConfiguredHighCourtServices(highCourtServices) });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const snapshot = await resolved.service.getPublishedSnapshot();
+        response.json({
+          court: resolved.profile,
+          snapshot,
+          stats: snapshot?.payload.stats ?? null,
+          trends: snapshot?.payload.trends ?? null,
+          publications: await resolved.service.listPublicationHistory(),
+        });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug/runs",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, runs: await resolved.service.listRuns() });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug/publications",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, publications: await resolved.service.listPublicationHistory() });
+      }),
+    );
+
+    app.get(
+      "/operator/high-courts/:courtSlug/runs/:runId",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const inspection = await resolved.service.inspectRun(readRouteParam(request.params.runId));
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        response.json(inspection);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/runs/fetch",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const result = await resolved.service.captureRun(request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/runs/:runId/publish",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.publishRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/runs/:runId/replay",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.replayRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/high-courts/:courtSlug/publications/:publicationId/rollback",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveHighCourtOperatorRequest(request, highCourtServices);
+        if (!resolved) {
+          response.status(404).json({ error: "High Court not found." });
+          return;
+        }
+
+        const publicationId = readRouteParam(request.params.publicationId);
+        const publication = (await resolved.service.listPublicationHistory()).find((entry) => entry.publication.id === publicationId);
+        if (!publication) {
+          response.status(404).json({ error: "Publication not found." });
+          return;
+        }
+
+        const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.get(
       "/operator/runs",
       operatorOnly(config),
       asyncRoute(async (request, response) => {
@@ -654,6 +816,21 @@ function resolveOperatorServiceRequest(
   return { profile, service };
 }
 
+function resolveHighCourtOperatorRequest(request: Request, services: HighCourtServiceMap) {
+  const courtSlug = readRouteParam(request.params.courtSlug);
+  const profile = getHighCourtProfileBySlug(courtSlug);
+  if (!profile) {
+    return null;
+  }
+
+  const service = services[profile.courtCode];
+  if (!service) {
+    return null;
+  }
+
+  return { profile, service };
+}
+
 function readOperatorRequestedProfile(request: Request) {
   const candidates = [
     request.query.stateSlug,
@@ -721,6 +898,26 @@ async function findPublicationServiceAcrossServices(publicationId: string, servi
   }
 
   return null;
+}
+
+async function listConfiguredHighCourtServices(highCourtServices: HighCourtServiceMap) {
+  const entries = await Promise.all(
+    listHighCourtProfiles().map(async (profile) => {
+      const service = highCourtServices[profile.courtCode];
+      if (!service) {
+        return null;
+      }
+
+      const snapshot = await service.getPublishedSnapshot();
+      return {
+        court: profile,
+        hasPublishedSnapshot: snapshot !== null,
+        snapshot: snapshot?.payload.snapshot ?? null,
+      };
+    }),
+  );
+
+  return entries.filter((entry) => entry !== null);
 }
 
 function readRequestHost(request: Request) {

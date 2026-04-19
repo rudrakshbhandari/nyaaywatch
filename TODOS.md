@@ -30,12 +30,13 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
-- [ ] Add the internal High Court read surface and operator entrypoints on top of the new Himachal High Court operator service before touching any public High Court route.
+- [ ] Run the new Himachal High Court internal read surface and operator namespace through repeated real operator cycles before deciding whether any public High Court beta route is ready.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
 ## Recently Completed
 
+- [x] Added the internal Himachal High Court read surface and operator entrypoints on top of the High Court operator lifecycle: the app now exposes a dedicated `/operator/high-courts/:courtSlug/...` namespace plus local/remote operator support for High Court fetch, inspect, publish, replay, rollback, and publication/history reads without touching any public High Court route.
 - [x] Fixed the false-positive Himachal daily-fetch lag in `npm run ops:verify-public-alpha`: the sweep now reads each state's latest successful internal operator run instead of inferring internal cadence from the older published snapshot date. Live AWS evidence already showed Himachal's scheduled fetch `run_337a80ae-4980-415a-8585-d670e413dfed` completed on `2026-04-17` with `sourceSnapshotAt=2026-04-16`, and the corrected live sweep is now green across all 28 public states.
 - [x] Implemented the Himachal High Court internal operator lifecycle on top of the explicit High Court date contract: capture, inspect, publish, replay, and rollback now work through a dedicated High Court service with warehouse round-tripping and focused regression coverage.
 - [x] Resolved the Himachal High Court source-date contract at the methodology level: official HC NJDG HTML plus official AJAX responses did not expose a trustworthy source snapshot date on `2026-04-18`, so the High Court tier now adopts an explicit `captured_at` fallback trust label instead of faking `sourceSnapshotAt`.

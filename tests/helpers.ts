@@ -8,12 +8,17 @@ import { type Pool } from "pg";
 import { loadConfig, type AppConfig } from "../src/config/env.js";
 import { runMigrations } from "../src/db/migrate.js";
 import { createFixtureSourceClient } from "../src/dev/fixtures.js";
+import type { HighCourtCaptureBundle } from "../src/domain/high-court-capture-schema.js";
+import { getHighCourtProfile, listHighCourtProfiles, type SupportedHighCourtCode } from "../src/high-courts.js";
+import type { HighCourtSourceClient } from "../src/ingest/high-court-source-client.js";
 import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../src/geographies.js";
 import { createApp } from "../src/api/app.js";
+import { PublishedHighCourtSnapshotService } from "../src/services/published-high-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../src/storage/artifact-store.js";
 import { PgWarehouseStore } from "../src/storage/postgres.js";
+import { buildHimachalHighCourtCaptureBundle } from "./fixtures/high-court.js";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -50,13 +55,30 @@ export async function createTestContext(options: { stateCode?: SupportedStateCod
       return [publicProfile.stateCode, publicService];
     }),
   ) as Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
+  const highCourtServices = Object.fromEntries(
+    listHighCourtProfiles().map((highCourtProfile) => [
+      highCourtProfile.courtCode,
+      new PublishedHighCourtSnapshotService(
+        config,
+        highCourtProfile,
+        store,
+        artifactStore,
+        createFixtureHighCourtSourceClient(highCourtProfile.courtCode),
+      ),
+    ]),
+  ) as Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
 
-  return { pool, config, service, publicServices };
+  return { pool, config, service, publicServices, highCourtServices };
 }
 
 export async function seedTestSnapshot(service: PublishedSnapshotService) {
   const captured = await service.captureRun("Test fixture capture.");
   return service.publishRun(captured.run.id, "Test fixture publish.");
+}
+
+export async function seedTestHighCourtSnapshot(service: PublishedHighCourtSnapshotService) {
+  const captured = await service.captureRun("Test High Court fixture capture.");
+  return service.publishRun(captured.run.id, "Test High Court fixture publish.");
 }
 
 export async function insertHistoricalPublishedSnapshot(
@@ -191,8 +213,9 @@ export function createTestApp(
   config: AppConfig,
   service: PublishedSnapshotService,
   publicServices?: Partial<Record<SupportedStateCode, PublishedSnapshotService>>,
+  highCourtServices?: Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>,
 ) {
-  return createApp(config, service, publicServices);
+  return createApp(config, service, publicServices, highCourtServices);
 }
 
 export function createScopedTestService(
@@ -232,6 +255,18 @@ function createTestConfig(stateCode: SupportedStateCode = "HP"): AppConfig {
 
 function loadFixturePublishedSnapshot(): PublishedSnapshot {
   return JSON.parse(readFileSync(join(repoRoot, "fixtures/himachal/published-snapshot.json"), "utf8")) as PublishedSnapshot;
+}
+
+function createFixtureHighCourtSourceClient(courtCode: SupportedHighCourtCode): HighCourtSourceClient {
+  if (courtCode !== "HPHC") {
+    throw new Error(`No checked-in High Court fixture set is available for ${courtCode}.`);
+  }
+
+  return {
+    async captureLatest(): Promise<HighCourtCaptureBundle> {
+      return buildHimachalHighCourtCaptureBundle();
+    },
+  };
 }
 
 export function buildPunjabTestSnapshot(): PublishedSnapshot {

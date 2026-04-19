@@ -1,12 +1,13 @@
 import {
   parseRemoteOperatorCommand,
+  resolveRemoteOperatorHighCourtSlug,
   resolveRemoteOperatorStateCode,
   runRemoteOperatorCommand,
 } from "./operator-remote-client.js";
 
 async function main() {
   const args = process.argv.slice(2);
-  const commandArgs = ["--base-url", "--state", "--state-slug", "--connect-host", "--connect-port", "--timeout-ms"].reduce(
+  const commandArgs = ["--base-url", "--state", "--state-slug", "--high-court", "--connect-host", "--connect-port", "--timeout-ms"].reduce(
     (currentArgs, flag) => stripFlag(currentArgs, flag),
     args,
   );
@@ -17,18 +18,27 @@ async function main() {
   const stateCode = resolveRemoteOperatorStateCode(
     readFlag(args, "--state-slug") ?? readFlag(args, "--state") ?? process.env.STATE_SLUG,
   );
+  const highCourtSlug = resolveRemoteOperatorHighCourtSlug(readFlag(args, "--high-court") ?? process.env.HIGH_COURT_SLUG);
   const connectHost = readFlag(args, "--connect-host") ?? process.env.OPERATOR_CONNECT_HOST;
   const connectPort = connectPortStr ?? process.env.OPERATOR_CONNECT_PORT;
   const command = parseRemoteOperatorCommand(commandArgs);
 
   if (!baseUrl || !operatorToken) {
     throw new Error(
-      "Usage: tsx src/dev/operator-remote.ts --base-url <https://nyaaywatch.in> [--state <HP|PB|HR|UK|RJ|UP> | --state-slug <state-slug>] [--connect-host <alb-dns>] [--connect-port <443>] [--timeout-ms <900000>] <fetch|inspect|publications|publish|replay|rollback> [target-id] [note]",
+      "Usage: tsx src/dev/operator-remote.ts --base-url <https://nyaaywatch.in> [--state <HP|PB|HR|UK|RJ|UP> | --state-slug <state-slug> | --high-court <court-slug>] [--connect-host <alb-dns>] [--connect-port <443>] [--timeout-ms <900000>] <fetch|inspect|publications|publish|replay|rollback> [target-id] [note]",
     );
   }
 
+  if (stateCode && highCourtSlug) {
+    throw new Error("Select either a state or a High Court target, not both.");
+  }
+
   const result = await runRemoteOperatorCommand(
-    command.name === "fetch" || command.name === "publications" ? { ...command, stateCode } : command,
+    highCourtSlug
+      ? { ...command, highCourtSlug }
+      : command.name === "fetch" || command.name === "publications"
+        ? { ...command, stateCode }
+        : command,
     {
       baseUrl,
       operatorToken,

@@ -110,6 +110,8 @@ npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --connect-host=<alb-dns> --state=UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal publications
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court himachal fetch "Internal Himachal High Court fetch"
 npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:reconcile-fetch-schedule
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -166,8 +168,18 @@ Operator endpoints require `x-operator-token`:
 - `POST /operator/runs/:runId/replay`
 - `GET /operator/publications`
 - `POST /operator/publications/:publicationId/rollback`
+- `GET /operator/high-courts`
+- `GET /operator/high-courts/:courtSlug`
+- `GET /operator/high-courts/:courtSlug/runs`
+- `GET /operator/high-courts/:courtSlug/runs/:runId`
+- `POST /operator/high-courts/:courtSlug/runs/fetch`
+- `POST /operator/high-courts/:courtSlug/runs/:runId/publish`
+- `POST /operator/high-courts/:courtSlug/runs/:runId/replay`
+- `GET /operator/high-courts/:courtSlug/publications`
+- `POST /operator/high-courts/:courtSlug/publications/:publicationId/rollback`
 
 Operator routes default to the runtime's configured state, but they also accept explicit `stateCode` or `stateSlug` selectors on query params or JSON bodies for multi-state operations.
+High Court operator routes use the explicit `/operator/high-courts/:courtSlug/...` namespace so the internal read and publish surface stays tier-aware instead of pretending High Court data is just another state snapshot.
 
 For live remote operation from a local terminal, use `npm run operator:remote`. Add `--connect-host=<alb-dns>` for heavier internal states when you need to bypass Cloudflare but still preserve `nyaaywatch.in` as the HTTP and TLS host.
 
