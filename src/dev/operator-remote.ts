@@ -5,13 +5,20 @@ import {
   resolveRemoteOperatorStateCode,
   runRemoteOperatorCommand,
 } from "./operator-remote-client.js";
+import { hasFlag, readBooleanFlag, readFlag, stripFlag } from "./cli-flag-utils.js";
 
 async function main() {
   const args = process.argv.slice(2);
-  const commandArgs = ["--base-url", "--state", "--state-slug", "--high-court", "--supreme-court", "--connect-host", "--connect-port", "--timeout-ms"].reduce(
-    (currentArgs, flag) => stripFlag(currentArgs, flag),
-    args,
-  );
+  const commandArgs = ([
+    ["--base-url", true],
+    ["--state", true],
+    ["--state-slug", true],
+    ["--high-court", true],
+    ["--supreme-court", false],
+    ["--connect-host", true],
+    ["--connect-port", true],
+    ["--timeout-ms", true],
+  ] as Array<[string, boolean]>).reduce((currentArgs, [flag, takesValue]) => stripFlag(currentArgs, flag, takesValue), args);
   const timeoutStr = readFlag(args, "--timeout-ms");
   const connectPortStr = readFlag(args, "--connect-port");
   const baseUrl = readFlag(args, "--base-url") ?? process.env.OPERATOR_BASE_URL ?? process.env.BASE_URL;
@@ -21,7 +28,7 @@ async function main() {
   );
   const highCourtSlug = resolveRemoteOperatorHighCourtSlug(readFlag(args, "--high-court") ?? process.env.HIGH_COURT_SLUG);
   const supremeCourt = resolveRemoteOperatorSupremeCourtSelection(
-    args.includes("--supreme-court") ? "true" : process.env.SUPREME_COURT_ENABLED,
+    hasFlag(args, "--supreme-court") ? readBooleanFlag(args, "--supreme-court") : process.env.SUPREME_COURT_ENABLED,
   );
   const connectHost = readFlag(args, "--connect-host") ?? process.env.OPERATOR_CONNECT_HOST;
   const connectPort = connectPortStr ?? process.env.OPERATOR_CONNECT_PORT;
@@ -55,20 +62,6 @@ async function main() {
   );
 
   console.log(JSON.stringify(result, null, 2));
-}
-
-function readFlag(args: string[], flag: string) {
-  const index = args.findIndex((value) => value === flag);
-  return index >= 0 ? args[index + 1] : undefined;
-}
-
-function stripFlag(args: string[], flag: string) {
-  const index = args.findIndex((value) => value === flag);
-  if (index < 0) {
-    return args;
-  }
-
-  return args.filter((_, currentIndex) => currentIndex !== index && currentIndex !== index + 1);
 }
 
 await main();
