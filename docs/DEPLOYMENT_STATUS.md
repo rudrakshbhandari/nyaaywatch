@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:96`
+- ECS task definition: `nyaaywatch-staging:101`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
@@ -69,6 +69,8 @@ Operational notes:
   - unscoped default routes for Himachal Pradesh
   - narrow Supreme Court beta routes at `/supreme-court` and `/v1/supreme-court/...`
   - narrow Himachal High Court beta routes at `/high-courts/himachal` and `/v1/high-courts/himachal/...`
+  - narrow Allahabad High Court beta routes at `/high-courts/uttar-pradesh` and `/v1/high-courts/uttar-pradesh/...`
+  - narrow Rajasthan High Court beta routes at `/high-courts/rajasthan` and `/v1/high-courts/rajasthan/...`
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
   - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
@@ -106,6 +108,20 @@ Operational notes:
 - Current Himachal High Court reference-date kind: `captured_at`
 - Current Himachal High Court published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
 - Current Himachal High Court methodology version: `2026.04-high-court-draft`
+- Current active Uttar Pradesh High Court publication: `publication_91726f20-da84-4401-9da0-18c5ad711694`
+- Current active Uttar Pradesh High Court published snapshot: `snapshot_c0d74fe7-6755-467e-86be-90424446a514`
+- Current Uttar Pradesh High Court publication action: `rollback`
+- Current Uttar Pradesh High Court reference date: `2026-04-19T03:38:57.761Z`
+- Current Uttar Pradesh High Court reference-date kind: `captured_at`
+- Current Uttar Pradesh High Court published-from run: `run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
+- Current Uttar Pradesh High Court methodology version: `2026.04-high-court-draft`
+- Current active Rajasthan High Court publication: `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f`
+- Current active Rajasthan High Court published snapshot: `snapshot_03ac0bb4-ba77-4d92-9b96-478983aadfa9`
+- Current Rajasthan High Court publication action: `rollback`
+- Current Rajasthan High Court reference date: `2026-04-19T03:39:10.250Z`
+- Current Rajasthan High Court reference-date kind: `captured_at`
+- Current Rajasthan High Court published-from run: `run_bdc31094-2d40-4960-af99-13d2d803cf0c`
+- Current Rajasthan High Court methodology version: `2026.04-high-court-draft`
 - Current active Supreme Court publication: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
 - Current active Supreme Court published snapshot: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
 - Current Supreme Court publication action: `rollback`
@@ -286,6 +302,14 @@ Latest confirmed operator validation:
   - the active High Court snapshot remained `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:28.731Z`, and `publishedFromRunId=run_288288e1-f32b-45d1-86cd-c2384bba38ac`
   - live route verification returned `200` for `/high-courts/himachal`, `/high-courts/himachal/data`, `/high-courts/himachal/methodology`, `/high-courts/himachal/api`, `/v1/high-courts/himachal/stats`, and `/v1/high-courts/himachal/trends`
   - public stats on the live route matched the internal proof-cycle numbers: `pendingTotalCases=105599`, `institutedLastMonthTotalCases=7046`, `disposedLastMonthTotalCases=6528`
+- Uttar Pradesh and Rajasthan High Court public beta exposure completed on 2026-04-19 after PR `#113` merged and GitHub deploy run `24636212237` rolled the live service to task definition `:101`:
+  - the already-reviewed active Allahabad High Court publication `publication_91726f20-da84-4401-9da0-18c5ad711694` became publicly reachable under `/high-courts/uttar-pradesh`
+  - the already-reviewed active Rajasthan High Court publication `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f` became publicly reachable under `/high-courts/rajasthan`
+  - live route verification returned `200` for `/high-courts`, `/high-courts/uttar-pradesh`, `/high-courts/uttar-pradesh/data`, `/high-courts/uttar-pradesh/methodology`, `/high-courts/uttar-pradesh/api`, `/v1/high-courts/uttar-pradesh/stats`, `/v1/high-courts/uttar-pradesh/trends`, `/high-courts/rajasthan`, `/high-courts/rajasthan/data`, `/high-courts/rajasthan/methodology`, `/high-courts/rajasthan/api`, `/v1/high-courts/rajasthan/stats`, and `/v1/high-courts/rajasthan/trends`
+  - the active Uttar Pradesh High Court snapshot remains `snapshot_c0d74fe7-6755-467e-86be-90424446a514` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:31.468Z`, and `publishedFromRunId=run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
+  - the active Rajasthan High Court snapshot remains `snapshot_03ac0bb4-ba77-4d92-9b96-478983aadfa9` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:34.582Z`, and `publishedFromRunId=run_bdc31094-2d40-4960-af99-13d2d803cf0c`
+  - live Allahabad High Court stats are `pendingTotalCases=1223215`, `institutedLastMonthTotalCases=26638`, and `disposedLastMonthTotalCases=28080`
+  - live Rajasthan High Court stats are `pendingTotalCases=678393`, `institutedLastMonthTotalCases=18847`, and `disposedLastMonthTotalCases=12318`
 - Broad public-alpha ops sweep logic corrected on 2026-04-18:
   - the original Himachal daily-fetch alert was a false positive caused by comparing internal cadence against the older published Himachal snapshot date instead of the latest internal operator run
   - live AWS staging logs already showed the scheduled Himachal fetch `run_337a80ae-4980-415a-8585-d670e413dfed` completed on `2026-04-17T20:10:06Z` with `sourceSnapshotAt=2026-04-16T00:00:00.000Z`
