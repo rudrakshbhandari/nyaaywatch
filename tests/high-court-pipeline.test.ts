@@ -69,6 +69,19 @@ const HIMACHAL_HIGH_COURT_HTML = `
 <p>Last Reviewed and Updated on : </p>
 `;
 
+const MALFORMED_DISPOSAL_HTML = `
+${HIMACHAL_HIGH_COURT_HTML.replace(
+  `<td><span class='h4'><a href="#" onclick="fetchStateData('disp',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">976</a></span></td>`,
+  `<td><span class='h4'><a href="#" onclick="fetchStateData('disp',3);" aria-label="976" data-bs-toggle="modal" data-bs-target="#modal_state_data">976</span></td>`,
+).replace(
+  `<td><span class='h4'><a href="#" onclick="fetchStateData('disp',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">6,528</a></span></td>`,
+  `<!--<td><span class='h4'><a href="#" onclick="fetchStateData('disp',2);" data-bs-toggle="modal" data-bs-target="#modal_state_data">5,552</span></td>
+  <td><span class='h4'><a href="#" onclick="fetchStateData('disp',3);" data-bs-toggle="modal" data-bs-target="#modal_state_data">976</span></td>
+  <td><span class='h4'><a href="#" onclick="fetchStateData('disp',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">6,528</span></td>-->
+  <td><span class='h4'><a href="#" onclick="fetchStateData('disp',1);" data-bs-toggle="modal" data-bs-target="#modal_state_data">6,528</a></span></td>`,
+)}
+`;
+
 describe("High Court source client", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -170,6 +183,29 @@ describe("High Court NJDG extraction", () => {
       aboveTenYears: 7750,
     });
     expect(extracted.caseTypes).toEqual(["Writ Petition", "Second Appeal"]);
+  });
+
+  it("extracts disposal values even when the criminal cell is missing a closing anchor in live HC NJDG HTML", () => {
+    const extracted = extractHighCourtCaptureBundle({
+      capturedAt: "2026-04-19T00:00:00.000Z",
+      courtCode: "UPHC",
+      courtName: "Allahabad High Court",
+      stateCode: "UP",
+      stateName: "Uttar Pradesh",
+      sourceName: "HC NJDG Allahabad High Court dashboard",
+      sourceAttribution: "High Courts of India National Judicial Data Grid for Allahabad High Court",
+      homePage: {
+        url: "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=9~13",
+        html: MALFORMED_DISPOSAL_HTML,
+      },
+      benchOptions: [{ benchCode: "1", benchName: "Principal Bench" }],
+    });
+
+    expect(extracted.disposedLastMonth).toEqual({
+      civilCases: 5552,
+      criminalCases: 976,
+      totalCases: 6528,
+    });
   });
 
   it("records the current source-date gap explicitly when the static High Court page does not expose a date", () => {
