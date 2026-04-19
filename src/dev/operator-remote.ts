@@ -1,13 +1,14 @@
 import {
   parseRemoteOperatorCommand,
   resolveRemoteOperatorHighCourtSlug,
+  resolveRemoteOperatorSupremeCourtSelection,
   resolveRemoteOperatorStateCode,
   runRemoteOperatorCommand,
 } from "./operator-remote-client.js";
 
 async function main() {
   const args = process.argv.slice(2);
-  const commandArgs = ["--base-url", "--state", "--state-slug", "--high-court", "--connect-host", "--connect-port", "--timeout-ms"].reduce(
+  const commandArgs = ["--base-url", "--state", "--state-slug", "--high-court", "--supreme-court", "--connect-host", "--connect-port", "--timeout-ms"].reduce(
     (currentArgs, flag) => stripFlag(currentArgs, flag),
     args,
   );
@@ -19,6 +20,9 @@ async function main() {
     readFlag(args, "--state-slug") ?? readFlag(args, "--state") ?? process.env.STATE_SLUG,
   );
   const highCourtSlug = resolveRemoteOperatorHighCourtSlug(readFlag(args, "--high-court") ?? process.env.HIGH_COURT_SLUG);
+  const supremeCourt = resolveRemoteOperatorSupremeCourtSelection(
+    args.includes("--supreme-court") ? "true" : process.env.SUPREME_COURT_ENABLED,
+  );
   const connectHost = readFlag(args, "--connect-host") ?? process.env.OPERATOR_CONNECT_HOST;
   const connectPort = connectPortStr ?? process.env.OPERATOR_CONNECT_PORT;
   const command = parseRemoteOperatorCommand(commandArgs);
@@ -29,12 +33,14 @@ async function main() {
     );
   }
 
-  if (stateCode && highCourtSlug) {
-    throw new Error("Select either a state or a High Court target, not both.");
+  if ([Boolean(stateCode), Boolean(highCourtSlug), supremeCourt].filter(Boolean).length > 1) {
+    throw new Error("Select either a state, a High Court, or Supreme Court, not multiple targets.");
   }
 
   const result = await runRemoteOperatorCommand(
-    highCourtSlug
+    supremeCourt
+      ? { ...command, supremeCourt: true }
+      : highCourtSlug
       ? { ...command, highCourtSlug }
       : command.name === "fetch" || command.name === "publications"
         ? { ...command, stateCode }

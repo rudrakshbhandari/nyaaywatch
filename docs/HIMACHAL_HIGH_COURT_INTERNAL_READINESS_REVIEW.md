@@ -133,24 +133,9 @@ Important nuance:
 
 ## Recommendation
 
-<<<<<<< HEAD
-Himachal High Court is now ready enough for a narrow public beta route.
-
-That does **not** mean:
-
-- the High Court tier is already mature enough for a national High Court UX
-- the High Court date contract is ideal
-- the next product layer should automatically be more High Courts instead of Supreme Court
-
-The next concrete action is:
-
-- verify the live public Himachal High Court beta after deploy
-- then decide whether Supreme Court, not more High Courts, should be the next top-down product tier
-=======
 Himachal High Court has cleared the first public-beta gate and is now live as a narrow public High Court surface.
 
 The next concrete action is:
 
 - keep Himachal High Court public and boring through additional operator cycles
 - move the next public top-down planning track to Supreme Court before broadening the High Court UX layer
->>>>>>> 1237465 (docs: plan supreme court tier after himachal beta)

@@ -25,12 +25,15 @@ import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
+import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 import { buildPublicHighCourtPageContext } from "./public-high-court.js";
 import { buildPublicPageContext } from "./public-state.js";
+import { getSupremeCourtProfile } from "../supreme-court.js";
 
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
 type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
+type SupremeCourtService = PublishedSupremeCourtSnapshotService | undefined;
 
 const DEFAULT_PUBLIC_STATE_CODE: SupportedStateCode = "HP";
 
@@ -39,6 +42,7 @@ export function createApp(
   service: PublishedSnapshotService,
   publicServices: PublicServiceMap = { [config.STATE_CODE]: service },
   highCourtServices: HighCourtServiceMap = {},
+  supremeCourtService?: PublishedSupremeCourtSnapshotService,
 ) {
   const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
@@ -643,6 +647,156 @@ export function createApp(
 
   if (config.ENABLE_OPERATOR_ROUTES) {
     app.get(
+      "/operator/supreme-court",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const snapshot = await resolved.service.getPublishedSnapshot();
+        response.json({
+          court: resolved.profile,
+          snapshot,
+          stats: snapshot?.payload.stats ?? null,
+          trends: snapshot?.payload.trends ?? null,
+          publications: await resolved.service.listPublicationHistory(),
+        });
+      }),
+    );
+
+    app.get(
+      "/operator/supreme-court/runs",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, runs: await resolved.service.listRuns() });
+      }),
+    );
+
+    app.get(
+      "/operator/supreme-court/publications",
+      operatorOnly(config),
+      asyncRoute(async (_request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        response.json({ court: resolved.profile, publications: await resolved.service.listPublicationHistory() });
+      }),
+    );
+
+    app.get(
+      "/operator/supreme-court/runs/:runId",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const inspection = await resolved.service.inspectRun(readRouteParam(request.params.runId));
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        response.json(inspection);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/runs/fetch",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const result = await resolved.service.captureRun(request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/runs/:runId/publish",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.publishRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/runs/:runId/replay",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const runId = readRouteParam(request.params.runId);
+        const inspection = await resolved.service.inspectRun(runId);
+        if (!inspection) {
+          response.status(404).json({ error: "Run not found." });
+          return;
+        }
+
+        const result = await resolved.service.replayRun(runId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.post(
+      "/operator/supreme-court/publications/:publicationId/rollback",
+      operatorOnly(config),
+      asyncRoute(async (request, response) => {
+        const resolved = resolveSupremeCourtOperatorRequest(supremeCourtService);
+        if (!resolved) {
+          response.status(404).json({ error: "Supreme Court service is not configured." });
+          return;
+        }
+
+        const publicationId = readRouteParam(request.params.publicationId);
+        const publication = (await resolved.service.listPublicationHistory()).find((entry) => entry.publication.id === publicationId);
+        if (!publication) {
+          response.status(404).json({ error: "Publication not found." });
+          return;
+        }
+
+        const result = await resolved.service.rollbackPublication(publicationId, request.body?.note);
+        response.status(201).json(result);
+      }),
+    );
+
+    app.get(
       "/operator/high-courts",
       operatorOnly(config),
       asyncRoute(async (_request, response) => {
@@ -1039,6 +1193,17 @@ function resolveHighCourtOperatorRequest(request: Request, services: HighCourtSe
   }
 
   return { profile, service };
+}
+
+function resolveSupremeCourtOperatorRequest(service: SupremeCourtService) {
+  if (!service) {
+    return null;
+  }
+
+  return {
+    profile: getSupremeCourtProfile(),
+    service,
+  };
 }
 
 function readOperatorRequestedProfile(request: Request) {

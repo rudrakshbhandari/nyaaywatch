@@ -5,10 +5,13 @@ import { getStateProfile } from "../geographies.js";
 import { getHighCourtProfile, getHighCourtProfileBySlug, listHighCourtProfiles } from "../high-courts.js";
 import { NjdgStateSourceClient } from "../ingest/himachal-source-client.js";
 import { createHighCourtSourceClient } from "../ingest/high-court-source-client.js";
+import { createSupremeCourtSourceClient } from "../ingest/supreme-court-source-client.js";
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
+import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 import { S3ArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
+import { getSupremeCourtProfile } from "../supreme-court.js";
 
 const SUPPORTED_OPERATOR_COMMANDS = ["fetch", "inspect", "publications", "publish", "replay", "rollback"] as const;
 
@@ -17,6 +20,7 @@ export type OperatorCommand = (typeof SUPPORTED_OPERATOR_COMMANDS)[number];
 export interface OperatorInvocation {
   stateCode?: string;
   highCourtCode?: string;
+  supremeCourt?: boolean;
   command: OperatorCommand;
   targetId?: string;
   note?: string;
@@ -25,7 +29,8 @@ export interface OperatorInvocation {
 export function parseOperatorInvocation(args: string[]): OperatorInvocation {
   const stateCode = readFlag(args, "--state");
   const highCourtCode = resolveHighCourtCode(readFlag(args, "--high-court"));
-  const positionals = ["--state", "--high-court"].reduce((currentArgs, flag) => stripFlag(currentArgs, flag), args);
+  const supremeCourt = args.includes("--supreme-court");
+  const positionals = ["--state", "--high-court", "--supreme-court"].reduce((currentArgs, flag) => stripFlag(currentArgs, flag), args);
   const [rawCommand, rawTargetId, ...rest] = positionals;
 
   if (!rawCommand) {
@@ -38,8 +43,8 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
     throw new Error(`Unsupported operator command: ${rawCommand}`);
   }
 
-  if (stateCode && highCourtCode) {
-    throw new Error("Select either --state or --high-court, not both.");
+  if ([Boolean(stateCode), Boolean(highCourtCode), supremeCourt].filter(Boolean).length > 1) {
+    throw new Error("Select either --state, --high-court, or --supreme-court, not multiple targets.");
   }
 
   const command = rawCommand as OperatorCommand;
@@ -48,6 +53,7 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
     return {
       stateCode,
       highCourtCode,
+      supremeCourt,
       command: "fetch",
       note: [rawTargetId, ...rest].join(" ").trim() || undefined,
     };
@@ -57,6 +63,7 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
     return {
       stateCode,
       highCourtCode,
+      supremeCourt,
       command: "publications",
     };
   }
@@ -68,6 +75,7 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
   return {
     stateCode,
     highCourtCode,
+    supremeCourt,
     command,
     targetId: rawTargetId,
     note: rest.join(" ").trim() || undefined,
@@ -88,6 +96,31 @@ export async function runOperatorInvocation(
   try {
     const store = PgWarehouseStore.fromPool(pool);
     const artifactStore = new S3ArtifactStore(config);
+    if (invocation.supremeCourt) {
+      const supremeCourtService = new PublishedSupremeCourtSnapshotService(
+        config,
+        getSupremeCourtProfile(),
+        store,
+        artifactStore,
+        createSupremeCourtSourceClient(),
+      );
+
+      switch (invocation.command) {
+        case "fetch":
+          return await supremeCourtService.captureRun(invocation.note);
+        case "publications":
+          return await supremeCourtService.listPublicationHistory();
+        case "inspect":
+          return await supremeCourtService.inspectRun(invocation.targetId!);
+        case "publish":
+          return await supremeCourtService.publishRun(invocation.targetId!, invocation.note);
+        case "replay":
+          return await supremeCourtService.replayRun(invocation.targetId!, invocation.note);
+        case "rollback":
+          return await supremeCourtService.rollbackPublication(invocation.targetId!, invocation.note);
+      }
+    }
+
     if (invocation.highCourtCode) {
       const highCourtProfile = getRequiredHighCourtProfile(invocation.highCourtCode);
       const highCourtService = new PublishedHighCourtSnapshotService(

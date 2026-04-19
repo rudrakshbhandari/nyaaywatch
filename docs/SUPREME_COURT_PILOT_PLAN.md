@@ -37,6 +37,22 @@ Why Supreme Court next:
 - it lets the homepage tell a national judicial story without waiting for all High Courts to be public
 - it clarifies the top-down product shell before broader High Court UX expansion
 
+## Current Implementation Status
+
+The repo now has the internal Supreme Court scaffold:
+
+- a dedicated Supreme Court source and profile module
+- stored-evidence capture and deterministic aggregate extraction
+- Supreme Court snapshot-candidate and published-snapshot schemas
+- internal operator lifecycle under `/operator/supreme-court/...`
+- local and remote operator CLI support
+
+What it does **not** have yet:
+
+- repeated live Supreme Court proof cycles on the deployed stack
+- a public `/supreme-court` route family
+- a finished public methodology page for the Supreme Court tier
+
 ## Product Position
 
 Supreme Court should ship as:
