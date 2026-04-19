@@ -38,9 +38,9 @@ The internal High Court registry now includes:
 
 Current posture:
 
-- `sourceReviewStatus=reviewed`: Himachal Pradesh, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
+- `sourceReviewStatus=reviewed`: Himachal Pradesh, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
 - `sourceReviewStatus=queued`: every other configured court in this wave
-- `publicBeta=true`: Himachal Pradesh, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
+- `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
 - `publicBeta=false`: every other configured court in this wave
 
 ## Why These Courts
@@ -79,21 +79,21 @@ After this slice, the repo still does **not** claim:
 - that every configured High Court has cleared source review
 - that cross-court methodology is public-ready
 - that multi-jurisdiction High Courts fit the current schema
-- that every configured High Court should launch publicly just because three High Courts now have narrow beta routes
+- that every configured High Court should launch publicly just because seven High Courts now have narrow beta routes
 
 ## Next Decision After Setup
 
-Use this wave to choose the next one or two post-Gujarat-and-Madhya-Pradesh courts for real operator-cycle validation.
+Use this wave to choose the next one or two post-Andhra-and-Telangana courts for real operator-cycle validation.
 
 The next serious gate is still operational evidence:
 
 - repeated internal fetch and publish cycles
 - replay and rollback proof
 - source-review writeups for the next court(s)
-- a methodologically honest reason to expose any public High Court beta beyond the current three-court set
+- a methodologically honest reason to expose any public High Court beta beyond the current seven-court set
 
 The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
 
-- validate the next deliberate internal pair after Gujarat and Madhya Pradesh
+- validate the next deliberate internal pair after Andhra Pradesh and Telangana
 - keep using `npm run high-court:wave-readiness` for each deliberate pair
 - treat each additional pair as an internal proof step, not automatic public-beta approval
