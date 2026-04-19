@@ -44,6 +44,7 @@ Why it matters:
 
 - this is the closest High Court analogue to the district/subordinate NJDG surface NyaayWatch already knows how to reason about
 - it is the best candidate for a first stored-evidence snapshot source
+- the Himachal-selected HC NJDG page is reachable directly via `https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=2~5`
 
 ### 2. High Court Services
 
@@ -174,6 +175,24 @@ High Court and Supreme Court surfaces may expose registered / unregistered disti
 Rule:
 
 - do not put those fields on the public page until the semantics are stable and explicitly documented
+
+### 1a. Source Snapshot Date Gap
+
+As verified on `2026-04-19`, the Himachal-selected HC NJDG page exposes the expected aggregate metrics in static HTML, but the static response does **not** expose a parseable `Last Reviewed and Updated on` date the way district NJDG does.
+
+Observed static footer output:
+
+- `Last Reviewed and Updated on :`
+- `S1`
+- `Version :2.0`
+
+Operational implication:
+
+- NyaayWatch can implement capture and aggregate extraction now
+- NyaayWatch should **not** pretend it already has a trustworthy source snapshot date for High Court publications
+- public beta should stay blocked until either:
+  - the actual source date is recovered from an official HC NJDG response path, or
+  - the methodology intentionally adopts a different trust label such as capture date with an explicit caveat
 
 ### 2. Case-Type Breakdown Stability
 

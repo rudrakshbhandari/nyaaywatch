@@ -13,6 +13,7 @@ describe("high court profiles", () => {
       courtName: "High Court of Himachal Pradesh",
       stateCode: "HP",
       stateName: "Himachal Pradesh",
+      hcNjdgStateValue: "2~5",
       publicBeta: false,
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",

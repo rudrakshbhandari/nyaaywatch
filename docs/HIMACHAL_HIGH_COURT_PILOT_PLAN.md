@@ -235,19 +235,21 @@ Done when:
 
 Outcome:
 
-- Himachal High Court aggregate data can be converted into a deterministic snapshot candidate
+- Himachal High Court aggregate data can be captured and extracted deterministically from stored evidence, with publication still blocked until the source-date contract is explicit
 
 Tasks:
 
 - add High Court source capture support
 - add stored raw artifact handling
-- add extract and normalize steps for the High Court source shape
+- add extract steps for the High Court source shape
+- make the publication blocker explicit if the source does not expose a trustworthy source snapshot date
 - create representative fixtures
 - add regression coverage for deterministic replay
 
 Done when:
 
-- the same stored input yields the same normalized output
+- the same stored input yields the same extracted output
+- the repo states clearly whether High Court publication is ready or blocked
 
 ### Phase 3: Internal Publication Flow
 
@@ -354,9 +356,10 @@ Do these next:
 1. add a Himachal High Court source-review doc
 2. add a High Court methodology draft
 3. scaffold the High Court route and data namespaces
-4. implement the High Court capture / normalize pipeline
-5. prove internal publication and rollback
-6. only then decide on public beta timing
+4. implement the High Court capture / extract pipeline
+5. resolve the High Court source-date contract so publication semantics are defensible
+6. only then prove internal publication and rollback
+7. only then decide on public beta timing
 
 ## Definition Of Done
 
