@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:93`
+- ECS task definition: `nyaaywatch-staging:96`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
@@ -105,6 +105,13 @@ Operational notes:
 - Current Himachal High Court reference-date kind: `captured_at`
 - Current Himachal High Court published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
 - Current Himachal High Court methodology version: `2026.04-high-court-draft`
+- Current active internal Supreme Court publication: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- Current active internal Supreme Court published snapshot: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- Current internal Supreme Court publication action: `rollback`
+- Current internal Supreme Court reference date: `2026-04-19T07:06:34.049Z`
+- Current internal Supreme Court reference-date kind: `captured_at`
+- Current internal Supreme Court published-from run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- Current internal Supreme Court methodology version: `2026.04-supreme-court-draft`
 - Current active Punjab publication: `publication_8a5ddc6e-f520-4344-8161-76dc4dead033`
 - Current active Punjab published snapshot: `snapshot_35226b6d-2fac-49d6-9d53-7aa24b9387e5`
 - Current Punjab source snapshot date: `2026-04-16`
@@ -244,6 +251,18 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Supreme Court second internal proof cycle completed on 2026-04-19 after PR `#108` merged and GitHub deploy run `24623340754` rolled the live service to task definition `:96`:
+  - the internal Supreme Court operator namespace remained auth-protected under `/operator/supreme-court/...`
+  - `GET /operator/supreme-court` returned `401` without a token and `200` with the operator token
+  - `GET /supreme-court` still returned `404`, confirming the public route family remains dark after the second window too
+  - live Supreme Court fetch run `run_92990afc-1acd-4d37-b6d5-69dc95a1d933` completed successfully
+  - live Supreme Court publication `publication_a4af147e-0495-40ae-8359-5d2775da3c8a` created `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+  - live Supreme Court replay run `run_e9572b2a-bb76-4318-885d-23b04d776eea` created publication `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
+  - live Supreme Court rollback `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` restored the second-window publication chain and left `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486` active
+  - the active internal Supreme Court snapshot now carries `referenceDateAt=2026-04-19T07:06:34.049Z`, `referenceDateKind=captured_at`, `sourceSnapshotAt=null`, and `publishedAt=2026-04-19T07:06:42.130Z`
+  - active internal Supreme Court stats remain `pendingRegisteredCases=71534`, `pendingUnregisteredCases=22624`, `pendingTotalCases=94158`, `institutedLastMonthTotalCases=6148`, and `disposedLastMonthTotalCases=4552`
+- Supreme Court methodology draft completed on 2026-04-19:
+  - `docs/SUPREME_COURT_METHODOLOGY.md` now records the sourced-versus-derived metric contract, the registered or unregistered pending treatment, the explicit `captured_at` fallback date policy, and the cross-tier comparison limits that should hold before any public `/supreme-court` route ships
 - Supreme Court internal proof cycle completed on 2026-04-19 after PR `#107` merged and GitHub deploy run `24622868188` rolled the live service to task definition `:95`:
   - the internal Supreme Court operator namespace is now live and auth-protected under `/operator/supreme-court/...`
   - `GET /operator/supreme-court` returned `401` without a token
