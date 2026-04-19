@@ -12,6 +12,7 @@ import { PublishedSnapshotService } from "../services/published-snapshot-service
 import { S3ArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
+import { hasFlag, readFlag, stripFlag } from "./cli-flag-utils.js";
 
 const SUPPORTED_OPERATOR_COMMANDS = ["fetch", "inspect", "publications", "publish", "replay", "rollback"] as const;
 
@@ -29,8 +30,12 @@ export interface OperatorInvocation {
 export function parseOperatorInvocation(args: string[]): OperatorInvocation {
   const stateCode = readFlag(args, "--state");
   const highCourtCode = resolveHighCourtCode(readFlag(args, "--high-court"));
-  const supremeCourt = args.includes("--supreme-court");
-  const positionals = ["--state", "--high-court", "--supreme-court"].reduce((currentArgs, flag) => stripFlag(currentArgs, flag), args);
+  const supremeCourt = hasFlag(args, "--supreme-court");
+  const positionals = ([
+    ["--state", true],
+    ["--high-court", true],
+    ["--supreme-court", false],
+  ] as Array<[string, boolean]>).reduce((currentArgs, [flag, takesValue]) => stripFlag(currentArgs, flag, takesValue), args);
   const [rawCommand, rawTargetId, ...rest] = positionals;
 
   if (!rawCommand) {
@@ -167,20 +172,6 @@ export async function runOperatorInvocation(
   } finally {
     await pool.end();
   }
-}
-
-function readFlag(args: string[], flag: string) {
-  const index = args.findIndex((value) => value === flag);
-  return index >= 0 ? args[index + 1] : undefined;
-}
-
-function stripFlag(args: string[], flag: string) {
-  const index = args.findIndex((value) => value === flag);
-  if (index < 0) {
-    return args;
-  }
-
-  return args.filter((_, currentIndex) => currentIndex !== index && currentIndex !== index + 1);
 }
 
 function resolveHighCourtCode(selected?: string) {

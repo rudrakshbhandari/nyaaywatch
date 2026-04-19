@@ -250,6 +250,7 @@ Start here:
 - [Himachal High Court source review](docs/HIMACHAL_HIGH_COURT_SOURCE_REVIEW.md)
 - [Himachal High Court methodology draft](docs/HIMACHAL_HIGH_COURT_METHODOLOGY.md)
 - [Himachal High Court internal readiness review](docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md)
+- [Supreme Court internal readiness review](docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md)
 - [Supreme Court pilot plan](docs/SUPREME_COURT_PILOT_PLAN.md)
 - [Supreme Court source review](docs/SUPREME_COURT_SOURCE_REVIEW.md)
 - [High Court internal wave 1](docs/HIGH_COURT_INTERNAL_WAVE_1.md)

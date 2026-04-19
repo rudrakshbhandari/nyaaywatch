@@ -46,10 +46,11 @@ The repo now has the internal Supreme Court scaffold:
 - Supreme Court snapshot-candidate and published-snapshot schemas
 - internal operator lifecycle under `/operator/supreme-court/...`
 - local and remote operator CLI support
+- the first live Supreme Court proof cycle recorded in `docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md`
 
 What it does **not** have yet:
 
-- repeated live Supreme Court proof cycles on the deployed stack
+- repeated live Supreme Court proof cycles across separate windows on the deployed stack
 - a public `/supreme-court` route family
 - a finished public methodology page for the Supreme Court tier
 

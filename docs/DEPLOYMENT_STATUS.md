@@ -244,6 +244,16 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Supreme Court internal proof cycle completed on 2026-04-19 after PR `#107` merged and GitHub deploy run `24622868188` rolled the live service to task definition `:95`:
+  - the internal Supreme Court operator namespace is now live and auth-protected under `/operator/supreme-court/...`
+  - `GET /operator/supreme-court` returned `401` without a token
+  - `GET /supreme-court` still returned `404`, confirming the public route family remains dark
+  - live Supreme Court fetch run `run_1eae4c35-6ed8-4e32-8d2e-a8b0b704df1e` completed successfully
+  - live Supreme Court publication `publication_e0e10038-e70c-4556-a972-df9f530d03de` created `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81`
+  - live Supreme Court replay run `run_06a8e66e-26ac-4de6-9182-561989b49e4c` created publication `publication_dbcca7db-d563-4ba8-a0b1-3ea730c40ce5`
+  - live Supreme Court rollback `publication_816712a1-56c7-4b2b-b49d-74d78f6a9bbd` restored the original publication chain and left `snapshot_4a64f3c4-b978-4a91-90f4-1fafbfe38f81` active
+  - the active internal Supreme Court snapshot carries `referenceDateAt=2026-04-19T06:41:34.634Z`, `referenceDateKind=captured_at`, `sourceSnapshotAt=null`, and `publishedAt=2026-04-19T06:42:07.131Z`
+  - active internal Supreme Court stats are `pendingRegisteredCases=71534`, `pendingUnregisteredCases=22624`, `pendingTotalCases=94158`, `institutedLastMonthTotalCases=6148`, and `disposedLastMonthTotalCases=4552`
 - Himachal High Court public beta exposure completed on 2026-04-19 after PR `#105` merged and GitHub deploy run `24621281752` rolled the live service to task definition `:93`:
   - the already-reviewed active High Court publication `publication_e66cb2f9-b307-46d6-b00c-51b01e901fee` became publicly reachable under `/high-courts/himachal`
   - the active High Court snapshot remained `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:28.731Z`, and `publishedFromRunId=run_288288e1-f32b-45d1-86cd-c2384bba38ac`
