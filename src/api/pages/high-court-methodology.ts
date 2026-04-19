@@ -62,7 +62,7 @@ export function renderHighCourtMethodologyPage(
         <article class="card">
           <h3>When HC NJDG does not expose one</h3>
           <p>The page uses the captured page timestamp as <code>referenceDateAt</code> and labels it as <code>captured_at</code> instead of inventing a source date.</p>
-          <p>This is the current Himachal High Court posture.</p>
+          <p>This is the current posture for the live public High Court beta pages.</p>
         </article>
       </div>
     </section>

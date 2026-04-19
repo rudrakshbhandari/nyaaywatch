@@ -8,7 +8,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
       eyebrow: "HIGH COURT API",
       headline: "The public High Court API matches the latest published High Court snapshot.",
       lede:
-        "If the Himachal High Court beta page shows a number, the published JSON can expose it. If it is still in operator review, it stays private.",
+        "If a public High Court beta page shows a number, the published JSON can expose it. If it is still in operator review, it stays private.",
       isHero: true,
     })}
 

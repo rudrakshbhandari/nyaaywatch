@@ -370,6 +370,8 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.RJHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.UPHC!);
 
     const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
@@ -377,6 +379,8 @@ describe("HTTP routes", () => {
     expect(index.status).toBe(200);
     expect(index.text).toContain("Public High Court observability is now live in a narrow beta.");
     expect(index.text).toContain("High Court of Himachal Pradesh");
+    expect(index.text).toContain("High Court of Rajasthan");
+    expect(index.text).toContain("Allahabad High Court");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
@@ -387,7 +391,7 @@ describe("HTTP routes", () => {
     const data = await request(app).get("/high-courts/himachal/data");
     expect(data.status).toBe(200);
     expect(data.text).toContain("/v1/high-courts/himachal/stats");
-    expect(data.text).toContain("This first public High Court beta ships the JSON surface before adding download formats.");
+    expect(data.text).toContain("This public High Court beta ships the JSON surface before adding download formats.");
 
     const methodology = await request(app).get("/high-courts/himachal/methodology");
     expect(methodology.status).toBe(200);
@@ -408,8 +412,22 @@ describe("HTTP routes", () => {
     expect(trends.body.snapshot.referenceDateKind).toBe("captured_at");
     expect(trends.body.trends.length).toBeGreaterThan(0);
 
-    const queuedCourt = await request(app).get("/high-courts/uttar-pradesh");
-    expect(queuedCourt.status).toBe(404);
+    const uttarPradeshOverview = await request(app).get("/high-courts/uttar-pradesh");
+    expect(uttarPradeshOverview.status).toBe(200);
+    expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
+    expect(uttarPradeshOverview.text).toContain("This page covers Allahabad High Court. 2 other public High Court pages are linked in the switcher.");
+
+    const rajasthanOverview = await request(app).get("/high-courts/rajasthan");
+    expect(rajasthanOverview.status).toBe(200);
+    expect(rajasthanOverview.text).toContain("High Court of Rajasthan");
+
+    const uttarPradeshStats = await request(app).get("/v1/high-courts/uttar-pradesh/stats");
+    expect(uttarPradeshStats.status).toBe(200);
+    expect(uttarPradeshStats.body.snapshot.courtCode).toBe("UPHC");
+
+    const rajasthanTrends = await request(app).get("/v1/high-courts/rajasthan/trends");
+    expect(rajasthanTrends.status).toBe(200);
+    expect(rajasthanTrends.body.snapshot.courtCode).toBe("RJHC");
   });
 
   it("serves Supreme Court through the public beta namespace once a published Supreme Court snapshot exists", async () => {

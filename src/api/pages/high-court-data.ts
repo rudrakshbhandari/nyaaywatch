@@ -28,7 +28,7 @@ export function renderHighCourtDataPage(
       ${renderStatTile({
         label: "Public endpoints",
         value: "2",
-        note: "Stats and trends for the active Himachal High Court publication.",
+        note: `Stats and trends for the active ${profile.courtName} publication.`,
       })}
       ${renderStatTile({
         label: "Trend points",
@@ -43,7 +43,7 @@ export function renderHighCourtDataPage(
       ${renderStatTile({
         label: "CSV posture",
         value: "Not yet",
-        note: "This first public High Court beta ships the JSON surface before adding download formats.",
+        note: "This public High Court beta ships the JSON surface before adding download formats.",
         tone: "flag",
       })}
     </section>

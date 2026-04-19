@@ -1,6 +1,6 @@
-# High Court Internal Wave 1
+# High Court Wave 1
 
-Internal-only configuration plan for the first multi-High-Court setup after the Himachal pilot.
+First broader High Court configuration wave after the Himachal pilot.
 
 Verified against the live official HC NJDG selector list on **April 18, 2026**.
 
@@ -12,7 +12,7 @@ This repo now configures a first internal High Court wave for the courts that al
 - one primary jurisdiction already represented in the current state rollout
 - one HC NJDG selector value
 
-These courts are **not** public-beta approved by this document. They are internal operator candidates only.
+This document records the broader configured set, plus which courts have now advanced from internal-only status to public beta.
 
 ## Configured Internal Wave
 
@@ -38,9 +38,9 @@ The internal High Court registry now includes:
 
 Current posture:
 
-- `sourceReviewStatus=reviewed`: Himachal Pradesh only
+- `sourceReviewStatus=reviewed`: Himachal Pradesh, Rajasthan, and Uttar Pradesh
 - `sourceReviewStatus=queued`: every other configured court in this wave
-- `publicBeta=true`: Himachal Pradesh only
+- `publicBeta=true`: Himachal Pradesh, Rajasthan, and Uttar Pradesh
 - `publicBeta=false`: every other configured court in this wave
 
 ## Why These Courts
@@ -79,21 +79,21 @@ After this slice, the repo still does **not** claim:
 - that every configured High Court has cleared source review
 - that cross-court methodology is public-ready
 - that multi-jurisdiction High Courts fit the current schema
-- that every configured High Court should launch publicly just because Himachal now has a narrow beta route
+- that every configured High Court should launch publicly just because three High Courts now have narrow beta routes
 
 ## Next Decision After Setup
 
-Use this internal wave to choose one or two post-Himachal courts for real operator-cycle validation.
+Use this wave to choose the next one or two post-Uttar-Pradesh-and-Rajasthan courts for real operator-cycle validation.
 
 The next serious gate is still operational evidence:
 
 - repeated internal fetch and publish cycles
 - replay and rollback proof
 - source-review writeups for the next court(s)
-- a methodologically honest reason to expose any public High Court beta beyond Himachal
+- a methodologically honest reason to expose any public High Court beta beyond the current three-court set
 
 The repo now makes that first recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
 
-- validate Uttar Pradesh and Rajasthan first
-- use `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
-- treat that pair as an internal proof step, not a public-beta approval
+- validate Gujarat and Madhya Pradesh next
+- keep using `npm run high-court:wave-readiness` for each deliberate pair
+- treat each additional pair as an internal proof step, not automatic public-beta approval

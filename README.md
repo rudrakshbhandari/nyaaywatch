@@ -28,7 +28,7 @@ What is shipped now:
 - S3-backed stored raw HTML evidence and normalized snapshot-candidate artifacts
 - public routes for homepage, districts workspace, district detail, data downloads, methodology, and API docs
 - narrow public Supreme Court beta routes under `/supreme-court`
-- narrow public High Court beta routes for Himachal High Court under `/high-courts/himachal`
+- narrow public High Court beta routes for Himachal High Court, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
@@ -150,6 +150,14 @@ Public routes:
 - `/high-courts/himachal/data`
 - `/high-courts/himachal/methodology`
 - `/high-courts/himachal/api`
+- `/high-courts/uttar-pradesh`
+- `/high-courts/uttar-pradesh/data`
+- `/high-courts/uttar-pradesh/methodology`
+- `/high-courts/uttar-pradesh/api`
+- `/high-courts/rajasthan`
+- `/high-courts/rajasthan/data`
+- `/high-courts/rajasthan/methodology`
+- `/high-courts/rajasthan/api`
 - `/districts`
 - `/districts/:id`
 - `/data`
@@ -166,7 +174,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - Supreme Court now has a narrow public beta route family under `/supreme-court`
-- Himachal High Court now has a narrow public beta route family under `/high-courts/himachal`
+- the public High Court beta currently covers Himachal High Court, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
@@ -178,6 +186,10 @@ Public API:
 - `GET /v1/supreme-court/trends`
 - `GET /v1/high-courts/himachal/stats`
 - `GET /v1/high-courts/himachal/trends`
+- `GET /v1/high-courts/uttar-pradesh/stats`
+- `GET /v1/high-courts/uttar-pradesh/trends`
+- `GET /v1/high-courts/rajasthan/stats`
+- `GET /v1/high-courts/rajasthan/trends`
 - `GET /v1/districts`
 - `GET /v1/trends`
 - `GET /v1/states/:stateSlug/stats`
@@ -259,6 +271,8 @@ Start here:
 - [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
 - [Himachal High Court pilot plan](docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md)
 - [Himachal High Court source review](docs/HIMACHAL_HIGH_COURT_SOURCE_REVIEW.md)
+- [Uttar Pradesh High Court source review](docs/UTTAR_PRADESH_HIGH_COURT_SOURCE_REVIEW.md)
+- [Rajasthan High Court source review](docs/RAJASTHAN_HIGH_COURT_SOURCE_REVIEW.md)
 - [Himachal High Court methodology draft](docs/HIMACHAL_HIGH_COURT_METHODOLOGY.md)
 - [Himachal High Court internal readiness review](docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md)
 - [Supreme Court internal readiness review](docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md)
