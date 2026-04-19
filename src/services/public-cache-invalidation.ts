@@ -1,5 +1,8 @@
 import type { AppConfig } from "../config/env.js";
+import { buildPublicHighCourtRoutes } from "../api/public-high-court.js";
+import { buildPublicSupremeCourtRoutes } from "../api/public-supreme-court.js";
 import { getStateProfile, type SupportedStateCode } from "../geographies.js";
+import type { HighCourtProfile } from "../high-courts.js";
 import { logInfo } from "../lib/logger.js";
 import { buildPublicStateRoutes } from "../api/public-state.js";
 
@@ -15,14 +18,81 @@ export class PublicCacheInvalidationService {
   async invalidatePublishedData(stateCode: SupportedStateCode, districtIds: string[]) {
     if (!this.isConfigured()) {
       logInfo("public_cache_invalidation_skipped", {
-        stateCode,
+        scope: `state:${stateCode}`,
         reason: "cloudflare_not_configured",
       });
       return;
     }
 
+    await this.purgeUrls(this.buildPublicDataUrls(stateCode, districtIds), `state:${stateCode}`);
+  }
+
+  async invalidateHighCourtRoutes(profile: HighCourtProfile) {
+    if (!this.isConfigured()) {
+      logInfo("public_cache_invalidation_skipped", {
+        scope: `high_court:${profile.courtSlug}`,
+        reason: "cloudflare_not_configured",
+      });
+      return;
+    }
+
+    await this.purgeUrls(this.buildHighCourtUrls(profile), `high_court:${profile.courtSlug}`);
+  }
+
+  async invalidateSupremeCourtRoutes() {
+    if (!this.isConfigured()) {
+      logInfo("public_cache_invalidation_skipped", {
+        scope: "supreme_court",
+        reason: "cloudflare_not_configured",
+      });
+      return;
+    }
+
+    await this.purgeUrls(this.buildSupremeCourtUrls(), "supreme_court");
+  }
+
+  async invalidateExplicitUrls(urls: string[], scope: string) {
+    if (!this.isConfigured()) {
+      logInfo("public_cache_invalidation_skipped", {
+        scope,
+        reason: "cloudflare_not_configured",
+      });
+      return;
+    }
+
+    await this.purgeUrls(urls, scope);
+  }
+
+  private buildPublicDataUrls(stateCode: SupportedStateCode, districtIds: string[]) {
+    const profile = getStateProfile(stateCode);
+    const routes = buildPublicStateRoutes(profile);
+    const baseUrl = this.requirePublicBaseUrl();
+
+    return [routes.data, routes.districtsCsv, ...districtIds.map((districtId) => routes.districtCsv(districtId))].map((path) =>
+      new URL(path, baseUrl).toString(),
+    );
+  }
+
+  private buildHighCourtUrls(profile: HighCourtProfile) {
+    const baseUrl = this.requirePublicBaseUrl();
+    const routes = buildPublicHighCourtRoutes(profile);
+
+    return [routes.index, routes.home, routes.data, routes.methodology, routes.api, routes.statsApi, routes.trendsApi].map((path) =>
+      new URL(path, baseUrl).toString(),
+    );
+  }
+
+  private buildSupremeCourtUrls() {
+    const baseUrl = this.requirePublicBaseUrl();
+    const routes = buildPublicSupremeCourtRoutes();
+
+    return [routes.home, routes.data, routes.methodology, routes.api, routes.statsApi, routes.trendsApi].map((path) =>
+      new URL(path, baseUrl).toString(),
+    );
+  }
+
+  private async purgeUrls(urls: string[], scope: string) {
     const zoneId = await this.resolveZoneId();
-    const urls = this.buildPublicDataUrls(stateCode, districtIds);
     const response = await fetch(`${CLOUDFLARE_API_BASE}/zones/${zoneId}/purge_cache`, {
       method: "POST",
       headers: {
@@ -35,26 +105,22 @@ export class PublicCacheInvalidationService {
 
     if (!response.ok || body.success !== true) {
       const detail = body.errors?.map((error) => error.message).filter(Boolean).join("; ") || response.statusText;
-      throw new Error(`Cloudflare purge failed for ${stateCode}: ${detail}`);
+      throw new Error(`Cloudflare purge failed for ${scope}: ${detail}`);
     }
 
     logInfo("public_cache_invalidated", {
-      stateCode,
+      scope,
       urlCount: urls.length,
     });
   }
 
-  private buildPublicDataUrls(stateCode: SupportedStateCode, districtIds: string[]) {
-    const profile = getStateProfile(stateCode);
-    const routes = buildPublicStateRoutes(profile);
+  private requirePublicBaseUrl() {
     const baseUrl = this.resolvePublicBaseUrl();
     if (!baseUrl) {
       throw new Error("PUBLIC_BASE_URL or CANONICAL_HOST is required for cache invalidation.");
     }
 
-    return [routes.data, routes.districtsCsv, ...districtIds.map((districtId) => routes.districtCsv(districtId))].map((path) =>
-      new URL(path, baseUrl).toString(),
-    );
+    return baseUrl;
   }
 
   private resolvePublicBaseUrl() {

@@ -15,6 +15,7 @@ import {
   buildSupremeCourtSnapshotCandidate,
   materializeSupremeCourtPublishedSnapshot,
 } from "../normalize/supreme-court-snapshot-candidate.js";
+import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
 import type { ArtifactStore } from "../storage/artifact-store.js";
 import {
   PgWarehouseStore,
@@ -43,13 +44,17 @@ export interface SupremeCourtPublicationHistoryEntry {
 }
 
 export class PublishedSupremeCourtSnapshotService {
+  private readonly cacheInvalidation: PublicCacheInvalidationService;
+
   constructor(
     private readonly config: AppConfig,
     private readonly profile: SupremeCourtProfile,
     private readonly store: PgWarehouseStore,
     private readonly artifactStore: ArtifactStore,
     private readonly sourceClient: SupremeCourtSourceClient,
-  ) {}
+  ) {
+    this.cacheInvalidation = new PublicCacheInvalidationService(config);
+  }
 
   async getPublishedSnapshot(): Promise<SupremeCourtPublishedSnapshotRecord | null> {
     return this.store.getLatestSupremeCourtPublishedSnapshot(this.profile.courtCode);
@@ -226,7 +231,7 @@ export class PublishedSupremeCourtSnapshotService {
       inspection.run.replayOfRunId ?? undefined,
     );
 
-    return this.store.withTransaction(async (tx) => {
+    const result = await this.store.withTransaction(async (tx) => {
       const snapshot = await tx.insertSupremeCourtPublishedSnapshot({
         id: createId("snapshot"),
         runId,
@@ -259,6 +264,10 @@ export class PublishedSupremeCourtSnapshotService {
 
       return { run, publication, snapshot };
     });
+
+    await this.cacheInvalidation.invalidateSupremeCourtRoutes();
+
+    return result;
   }
 
   async replayRun(
@@ -375,6 +384,8 @@ export class PublishedSupremeCourtSnapshotService {
       restoredSnapshotId: rollback.publishedSnapshotId,
       previousPublicationId: rollback.previousPublicationId,
     });
+
+    await this.cacheInvalidation.invalidateSupremeCourtRoutes();
 
     return rollback;
   }
