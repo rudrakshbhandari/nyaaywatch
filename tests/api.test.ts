@@ -210,6 +210,82 @@ describe("HTTP routes", () => {
     expect(listedPunjabPublications.body.publications[0].publication.stateCode).toBe("PB");
   });
 
+  it("exposes the internal High Court read surface and operator lifecycle on the dedicated namespace", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices);
+
+    const unauthorized = await request(app).get("/operator/high-courts");
+    expect(unauthorized.status).toBe(401);
+
+    const listedHighCourts = await request(app)
+      .get("/operator/high-courts")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(listedHighCourts.status).toBe(200);
+    expect(listedHighCourts.body.highCourts).toHaveLength(1);
+    expect(listedHighCourts.body.highCourts[0].court.courtSlug).toBe("himachal");
+    expect(listedHighCourts.body.highCourts[0].hasPublishedSnapshot).toBe(false);
+
+    const fetched = await request(app)
+      .post("/operator/high-courts/himachal/runs/fetch")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Fetch Himachal High Court via HTTP" });
+
+    expect(fetched.status).toBe(201);
+    expect(fetched.body.run.stateCode).toBe("HPHC");
+    expect(fetched.body.candidate.snapshot.courtTier).toBe("high_court");
+    expect(fetched.body.candidate.snapshot.referenceDateKind).toBe("captured_at");
+
+    const runs = await request(app)
+      .get("/operator/high-courts/himachal/runs")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(runs.status).toBe(200);
+    expect(runs.body.runs).toHaveLength(1);
+    expect(runs.body.runs[0].id).toBe(fetched.body.run.id);
+
+    const inspected = await request(app)
+      .get(`/operator/high-courts/himachal/runs/${fetched.body.run.id}`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(inspected.status).toBe(200);
+    expect(inspected.body.run.id).toBe(fetched.body.run.id);
+
+    const published = await request(app)
+      .post(`/operator/high-courts/himachal/runs/${fetched.body.run.id}/publish`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Publish Himachal High Court via HTTP" });
+
+    expect(published.status).toBe(201);
+    expect(published.body.snapshot.payload.snapshot.courtCode).toBe("HPHC");
+
+    const detail = await request(app)
+      .get("/operator/high-courts/himachal")
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
+
+    expect(detail.status).toBe(200);
+    expect(detail.body.court.courtSlug).toBe("himachal");
+    expect(detail.body.stats.pendingTotalCases).toBeGreaterThan(0);
+    expect(detail.body.publications[0].publication.stateCode).toBe("HPHC");
+
+    const replay = await request(app)
+      .post(`/operator/high-courts/himachal/runs/${published.body.run.id}/replay`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Replay Himachal High Court via HTTP" });
+
+    expect(replay.status).toBe(201);
+    expect(replay.body.run.replayOfRunId).toBe(published.body.run.id);
+
+    const rollback = await request(app)
+      .post(`/operator/high-courts/himachal/publications/${published.body.publication.id}/rollback`)
+      .set("x-operator-token", context.config.OPERATOR_API_TOKEN)
+      .send({ note: "Rollback Himachal High Court via HTTP" });
+
+    expect(rollback.status).toBe(201);
+    expect(rollback.body.action).toBe("rollback");
+  });
+
   it("serves Punjab through explicit state-scoped public routes once Punjab has a published snapshot", async () => {
     const context = await createTestContext();
     pools.push(context.pool);

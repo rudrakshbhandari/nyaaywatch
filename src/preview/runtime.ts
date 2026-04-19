@@ -7,6 +7,9 @@ import { loadConfig, type AppConfig } from "../config/env.js";
 import { runMigrations } from "../db/migrate.js";
 import { createFixtureSourceClient } from "../dev/fixtures.js";
 import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../geographies.js";
+import { listHighCourtProfiles, type SupportedHighCourtCode } from "../high-courts.js";
+import { createHighCourtSourceClient } from "../ingest/high-court-source-client.js";
+import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
 import { InMemoryArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
@@ -61,6 +64,18 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
       return [publicProfile.stateCode, publicService];
     }),
   ) as Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
+  const highCourtServices = Object.fromEntries(
+    listHighCourtProfiles().map((highCourtProfile) => [
+      highCourtProfile.courtCode,
+      new PublishedHighCourtSnapshotService(
+        config,
+        highCourtProfile,
+        store,
+        artifactStore,
+        createHighCourtSourceClient(highCourtProfile.courtCode),
+      ),
+    ]),
+  ) as Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
   const existing = await service.getPublishedSnapshot();
 
   if (!existing) {
@@ -69,7 +84,7 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
   }
 
   return {
-    app: createApp(config, service, publicServices),
+    app: createApp(config, service, publicServices, highCourtServices),
     config,
     async close() {
       await pool.end();
