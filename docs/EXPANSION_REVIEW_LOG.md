@@ -1391,4 +1391,79 @@ Supreme Court is now live as the narrow top-down public shell, and the first bro
 
 ### Recommendation
 
-The first broader High Court public wave is now live. The next deliberate High Court validation pair should be Gujarat and Madhya Pradesh, not a broad all-courts jump.
+The first broader High Court public wave is now live. Gujarat and Madhya Pradesh should be the immediate next public wave only if their live public rollout evidence closes cleanly first, and there is still no case for jumping straight to an all-courts launch.
+
+## Gujarat And Madhya Pradesh High Court Public Beta Rollout
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public rollout completed`
+- public URL family:
+  - `https://nyaaywatch.in/high-courts/gujarat`
+  - `https://nyaaywatch.in/high-courts/gujarat/data`
+  - `https://nyaaywatch.in/high-courts/gujarat/methodology`
+  - `https://nyaaywatch.in/high-courts/gujarat/api`
+  - `https://nyaaywatch.in/v1/high-courts/gujarat/stats`
+  - `https://nyaaywatch.in/v1/high-courts/gujarat/trends`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh/data`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh/methodology`
+  - `https://nyaaywatch.in/high-courts/madhya-pradesh/api`
+  - `https://nyaaywatch.in/v1/high-courts/madhya-pradesh/stats`
+  - `https://nyaaywatch.in/v1/high-courts/madhya-pradesh/trends`
+
+### Public Rollout Evidence
+
+- public-rollout deploy run: `24637168455`
+- public-rollout settled ECS task definition after deploy: `nyaaywatch-staging:103`
+- stable public route status after launch:
+  - `200 /high-courts`
+  - `200 /high-courts/gujarat`
+  - `200 /high-courts/gujarat/data`
+  - `200 /high-courts/gujarat/methodology`
+  - `200 /high-courts/gujarat/api`
+  - `200 /v1/high-courts/gujarat/stats`
+  - `200 /v1/high-courts/gujarat/trends`
+  - `200 /high-courts/madhya-pradesh`
+  - `200 /high-courts/madhya-pradesh/data`
+  - `200 /high-courts/madhya-pradesh/methodology`
+  - `200 /high-courts/madhya-pradesh/api`
+  - `200 /v1/high-courts/madhya-pradesh/stats`
+  - `200 /v1/high-courts/madhya-pradesh/trends`
+- active Gujarat High Court publication after launch: `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7`
+- active Gujarat High Court snapshot after launch: `snapshot_b114637b-e1cc-4550-a44b-66af2f14eaff`
+- active Gujarat High Court publication action after launch: `rollback`
+- active Gujarat High Court published-from run: `run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+- active Gujarat High Court reference date: `2026-04-19T18:59:11.819Z`
+- active Gujarat High Court reference-date kind: `captured_at`
+- active Gujarat High Court `sourceSnapshotAt`: `null`
+- active Gujarat High Court published at: `2026-04-19T18:59:57.944Z`
+- live Gujarat High Court stats:
+  - `pendingTotalCases=174777`
+  - `institutedLastMonthTotalCases=7305`
+  - `disposedLastMonthTotalCases=8085`
+- live Gujarat High Court trends count: `1`
+- active Madhya Pradesh High Court publication after launch: `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4`
+- active Madhya Pradesh High Court snapshot after launch: `snapshot_636a67c4-a5bc-4841-9b45-4e306d8cb3d0`
+- active Madhya Pradesh High Court publication action after launch: `rollback`
+- active Madhya Pradesh High Court published-from run: `run_8526bedf-df11-46a0-a394-9379ae4d1547`
+- active Madhya Pradesh High Court reference date: `2026-04-19T18:59:11.663Z`
+- active Madhya Pradesh High Court reference-date kind: `captured_at`
+- active Madhya Pradesh High Court `sourceSnapshotAt`: `null`
+- active Madhya Pradesh High Court published at: `2026-04-19T18:59:58.343Z`
+- live Madhya Pradesh High Court stats:
+  - `pendingTotalCases=476385`
+  - `institutedLastMonthTotalCases=12726`
+  - `disposedLastMonthTotalCases=15012`
+- live Madhya Pradesh High Court trends count: `1`
+
+### What Cleared
+
+- the already-proven internal Gujarat High Court and Madhya Pradesh High Court publication chains now serve real public beta route families
+- public HTML and JSON surfaces remain aligned with the same published snapshot contract and `captured_at` reference-date posture used in the internal proof cycles
+- the live product now exposes a real five-court High Court public beta set under one shared `/high-courts/...` shell
+- the live deployment settled on task definition `:103` without breaking the existing Himachal High Court, Uttar Pradesh High Court, Rajasthan High Court, or Supreme Court public surfaces
+
+### Recommendation
+
+The second High Court public wave is now live. The next deliberate High Court pair should come from the remaining queued single-jurisdiction courts, and that decision should be made explicitly instead of implying that all remaining High Courts are now ready for public exposure.

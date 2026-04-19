@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:101`
+- ECS task definition: `nyaaywatch-staging:103`
 - Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
 - Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
@@ -69,6 +69,8 @@ Operational notes:
   - unscoped default routes for Himachal Pradesh
   - narrow Supreme Court beta routes at `/supreme-court` and `/v1/supreme-court/...`
   - narrow Himachal High Court beta routes at `/high-courts/himachal` and `/v1/high-courts/himachal/...`
+  - narrow Gujarat High Court beta routes at `/high-courts/gujarat` and `/v1/high-courts/gujarat/...`
+  - narrow Madhya Pradesh High Court beta routes at `/high-courts/madhya-pradesh` and `/v1/high-courts/madhya-pradesh/...`
   - narrow Allahabad High Court beta routes at `/high-courts/uttar-pradesh` and `/v1/high-courts/uttar-pradesh/...`
   - narrow Rajasthan High Court beta routes at `/high-courts/rajasthan` and `/v1/high-courts/rajasthan/...`
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
@@ -108,6 +110,20 @@ Operational notes:
 - Current Himachal High Court reference-date kind: `captured_at`
 - Current Himachal High Court published-from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
 - Current Himachal High Court methodology version: `2026.04-high-court-draft`
+- Current active Gujarat High Court publication: `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7`
+- Current active Gujarat High Court published snapshot: `snapshot_b114637b-e1cc-4550-a44b-66af2f14eaff`
+- Current Gujarat High Court publication action: `rollback`
+- Current Gujarat High Court reference date: `2026-04-19T18:59:11.819Z`
+- Current Gujarat High Court reference-date kind: `captured_at`
+- Current Gujarat High Court published-from run: `run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+- Current Gujarat High Court methodology version: `2026.04-high-court-draft`
+- Current active Madhya Pradesh High Court publication: `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4`
+- Current active Madhya Pradesh High Court published snapshot: `snapshot_636a67c4-a5bc-4841-9b45-4e306d8cb3d0`
+- Current Madhya Pradesh High Court publication action: `rollback`
+- Current Madhya Pradesh High Court reference date: `2026-04-19T18:59:11.663Z`
+- Current Madhya Pradesh High Court reference-date kind: `captured_at`
+- Current Madhya Pradesh High Court published-from run: `run_8526bedf-df11-46a0-a394-9379ae4d1547`
+- Current Madhya Pradesh High Court methodology version: `2026.04-high-court-draft`
 - Current active Uttar Pradesh High Court publication: `publication_91726f20-da84-4401-9da0-18c5ad711694`
 - Current active Uttar Pradesh High Court published snapshot: `snapshot_c0d74fe7-6755-467e-86be-90424446a514`
 - Current Uttar Pradesh High Court publication action: `rollback`
@@ -302,6 +318,14 @@ Latest confirmed operator validation:
   - the active High Court snapshot remained `snapshot_eacb324b-2572-4ce6-84a9-1217abf2d14b` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T03:40:28.731Z`, and `publishedFromRunId=run_288288e1-f32b-45d1-86cd-c2384bba38ac`
   - live route verification returned `200` for `/high-courts/himachal`, `/high-courts/himachal/data`, `/high-courts/himachal/methodology`, `/high-courts/himachal/api`, `/v1/high-courts/himachal/stats`, and `/v1/high-courts/himachal/trends`
   - public stats on the live route matched the internal proof-cycle numbers: `pendingTotalCases=105599`, `institutedLastMonthTotalCases=7046`, `disposedLastMonthTotalCases=6528`
+- Gujarat and Madhya Pradesh High Court public beta exposure completed on 2026-04-19 after PR `#115` merged and GitHub deploy run `24637168455` rolled the live service to task definition `:103`:
+  - the already-reviewed active Gujarat High Court publication `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7` became publicly reachable under `/high-courts/gujarat`
+  - the already-reviewed active Madhya Pradesh High Court publication `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4` became publicly reachable under `/high-courts/madhya-pradesh`
+  - live route verification returned `200` for `/high-courts`, `/high-courts/gujarat`, `/high-courts/gujarat/data`, `/high-courts/gujarat/methodology`, `/high-courts/gujarat/api`, `/v1/high-courts/gujarat/stats`, `/v1/high-courts/gujarat/trends`, `/high-courts/madhya-pradesh`, `/high-courts/madhya-pradesh/data`, `/high-courts/madhya-pradesh/methodology`, `/high-courts/madhya-pradesh/api`, `/v1/high-courts/madhya-pradesh/stats`, and `/v1/high-courts/madhya-pradesh/trends`
+  - the active Gujarat High Court snapshot remains `snapshot_b114637b-e1cc-4550-a44b-66af2f14eaff` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T18:59:57.944Z`, and `publishedFromRunId=run_a56b9376-cb93-4e1a-968c-0a99840b500c`
+  - the active Madhya Pradesh High Court snapshot remains `snapshot_636a67c4-a5bc-4841-9b45-4e306d8cb3d0` with `referenceDateKind=captured_at`, `publishedAt=2026-04-19T18:59:58.343Z`, and `publishedFromRunId=run_8526bedf-df11-46a0-a394-9379ae4d1547`
+  - live Gujarat High Court stats are `pendingTotalCases=174777`, `institutedLastMonthTotalCases=7305`, and `disposedLastMonthTotalCases=8085`
+  - live Madhya Pradesh High Court stats are `pendingTotalCases=476385`, `institutedLastMonthTotalCases=12726`, and `disposedLastMonthTotalCases=15012`
 - Uttar Pradesh and Rajasthan High Court public beta exposure completed on 2026-04-19 after PR `#113` merged and GitHub deploy run `24636212237` rolled the live service to task definition `:101`:
   - the already-reviewed active Allahabad High Court publication `publication_91726f20-da84-4401-9da0-18c5ad711694` became publicly reachable under `/high-courts/uttar-pradesh`
   - the already-reviewed active Rajasthan High Court publication `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f` became publicly reachable under `/high-courts/rajasthan`

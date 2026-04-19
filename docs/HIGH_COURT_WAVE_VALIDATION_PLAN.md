@@ -121,6 +121,14 @@ Follow-up live check after PR `#113` merged and deploy run `24636212237` settled
 - live operator publication history showed Uttar Pradesh active on `publication_91726f20-da84-4401-9da0-18c5ad711694` and Rajasthan active on `publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f`
 - the public High Court beta set is now Himachal, Uttar Pradesh, and Rajasthan
 
+Follow-up live check after PR `#115` merged and deploy run `24637168455` settled the live service on task definition `:103`:
+
+- the public `/high-courts` index still returned `200`
+- `/high-courts/gujarat`, `/high-courts/gujarat/data`, `/high-courts/gujarat/methodology`, `/high-courts/gujarat/api`, `/v1/high-courts/gujarat/stats`, and `/v1/high-courts/gujarat/trends` all returned `200`
+- `/high-courts/madhya-pradesh`, `/high-courts/madhya-pradesh/data`, `/high-courts/madhya-pradesh/methodology`, `/high-courts/madhya-pradesh/api`, `/v1/high-courts/madhya-pradesh/stats`, and `/v1/high-courts/madhya-pradesh/trends` all returned `200`
+- live operator publication history showed Gujarat active on `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7` and Madhya Pradesh active on `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4`
+- the public High Court beta set is now Himachal, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:
@@ -145,10 +153,20 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Uttar Pradesh and Rajasthan have cleared both the internal proof bar and the public rollout bar, the next likely internal validation candidates should be:
+Now that Uttar Pradesh, Rajasthan, Gujarat, and Madhya Pradesh have cleared both the internal proof bar and the public rollout bar, the next likely internal validation candidates should be selected from the remaining queued single-jurisdiction High Courts:
 
-- Gujarat
-- Madhya Pradesh
+- Andhra Pradesh
+- Telangana
+- Chhattisgarh
+- Jharkhand
+- Karnataka
+- Odisha
+- Bihar
+- Uttarakhand
+- Sikkim
+- Tripura
+- Meghalaya
+- Manipur
 
 Only after that should the repo revisit:
 
