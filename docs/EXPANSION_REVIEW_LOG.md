@@ -1209,7 +1209,7 @@ The supported-state rollout program is complete for the current repo scope. Any 
 
 ### Recommendation
 
-Keep Himachal High Court public as the narrow proving ground for the High Court tier, but treat Supreme Court as the next public top-down planning track before broad High Court UX expansion.
+Keep Himachal High Court public as the narrow proving ground for the High Court tier, and now use the live Supreme Court beta as the top-down public shell before widening the High Court wave.
 
 ## Supreme Court Internal Proof Cycles
 
@@ -1265,10 +1265,55 @@ Keep Himachal High Court public as the narrow proving ground for the High Court 
 
 ### What Did Not Clear Yet
 
-- the public `/supreme-court` route family remains intentionally dark
-- the public Supreme Court route family is not yet implemented
 - the homepage still does not expose the Supreme Court top-of-funnel module
+- broader High Court public rollout is still pending
+
+## Supreme Court Public Beta Rollout
+
+- review date: 2026-04-19
+- reviewer: Codex
+- decision: `public rollout completed`
+- public URL family:
+  - `https://nyaaywatch.in/supreme-court`
+  - `https://nyaaywatch.in/supreme-court/data`
+  - `https://nyaaywatch.in/supreme-court/methodology`
+  - `https://nyaaywatch.in/supreme-court/api`
+  - `https://nyaaywatch.in/v1/supreme-court/stats`
+  - `https://nyaaywatch.in/v1/supreme-court/trends`
+
+### Public Rollout Evidence
+
+- public-rollout deploy run: `24624392748`
+- public-rollout settled ECS task definition after deploy: `nyaaywatch-staging:98`
+- unauthenticated operator route status after public launch: `401 /operator/supreme-court`
+- stable public route status after launch:
+  - `200 /supreme-court`
+  - `200 /supreme-court/data`
+  - `200 /supreme-court/methodology`
+  - `200 /supreme-court/api`
+  - `200 /v1/supreme-court/stats`
+  - `200 /v1/supreme-court/trends`
+- active public publication after launch: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- active public snapshot after launch: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- active publication action after launch: `rollback`
+- published-from run on the active public snapshot: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- active public reference date: `2026-04-19T07:06:34.049Z`
+- active public reference-date kind: `captured_at`
+- active public `sourceSnapshotAt`: `null`
+- active public published at: `2026-04-19T07:06:42.130Z`
+- live public stats:
+  - `pendingTotalCases=94158`
+  - `institutedLastMonthTotalCases=6148`
+  - `disposedLastMonthTotalCases=4552`
+- live public trends count: `2`
+
+### What Cleared
+
+- the already-proven internal Supreme Court publication chain now serves a real public beta route family
+- public HTML and JSON surfaces remain aligned with the same published snapshot contract and `captured_at` reference-date posture used in the internal proof cycles
+- the operator surface remains auth-protected after public launch
+- Supreme Court now exists as a real public top-down tier inside NyaayWatch instead of only as an internal planning track
 
 ### Recommendation
 
-Treat Supreme Court as the next public implementation slice. The right follow-on is to wire the narrow `/supreme-court` route family and its API or methodology surfaces on top of the already-satisfied internal proof bar, not to spend more time proving the internal operator flow again.
+Supreme Court is now live as the narrow top-down public shell. The next public High Court wave should be chosen from the already-proven courts, with Uttar Pradesh and Rajasthan as the strongest current candidates.

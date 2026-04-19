@@ -14,7 +14,7 @@ Latest live verification referenced here was run against `https://nyaaywatch.in`
 - `courtSlug=supreme-court`
 - `courtName=Supreme Court of India`
 - internal operator namespace: `/operator/supreme-court/...`
-- public Supreme Court routes: not yet exposed
+- public Supreme Court routes: live under `/supreme-court` and `/v1/supreme-court/...`
 - Supreme Court date contract: explicit `captured_at` fallback when the stored aggregate payload does not expose a defensible upstream source snapshot timestamp
 
 What is true in repo state now:
@@ -25,11 +25,12 @@ What is true in repo state now:
 - live Supreme Court internal proof cycles have now cleared `fetch -> publish -> replay -> rollback` across separate windows
 - the live deployed stack now serves the Supreme Court operator namespace behind operator auth
 - the repo now has a written Supreme Court methodology draft
+- the public Supreme Court beta route family is live on `https://nyaaywatch.in`
 
 What is still **not** yet true in repo evidence:
 
-- the public `/supreme-court` route family is still intentionally dark
-- the public Supreme Court route family and its HTML or JSON trust surfaces are not yet implemented
+- the homepage still does not expose the Supreme Court top-of-funnel module
+- broader High Court public rollout still has to be decided separately from the Supreme Court beta
 
 ## Readiness Commands
 
@@ -47,7 +48,7 @@ Requires:
 The route-level auth boundary should also remain true:
 
 - `GET /operator/supreme-court` without a token returns `401`
-- `GET /supreme-court` currently returns `404`
+- `GET /supreme-court` currently returns `200`
 
 ## Internal Proof Bar
 
@@ -145,10 +146,37 @@ This means the repo now has repeated live Supreme Court proof windows with:
 
 ## Recommendation
 
-Supreme Court has now cleared the repeated-window internal proof bar for a public beta.
+Supreme Court has now cleared the repeated-window internal proof bar and the narrow public beta is live.
 
 The next concrete action is:
 
-- implement the public `/supreme-court` route family and wire it to the existing published-snapshot contract
-- turn the repo-side methodology draft into the live `/supreme-court/methodology` surface
-- keep the first public Supreme Court beta narrow, snapshot-based, and tier-aware
+- keep the Supreme Court public beta narrow, snapshot-based, and tier-aware
+- wire the Supreme Court module into the homepage or top-level IA without implying fake cross-tier comparability
+- choose the next High Court public wave from the already-proven internal courts
+
+## Public Beta Rollout
+
+Verified on `2026-04-19` after PR `#110` merged and GitHub deploy run `24624392748` completed on `main`.
+
+- settled ECS task definition: `nyaaywatch-staging:98`
+- unauthenticated operator route status: `401 /operator/supreme-court`
+- public route statuses:
+  - `200 /supreme-court`
+  - `200 /supreme-court/data`
+  - `200 /supreme-court/methodology`
+  - `200 /supreme-court/api`
+  - `200 /v1/supreme-court/stats`
+  - `200 /v1/supreme-court/trends`
+- active public publication id: `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a`
+- active public snapshot id: `snapshot_fee1e8ee-b67e-4c95-aa1b-a94b0ea0b486`
+- published-from run id on the active public snapshot: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
+- reference date: `2026-04-19T07:06:34.049Z`
+- reference date kind: `captured_at`
+- published snapshot `sourceSnapshotAt`: `null`
+- published at: `2026-04-19T07:06:42.130Z`
+- methodology version: `2026.04-supreme-court-draft`
+- live public stats:
+  - `pendingTotalCases=94158`
+  - `institutedLastMonthTotalCases=6148`
+  - `disposedLastMonthTotalCases=4552`
+- live public trends count: `2`
