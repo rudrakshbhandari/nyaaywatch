@@ -178,21 +178,31 @@ Rule:
 
 ### 1a. Source Snapshot Date Gap
 
-As verified on `2026-04-19`, the Himachal-selected HC NJDG page exposes the expected aggregate metrics in static HTML, but the static response does **not** expose a parseable `Last Reviewed and Updated on` date the way district NJDG does.
+As verified on `2026-04-18`, the Himachal-selected HC NJDG page exposes the expected aggregate metrics in static HTML, but the static response does **not** expose a parseable `Last Reviewed and Updated on` date the way district NJDG does.
 
 Observed static footer output:
 
 - `Last Reviewed and Updated on :`
-- `S1`
+- `S3`
 - `Version :2.0`
+
+Follow-up verification against official HC NJDG AJAX responses on the same date also did **not** expose a trustworthy source snapshot date.
+
+Checked official response paths:
+
+- `/?p=home/fetchSummaryReport`
+- `/?p=home/fetchStateData`
+
+Observed result:
+
+- both endpoints returned structured official HC NJDG data
+- neither response exposed a source update date, review date, or snapshot timestamp field
 
 Operational implication:
 
 - NyaayWatch can implement capture and aggregate extraction now
-- NyaayWatch should **not** pretend it already has a trustworthy source snapshot date for High Court publications
-- public beta should stay blocked until either:
-  - the actual source date is recovered from an official HC NJDG response path, or
-  - the methodology intentionally adopts a different trust label such as capture date with an explicit caveat
+- NyaayWatch should **not** pretend it has a trustworthy source snapshot date for High Court publications when the official product does not expose one
+- the High Court tier should instead use an explicit `captured_at` fallback trust label until the official HC NJDG product exposes a defensible source snapshot date
 
 ### 2. Case-Type Breakdown Stability
 

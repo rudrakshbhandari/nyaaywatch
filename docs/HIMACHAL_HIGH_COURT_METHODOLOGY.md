@@ -18,7 +18,8 @@ It should emphasize:
 
 - sourced aggregate metrics
 - clear provenance
-- snapshot date
+- snapshot date when the official source exposes one
+- capture date as an explicit fallback when the official High Court source does not expose a trustworthy source snapshot date
 - freshness and methodology labeling
 - tier-specific caveats
 
@@ -44,6 +45,27 @@ It is not:
 - a judgment repository
 
 ## Proposed V0 Public Metrics
+
+## Date And Freshness Contract
+
+The High Court tier cannot assume the official source always exposes a source snapshot date.
+
+Working rule for the Himachal High Court pilot:
+
+- if HC NJDG exposes a trustworthy source snapshot date, store and display it as `sourceSnapshotAt`
+- if HC NJDG does **not** expose one, store `sourceSnapshotAt=null`
+- in that case, store and display the official page capture timestamp as the High Court `referenceDateAt`
+- label the basis explicitly as `captured_at`, not as an implied source snapshot date
+
+Freshness should be measured from:
+
+- `sourceSnapshotAt` when available
+- otherwise `referenceDateAt` with an explicit `captured_at` label
+
+Public implication:
+
+- NyaayWatch can still publish a High Court snapshot honestly
+- but the High Court page must not claim that the official source exposed an underlying snapshot/update date when it did not
 
 ### Sourced Metrics
 

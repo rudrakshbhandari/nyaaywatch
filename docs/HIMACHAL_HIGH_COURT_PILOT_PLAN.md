@@ -235,21 +235,21 @@ Done when:
 
 Outcome:
 
-- Himachal High Court aggregate data can be captured and extracted deterministically from stored evidence, with publication still blocked until the source-date contract is explicit
+- Himachal High Court aggregate data can be captured and extracted deterministically from stored evidence, with an explicit High Court date contract even when HC NJDG does not expose a source snapshot date
 
 Tasks:
 
 - add High Court source capture support
 - add stored raw artifact handling
 - add extract steps for the High Court source shape
-- make the publication blocker explicit if the source does not expose a trustworthy source snapshot date
+- define the fallback trust label if the source does not expose a trustworthy source snapshot date
 - create representative fixtures
 - add regression coverage for deterministic replay
 
 Done when:
 
 - the same stored input yields the same extracted output
-- the repo states clearly whether High Court publication is ready or blocked
+- the repo states clearly how High Court freshness works when only capture time is available
 
 ### Phase 3: Internal Publication Flow
 
@@ -357,7 +357,7 @@ Do these next:
 2. add a High Court methodology draft
 3. scaffold the High Court route and data namespaces
 4. implement the High Court capture / extract pipeline
-5. resolve the High Court source-date contract so publication semantics are defensible
+5. codify the High Court date contract so publication semantics remain defensible even when HC NJDG only exposes capture time
 6. only then prove internal publication and rollback
 7. only then decide on public beta timing
 
