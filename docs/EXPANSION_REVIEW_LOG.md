@@ -1542,3 +1542,28 @@ Karnataka and Odisha are now internal-ready. The next deliberate internal High C
 ### Recommendation
 
 Bihar and Uttarakhand are now internal-ready. The next deliberate internal High Court pair should move to Sikkim and Tripura rather than widening public exposure immediately.
+
+## Sikkim And Tripura High Court Internal Proof Pair
+
+- review date: 2026-04-20
+- reviewer: Codex
+- decision: `internal proof bar satisfied`
+- methodology version: `2026.04-high-court-draft`
+- validation command: `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=sikkim,tripura`
+
+### Live Proof Evidence
+
+- Sikkim fetch `run_8eedeee8-3388-41a4-8c50-113d692bf3ef`, publish `publication_aed8197a-bb0c-44ce-a5fd-e5390b6624bd`, replay `run_d0b6fffb-4889-4600-86e5-d76c2e39fcce`, replay publication `publication_a68a5d4f-ae60-4ff6-a45a-92700da81da0`, and rollback `publication_c1228f24-f667-4515-93fe-650281d256d3` all succeeded
+- Tripura fetch `run_54d4661c-ab6f-4534-9e4f-fcb653993e0b`, publish `publication_71012f4c-2149-4459-b9da-f04bafbbbb62`, replay `run_65bba8a7-ae2b-4ffa-83e0-a9dea1928b0b`, replay publication `publication_7656f85a-ef0f-4a74-ac57-7ef944079f1c`, and rollback `publication_11fa9e09-2810-45e5-a522-aa45b761916b` all succeeded
+- the batch verifier returned `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, and `rollbackReadyCourts=2`
+- both courts remained internal-only during this proof slice; no public High Court routes were exposed for either court
+
+### What Cleared
+
+- the live operator path now has fresh same-day proof that it still works for the smallest queued single-jurisdiction courts in the current registry
+- both courts retained the explicit `captured_at` reference-date posture, so the current High Court date contract still holds
+- both courts now have the minimum publish, replay, and rollback evidence needed for internal readiness
+
+### Recommendation
+
+Sikkim and Tripura are now internal-ready. The next deliberate internal High Court pair should move to Meghalaya and Manipur rather than widening public exposure immediately.
