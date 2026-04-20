@@ -20,7 +20,7 @@ The original seven-court public High Court beta is no longer the terminal public
 - Uttar Pradesh via Allahabad High Court
 - Rajasthan
 
-Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, and the court-first multi-jurisdiction model has already cleared the Punjab and Haryana public beta launch. The next gating problem is no longer whether another public wave should exist; it is only whether the approved Wave 1 batch is fully carried through to live public rollout and recorded cleanly.
+Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, and the court-first multi-jurisdiction model has already cleared the Punjab and Haryana, Delhi, Kerala, and Madras public beta launches. The next gating problem is no longer whether Wave 1 should exist; it is only whether the Wave 1 stable window stays clean enough to move to Wave 2 deliberately.
 
 The initial design answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`.
 The first execution-plan answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
@@ -75,37 +75,37 @@ The seventh validation pair was:
 
 That pair has now also cleared the internal proof bar on the live operator lane.
 
-Delhi High Court, High Court of Kerala, and Madras High Court have now also cleared live internal `fetch -> publish -> replay -> rollback` proof on `https://nyaaywatch.in`, so the approved Wave 1 public-beta launch no longer lacks operational evidence.
+Delhi High Court, High Court of Kerala, and Madras High Court have now also cleared live internal `fetch -> publish -> replay -> rollback` proof on `https://nyaaywatch.in`, and PR `#141` plus deploy run `24686545934` have already carried that batch through to live public rollout with public-route verification and explicit cache purge evidence.
 
 This is a repo recommendation from current project state, not an official source fact.
 
-## Why This Court
+## Why Wave 2
 
-Punjab and Haryana is the correct next internal validation target because it is:
+Calcutta High Court, Bombay High Court, and Gauhati High Court are now the correct next public-wave target because they are:
 
-- already configured inside the new court-first High Court registry
-- the first real proof target for the widened `coveredGeographies[]` model
-- still internal-only instead of already public beta
-- backed by live lower-court public state profiles for Punjab and Haryana, while also forcing the repo to represent Chandigarh honestly as a union territory
-- narrow enough to validate the model without jumping straight to the larger deferred multi-jurisdiction courts
+- the only remaining deferred courts in the approved multi-jurisdiction batch plan
+- broader and more operationally complex than the now-live Wave 1 courts
+- no longer blocked on the court-first model itself, because Wave 1 has already proven the public batch discipline under live traffic
 
-The point of this court is not extra breadth for its own sake.
+The point of Wave 2 is not to reopen the model debate.
 
-The point of this court is to prove that the internal operator lane, readiness tooling, and published High Court model all still hold once one High Court legitimately spans multiple geographies:
+The point of Wave 2 is to prove that the repo can keep expanding the public High Court beta in larger deliberate batches once the narrower Wave 1 courts stay stable.
 
-- Punjab
-- Haryana
-- Chandigarh as a union territory
+## Wave 1 Launch Evidence
 
-This is the minimum honest multi-jurisdiction proof step before any broader public-wave discussion.
-
-## Validation Command
-
-The single-court readiness sweep used for the internal Punjab and Haryana proof target was:
+The decisive launch evidence for the completed Wave 1 public rollout was:
 
 ```bash
-npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=delhi,kerala,madras
+npm run release:purge-public-routes -- --high-court=delhi,kerala,madras
 ```
+
+Wave 1 also now has:
+
+- GitHub deploy run `24686545934` completed successfully on `main`, with `verify`, `secret-scan`, and `deploy` all green and `preview` skipped
+- the live ECS service steady on task definition `:134`
+- all three scheduler targets pointing at task definition `:134`
+- `/`, `/high-courts`, `/high-courts/{delhi,kerala,madras}`, `/high-courts/{delhi,kerala,madras}/{data,methodology,api}`, and `/v1/high-courts/{delhi,kerala,madras}/{stats,trends}` all returning `200`
 
 Requires:
 
@@ -126,7 +126,7 @@ The batch command reuses the existing High Court readiness verifier for each sel
 - explicit High Court reference-date posture
 - aggregate ready / not-ready totals across the selected set
 
-That single-court command is now recorded live evidence, not an open court-selection step.
+That batch command is now recorded live evidence, not an open court-selection step.
 
 ## Current Live Evidence
 
