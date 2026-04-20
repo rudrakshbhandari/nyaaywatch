@@ -4,7 +4,7 @@ Concrete rollout plan for the remaining deferred court-first High Court public b
 
 This document exists to answer one narrow question:
 
-- now that Punjab and Haryana has already cleared the first public multi-jurisdiction High Court beta launch, how should the repo bring the remaining deferred courts into public beta without falling back to one-court-at-a-time hesitation?
+- now that Punjab and Haryana had already cleared the first public multi-jurisdiction High Court beta launch, how did the repo bring the remaining deferred courts into public beta without falling back to one-court-at-a-time hesitation?
 
 ## Current Product Decision
 
@@ -69,7 +69,9 @@ Why this wave second:
 
 - these are the broader and more operationally complex remaining courts
 - Wave 1 is now live, so the repo has already proven that the three-court public-beta batch discipline works
-- once the Wave 1 stable window stays clean, there is no product reason to keep these courts out of public beta
+- once the Wave 1 stable window stayed clean, there was no product reason to keep these courts out of public beta
+
+Wave 2 is now live in the public beta after PR `#144` merged, deploy run `24691704672` completed successfully, and the Bombay, Calcutta, and Gauhati public route families plus the explicit Cloudflare purge all cleared on `https://nyaaywatch.in`.
 
 ## Rollout Discipline
 
@@ -83,7 +85,7 @@ Recommended release discipline:
 4. hold a short stable window long enough to prove no route, cache, or trust-surface regression
 5. then move to the next three-court wave
 
-Wave 1 has already completed steps 1 through 3. The current gate before Wave 2 is the stable-window check, not another Delhi, Kerala, or Madras rollout task.
+Wave 1 and Wave 2 have now both completed steps 1 through 4 for the approved deferred court-first set. There is no remaining pending public-beta wave inside this plan.
 
 The stable window is between waves, not between individual courts inside the same approved wave.
 
@@ -105,11 +107,11 @@ What no longer gates a wave:
 - a requirement to re-prove the court-first model from scratch
 - an artificial preference for pairs or one-court launches
 
-The immediate Wave 2 implementation slice is now:
+Wave 2 is now complete:
 
-1. the Bombay, Calcutta, and Gauhati profiles are configured and their live internal `fetch -> publish -> replay -> rollback` proof batch is complete
-2. the repo code now flips the whole wave public together
-3. the remaining rollout task is deploy verification, explicit Cloudflare purge, and release-evidence sync for the whole batch
+1. the Bombay, Calcutta, and Gauhati profiles cleared live internal `fetch -> publish -> replay -> rollback` proof
+2. the repo code flipped the whole wave public together through PR `#144`
+3. deploy verification, explicit Cloudflare purge, and release-evidence sync all cleared for the whole batch
 
 ## What To Avoid
 
@@ -122,7 +124,7 @@ Do not:
 
 ## Source Of Truth
 
-This document is now the concrete rollout plan for the remaining deferred court-first High Court public beta set.
+This document is now the completed rollout plan for the deferred court-first High Court public beta set.
 
 Supporting context still lives in:
 

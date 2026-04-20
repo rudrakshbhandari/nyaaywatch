@@ -6,6 +6,69 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_dc662dd9-3d81-4e94-9bf3-b32f812dca12:start -->
+## publication_dc662dd9-3d81-4e94-9bf3-b32f812dca12
+
+- Reviewed at: `2026-04-20T21:48:59.000Z`
+- Reviewer: `Codex Bombay High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/bombay`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-20T21:28:00.030Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-20T21:30:25.920Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_e9382c6c-5548-46f6-b2e1-2d7d2f0060eb`
+- Rollback target: `publication_d9557678-91af-4bd2-ae98-8876b9052a38`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Bombay High Court became publicly reachable on `2026-04-20` after PR `#144` merged and deploy run `24691704672` settled the ECS service on task definition `:137`. Stable public verification passed for `/high-courts/bombay`, `/high-courts/bombay/data`, `/high-courts/bombay/methodology`, `/high-courts/bombay/api`, `/v1/high-courts/bombay/stats`, and `/v1/high-courts/bombay/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`.
+
+<!-- release:publication_dc662dd9-3d81-4e94-9bf3-b32f812dca12:end -->
+
+<!-- release:publication_f1730e97-3737-4bbf-aafe-43de40acd816:start -->
+## publication_f1730e97-3737-4bbf-aafe-43de40acd816
+
+- Reviewed at: `2026-04-20T21:48:59.000Z`
+- Reviewer: `Codex Calcutta High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/calcutta`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-20T21:30:27.652Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-20T21:30:28.290Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_ad0aed7c-8117-4956-919f-70fbf8a33a94`
+- Rollback target: `publication_9f6cd11e-a27b-410c-9bf3-3f3a9bb9d743`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Calcutta High Court became publicly reachable on `2026-04-20` after PR `#144` merged and deploy run `24691704672` settled the ECS service on task definition `:137`. Stable public verification passed for `/high-courts/calcutta`, `/high-courts/calcutta/data`, `/high-courts/calcutta/methodology`, `/high-courts/calcutta/api`, `/v1/high-courts/calcutta/stats`, and `/v1/high-courts/calcutta/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`.
+
+<!-- release:publication_f1730e97-3737-4bbf-aafe-43de40acd816:end -->
+
+<!-- release:publication_c109c7bd-2dac-410c-8a31-13affeef633a:start -->
+## publication_c109c7bd-2dac-410c-8a31-13affeef633a
+
+- Reviewed at: `2026-04-20T21:48:59.000Z`
+- Reviewer: `Codex Gauhati High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/gauhati`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-20T21:27:59.555Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-20T21:30:25.941Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_f4fde1e3-ae9a-47a2-a7f9-5268975800de`
+- Rollback target: `publication_06a118a1-df92-42fc-8a6e-543a7effc14a`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Gauhati High Court became publicly reachable on `2026-04-20` after PR `#144` merged and deploy run `24691704672` settled the ECS service on task definition `:137`. Stable public verification passed for `/high-courts/gauhati`, `/high-courts/gauhati/data`, `/high-courts/gauhati/methodology`, `/high-courts/gauhati/api`, `/v1/high-courts/gauhati/stats`, and `/v1/high-courts/gauhati/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`.
+
+<!-- release:publication_c109c7bd-2dac-410c-8a31-13affeef633a:end -->
+
 <!-- release:publication_c5904e38-cced-477d-b184-5e586de6b8f4:start -->
 ## publication_c5904e38-cced-477d-b184-5e586de6b8f4
 

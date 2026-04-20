@@ -1674,3 +1674,33 @@ Punjab and Haryana is now live public beta. The next deliberate step is not anot
 ### Recommendation
 
 Wave 1 is now live public beta. The next deliberate move is to hold the short stable window cleanly, then execute Wave 2 for Calcutta, Bombay, and Gauhati as the next larger batch.
+
+## Bombay, Calcutta, and Gauhati High Court Public Beta Launch
+
+- date: `2026-04-20`
+- courts: `BOHC`, `CLHC`, and `GHHC`
+- decision: `public beta live`
+- GitHub PR: `#144`
+- GitHub deploy run: `24691704672`
+
+### Live Public Evidence
+
+- GitHub deploy run `24691704672` completed successfully on `main`, with `verify`, `secret-scan`, and `deploy` all green and `preview` skipped
+- the live ECS service rolled to task definition `:137` and reached steady state
+- all three live internal scheduler targets now point at task definition `:137`: lower-court, Supreme Court, and High Court internal fetch schedules
+- the explicit Cloudflare purge completed for the whole Wave 2 batch through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`, with one `public_cache_invalidated` event per court and `urlCount=7`
+- `/high-courts/bombay`, `/high-courts/bombay/data`, `/high-courts/bombay/methodology`, `/high-courts/bombay/api`, `/v1/high-courts/bombay/stats`, and `/v1/high-courts/bombay/trends` all returned `200` on `https://nyaaywatch.in`
+- `/high-courts/calcutta`, `/high-courts/calcutta/data`, `/high-courts/calcutta/methodology`, `/high-courts/calcutta/api`, `/v1/high-courts/calcutta/stats`, and `/v1/high-courts/calcutta/trends` all returned `200` on `https://nyaaywatch.in`
+- `/high-courts/gauhati`, `/high-courts/gauhati/data`, `/high-courts/gauhati/methodology`, `/high-courts/gauhati/api`, `/v1/high-courts/gauhati/stats`, and `/v1/high-courts/gauhati/trends` all returned `200` on `https://nyaaywatch.in`
+- `/high-courts` and `/` both now surface Bombay High Court, Calcutta High Court, and Gauhati High Court in the public High Court card set and switcher
+- the currently active live publications are Bombay `publication_dc662dd9-3d81-4e94-9bf3-b32f812dca12`, Calcutta `publication_f1730e97-3737-4bbf-aafe-43de40acd816`, and Gauhati `publication_c109c7bd-2dac-410c-8a31-13affeef633a`
+
+### What Changed
+
+- the approved two-wave court-first High Court public-beta batch plan is now fully live; there are no remaining deferred courts inside that approved rollout set
+- the repo has now exercised a second three-court multi-jurisdiction-aware public batch after Punjab and Haryana and Wave 1, not just a one-off follow-up
+- the live public High Court beta set is now Himachal, Andhra Pradesh, Bombay, Calcutta, Telangana, Delhi, Gujarat, Gauhati, Kerala, Madras, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
+
+### Recommendation
+
+The deferred court-first High Court batch plan is now exhausted. The next deliberate work is operational quality and release discipline, not another pending public-beta expansion decision inside this approved set.

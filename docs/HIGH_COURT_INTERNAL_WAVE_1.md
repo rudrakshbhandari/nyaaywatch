@@ -63,15 +63,15 @@ It includes courts that fit the current model without pretending the model is br
 
 ## Deferred From Public Beta
 
-This slice now configures the Wave 1 public-batch courts for public beta in repo code after their internal review and proof passed.
+This slice originally left the Wave 2 public-batch courts internal-only while they cleared proof.
 
-The only remaining court-first High Courts that are still internal-only after this setup step are:
+That is no longer the current posture:
 
-- Bombay High Court via `27~1`, covering Maharashtra, Goa, and Dadra and Nagar Haveli and Daman and Diu
-- Calcutta High Court via `19~16`, covering West Bengal and Andaman and Nicobar Islands
-- Gauhati High Court via `18~6`, covering Assam, Nagaland, Mizoram, and Arunachal Pradesh
+- Bombay High Court via `27~1`, covering Maharashtra, Goa, and Dadra and Nagar Haveli and Daman and Diu, is now live in the public beta
+- Calcutta High Court via `19~16`, covering West Bengal and Andaman and Nicobar Islands, is now live in the public beta
+- Gauhati High Court via `18~6`, covering Assam, Nagaland, Mizoram, and Arunachal Pradesh, is now live in the public beta
 
-Those courts are no longer just abstract deferred names. They are now configured as reviewed public-beta Wave 2 profiles in repo code after clearing the live proof batch.
+There are no remaining deferred courts inside the approved two-wave court-first High Court public-beta plan.
 
 ## Operational Meaning
 
@@ -114,5 +114,5 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - the original seven-court public beta is no longer fixed now that Punjab and Haryana has cleared the separate product and methodology decision
 - the next approved public-beta move for the remaining deferred court-first High Courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
 - Delhi, Kerala, and Madras are now live in the public High Court beta as the completed Wave 1 batch
-- the remaining three deferred courts have now cleared the Wave 2 proof bar and the repo code now exposes them through the public High Court beta
-- the remaining rollout work is no longer model or proof preparation; it is deploy verification, cache purge, and release-evidence sync for the Wave 2 public batch
+- the remaining three deferred courts have now also cleared deploy verification, cache purge, and rollout-evidence sync for the Wave 2 public batch
+- the deferred court-first High Court public-beta plan is now exhausted; future High Court scope decisions should start from operational quality and product intent, not this backlog
