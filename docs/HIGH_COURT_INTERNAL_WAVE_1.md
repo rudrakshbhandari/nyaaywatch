@@ -101,5 +101,6 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - Meghalaya and Manipur have now also cleared the internal proof bar
 - the queued single-jurisdiction High Court validation list is now exhausted
 - `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md` now records the first court-first model needed before the deferred multi-jurisdiction courts can move again
+- `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` now turns that design into a concrete first execution slice, with Punjab and Haryana High Court as the first internal multi-jurisdiction pilot once the identity and schema work lands
 - keep the current seven-court public beta fixed until multi-jurisdiction High Courts are intentionally designed
 - treat any future court addition as a product and methodology decision, not automatic public-beta approval

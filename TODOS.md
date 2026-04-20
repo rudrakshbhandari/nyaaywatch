@@ -31,7 +31,8 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 ### 3. Deliberate Post-Rollout Scope Decisions
 
 - [x] Reconciled the legacy `.com -> .in` ALB redirect rules back under CloudFormation ownership. The repo now includes `infra/aws/staging/import-canonical-redirect-rules.sh`, the live `nyaaywatch-staging` stack imported both priority-10 listener rules on `2026-04-20T05:44Z`, and `ManageCanonicalRedirectRules=false` is now only a temporary recovery lever for older-stack reconciliation.
-- [ ] Turn the initial multi-jurisdiction High Court design into a phase-1 implementation plan: storage identity cleanup, profile/schema widening, and the first internal pilot court.
+- [x] Turned the initial multi-jurisdiction High Court design into a concrete phase-1 implementation plan in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`, with a court-first identity migration, schema widening, and Punjab and Haryana High Court as the first internal pilot boundary.
+- [ ] Start the phase-1 implementation itself: warehouse `scope_type` / `scope_code` migration, High Court profile refactor to `coveredGeographies[]`, and compatibility wiring so the current seven-court public beta stays stable while Punjab and Haryana High Court is added internally.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
