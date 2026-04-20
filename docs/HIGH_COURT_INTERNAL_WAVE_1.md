@@ -95,6 +95,7 @@ The next serious gate is still operational evidence:
 The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
 
 - Chhattisgarh and Jharkhand have now cleared the internal proof bar
-- validate Karnataka and Odisha as the next deliberate queued-court pair
+- Karnataka and Odisha have now also cleared the internal proof bar
+- validate Bihar and Uttarakhand as the next deliberate queued-court pair
 - keep using `npm run high-court:wave-readiness` for each deliberate pair
 - treat each additional pair as an internal proof step, not automatic public-beta approval

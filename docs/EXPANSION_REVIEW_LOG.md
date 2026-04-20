@@ -1492,3 +1492,28 @@ The second High Court public wave is now live. The next deliberate High Court pa
 ### Recommendation
 
 Chhattisgarh and Jharkhand are now internal-ready. The next deliberate internal High Court pair should move to Karnataka and Odisha rather than widening public exposure immediately.
+
+## Karnataka And Odisha High Court Internal Proof Pair
+
+- review date: 2026-04-20
+- reviewer: Codex
+- decision: `internal proof bar satisfied`
+- methodology version: `2026.04-high-court-draft`
+- validation command: `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=karnataka,odisha`
+
+### Live Proof Evidence
+
+- Karnataka fetch `run_5635ab49-9db5-4053-8460-f8179d2f0f3f`, publish `publication_d74e7343-91b0-4562-bce5-070416bc78ba`, replay `run_ea1ae5aa-92e7-4aa8-acac-11ccace981fb`, replay publication `publication_9d39aae7-f158-4427-90e8-7f38be967513`, and rollback `publication_ae7cbffd-d539-4589-b8eb-f8ec0b7a71c0` all succeeded
+- Odisha fetch `run_31acfb87-0cff-4aa0-a2ca-c177b6830223`, publish `publication_e6a7fb6d-507c-4e55-8fb2-6e04a54f2709`, replay `run_b5b746a2-c827-4e35-b356-deffa2367705`, replay publication `publication_96e63094-a99d-4823-b31f-1c303a35739a`, and rollback `publication_3f31d745-0a9c-40c5-955d-f69bb4fbcff6` all succeeded
+- the batch verifier returned `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, and `rollbackReadyCourts=2`
+- both courts remained internal-only during this proof slice; no public High Court routes were exposed for either court
+
+### What Cleared
+
+- the live operator path now has fresh same-day proof that it still works for larger queued single-jurisdiction High Courts beyond the seven-court public beta
+- both courts retained the explicit `captured_at` reference-date posture, so the current High Court date contract still holds
+- both courts now have the minimum publish, replay, and rollback evidence needed for internal readiness
+
+### Recommendation
+
+Karnataka and Odisha are now internal-ready. The next deliberate internal High Court pair should move to Bihar and Uttarakhand rather than widening public exposure immediately.
