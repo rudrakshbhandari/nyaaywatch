@@ -100,6 +100,18 @@ describe("High Court source client", () => {
     );
   });
 
+  it("builds the Wave 1 Delhi, Kerala, and Madras NJDG URLs", () => {
+    expect(buildHighCourtPageUrl(getHighCourtProfile("DLHC"))).toBe(
+      "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=7~26",
+    );
+    expect(buildHighCourtPageUrl(getHighCourtProfile("KLHC"))).toBe(
+      "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=32~4",
+    );
+    expect(buildHighCourtPageUrl(getHighCourtProfile("MDHC"))).toBe(
+      "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=33~10",
+    );
+  });
+
   it("captures the selected High Court page and bench options", async () => {
     vi.stubGlobal(
       "fetch",

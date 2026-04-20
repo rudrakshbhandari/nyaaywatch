@@ -140,11 +140,89 @@ describe("high court profiles", () => {
         officialSite: "https://www.highcourtchd.gov.in/",
       },
     });
+
+    expect(getHighCourtProfile("DLHC")).toEqual({
+      courtCode: "DLHC",
+      courtSlug: "delhi",
+      courtName: "High Court of Delhi",
+      hcNjdgStateValue: "7~26",
+      coveredGeographies: [
+        {
+          geographyCode: "DL",
+          geographyName: "Delhi",
+          geographyType: "union_territory",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://www.delhihighcourt.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("KLHC")).toEqual({
+      courtCode: "KLHC",
+      courtSlug: "kerala",
+      courtName: "High Court of Kerala",
+      hcNjdgStateValue: "32~4",
+      coveredGeographies: [
+        {
+          geographyCode: "KL",
+          geographyName: "Kerala",
+          geographyType: "state",
+          lowerCourtStateCode: "KL",
+        },
+        {
+          geographyCode: "LD",
+          geographyName: "Lakshadweep",
+          geographyType: "union_territory",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://highcourt.kerala.gov.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("MDHC")).toEqual({
+      courtCode: "MDHC",
+      courtSlug: "madras",
+      courtName: "Madras High Court",
+      hcNjdgStateValue: "33~10",
+      coveredGeographies: [
+        {
+          geographyCode: "TN",
+          geographyName: "Tamil Nadu",
+          geographyType: "state",
+          lowerCourtStateCode: "TN",
+        },
+        {
+          geographyCode: "PY",
+          geographyName: "Puducherry",
+          geographyType: "union_territory",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://hcmadras.tn.gov.in/",
+      },
+    });
   });
 
   it("resolves high court profiles by slug", () => {
     expect(getHighCourtProfileBySlug("himachal")?.courtCode).toBe("HPHC");
     expect(getHighCourtProfileBySlug("HIMACHAL")?.courtCode).toBe("HPHC");
+    expect(getHighCourtProfileBySlug("delhi")?.courtCode).toBe("DLHC");
+    expect(getHighCourtProfileBySlug("kerala")?.courtCode).toBe("KLHC");
+    expect(getHighCourtProfileBySlug("madras")?.courtCode).toBe("MDHC");
     expect(getHighCourtProfileBySlug("uttar-pradesh")?.courtCode).toBe("UPHC");
     expect(getHighCourtProfileBySlug("gujarat")?.courtCode).toBe("GJHC");
     expect(getHighCourtProfileBySlug("madhya-pradesh")?.courtCode).toBe("MPHC");
@@ -153,7 +231,7 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("punjab-and-haryana")?.courtCode).toBe("PHHC");
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
-    expect(listHighCourtProfiles()).toHaveLength(18);
+    expect(listHighCourtProfiles()).toHaveLength(21);
     expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
       "himachal",
       "andhra-pradesh",
@@ -164,7 +242,10 @@ describe("high court profiles", () => {
       "rajasthan",
       "uttar-pradesh",
     ]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(8);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(11);
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("DLHC"))).toBeNull();
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("KLHC"))).toBe("KL");
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("MDHC"))).toBe("TN");
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("UPHC"))).toBe("UP");
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("PHHC"))).toBe("PB");
   });
@@ -198,8 +279,18 @@ describe("high court routes", () => {
 
   it("formats court-first coverage labels and sentences", () => {
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("HPHC"))).toBe("Himachal Pradesh");
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("DLHC"))).toBe("Delhi");
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("KLHC"))).toBe("Kerala and Lakshadweep");
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("MDHC"))).toBe("Tamil Nadu and Puducherry");
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("PHHC"))).toBe("Punjab, Haryana, and Chandigarh");
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("GJHC"))).toBe("This page tracks High Court of Gujarat across Gujarat.");
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("DLHC"))).toBe("This page tracks High Court of Delhi across Delhi.");
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("KLHC"))).toBe(
+      "This page tracks High Court of Kerala across Kerala and Lakshadweep.",
+    );
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("MDHC"))).toBe(
+      "This page tracks Madras High Court across Tamil Nadu and Puducherry.",
+    );
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("PHHC"))).toBe(
       "This page tracks High Court of Punjab and Haryana across Punjab, Haryana, and Chandigarh.",
     );

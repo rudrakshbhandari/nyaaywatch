@@ -32,9 +32,12 @@ export const SUPPORTED_HIGH_COURT_CODES = [
   "APHC",
   "TSHC",
   "CGHC",
+  "DLHC",
   "GJHC",
   "JHHC",
   "KAHC",
+  "KLHC",
+  "MDHC",
   "MPHC",
   "MNHC",
   "MLHC",
@@ -104,6 +107,18 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     hcNjdgStateValue: "22~18",
     coveredGeographies: [buildStateCourtGeography("CG")],
   }),
+  DLHC: buildHighCourtProfile({
+    courtCode: "DLHC",
+    courtSlug: "delhi",
+    courtName: "High Court of Delhi",
+    hcNjdgStateValue: "7~26",
+    coveredGeographies: [buildUnionTerritoryCourtGeography("DL", "Delhi")],
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.delhihighcourt.nic.in/",
+    },
+  }),
   GJHC: buildHighCourtProfile({
     courtCode: "GJHC",
     courtSlug: "gujarat",
@@ -130,6 +145,36 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Karnataka",
     hcNjdgStateValue: "29~3",
     coveredGeographies: [buildStateCourtGeography("KA")],
+  }),
+  KLHC: buildHighCourtProfile({
+    courtCode: "KLHC",
+    courtSlug: "kerala",
+    courtName: "High Court of Kerala",
+    hcNjdgStateValue: "32~4",
+    coveredGeographies: [
+      buildStateCourtGeography("KL"),
+      buildUnionTerritoryCourtGeography("LD", "Lakshadweep"),
+    ],
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://highcourt.kerala.gov.in/",
+    },
+  }),
+  MDHC: buildHighCourtProfile({
+    courtCode: "MDHC",
+    courtSlug: "madras",
+    courtName: "Madras High Court",
+    hcNjdgStateValue: "33~10",
+    coveredGeographies: [
+      buildStateCourtGeography("TN"),
+      buildUnionTerritoryCourtGeography("PY", "Puducherry"),
+    ],
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://hcmadras.tn.gov.in/",
+    },
   }),
   MPHC: buildHighCourtProfile({
     courtCode: "MPHC",
