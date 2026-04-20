@@ -189,6 +189,8 @@ This is a design recommendation, not a public rollout approval.
 - update homepage framing so the High Court section does not imply one-state equivalence
 - add methodology language for mixed state and union-territory coverage
 
+The concrete implementation plan for this phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
+
 ### Phase 4: Public-beta decision
 
 Only after the first three phases succeed should the repo decide whether any multi-jurisdiction High Court deserves public beta exposure.
@@ -214,3 +216,4 @@ Until this design is implemented, the public High Court beta should remain fixed
 - Rajasthan
 
 The concrete first execution slice for this design now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
+The concrete public-language follow-up after that slice now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
