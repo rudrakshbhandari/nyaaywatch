@@ -48,6 +48,12 @@ ECS service rollout helper:
 infra/aws/staging/redeploy-service.sh
 ```
 
+Canonical redirect-rule import helper:
+
+```bash
+infra/aws/staging/import-canonical-redirect-rules.sh
+```
+
 ## Required Inputs
 
 You need:
@@ -65,7 +71,7 @@ Optional:
 - `CLOUDFLARE_API_TOKEN_SECRET_ARN` if publish / rollback should purge Cloudflare cache without storing the token in plaintext task-definition environment variables
 - `EXISTING_DATABASE_URL_SECRET_ARN` if an existing stack should reference a pre-created `DATABASE_URL` secret instead of creating a new one
 - `EXISTING_OPERATOR_API_TOKEN_SECRET_ARN` if an existing stack should reference a pre-created operator-token secret instead of creating a new one
-- `MANAGE_CANONICAL_REDIRECT_RULES=false` if an older stack already has unmanaged `.com -> .in` listener rules and CloudFormation should leave them alone during reconciliation
+- `MANAGE_CANONICAL_REDIRECT_RULES=false` only as a temporary reconciliation escape hatch if an older stack already has unmanaged `.com -> .in` listener rules; the intended steady state is to import those rules so CloudFormation owns them too
 
 The stack creates its own isolated VPC with:
 
@@ -137,6 +143,14 @@ export EXISTING_OPERATOR_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:
    - `OperatorApiTokenSecretArn`
 
 4. Copy the live values into `docs/DEPLOYMENT_STATUS.md` so the current staging URL and resource names are discoverable without re-querying AWS.
+
+If an older stack already had the priority-10 `.com -> .in` listener rules outside CloudFormation and the first reconciliation had to use `MANAGE_CANONICAL_REDIRECT_RULES=false`, import those live rules immediately after the stack is otherwise healthy:
+
+```bash
+./infra/aws/staging/import-canonical-redirect-rules.sh nyaaywatch-staging
+```
+
+That import path is the preferred end state. Leaving the canonical redirect rules permanently unmanaged should be treated as temporary drift, not the normal staging posture.
 
 Note:
 

@@ -544,7 +544,11 @@ Latest confirmed operator validation:
   - the stack-managed ECS service is stable on task definition `:119`
   - task definition `:119` injects `DATABASE_URL`, `OPERATOR_API_TOKEN`, and `CLOUDFLARE_API_TOKEN` through ECS `secrets`
   - `https://nyaaywatch.in/health` still returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`
-  - remaining narrow drift: the older stack already had unmanaged `.com -> .in` listener rules at priority `10`, so the reconciliation uses `ManageCanonicalRedirectRules=false` and leaves those redirect rules outside CloudFormation ownership for now
+- Canonical `.com -> .in` ALB redirect-rule ownership reconciliation completed on 2026-04-20 without a service deploy:
+  - the live `nyaaywatch-staging` CloudFormation stack imported `CanonicalHttpRedirectRule` and `CanonicalHttpsRedirectRule` at `2026-04-20T05:44Z`
+  - `ManageCanonicalRedirectRules` is back to `true` on the live stack, so the canonical redirect rules are now stack-managed instead of externally managed drift
+  - the imported rule ARNs remained unchanged: HTTP `.../e88986b94ac719de` and HTTPS `.../b9511887c838d80f`
+  - `curl -sSI http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com/ -H 'Host: nyaaywatch.com'` still returned `301` with `Location: https://nyaaywatch.in:443/`
 
 ## Release Use
 
