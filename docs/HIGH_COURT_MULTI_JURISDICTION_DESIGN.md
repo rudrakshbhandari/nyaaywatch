@@ -191,29 +191,27 @@ This is a design recommendation, not a public rollout approval.
 
 The concrete implementation plan for this phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
 
-### Phase 4: Public-beta decision
+### Phase 4: Public-beta expansion
 
-Only after the first three phases succeed should the repo decide whether any multi-jurisdiction High Court deserves public beta exposure.
+After the first three phases succeed, the repo should move from one proof-point launch to an explicit public-beta batch plan for the remaining deferred courts.
 
 ## Non-Goals
 
 This design does not approve:
 
-- automatic public launch of every deferred High Court
+- automatic all-at-once launch of every deferred High Court without explicit batch rollout discipline
 - a nationwide High Court shell that outruns methodology
 - merging High Court and lower-court geography concepts into one blurred route family
 
 ## Current Decision
 
-Until this design is implemented, the public High Court beta should remain fixed at:
+This design is now implemented far enough that the public High Court beta no longer needs to stop at one multi-jurisdiction proof point.
 
-- Himachal
-- Andhra Pradesh
-- Telangana
-- Gujarat
-- Madhya Pradesh
-- Uttar Pradesh via Allahabad High Court
-- Rajasthan
+Current rollout posture:
+
+- Punjab and Haryana is already the first live public multi-jurisdiction High Court beta page
+- the remaining deferred court-first High Courts are now approved for public-beta rollout in larger waves, not one-court-at-a-time hesitation
 
 The concrete first execution slice for this design now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
 The concrete public-language follow-up after that slice now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
+The concrete batch rollout plan for the remaining deferred courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`.

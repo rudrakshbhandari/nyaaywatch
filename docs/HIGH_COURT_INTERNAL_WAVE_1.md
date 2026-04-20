@@ -57,7 +57,7 @@ It includes courts that fit the current model without pretending the model is br
 
 ## Explicitly Deferred
 
-This slice does **not** configure the multi-jurisdiction High Courts whose product and schema implications need a separate pass:
+This slice does **not** configure the remaining deferred court-first High Courts, even though the product direction is now to bring them into public beta later through dedicated larger rollout waves:
 
 - Bombay High Court
 - Calcutta High Court
@@ -65,7 +65,7 @@ This slice does **not** configure the multi-jurisdiction High Courts whose produ
 - High Court of Kerala
 - Madras High Court
 
-Delhi High Court is also deferred for now because the current lower-court state registry does not yet include a Delhi state profile, and this slice intentionally stays aligned with the existing supported-state shell.
+Delhi High Court is also deferred in this original slice because the current lower-court state registry did not yet include a Delhi state profile, and this document only records the narrower first wave rather than the later court-first batch rollout.
 
 ## Operational Meaning
 
@@ -105,4 +105,5 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` now has PR 1 through PR 4 completed, and Punjab and Haryana High Court has live internal fetch, publish, replay, and rollback proof with explicit Punjab, Haryana, and Chandigarh coverage
 - the next live validation move is no longer another proof cycle; the concrete methodology and UX follow-up is now landed on the shipped public High Court surfaces
 - the original seven-court public beta is no longer fixed now that Punjab and Haryana has cleared the separate product and methodology decision
-- treat any future court addition after Punjab and Haryana as a product and methodology decision, not automatic public-beta approval
+- the next approved public-beta move for the remaining deferred court-first High Courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
+- the remaining six deferred courts are now expected to join public beta in two waves of three, not through pairs or isolated one-court launches
