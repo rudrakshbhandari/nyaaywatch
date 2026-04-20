@@ -10,7 +10,7 @@ This document answers one narrow question:
 
 Do **not** expand the public High Court beta further right now.
 
-Keep the current seven-court public High Court beta fixed:
+The original seven-court public High Court beta is no longer the terminal public set:
 
 - Himachal
 - Andhra Pradesh
@@ -194,9 +194,9 @@ Follow-up live check after PR `#115` merged and deploy run `24637168455` settled
 Current repo posture after later High Court launches:
 
 - Andhra Pradesh and Telangana are also now live inside the public High Court beta set
-- the seven-court public High Court beta is now Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan
+- the original seven-court public High Court beta was Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan
 - the next decision is no longer "which already-proven court should go live next"
-- the next decision is whether the repo should hold this seven-court beta fixed until a multi-jurisdiction High Court design is ready
+- the next decision was whether the repo should hold that set fixed until a multi-jurisdiction High Court design was ready
 
 Follow-up live check on **April 20, 2026** for the then-recommended Chhattisgarh and Jharkhand pair:
 
@@ -358,7 +358,7 @@ Current conclusion from live evidence:
 - every queued single-jurisdiction High Court in the current registry now has live publish, replay, and rollback evidence
 - the next remaining question is not whether more internal queued-court proof is needed
 - the next remaining question is whether any additional public High Court wave or any multi-jurisdiction expansion is methodologically defensible
-- the current decision is to keep the seven-court public High Court beta fixed until the multi-jurisdiction court problem is intentionally designed
+- the original decision was to keep the seven-court public High Court beta fixed until the multi-jurisdiction court problem was intentionally designed
 - the first explicit design pass for that problem now exists in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
 
 Follow-up live check on **April 20, 2026** for the internal Punjab and Haryana High Court pilot:
@@ -389,7 +389,7 @@ Current conclusion from live evidence:
 - the first court-first multi-jurisdiction High Court phase is now technically complete
 - the next remaining question is no longer whether the operator lane can handle a multi-jurisdiction court
 - the public methodology and route language pass for explicit covered geographies is now landed across the shipped High Court public surfaces
-- the next remaining question is whether any multi-jurisdiction High Court, starting with Punjab and Haryana, deserves public beta exposure at all
+- the next remaining question has now been resolved in favor of one public multi-jurisdiction beta promotion: Punjab and Haryana is the first such court
 
 ## What Counts As Success
 
@@ -415,10 +415,10 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, Chhattisgarh plus Jharkhand, Karnataka plus Odisha, Bihar plus Uttarakhand, Sikkim plus Tripura, and Meghalaya plus Manipur have all cleared the internal proof bar, and Punjab and Haryana has cleared the first internal multi-jurisdiction proof pass, the remaining High Court work is no longer about missing operational evidence.
+Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, Rajasthan, and Punjab and Haryana are public beta High Courts, Chhattisgarh plus Jharkhand, Karnataka plus Odisha, Bihar plus Uttarakhand, Sikkim plus Tripura, and Meghalaya plus Manipur have all cleared the internal proof bar, and Punjab and Haryana has already cleared the first internal multi-jurisdiction proof pass, the remaining High Court work is no longer about missing operational evidence.
 
-The repo should now hold the current seven-court public beta fixed until it can answer three harder questions intentionally:
+The harder questions that originally blocked a public multi-jurisdiction court now have working answers:
 
-- how multi-jurisdiction High Courts fit the product and schema
-- what public methodology language remains honest once court-to-state mapping is no longer one-to-one
-- whether any second public High Court wave improves the product enough to justify the broader trust surface
+- multi-jurisdiction High Courts fit the product and schema through a court-first identity plus explicit `coveredGeographies[]`
+- the public methodology language now remains honest once court-to-state mapping is no longer one-to-one
+- Punjab and Haryana is the first public multi-jurisdiction High Court beta page; any further public High Court expansion should still clear a separate product and trust-surface decision

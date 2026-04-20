@@ -175,6 +175,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       buildStateCourtGeography("HR"),
       buildUnionTerritoryCourtGeography("CHD", "Chandigarh"),
     ],
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
