@@ -113,6 +113,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Delhi",
     hcNjdgStateValue: "7~26",
     coveredGeographies: [buildUnionTerritoryCourtGeography("DL", "Delhi")],
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
@@ -155,6 +156,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       buildStateCourtGeography("KL"),
       buildUnionTerritoryCourtGeography("LD", "Lakshadweep"),
     ],
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
@@ -170,6 +172,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       buildStateCourtGeography("TN"),
       buildUnionTerritoryCourtGeography("PY", "Puducherry"),
     ],
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,

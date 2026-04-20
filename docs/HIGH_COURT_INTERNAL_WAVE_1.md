@@ -12,7 +12,7 @@ This repo now configures a first internal High Court wave for the courts that al
 - one primary jurisdiction already represented in the current state rollout
 - one HC NJDG selector value
 
-This document records the broader configured set, plus which courts have now advanced from internal-only status to public beta.
+This document records the broader configured set, plus which courts have now advanced from internal-only status to public beta in repo code.
 
 ## Configured Internal Wave
 
@@ -44,7 +44,7 @@ Current posture:
 
 - `sourceReviewStatus=reviewed`: Himachal Pradesh, Andhra Pradesh, Telangana, Delhi High Court, Gujarat, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
 - `sourceReviewStatus=queued`: every other configured court in this wave
-- `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
+- `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Telangana, Delhi High Court, Gujarat, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
 - `publicBeta=false`: every other configured court in this wave
 
 ## Why These Courts
@@ -60,7 +60,7 @@ It includes courts that fit the current model without pretending the model is br
 
 ## Explicitly Deferred
 
-This slice now configures the Wave 1 public-batch courts for internal review and proof, but it still does **not** expose them publicly yet.
+This slice now configures the Wave 1 public-batch courts for public beta in repo code after their internal review and proof passed.
 
 The only remaining deferred court-first High Courts after this setup step are:
 
@@ -75,7 +75,7 @@ After this slice:
 - the operator-only `/operator/high-courts/:courtSlug/...` namespace can be configured for this wave
 - local and remote operator tooling can target these additional High Court slugs
 - test and preview runtime setup no longer assume Himachal is the only configured High Court
-- Delhi, Kerala, and Madras are now configured as reviewed internal High Courts ahead of the deliberate Wave 1 public-beta launch
+- Delhi, Kerala, and Madras are now configured as reviewed public-beta High Courts in repo code after clearing the deliberate Wave 1 proof bar
 
 After this slice, the repo still does **not** claim:
 
@@ -108,5 +108,5 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - the next live validation move is no longer another proof cycle; the concrete methodology and UX follow-up is now landed on the shipped public High Court surfaces
 - the original seven-court public beta is no longer fixed now that Punjab and Haryana has cleared the separate product and methodology decision
 - the next approved public-beta move for the remaining deferred court-first High Courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
-- Delhi, Kerala, and Madras are now the active Wave 1 internal proof batch before public exposure
+- Delhi, Kerala, and Madras are now the active Wave 1 public-beta launch batch
 - the remaining three deferred courts are now expected to follow as Wave 2 after Wave 1 proves stable
