@@ -1592,3 +1592,28 @@ Sikkim and Tripura are now internal-ready. The next deliberate internal High Cou
 ### Recommendation
 
 Meghalaya and Manipur are now internal-ready, and the queued single-jurisdiction High Court list is exhausted. Any next High Court expansion decision should now be explicitly about a public-beta widening call or a multi-jurisdiction schema change, not about missing internal proof on the remaining queued courts.
+
+## Punjab And Haryana High Court Internal Multi-Jurisdiction Pilot
+
+- review date: 2026-04-20
+- reviewer: Codex
+- decision: `internal proof bar satisfied`
+- methodology version: `2026.04-high-court-draft`
+- validation command: `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana`
+
+### Live Proof Evidence
+
+- fetch `run_642f9d1d-5246-42a5-b3e0-1b5bb78def50`, publish `publication_83b3d316-cdaf-4729-bcea-a875599af83f`, replay `run_84726b0e-7732-4d4b-8a6b-da3c10d17ae4`, replay publication `publication_adade273-f47c-4b4e-8501-75ea35e06814`, and rollback `publication_797e59da-9032-42dc-a891-f68f3d83fc0b` all succeeded
+- the readiness verifier returned `operatorAuthProtected=true`, `runCount=2`, `publicationCount=3`, `publishCount=2`, `rollbackCount=1`, `replayedRunCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
+- the live internal operator profile reports court code `PHHC` with explicit covered geographies for Punjab, Haryana, and Chandigarh
+- `/high-courts/punjab-and-haryana` remained outside the public route family during this proof slice; this stayed internal-only throughout
+
+### What Cleared
+
+- the live operator lane now has same-day proof that the court-first High Court model survives a real multi-jurisdiction court without falling back to fake one-state metadata
+- the readiness tooling now proves canonical `scope_type=high_court` and `scope_code=PHHC` alignment on live data, not just in local tests
+- the first multi-jurisdiction High Court phase is now operationally proven, not just designed
+
+### Recommendation
+
+Punjab and Haryana is now internal-ready. The next deliberate step is not another proof run; it is a methodology and UX decision about how explicit covered geographies should be described before any multi-jurisdiction High Court is considered for public beta.

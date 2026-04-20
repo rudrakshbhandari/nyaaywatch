@@ -549,6 +549,17 @@ Latest confirmed operator validation:
   - `ManageCanonicalRedirectRules` is back to `true` on the live stack, so the canonical redirect rules are now stack-managed instead of externally managed drift
   - the imported rule ARNs remained unchanged: HTTP `.../e88986b94ac719de` and HTTPS `.../b9511887c838d80f`
   - `curl -sSI http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com/ -H 'Host: nyaaywatch.com'` still returned `301` with `Location: https://nyaaywatch.in:443/`
+- Punjab and Haryana High Court internal proof completed on 2026-04-20 after PR `#133` merged:
+  - the live `/operator/high-courts/punjab-and-haryana` profile returned court code `PHHC` with explicit covered geographies for Punjab, Haryana, and Chandigarh while remaining outside the public High Court beta
+  - fetch `run_642f9d1d-5246-42a5-b3e0-1b5bb78def50`, publish `publication_83b3d316-cdaf-4729-bcea-a875599af83f`, replay `run_84726b0e-7732-4d4b-8a6b-da3c10d17ae4`, replay publication `publication_adade273-f47c-4b4e-8501-75ea35e06814`, and rollback `publication_797e59da-9032-42dc-a891-f68f3d83fc0b` all succeeded on `https://nyaaywatch.in`
+  - `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana` returned `operatorAuthProtected=true`, `runCount=2`, `publicationCount=3`, `publishCount=2`, `rollbackCount=1`, `replayedRunCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
+- Internal fetch scheduler deploy-role scope repair completed on 2026-04-20:
+  - the first attempt of GitHub deploy run `24653526489` failed in `Reconcile daily internal fetch schedule` because `nyaaywatch-github-deploy-role` still allowed scheduler operations only on `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
+  - the live IAM policy was widened to include `nyaaywatch-staging-supreme-court-internal-fetch` and `nyaaywatch-staging-high-courts-internal-fetch` alongside the existing lower-court schedule ARN
+  - GitHub Actions rerun attempt `2` for run `24653526489` completed successfully at `2026-04-20T07:31:19Z`
+  - the live ECS service is now stable on task definition `:126`
+  - all three schedules now exist and target task definition `:126`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, and `nyaaywatch-staging-high-courts-internal-fetch`
+  - `curl -fsSL https://nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`
 
 ## Release Use
 

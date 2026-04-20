@@ -129,7 +129,7 @@ if [[ -z "$role_arn_override" ]]; then
   if aws scheduler get-schedule \
     --region "$region" \
     --group-name "$schedule_group_name" \
-    --name "$schedule_name" \
+    --name "$state_schedule_name" \
     --output json \
     > "$tmpdir/existing-schedule.json" 2>/dev/null; then
     schedule_exists="true"

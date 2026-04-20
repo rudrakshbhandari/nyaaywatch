@@ -99,7 +99,7 @@ This is the minimum honest multi-jurisdiction proof step before any broader publ
 
 ## Validation Command
 
-Use the single-court readiness sweep for the next internal proof target:
+The single-court readiness sweep used for the internal Punjab and Haryana proof target was:
 
 ```bash
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana
@@ -124,7 +124,7 @@ The batch command reuses the existing High Court readiness verifier for each sel
 - explicit High Court reference-date posture
 - aggregate ready / not-ready totals across the selected set
 
-The single-court command is now the right next move because Punjab and Haryana is an internal pilot, not a new pair-selection exercise.
+That single-court command is now recorded live evidence, not an open court-selection step.
 
 ## Current Live Evidence
 
@@ -361,6 +361,35 @@ Current conclusion from live evidence:
 - the current decision is to keep the seven-court public High Court beta fixed until the multi-jurisdiction court problem is intentionally designed
 - the first explicit design pass for that problem now exists in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
 
+Follow-up live check on **April 20, 2026** for the internal Punjab and Haryana High Court pilot:
+
+- `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana`
+- result: `operatorAuthProtected=true`, `runCount=2`, `publicationCount=3`, `publishCount=2`, `rollbackCount=1`, `replayedRunCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
+
+Live operator proof-cycle evidence now recorded:
+
+- Punjab and Haryana:
+  - court code `PHHC`
+  - fetch run `run_642f9d1d-5246-42a5-b3e0-1b5bb78def50`
+  - first publish publication `publication_83b3d316-cdaf-4729-bcea-a875599af83f`
+  - first publish snapshot `snapshot_44c791fb-2db5-4aea-9ef2-c26b562c1da5`
+  - replay run `run_84726b0e-7732-4d4b-8a6b-da3c10d17ae4`
+  - replay publication `publication_adade273-f47c-4b4e-8501-75ea35e06814`
+  - rollback publication `publication_797e59da-9032-42dc-a891-f68f3d83fc0b`
+  - `hasPublishedSnapshot=true`
+  - `hasReplayEvidence=true`
+  - `hasRollbackEvidence=true`
+  - `referenceDateContractDefensible=true`
+  - `canonicalScopeAligned=true`
+  - `internalProofBarSatisfied=true`
+
+Current conclusion from live evidence:
+
+- the internal Punjab and Haryana pilot has now cleared the live High Court proof bar
+- the first court-first multi-jurisdiction High Court phase is now technically complete
+- the next remaining question is no longer whether the operator lane can handle a multi-jurisdiction court
+- the next remaining question is how the public methodology and route language should describe explicit covered geographies before any public beta decision
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:
@@ -385,7 +414,7 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, and Chhattisgarh plus Jharkhand, Karnataka plus Odisha, Bihar plus Uttarakhand, Sikkim plus Tripura, and Meghalaya plus Manipur have now cleared the internal proof bar, the queued single-jurisdiction High Court list is exhausted.
+Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, Chhattisgarh plus Jharkhand, Karnataka plus Odisha, Bihar plus Uttarakhand, Sikkim plus Tripura, and Meghalaya plus Manipur have all cleared the internal proof bar, and Punjab and Haryana has cleared the first internal multi-jurisdiction proof pass, the remaining High Court work is no longer about missing operational evidence.
 
 The repo should now hold the current seven-court public beta fixed until it can answer three harder questions intentionally:
 

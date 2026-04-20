@@ -234,6 +234,13 @@ Status:
 - run the live internal operator proof cycle for Punjab and Haryana High Court
 - document the results
 
+Status:
+
+- completed on branch `high-court-punjab-haryana-proof`
+- fetch run `run_642f9d1d-5246-42a5-b3e0-1b5bb78def50`, publish publication `publication_83b3d316-cdaf-4729-bcea-a875599af83f`, replay run `run_84726b0e-7732-4d4b-8a6b-da3c10d17ae4`, replay publication `publication_adade273-f47c-4b4e-8501-75ea35e06814`, and rollback publication `publication_797e59da-9032-42dc-a891-f68f3d83fc0b` all succeeded on `https://nyaaywatch.in`
+- `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana` now reports `runCount=2`, `publicationCount=3`, `replayedRunCount=1`, `rollbackCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
+- the internal-only `PHHC` profile remains outside the public High Court beta despite clearing the live proof bar
+
 ## Testing And Verification
 
 Before calling phase 1 complete:
@@ -256,10 +263,10 @@ Phase 1 is done only when:
 
 ## After Phase 1
 
-If phase 1 succeeds, the next move is not automatic public rollout.
+Phase 1 has now succeeded, and the next move is not automatic public rollout.
 
 The next move is:
 
-1. run the internal Punjab and Haryana High Court proof cycle
-2. update the public-methodology and UX language for explicit jurisdiction coverage
-3. decide whether any multi-jurisdiction High Court deserves public beta exposure
+1. update the public-methodology and UX language for explicit jurisdiction coverage
+2. decide whether any multi-jurisdiction High Court deserves public beta exposure
+3. only then consider a separate public-beta decision for Punjab and Haryana or another deferred multi-jurisdiction court
