@@ -93,11 +93,11 @@ The point of Wave 2 is to prove that the repo can keep expanding the public High
 
 The immediate repo slice before any public flip is now concrete:
 
-- Bombay High Court configured as reviewed internal profile via HC NJDG selector `27~1`
-- Calcutta High Court configured as reviewed internal profile via HC NJDG selector `19~16`
-- Gauhati High Court configured as reviewed internal profile via HC NJDG selector `18~6`
-- live `fetch -> publish -> replay -> rollback` proof for all three courts
-- only then the three-court public route flip plus purge and rollout-evidence sync
+- Bombay High Court configured as reviewed public-beta profile in repo code via HC NJDG selector `27~1`
+- Calcutta High Court configured as reviewed public-beta profile in repo code via HC NJDG selector `19~16`
+- Gauhati High Court configured as reviewed public-beta profile in repo code via HC NJDG selector `18~6`
+- live `fetch -> publish -> replay -> rollback` proof now exists for all three courts
+- the remaining live work is the three-court public route rollout verification plus purge and rollout-evidence sync
 
 ## Wave 1 Launch Evidence
 
@@ -433,5 +433,5 @@ The harder questions that originally blocked a public multi-jurisdiction court n
 - the public methodology language now remains honest once court-to-state mapping is no longer one-to-one
 - Punjab and Haryana is the first public multi-jurisdiction High Court beta page, and the remaining deferred court-first High Courts are now approved for sequential public-beta waves larger than two courts at a time through `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
 - Delhi High Court, High Court of Kerala, and Madras High Court are now live public Wave 1 courts
-- Bombay High Court, Calcutta High Court, and Gauhati High Court are now the reviewed internal Wave 2 courts
-- the immediate live gate is no longer source review or model design; it is the three-court `fetch -> publish -> replay -> rollback` proof batch for Wave 2
+- Bombay High Court, Calcutta High Court, and Gauhati High Court have now cleared the Wave 2 proof bar and are configured for public beta in repo code
+- the immediate live gate is no longer source review, model design, or proof execution; it is the three-court public route rollout verification, explicit cache purge, and rollout-evidence sync for Wave 2

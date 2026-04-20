@@ -47,8 +47,8 @@ Current posture:
 
 - `sourceReviewStatus=reviewed`: Himachal Pradesh, Andhra Pradesh, Bombay High Court, Calcutta High Court, Telangana, Delhi High Court, Gauhati High Court, Gujarat, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
 - `sourceReviewStatus=queued`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, and Bihar via Patna High Court
-- `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Telangana, Delhi High Court, Gujarat, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
-- `publicBeta=false`: Bombay High Court, Calcutta High Court, Chhattisgarh, Gauhati High Court, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, and Bihar via Patna High Court
+- `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Bombay High Court, Calcutta High Court, Telangana, Delhi High Court, Gujarat, Gauhati High Court, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
+- `publicBeta=false`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, and Bihar via Patna High Court
 
 ## Why These Courts
 
@@ -71,7 +71,7 @@ The only remaining court-first High Courts that are still internal-only after th
 - Calcutta High Court via `19~16`, covering West Bengal and Andaman and Nicobar Islands
 - Gauhati High Court via `18~6`, covering Assam, Nagaland, Mizoram, and Arunachal Pradesh
 
-Those courts are no longer just abstract deferred names. They are now configured as reviewed internal Wave 2 profiles and are waiting on the live proof batch before the public route flip.
+Those courts are no longer just abstract deferred names. They are now configured as reviewed public-beta Wave 2 profiles in repo code after clearing the live proof batch.
 
 ## Operational Meaning
 
@@ -114,5 +114,5 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - the original seven-court public beta is no longer fixed now that Punjab and Haryana has cleared the separate product and methodology decision
 - the next approved public-beta move for the remaining deferred court-first High Courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
 - Delhi, Kerala, and Madras are now live in the public High Court beta as the completed Wave 1 batch
-- the remaining three deferred courts are now expected to follow as Wave 2 after the Wave 1 stable window proves clean
-- the immediate repo step is now the live `fetch -> publish -> replay -> rollback` proof batch for Bombay, Calcutta, and Gauhati before any public route flip
+- the remaining three deferred courts have now cleared the Wave 2 proof bar and the repo code now exposes them through the public High Court beta
+- the remaining rollout work is no longer model or proof preparation; it is deploy verification, cache purge, and release-evidence sync for the Wave 2 public batch
