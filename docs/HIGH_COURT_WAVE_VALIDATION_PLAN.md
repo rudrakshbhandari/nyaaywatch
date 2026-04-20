@@ -38,10 +38,17 @@ The fourth validation pair was:
 
 That pair has now also cleared the internal proof bar on the live operator lane.
 
-Validate this pair next:
+The fifth validation pair was:
 
 - Bihar
 - Uttarakhand
+
+That pair has now also cleared the internal proof bar on the live operator lane.
+
+Validate this pair next:
+
+- Sikkim
+- Tripura
 
 This is a product and operations recommendation from current repo state, not an official source fact.
 
@@ -61,10 +68,10 @@ The point of this pair is not representativeness theater.
 
 The point is to widen evidence for the next deliberate public-wave decision on:
 
-- a large Hindi-belt court that materially broadens the current internal-ready queue without creating a new schema problem: Bihar
-- a smaller hill-state court that pressures the same operator flow in a different operational shape while still fitting the current one-state-one-court boundary: Uttarakhand
+- a smaller hill-state court that pressures the same operator flow with a compact pending docket and the narrowest remaining single-state footprint: Sikkim
+- a north-east court that broadens internal proof without forcing multi-jurisdiction High Court logic: Tripura
 
-If both hold up, the repo will have much better evidence that the next High Court wave can keep widening responsibly across both larger and smaller queued courts without skipping straight to the multi-jurisdiction court problem.
+If both hold up, the repo will have much better evidence that the next High Court wave can keep widening responsibly across smaller queued courts and north-east coverage without skipping straight to the multi-jurisdiction court problem.
 
 ## Validation Command
 
@@ -81,7 +88,7 @@ Requires:
 For the newly recommended pair, use:
 
 ```bash
-npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=bihar,uttarakhand
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=sikkim,tripura
 ```
 
 The batch command reuses the existing High Court readiness verifier for each selected court and returns:
@@ -229,6 +236,38 @@ Current conclusion from live evidence:
 - the next remaining question is not whether the live operator path works for larger queued single-jurisdiction courts
 - the next remaining question is which still-queued pair should follow them before any additional public-beta decision
 
+Follow-up live check on **April 20, 2026** for the then-recommended Bihar and Uttarakhand pair:
+
+- `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=bihar,uttarakhand`
+- result: `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, `rollbackReadyCourts=2`
+
+Live operator proof-cycle evidence now recorded:
+
+- Bihar:
+  - active publication `publication_f5df6afc-42ee-4aed-9ee9-480141a9d64e`
+  - active snapshot `snapshot_bf163712-e0a6-4e67-aeb0-35c92cdb11bd`
+  - first fetch run `run_b0e15789-7d46-42e2-a66a-e761d738249c`
+  - replay run `run_f421c0c5-c443-4d77-8375-20284f8ab765`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+- Uttarakhand:
+  - active publication `publication_df0e1e1f-98db-496a-936b-4058dd90d7c1`
+  - active snapshot `snapshot_fa23d74a-1876-4beb-9dc7-4d097a177f2a`
+  - first fetch run `run_1f26a1af-867a-47e2-9f5b-0741777d7082`
+  - replay run `run_0fd1e949-8a0b-4335-b8bd-35b464a93295`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+
+Current conclusion from live evidence:
+
+- Bihar and Uttarakhand have now both cleared the internal High Court proof bar
+- the next remaining question is not whether the live operator path works for medium-sized queued single-jurisdiction courts
+- the next remaining question is which smaller queued pair should follow them before any additional public-beta decision
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:
@@ -253,19 +292,15 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, and Chhattisgarh plus Jharkhand and Karnataka plus Odisha have now cleared the internal proof bar, the remaining queued single-jurisdiction High Courts are:
+Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, and Chhattisgarh plus Jharkhand, Karnataka plus Odisha, and Bihar plus Uttarakhand have now cleared the internal proof bar, the remaining queued single-jurisdiction High Courts are:
 
-- Bihar
-- Uttarakhand
 - Sikkim
 - Tripura
 - Meghalaya
 - Manipur
 
-If Bihar and Uttarakhand clear the same gates, the likely next follow-on queue should come from:
+If Sikkim and Tripura clear the same gates, the likely next follow-on queue should come from:
 
-- Sikkim
-- Tripura
 - Meghalaya
 - Manipur
 
