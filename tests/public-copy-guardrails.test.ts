@@ -53,7 +53,7 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/",
-        requiredText: "The point is not to flatten the tiers into one fake ranking system",
+        requiredText: "The courts, in the latest published snapshots.",
       },
       {
         path: "/states/himachal",
