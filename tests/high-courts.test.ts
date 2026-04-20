@@ -121,7 +121,7 @@ describe("high court profiles", () => {
           geographyType: "union_territory",
         },
       ],
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -148,7 +148,7 @@ describe("high court profiles", () => {
           geographyType: "union_territory",
         },
       ],
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -199,7 +199,7 @@ describe("high court profiles", () => {
           lowerCourtStateCode: "AR",
         },
       ],
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -338,9 +338,12 @@ describe("high court profiles", () => {
     expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
       "himachal",
       "andhra-pradesh",
+      "bombay",
+      "calcutta",
       "telangana",
       "delhi",
       "gujarat",
+      "gauhati",
       "kerala",
       "madras",
       "madhya-pradesh",

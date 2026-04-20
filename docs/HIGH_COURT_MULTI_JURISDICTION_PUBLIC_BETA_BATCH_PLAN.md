@@ -105,11 +105,11 @@ What no longer gates a wave:
 - a requirement to re-prove the court-first model from scratch
 - an artificial preference for pairs or one-court launches
 
-The immediate Wave 2 implementation slice is:
+The immediate Wave 2 implementation slice is now:
 
-1. add Bombay, Calcutta, and Gauhati as reviewed internal High Court profiles with exact HC NJDG selector values and explicit `coveredGeographies[]`
-2. run the live internal `fetch -> publish -> replay -> rollback` proof batch for all three courts
-3. only then flip the whole wave public together
+1. the Bombay, Calcutta, and Gauhati profiles are configured and their live internal `fetch -> publish -> replay -> rollback` proof batch is complete
+2. the repo code now flips the whole wave public together
+3. the remaining rollout task is deploy verification, explicit Cloudflare purge, and release-evidence sync for the whole batch
 
 ## What To Avoid
 

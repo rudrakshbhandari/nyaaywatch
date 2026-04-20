@@ -167,6 +167,14 @@ Public routes:
 - `/high-courts/andhra-pradesh/data`
 - `/high-courts/andhra-pradesh/methodology`
 - `/high-courts/andhra-pradesh/api`
+- `/high-courts/bombay`
+- `/high-courts/bombay/data`
+- `/high-courts/bombay/methodology`
+- `/high-courts/bombay/api`
+- `/high-courts/calcutta`
+- `/high-courts/calcutta/data`
+- `/high-courts/calcutta/methodology`
+- `/high-courts/calcutta/api`
 - `/high-courts/telangana`
 - `/high-courts/telangana/data`
 - `/high-courts/telangana/methodology`
@@ -179,6 +187,10 @@ Public routes:
 - `/high-courts/gujarat/data`
 - `/high-courts/gujarat/methodology`
 - `/high-courts/gujarat/api`
+- `/high-courts/gauhati`
+- `/high-courts/gauhati/data`
+- `/high-courts/gauhati/methodology`
+- `/high-courts/gauhati/api`
 - `/high-courts/kerala`
 - `/high-courts/kerala/data`
 - `/high-courts/kerala/methodology`
@@ -219,7 +231,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - Supreme Court now has a narrow public beta route family under `/supreme-court`
-- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
@@ -233,12 +245,18 @@ Public API:
 - `GET /v1/high-courts/himachal/trends`
 - `GET /v1/high-courts/andhra-pradesh/stats`
 - `GET /v1/high-courts/andhra-pradesh/trends`
+- `GET /v1/high-courts/bombay/stats`
+- `GET /v1/high-courts/bombay/trends`
+- `GET /v1/high-courts/calcutta/stats`
+- `GET /v1/high-courts/calcutta/trends`
 - `GET /v1/high-courts/telangana/stats`
 - `GET /v1/high-courts/telangana/trends`
 - `GET /v1/high-courts/delhi/stats`
 - `GET /v1/high-courts/delhi/trends`
 - `GET /v1/high-courts/gujarat/stats`
 - `GET /v1/high-courts/gujarat/trends`
+- `GET /v1/high-courts/gauhati/stats`
+- `GET /v1/high-courts/gauhati/trends`
 - `GET /v1/high-courts/kerala/stats`
 - `GET /v1/high-courts/kerala/trends`
 - `GET /v1/high-courts/madras/stats`

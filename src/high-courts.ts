@@ -100,6 +100,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       buildStateCourtGeography("GA"),
       buildUnionTerritoryCourtGeography("DNHDD", "Dadra and Nagar Haveli and Daman and Diu"),
     ],
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
@@ -115,6 +116,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       buildStateCourtGeography("WB"),
       buildUnionTerritoryCourtGeography("AN", "Andaman and Nicobar Islands"),
     ],
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
@@ -178,6 +180,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       buildStateCourtGeography("MZ"),
       buildStateCourtGeography("AR"),
     ],
+    publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
