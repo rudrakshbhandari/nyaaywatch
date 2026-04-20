@@ -463,6 +463,7 @@ Resources:
   CanonicalHttpRedirectRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Condition: ShouldManageCanonicalRedirectRules
+    DeletionPolicy: Delete
     Properties:
       Actions:
         - Type: redirect
@@ -498,6 +499,7 @@ Resources:
   CanonicalHttpsRedirectRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Condition: ShouldManageCanonicalRedirectRules
+    DeletionPolicy: Delete
     Properties:
       Actions:
         - Type: redirect
