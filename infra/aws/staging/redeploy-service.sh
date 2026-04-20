@@ -11,6 +11,17 @@ stack_name="$1"
 container_image="$2"
 region="${AWS_REGION:-ap-south-1}"
 
+lookup_stack_resource() {
+  local logical_resource_id="$1"
+  aws cloudformation describe-stack-resources \
+    --region "$region" \
+    --stack-name "$stack_name" \
+    --logical-resource-id "$logical_resource_id" \
+    --query "StackResources[0].PhysicalResourceId" \
+    --output text \
+    2>/dev/null || true
+}
+
 tmpdir="$(mktemp -d)"
 cleanup() {
   rm -rf "$tmpdir"
@@ -55,6 +66,17 @@ fi
 if [[ -z "$service_url" || "$service_url" == "None" ]]; then
   echo "ServiceUrl output not found for stack $stack_name" >&2
   exit 1
+fi
+
+database_url_secret_arn="$(lookup_stack_resource DatabaseUrlSecret)"
+operator_api_token_secret_arn="$(lookup_stack_resource OperatorApiTokenSecret)"
+
+if [[ -n "$database_url_secret_arn" && "$database_url_secret_arn" != "None" ]]; then
+  export DATABASE_URL_SECRET_ARN="$database_url_secret_arn"
+fi
+
+if [[ -n "$operator_api_token_secret_arn" && "$operator_api_token_secret_arn" != "None" ]]; then
+  export OPERATOR_API_TOKEN_SECRET_ARN="$operator_api_token_secret_arn"
 fi
 
 task_definition_arn="$(
@@ -112,6 +134,20 @@ for env_name in ("CLOUDFLARE_ZONE_ID", "CLOUDFLARE_ZONE_NAME", "PUBLIC_BASE_URL"
     env_value = os.environ.get(env_name)
     if env_value:
         environment_map[env_name] = env_value
+
+for env_name, secret_env_name in (
+    ("DATABASE_URL", "DATABASE_URL_SECRET_ARN"),
+    ("OPERATOR_API_TOKEN", "OPERATOR_API_TOKEN_SECRET_ARN"),
+):
+    secret_arn = os.environ.get(secret_env_name, "").strip()
+    if secret_arn:
+        environment_map.pop(env_name, None)
+        secret_map[env_name] = secret_arn
+    elif env_name in environment_map and env_name not in secret_map:
+        print(
+            f"warning: {env_name} remains in the ECS environment because {secret_env_name} is not configured for this stack.",
+            file=sys.stderr,
+        )
 
 cloudflare_secret_arn = os.environ.get("CLOUDFLARE_API_TOKEN_SECRET_ARN")
 if cloudflare_secret_arn:

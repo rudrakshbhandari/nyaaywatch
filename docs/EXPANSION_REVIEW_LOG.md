@@ -1467,3 +1467,28 @@ The first broader High Court public wave is now live. Gujarat and Madhya Pradesh
 ### Recommendation
 
 The second High Court public wave is now live. The next deliberate High Court pair should come from the remaining queued single-jurisdiction courts, and that decision should be made explicitly instead of implying that all remaining High Courts are now ready for public exposure.
+
+## Chhattisgarh And Jharkhand High Court Internal Proof Pair
+
+- review date: 2026-04-20
+- reviewer: Codex
+- decision: `internal proof bar satisfied`
+- methodology version: `2026.04-high-court-draft`
+- validation command: `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=chhattisgarh,jharkhand`
+
+### Live Proof Evidence
+
+- Chhattisgarh fetch `run_4131351e-cab9-45e9-b77f-dd2c70ce132d`, publish `publication_49fc441c-8b20-442c-b2b6-e30e3d9685ad`, replay `run_41fbbcb6-afc5-49b8-bfba-0ebba2603667`, replay publication `publication_13eb38be-b9f9-42b9-9019-9e07f27f0662`, and rollback `publication_65890e9d-5cdd-451b-81c6-408d809cf55e` all succeeded
+- Jharkhand fetch `run_6bbadf6b-adfa-4680-bcb6-151a5c549ec8`, publish `publication_82cb568d-bcca-48a1-8f98-8e6a6e5bd0b8`, replay `run_fd46f10b-63ef-472b-91d9-6c454b33d82f`, replay publication `publication_942ea6b8-54cb-471a-87d3-b58c606578e0`, and rollback `publication_8108ed78-c812-4302-8e6d-8c2d4dbba6d3` all succeeded
+- the batch verifier returned `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, and `rollbackReadyCourts=2`
+- both courts remained internal-only during this proof slice; no public High Court routes were exposed for either court
+
+### What Cleared
+
+- the live operator path now has fresh same-day proof that it still works for queued single-jurisdiction High Courts beyond the seven-court public beta
+- both courts retained the explicit `captured_at` reference-date posture, so the current High Court date contract still holds
+- both courts now have the minimum publish, replay, and rollback evidence needed for internal readiness
+
+### Recommendation
+
+Chhattisgarh and Jharkhand are now internal-ready. The next deliberate internal High Court pair should move to Karnataka and Odisha rather than widening public exposure immediately.
