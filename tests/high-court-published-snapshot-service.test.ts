@@ -37,6 +37,7 @@ describe("PublishedHighCourtSnapshotService", () => {
     expect(captured.run.sourceSnapshotAt).toBe("2026-04-19T00:00:00.000Z");
     expect(captured.candidate?.snapshot.sourceSnapshotAt).toBeNull();
     expect(captured.candidate?.snapshot.referenceDateKind).toBe("captured_at");
+    expect(captured.candidate?.snapshot.coveredGeographies[0]?.geographyCode).toBe("HP");
     expect(captured.artifacts.map((artifact) => artifact.artifactType)).toEqual([
       "raw-high-court-html-bundle",
       "high-court-snapshot-candidate-json",

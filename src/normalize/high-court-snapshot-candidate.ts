@@ -16,10 +16,9 @@ export function buildHighCourtSnapshotCandidate(
     snapshot: {
       courtTier: "high_court",
       courtCode: extracted.courtCode,
-      courtSlug: slugifyHighCourt(extracted.courtName, extracted.stateName),
+      courtSlug: extracted.courtSlug,
       courtName: extracted.courtName,
-      stateCode: extracted.stateCode,
-      stateName: extracted.stateName,
+      coveredGeographies: extracted.coveredGeographies,
       sourceName: extracted.sourceName,
       sourceSnapshotAt: extracted.sourceSnapshotAt,
       referenceDateAt,
@@ -107,17 +106,4 @@ function buildTrendPoints(
   }
 
   return points.slice(-5);
-}
-
-function slugifyHighCourt(courtName: string, stateName: string): string {
-  const normalizedCourtName = courtName.trim().toLowerCase();
-  if (normalizedCourtName.includes("himachal")) {
-    return "himachal";
-  }
-
-  return stateName
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
 }

@@ -6,6 +6,15 @@ export interface NjdgStateProfile {
   publicAlpha: boolean;
 }
 
+export type GeographyType = "state" | "union_territory";
+
+export interface CourtGeography {
+  geographyCode: string;
+  geographyName: string;
+  geographyType: GeographyType;
+  lowerCourtStateCode?: SupportedStateCode;
+}
+
 export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ", "OD", "WB", "JH", "CG", "GA", "SK", "MZ"] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
@@ -233,4 +242,14 @@ export function getPublicStateProfileBySlug(stateSlug: string): NjdgStateProfile
 
 export function getStateProfileByCodeOrSlug(value: string): NjdgStateProfile | null {
   return getStateProfileByCode(value) ?? listStateProfiles().find((profile) => profile.stateSlug === value.trim().toLowerCase()) ?? null;
+}
+
+export function buildStateCourtGeography(stateCode: SupportedStateCode): CourtGeography {
+  const profile = getStateProfile(stateCode);
+  return {
+    geographyCode: profile.stateCode,
+    geographyName: profile.stateName,
+    geographyType: "state",
+    lowerCourtStateCode: profile.stateCode,
+  };
 }

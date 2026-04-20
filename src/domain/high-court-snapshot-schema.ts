@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { HighCourtCoveredGeographySchema } from "./high-court-capture-schema.js";
 import { QualityStateSchema } from "./snapshot-schema.js";
 
 export const HighCourtReferenceDateKindSchema = z.enum(["source_snapshot_at", "captured_at"]);
@@ -9,8 +10,7 @@ export const HighCourtSnapshotMetadataSchema = z.object({
   courtCode: z.string().min(1),
   courtSlug: z.string().min(1),
   courtName: z.string().min(1),
-  stateCode: z.string().min(1),
-  stateName: z.string().min(1),
+  coveredGeographies: z.array(HighCourtCoveredGeographySchema).min(1),
   sourceName: z.string().min(1),
   sourceSnapshotAt: z.string().datetime().nullable(),
   referenceDateAt: z.string().datetime(),
@@ -59,7 +59,7 @@ export const HighCourtTrendPointSchema = z.object({
   disposedLastMonthTotalCases: z.number().int().nonnegative(),
 });
 
-export const HighCourtPublishedSnapshotSchema = z.object({
+const HighCourtPublishedSnapshotCanonicalSchema = z.object({
   snapshot: HighCourtSnapshotMetadataSchema,
   stats: HighCourtStatsSchema,
   ageBuckets: HighCourtAgeBucketsSchema,
@@ -67,4 +67,50 @@ export const HighCourtPublishedSnapshotSchema = z.object({
   trends: z.array(HighCourtTrendPointSchema).min(1),
 });
 
+export const HighCourtPublishedSnapshotSchema = z.preprocess(
+  normalizeHighCourtPublishedSnapshotInput,
+  HighCourtPublishedSnapshotCanonicalSchema,
+);
+
 export type HighCourtPublishedSnapshot = z.infer<typeof HighCourtPublishedSnapshotSchema>;
+
+export function normalizeHighCourtSnapshotMetadataInput(value: unknown): unknown {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const record = value as Record<string, unknown>;
+  if (Array.isArray(record.coveredGeographies)) {
+    return value;
+  }
+
+  const stateCode = typeof record.stateCode === "string" ? record.stateCode : null;
+  const stateName = typeof record.stateName === "string" ? record.stateName : null;
+  if (!stateCode || !stateName) {
+    return value;
+  }
+
+  return {
+    ...record,
+    coveredGeographies: [
+      {
+        geographyCode: stateCode,
+        geographyName: stateName,
+        geographyType: "state",
+        lowerCourtStateCode: stateCode,
+      },
+    ],
+  };
+}
+
+function normalizeHighCourtPublishedSnapshotInput(value: unknown): unknown {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const record = value as Record<string, unknown>;
+  return {
+    ...record,
+    snapshot: normalizeHighCourtSnapshotMetadataInput(record.snapshot),
+  };
+}

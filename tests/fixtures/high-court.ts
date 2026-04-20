@@ -69,7 +69,7 @@ export const BASE_HIGH_COURT_HTML = `
 `;
 
 export function buildHighCourtCaptureBundle(
-  profile: Pick<HighCourtProfile, "courtCode" | "courtName" | "stateCode" | "stateName" | "hcNjdgStateValue" | "sourceUrls">,
+  profile: Pick<HighCourtProfile, "courtCode" | "courtSlug" | "courtName" | "coveredGeographies" | "hcNjdgStateValue" | "sourceUrls">,
   capturedAt = "2026-04-19T00:00:00.000Z",
 ): HighCourtCaptureBundle {
   const html = BASE_HIGH_COURT_HTML.replace('value="2~5" selected>High Court of Himachal Pradesh', `value="${profile.hcNjdgStateValue}" selected>${profile.courtName}`);
@@ -77,9 +77,9 @@ export function buildHighCourtCaptureBundle(
   return {
     capturedAt,
     courtCode: profile.courtCode,
+    courtSlug: profile.courtSlug,
     courtName: profile.courtName,
-    stateCode: profile.stateCode,
-    stateName: profile.stateName,
+    coveredGeographies: profile.coveredGeographies,
     sourceName: `HC NJDG ${profile.courtName} dashboard`,
     sourceAttribution: `High Courts of India National Judicial Data Grid for ${profile.courtName}`,
     homePage: {
@@ -96,9 +96,16 @@ export function buildHimachalHighCourtCaptureBundle(
   return buildHighCourtCaptureBundle(
     {
       courtCode: "HPHC",
+      courtSlug: "himachal",
       courtName: "High Court of Himachal Pradesh",
-      stateCode: "HP",
-      stateName: "Himachal Pradesh",
+      coveredGeographies: [
+        {
+          geographyCode: "HP",
+          geographyName: "Himachal Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "HP",
+        },
+      ],
       hcNjdgStateValue: "2~5",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",

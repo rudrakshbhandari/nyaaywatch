@@ -109,9 +109,15 @@ describe("PublicCacheInvalidationService", () => {
       courtCode: "UPHC",
       courtSlug: "uttar-pradesh",
       courtName: "Allahabad High Court",
-      stateCode: "UP",
-      stateName: "Uttar Pradesh",
       hcNjdgStateValue: "9~13",
+      coveredGeographies: [
+        {
+          geographyCode: "UP",
+          geographyName: "Uttar Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "UP",
+        },
+      ],
       publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {

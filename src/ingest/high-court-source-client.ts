@@ -3,7 +3,11 @@ import {
   type HighCourtCaptureBundle,
 } from "../domain/high-court-capture-schema.js";
 import { extractHighCourtBenchOptions } from "../extract/high-court-njdg-html.js";
-import { getHighCourtProfile, type HighCourtProfile, type SupportedHighCourtCode } from "../high-courts.js";
+import {
+  getHighCourtProfile,
+  type HighCourtProfile,
+  type SupportedHighCourtCode,
+} from "../high-courts.js";
 
 export interface HighCourtSourceClient {
   captureLatest(): Promise<HighCourtCaptureBundle>;
@@ -19,9 +23,9 @@ export class HcNjdgSourceClient implements HighCourtSourceClient {
     return HighCourtCaptureBundleSchema.parse({
       capturedAt: new Date().toISOString(),
       courtCode: this.profile.courtCode,
+      courtSlug: this.profile.courtSlug,
       courtName: this.profile.courtName,
-      stateCode: this.profile.stateCode,
-      stateName: this.profile.stateName,
+      coveredGeographies: this.profile.coveredGeographies,
       sourceName: `HC NJDG ${this.profile.courtName} dashboard`,
       sourceAttribution: `High Courts of India National Judicial Data Grid for ${this.profile.courtName}`,
       homePage: {

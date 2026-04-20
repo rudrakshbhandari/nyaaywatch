@@ -2,6 +2,7 @@ import {
   HighCourtCaptureBundleSchema,
   type HighCourtBenchOption,
   type HighCourtCaptureBundle,
+  type HighCourtCoveredGeography,
 } from "../domain/high-court-capture-schema.js";
 
 export interface HighCourtMetricBreakdown {
@@ -21,9 +22,9 @@ export interface HighCourtAgeBucketTotals {
 export interface ExtractedHighCourtSnapshot {
   capturedAt: string;
   courtCode: string;
+  courtSlug: string;
   courtName: string;
-  stateCode: string;
-  stateName: string;
+  coveredGeographies: HighCourtCoveredGeography[];
   sourceName: string;
   sourceAttribution: string;
   sourceSnapshotAt: string | null;
@@ -73,9 +74,9 @@ export function extractHighCourtCaptureBundle(bundle: HighCourtCaptureBundle): E
   return {
     capturedAt: parsedBundle.capturedAt,
     courtCode: parsedBundle.courtCode,
+    courtSlug: parsedBundle.courtSlug,
     courtName: parsedBundle.courtName,
-    stateCode: parsedBundle.stateCode,
-    stateName: parsedBundle.stateName,
+    coveredGeographies: parsedBundle.coveredGeographies,
     sourceName: parsedBundle.sourceName,
     sourceAttribution: parsedBundle.sourceAttribution,
     sourceSnapshotAt: extractHighCourtSourceSnapshotAt(html),
