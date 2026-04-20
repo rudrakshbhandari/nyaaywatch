@@ -83,7 +83,7 @@ After this slice, the repo still does **not** claim:
 
 ## Next Decision After Setup
 
-Use this wave to choose the next one or two post-Andhra-and-Telangana courts for real operator-cycle validation.
+Use this wave to choose the next one or two queued courts after the current seven-court public beta for real operator-cycle validation.
 
 The next serious gate is still operational evidence:
 
@@ -94,6 +94,6 @@ The next serious gate is still operational evidence:
 
 The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
 
-- validate the next deliberate internal pair after Andhra Pradesh and Telangana
+- validate Chhattisgarh and Jharkhand as the next deliberate queued-court pair
 - keep using `npm run high-court:wave-readiness` for each deliberate pair
 - treat each additional pair as an internal proof step, not automatic public-beta approval

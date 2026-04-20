@@ -17,10 +17,17 @@ The first validation pair was:
 
 That pair has now cleared both the internal proof bar and the public rollout bar.
 
-Validate this pair next:
+The second validation pair was:
 
 - Gujarat
 - Madhya Pradesh
+
+That pair has now also cleared both the internal proof bar and the public rollout bar.
+
+Validate this pair next:
+
+- Chhattisgarh
+- Jharkhand
 
 This is a product and operations recommendation from current repo state, not an official source fact.
 
@@ -31,6 +38,7 @@ These two courts are the best next internal validation pair because they are:
 - already inside the new single-jurisdiction High Court registry
 - already aligned with supported lower-court state profiles
 - still internal-only instead of already public beta
+- adjacent to already-proven public-beta High Court territory without repeating the same courts again
 - materially meaningful without jumping straight to multi-jurisdiction courts
 - still simple enough to fit the current one-state-per-High-Court snapshot contract
 
@@ -38,8 +46,8 @@ The point of this pair is not representativeness theater.
 
 The point is to widen evidence for the next deliberate public-wave decision on:
 
-- a large western court with its own source-review needs: Gujarat
-- a central court that is already aligned with the current lower-court state shell: Madhya Pradesh
+- a central-eastern court that can prove the current contract still holds beyond the already-live western and north courts: Chhattisgarh
+- a neighboring eastern court that keeps the same one-state-one-court boundary while widening evidence in a different source context: Jharkhand
 
 If both hold up, the repo will have much better evidence that the next High Court wave can widen responsibly without skipping straight to the multi-jurisdiction court problem.
 
@@ -48,7 +56,7 @@ If both hold up, the repo will have much better evidence that the next High Cour
 Use the batch readiness sweep:
 
 ```bash
-npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=gujarat,madhya-pradesh
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=chhattisgarh,jharkhand
 ```
 
 Requires:
@@ -129,6 +137,13 @@ Follow-up live check after PR `#115` merged and deploy run `24637168455` settled
 - live operator publication history showed Gujarat active on `publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7` and Madhya Pradesh active on `publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4`
 - the public High Court beta set is now Himachal, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan
 
+Current repo posture after later High Court launches:
+
+- Andhra Pradesh and Telangana are also now live inside the public High Court beta set
+- the seven-court public High Court beta is now Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan
+- the next decision is no longer "which already-proven court should go live next"
+- the next decision is which still-queued single-jurisdiction court pair should become the next deliberate internal proof step after the current seven-court beta
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:
@@ -153,10 +168,8 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Uttar Pradesh, Rajasthan, Gujarat, and Madhya Pradesh have cleared both the internal proof bar and the public rollout bar, the next likely internal validation candidates should be selected from the remaining queued single-jurisdiction High Courts:
+Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, the remaining queued single-jurisdiction High Courts are:
 
-- Andhra Pradesh
-- Telangana
 - Chhattisgarh
 - Jharkhand
 - Karnataka
@@ -167,6 +180,13 @@ Now that Uttar Pradesh, Rajasthan, Gujarat, and Madhya Pradesh have cleared both
 - Tripura
 - Meghalaya
 - Manipur
+
+If Chhattisgarh and Jharkhand clear the same gates, the likely next follow-on queue should come from:
+
+- Karnataka
+- Odisha
+- Bihar
+- Uttarakhand
 
 Only after that should the repo revisit:
 
