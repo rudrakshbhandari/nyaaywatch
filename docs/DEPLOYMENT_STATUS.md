@@ -533,6 +533,13 @@ Latest confirmed operator validation:
   - the live ECS service rolled to task definition `:52`
   - the recurring scheduler `nyaaywatch-staging-weekday-internal-fetch` now targets the same live task definition `:52`
   - the deploy path now keeps the internal fetch schedule aligned with the latest ECS task definition after each successful `main` rollout
+- Runtime secret posture and Cloudflare purge-path remediation completed on 2026-04-20 outside a code deploy:
+  - the active ECS service now runs task definition `:117`
+  - `DATABASE_URL`, `OPERATOR_API_TOKEN`, and `CLOUDFLARE_API_TOKEN` are all injected through ECS `secrets`, not live plaintext task-definition environment values
+  - the task-execution role policy now grants `secretsmanager:GetSecretValue` for the database, operator-token, and Cloudflare-token secrets
+  - a new Secrets Manager secret now backs the Cloudflare token used for public-route cache invalidation
+  - the runtime purge path for Supreme Court and High Court public routes is now configured on the live service
+  - remaining gap: the live `nyaaywatch-staging` CloudFormation stack is still on an older template generation and does not yet own those secret resources directly, so stack-as-code parity is still incomplete even though the runtime is now correctly secret-backed
 
 ## Release Use
 
