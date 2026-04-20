@@ -97,6 +97,66 @@ describe("high court profiles", () => {
       },
     });
 
+    expect(getHighCourtProfile("BOHC")).toEqual({
+      courtCode: "BOHC",
+      courtSlug: "bombay",
+      courtName: "Bombay High Court",
+      hcNjdgStateValue: "27~1",
+      coveredGeographies: [
+        {
+          geographyCode: "MH",
+          geographyName: "Maharashtra",
+          geographyType: "state",
+          lowerCourtStateCode: "MH",
+        },
+        {
+          geographyCode: "GA",
+          geographyName: "Goa",
+          geographyType: "state",
+          lowerCourtStateCode: "GA",
+        },
+        {
+          geographyCode: "DNHDD",
+          geographyName: "Dadra and Nagar Haveli and Daman and Diu",
+          geographyType: "union_territory",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://bombayhighcourt.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("CLHC")).toEqual({
+      courtCode: "CLHC",
+      courtSlug: "calcutta",
+      courtName: "Calcutta High Court",
+      hcNjdgStateValue: "19~16",
+      coveredGeographies: [
+        {
+          geographyCode: "WB",
+          geographyName: "West Bengal",
+          geographyType: "state",
+          lowerCourtStateCode: "WB",
+        },
+        {
+          geographyCode: "AN",
+          geographyName: "Andaman and Nicobar Islands",
+          geographyType: "union_territory",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://calcuttahighcourt.gov.in/",
+      },
+    });
+
     expect(getHighCourtProfile("TSHC")).toMatchObject({
       courtCode: "TSHC",
       courtSlug: "telangana",
@@ -105,6 +165,46 @@ describe("high court profiles", () => {
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         officialSite: "https://tshc.gov.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("GHHC")).toEqual({
+      courtCode: "GHHC",
+      courtSlug: "gauhati",
+      courtName: "Gauhati High Court",
+      hcNjdgStateValue: "18~6",
+      coveredGeographies: [
+        {
+          geographyCode: "AS",
+          geographyName: "Assam",
+          geographyType: "state",
+          lowerCourtStateCode: "AS",
+        },
+        {
+          geographyCode: "NL",
+          geographyName: "Nagaland",
+          geographyType: "state",
+          lowerCourtStateCode: "NL",
+        },
+        {
+          geographyCode: "MZ",
+          geographyName: "Mizoram",
+          geographyType: "state",
+          lowerCourtStateCode: "MZ",
+        },
+        {
+          geographyCode: "AR",
+          geographyName: "Arunachal Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "AR",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://ghconline.gov.in/",
       },
     });
 
@@ -228,10 +328,13 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("madhya-pradesh")?.courtCode).toBe("MPHC");
     expect(getHighCourtProfileBySlug("andhra-pradesh")?.courtCode).toBe("APHC");
     expect(getHighCourtProfileBySlug("bihar")?.courtCode).toBe("BRHC");
+    expect(getHighCourtProfileBySlug("bombay")?.courtCode).toBe("BOHC");
+    expect(getHighCourtProfileBySlug("calcutta")?.courtCode).toBe("CLHC");
+    expect(getHighCourtProfileBySlug("gauhati")?.courtCode).toBe("GHHC");
     expect(getHighCourtProfileBySlug("punjab-and-haryana")?.courtCode).toBe("PHHC");
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
-    expect(listHighCourtProfiles()).toHaveLength(21);
+    expect(listHighCourtProfiles()).toHaveLength(24);
     expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
       "himachal",
       "andhra-pradesh",
@@ -245,8 +348,11 @@ describe("high court profiles", () => {
       "rajasthan",
       "uttar-pradesh",
     ]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(11);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(14);
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("DLHC"))).toBeNull();
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("BOHC"))).toBe("MH");
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("CLHC"))).toBe("WB");
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("GHHC"))).toBe("AS");
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("KLHC"))).toBe("KL");
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("MDHC"))).toBe("TN");
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("UPHC"))).toBe("UP");
@@ -283,11 +389,27 @@ describe("high court routes", () => {
   it("formats court-first coverage labels and sentences", () => {
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("HPHC"))).toBe("Himachal Pradesh");
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("DLHC"))).toBe("Delhi");
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("BOHC"))).toBe(
+      "Maharashtra, Goa, and Dadra and Nagar Haveli and Daman and Diu",
+    );
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("CLHC"))).toBe("West Bengal and Andaman and Nicobar Islands");
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("GHHC"))).toBe(
+      "Assam, Nagaland, Mizoram, and Arunachal Pradesh",
+    );
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("KLHC"))).toBe("Kerala and Lakshadweep");
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("MDHC"))).toBe("Tamil Nadu and Puducherry");
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("PHHC"))).toBe("Punjab, Haryana, and Chandigarh");
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("GJHC"))).toBe("This page tracks High Court of Gujarat across Gujarat.");
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("DLHC"))).toBe("This page tracks High Court of Delhi across Delhi.");
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("BOHC"))).toBe(
+      "This page tracks Bombay High Court across Maharashtra, Goa, and Dadra and Nagar Haveli and Daman and Diu.",
+    );
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("CLHC"))).toBe(
+      "This page tracks Calcutta High Court across West Bengal and Andaman and Nicobar Islands.",
+    );
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("GHHC"))).toBe(
+      "This page tracks Gauhati High Court across Assam, Nagaland, Mizoram, and Arunachal Pradesh.",
+    );
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("KLHC"))).toBe(
       "This page tracks High Court of Kerala across Kerala and Lakshadweep.",
     );

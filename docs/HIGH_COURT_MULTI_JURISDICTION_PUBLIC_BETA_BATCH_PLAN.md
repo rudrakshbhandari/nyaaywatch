@@ -105,6 +105,12 @@ What no longer gates a wave:
 - a requirement to re-prove the court-first model from scratch
 - an artificial preference for pairs or one-court launches
 
+The immediate Wave 2 implementation slice is:
+
+1. add Bombay, Calcutta, and Gauhati as reviewed internal High Court profiles with exact HC NJDG selector values and explicit `coveredGeographies[]`
+2. run the live internal `fetch -> publish -> replay -> rollback` proof batch for all three courts
+3. only then flip the whole wave public together
+
 ## What To Avoid
 
 Do not:
