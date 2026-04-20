@@ -98,6 +98,7 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - Karnataka and Odisha have now also cleared the internal proof bar
 - Bihar and Uttarakhand have now also cleared the internal proof bar
 - Sikkim and Tripura have now also cleared the internal proof bar
-- validate Meghalaya and Manipur as the next deliberate queued-court pair
+- Meghalaya and Manipur have now also cleared the internal proof bar
+- the queued single-jurisdiction High Court validation list is now exhausted
 - keep using `npm run high-court:wave-readiness` for each deliberate pair
 - treat each additional pair as an internal proof step, not automatic public-beta approval
