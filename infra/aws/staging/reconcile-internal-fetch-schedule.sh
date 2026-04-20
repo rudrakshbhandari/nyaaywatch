@@ -3,22 +3,32 @@ set -euo pipefail
 
 if [[ $# -gt 1 ]]; then
   echo "Usage: $0 [stack-name]" >&2
-  echo "Env overrides: INTERNAL_FETCH_SCHEDULE_EXPRESSION, INTERNAL_FETCH_SCHEDULE_TIMEZONE, INTERNAL_FETCH_SCHEDULE_STATE, INTERNAL_FETCH_SCHEDULE_NAME" >&2
+  echo "Env overrides: STATE_INTERNAL_FETCH_*, SUPREME_COURT_INTERNAL_FETCH_*, HIGH_COURT_INTERNAL_FETCH_*, INTERNAL_FETCH_SCHEDULER_ROLE_ARN" >&2
   exit 1
 fi
 
 stack_name="${1:-nyaaywatch-staging}"
 region="${AWS_REGION:-ap-south-1}"
-schedule_expression="${INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(0 8 * * ? *)}"
-schedule_timezone="${INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
-schedule_state="${INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
-schedule_name="${INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-weekday-internal-fetch}"
+state_schedule_expression="${STATE_INTERNAL_FETCH_SCHEDULE_EXPRESSION:-${INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(0 8 * * ? *)}}"
+state_schedule_timezone="${STATE_INTERNAL_FETCH_SCHEDULE_TIMEZONE:-${INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asia/Kolkata}}"
+state_schedule_state="${STATE_INTERNAL_FETCH_SCHEDULE_STATE:-${INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}}"
+state_schedule_name="${STATE_INTERNAL_FETCH_SCHEDULE_NAME:-${INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-weekday-internal-fetch}}"
+state_note_prefix="${STATE_INTERNAL_FETCH_NOTE_PREFIX:-${INTERNAL_FETCH_NOTE_PREFIX:-Scheduled daily lower-court internal raw fetch}}"
+supreme_court_schedule_expression="${SUPREME_COURT_INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(10 8 * * ? *)}"
+supreme_court_schedule_timezone="${SUPREME_COURT_INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
+supreme_court_schedule_state="${SUPREME_COURT_INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
+supreme_court_schedule_name="${SUPREME_COURT_INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-supreme-court-internal-fetch}"
+supreme_court_note_prefix="${SUPREME_COURT_INTERNAL_FETCH_NOTE_PREFIX:-Scheduled daily Supreme Court internal raw fetch}"
+high_court_schedule_expression="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(20 8 * * ? *)}"
+high_court_schedule_timezone="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
+high_court_schedule_state="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
+high_court_schedule_name="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-high-courts-internal-fetch}"
+high_court_note_prefix="${HIGH_COURT_INTERNAL_FETCH_NOTE_PREFIX:-Scheduled daily High Court internal raw fetch}"
 role_name="${INTERNAL_FETCH_SCHEDULER_ROLE_NAME:-${stack_name}-internal-fetch-scheduler}"
 role_policy_name="${INTERNAL_FETCH_SCHEDULER_POLICY_NAME:-${stack_name}-internal-fetch-scheduler}"
 role_arn_override="${INTERNAL_FETCH_SCHEDULER_ROLE_ARN:-}"
 manage_iam_mode="${INTERNAL_FETCH_MANAGE_IAM:-auto}"
 schedule_group_name="${INTERNAL_FETCH_SCHEDULE_GROUP_NAME:-default}"
-note_prefix="${INTERNAL_FETCH_NOTE_PREFIX:-Scheduled daily internal raw fetch}"
 
 tmpdir="$(mktemp -d)"
 cleanup() {
@@ -263,17 +273,29 @@ if [[ -z "$role_arn" ]]; then
   exit 1
 fi
 
-python3 - \
-  "$tmpdir/service.json" \
-  "$tmpdir/task-definition.json" \
-  "$tmpdir/create-schedule.json" \
-  "$schedule_name" \
-  "$schedule_group_name" \
-  "$schedule_expression" \
-  "$schedule_timezone" \
-  "$schedule_state" \
-  "$note_prefix" \
-  "$role_arn" <<'PY'
+reconcile_schedule() {
+  local schedule_name="$1"
+  local schedule_expression="$2"
+  local schedule_timezone="$3"
+  local schedule_state="$4"
+  local schedule_description="$5"
+  local entrypoint_path="$6"
+  local note_prefix="$7"
+  local request_path="$tmpdir/${schedule_name}.json"
+
+  python3 - \
+    "$tmpdir/service.json" \
+    "$tmpdir/task-definition.json" \
+    "$request_path" \
+    "$schedule_name" \
+    "$schedule_group_name" \
+    "$schedule_expression" \
+    "$schedule_timezone" \
+    "$schedule_state" \
+    "$note_prefix" \
+    "$role_arn" \
+    "$schedule_description" \
+    "$entrypoint_path" <<'PY'
 import json
 import sys
 
@@ -288,6 +310,8 @@ import sys
     schedule_state,
     note_prefix,
     role_arn,
+    schedule_description,
+    entrypoint_path,
 ) = sys.argv[1:]
 
 with open(service_path, "r", encoding="utf-8") as handle:
@@ -301,14 +325,14 @@ network = service["networkConfiguration"]["awsvpcConfiguration"]
 
 command = [
     "node",
-    "dist/src/dev/ecs-scheduled-fetch-entrypoint.js",
+    entrypoint_path,
     f"{note_prefix} (<aws.scheduler.scheduled-time>)",
 ]
 
 request = {
     "Name": schedule_name,
     "GroupName": schedule_group_name,
-    "Description": "Daily internal raw fetch across all implemented states. This schedule does not publish public snapshots.",
+    "Description": schedule_description,
     "FlexibleTimeWindow": {"Mode": "OFF"},
     "ScheduleExpression": schedule_expression,
     "ScheduleExpressionTimezone": schedule_timezone,
@@ -351,22 +375,50 @@ with open(target_path, "w", encoding="utf-8") as handle:
     json.dump(request, handle)
 PY
 
-if retry_scheduler_command update-schedule "$tmpdir/create-schedule.json" "$region"; then
-  action="updated"
-elif [[ "$scheduler_command_output" == *"ResourceNotFoundException"* ]]; then
-  if ! retry_scheduler_command create-schedule "$tmpdir/create-schedule.json" "$region"; then
+  if retry_scheduler_command update-schedule "$request_path" "$region"; then
+    action="updated"
+  elif [[ "$scheduler_command_output" == *"ResourceNotFoundException"* ]]; then
+    if ! retry_scheduler_command create-schedule "$request_path" "$region"; then
+      echo "$scheduler_command_output" >&2
+      exit 1
+    fi
+    action="created"
+  else
     echo "$scheduler_command_output" >&2
     exit 1
   fi
-  action="created"
-else
-  echo "$scheduler_command_output" >&2
-  exit 1
-fi
 
-aws scheduler get-schedule \
-  --region "$region" \
-  --group-name "$schedule_group_name" \
-  --name "$schedule_name" \
-  --query "{action:'$action',name:Name,state:State,scheduleExpression:ScheduleExpression,scheduleExpressionTimezone:ScheduleExpressionTimezone,targetArn:Target.Arn,targetTaskDefinition:Target.EcsParameters.TaskDefinitionArn}" \
-  --output json
+  aws scheduler get-schedule \
+    --region "$region" \
+    --group-name "$schedule_group_name" \
+    --name "$schedule_name" \
+    --query "{action:'$action',name:Name,state:State,scheduleExpression:ScheduleExpression,scheduleExpressionTimezone:ScheduleExpressionTimezone,description:Description,targetArn:Target.Arn,targetTaskDefinition:Target.EcsParameters.TaskDefinitionArn}" \
+    --output json
+}
+
+reconcile_schedule \
+  "$state_schedule_name" \
+  "$state_schedule_expression" \
+  "$state_schedule_timezone" \
+  "$state_schedule_state" \
+  "Daily internal raw fetch across all implemented lower-court state profiles. This schedule does not publish public snapshots." \
+  "dist/src/dev/ecs-scheduled-fetch-entrypoint.js" \
+  "$state_note_prefix"
+
+reconcile_schedule \
+  "$supreme_court_schedule_name" \
+  "$supreme_court_schedule_expression" \
+  "$supreme_court_schedule_timezone" \
+  "$supreme_court_schedule_state" \
+  "Daily internal raw fetch for the Supreme Court of India. This schedule does not publish public snapshots." \
+  "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js" \
+  "$supreme_court_note_prefix"
+
+reconcile_schedule \
+  "$high_court_schedule_name" \
+  "$high_court_schedule_expression" \
+  "$high_court_schedule_timezone" \
+  "$high_court_schedule_state" \
+  "Daily internal raw fetch across reviewed High Court profiles. This schedule does not publish public snapshots." \
+  "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js" \
+  "$high_court_note_prefix"

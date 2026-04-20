@@ -1,7 +1,7 @@
 import { listStateProfiles, type NjdgStateProfile } from "../geographies.js";
 import { runOperatorInvocation } from "./operator-ops.js";
 
-const DEFAULT_SCHEDULED_FETCH_NOTE_PREFIX = "Scheduled daily internal raw fetch";
+const DEFAULT_SCHEDULED_FETCH_NOTE_PREFIX = "Scheduled daily lower-court internal raw fetch";
 
 export interface ScheduledFetchStateResult {
   stateCode: string;

@@ -76,7 +76,7 @@ If blocked, record the exact blocker and required follow-up:
 
 - Blocker: `None`
 - Owner: `N/A`
-- Next action: `Keep the daily 8:00 AM Asia/Kolkata internal fetch schedule healthy across all implemented states, continue the existing operator-reviewed public publish cadence in docs/RELEASE_POLICY.md, and repeat the log/alarm review before each public publish.`
+- Next action: `Keep the daily lower-court (8:00 AM Asia/Kolkata), Supreme Court (8:10 AM Asia/Kolkata), and reviewed-High-Court (8:20 AM Asia/Kolkata) internal fetch schedules healthy, continue the existing operator-reviewed public publish cadence in docs/RELEASE_POLICY.md, and repeat the log/alarm review before each public publish.`
 
 ## Release Evidence
 

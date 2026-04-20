@@ -160,11 +160,12 @@ This keeps the deploy path inside the existing AWS stack instead of re-running C
 
 The live stack can keep an internal raw-fetch cadence without auto-publishing public data.
 
-Default schedule:
+Default schedules:
 
-- scope: all implemented states
-- cadence: every day at `8:00 AM Asia/Kolkata`
-- behavior: launches a one-off ECS task that runs sequential `fetch` operations for every implemented state and leaves public publication unchanged
+- lower-court states: every day at `8:00 AM Asia/Kolkata` across all implemented states
+- Supreme Court: every day at `8:10 AM Asia/Kolkata`
+- reviewed High Courts: every day at `8:20 AM Asia/Kolkata` across High Court profiles whose `sourceReviewStatus` is `reviewed`
+- behavior: each schedule launches its own one-off ECS task, keeps failures isolated by tier, and leaves public publication unchanged
 
 Manual reconcile command:
 
@@ -176,8 +177,8 @@ What it does:
 
 - discovers the current live ECS service, task definition, and awsvpc network settings
 - creates or updates the scheduler IAM role
-- creates or updates the EventBridge Scheduler schedule
-- keeps the schedule pointed at the current ECS task definition after each deploy
+- creates or updates the EventBridge Scheduler schedules for lower courts, Supreme Court, and reviewed High Courts
+- keeps all schedules pointed at the current ECS task definition after each deploy
 
 Bootstrap note:
 
