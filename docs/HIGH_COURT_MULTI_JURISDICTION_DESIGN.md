@@ -212,3 +212,5 @@ Until this design is implemented, the public High Court beta should remain fixed
 - Madhya Pradesh
 - Uttar Pradesh via Allahabad High Court
 - Rajasthan
+
+The concrete first execution slice for this design now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
