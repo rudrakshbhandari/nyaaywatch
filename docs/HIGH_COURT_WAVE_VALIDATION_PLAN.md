@@ -52,16 +52,18 @@ The sixth validation pair was:
 
 That pair has now also cleared the internal proof bar on the live operator lane.
 
-Validate this pair next:
+The seventh validation pair was:
 
 - Meghalaya
 - Manipur
+
+That pair has now also cleared the internal proof bar on the live operator lane.
 
 This is a product and operations recommendation from current repo state, not an official source fact.
 
 ## Why This Pair
 
-These two courts are the best next internal validation pair because they are:
+These two courts were the correct final internal validation pair because they are:
 
 - already inside the new single-jurisdiction High Court registry
 - already aligned with supported lower-court state profiles
@@ -73,12 +75,12 @@ These two courts are the best next internal validation pair because they are:
 
 The point of this pair is not representativeness theater.
 
-The point is to widen evidence for the next deliberate public-wave decision on:
+The point of this pair was to close the last remaining single-jurisdiction evidence gap on:
 
 - a north-east hill-state court that keeps the final queued proof step inside the current one-state-one-court contract: Meghalaya
 - another north-east court that closes out the remaining single-jurisdiction queue without inventing new schema logic: Manipur
 
-If both hold up, the repo will have closed the entire remaining single-jurisdiction High Court queue and can make the next public-wave or multi-jurisdiction decision from full internal evidence instead of partial coverage.
+Both held up, so the repo has now closed the entire remaining single-jurisdiction High Court queue and can make the next public-wave or multi-jurisdiction decision from full internal evidence instead of partial coverage.
 
 ## Validation Command
 
@@ -92,7 +94,7 @@ Requires:
 
 - `OPERATOR_API_TOKEN` in the environment
 
-For the newly recommended pair, use:
+The final queued-pair validation command was:
 
 ```bash
 npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=meghalaya,manipur
@@ -307,6 +309,39 @@ Current conclusion from live evidence:
 - the next remaining question is no longer whether the live operator path works for very small queued single-jurisdiction courts
 - the next remaining question is whether the final remaining queued pair clears cleanly enough to close out the single-jurisdiction queue before any additional public-beta decision
 
+Follow-up live check on **April 20, 2026** for the then-recommended Meghalaya and Manipur pair:
+
+- `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=meghalaya,manipur`
+- result: `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, `rollbackReadyCourts=2`
+
+Live operator proof-cycle evidence now recorded:
+
+- Meghalaya:
+  - active publication `publication_f3f58f7b-a7d9-4703-957c-1db2f3134fa4`
+  - active snapshot `snapshot_1815db27-d18e-46cf-ad3d-9680c12d2da3`
+  - first fetch run `run_65902f29-1875-41b7-aa95-0f1a728f31f9`
+  - replay run `run_fbc73342-720c-4443-9547-489663897e6b`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+- Manipur:
+  - active publication `publication_e32ba995-cb8b-4121-8a0c-a4516d6b6431`
+  - active snapshot `snapshot_866397e4-9e67-4b59-abd0-3aeacd121f71`
+  - first fetch run `run_0d5b0fcd-57c3-4e3c-858d-c7bbce687dc6`
+  - replay run `run_3ebeb879-dab1-4dfd-854b-2e29db35615e`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+
+Current conclusion from live evidence:
+
+- Meghalaya and Manipur have now both cleared the internal High Court proof bar
+- every queued single-jurisdiction High Court in the current registry now has live publish, replay, and rollback evidence
+- the next remaining question is not whether more internal queued-court proof is needed
+- the next remaining question is whether any additional public High Court wave or any multi-jurisdiction expansion is methodologically defensible
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:
@@ -331,12 +366,7 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, and Chhattisgarh plus Jharkhand, Karnataka plus Odisha, Bihar plus Uttarakhand, and Sikkim plus Tripura have now cleared the internal proof bar, the remaining queued single-jurisdiction High Courts are:
-
-- Meghalaya
-- Manipur
-
-If Meghalaya and Manipur clear the same gates, the remaining single-jurisdiction queue will be exhausted.
+Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, and Chhattisgarh plus Jharkhand, Karnataka plus Odisha, Bihar plus Uttarakhand, Sikkim plus Tripura, and Meghalaya plus Manipur have now cleared the internal proof bar, the queued single-jurisdiction High Court list is exhausted.
 
 Only after that should the repo revisit:
 

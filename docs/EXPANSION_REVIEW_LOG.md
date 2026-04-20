@@ -1567,3 +1567,28 @@ Bihar and Uttarakhand are now internal-ready. The next deliberate internal High 
 ### Recommendation
 
 Sikkim and Tripura are now internal-ready. The next deliberate internal High Court pair should move to Meghalaya and Manipur rather than widening public exposure immediately.
+
+## Meghalaya And Manipur High Court Internal Proof Pair
+
+- review date: 2026-04-20
+- reviewer: Codex
+- decision: `internal proof bar satisfied`
+- methodology version: `2026.04-high-court-draft`
+- validation command: `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=meghalaya,manipur`
+
+### Live Proof Evidence
+
+- Meghalaya fetch `run_65902f29-1875-41b7-aa95-0f1a728f31f9`, publish `publication_63f033cc-a462-46c3-9f92-4e7161d086d9`, replay `run_fbc73342-720c-4443-9547-489663897e6b`, replay publication `publication_5c2ec5f6-556f-4c89-b97e-b2fa1bad237e`, and rollback `publication_f3f58f7b-a7d9-4703-957c-1db2f3134fa4` all succeeded
+- Manipur fetch `run_0d5b0fcd-57c3-4e3c-858d-c7bbce687dc6`, publish `publication_388b8c9a-ba41-4141-9664-ec65cd33a0cb`, replay `run_3ebeb879-dab1-4dfd-854b-2e29db35615e`, replay publication `publication_7ca744b8-1db7-4f63-baec-5a0c147316ff`, and rollback `publication_e32ba995-cb8b-4121-8a0c-a4516d6b6431` all succeeded
+- the batch verifier returned `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, and `rollbackReadyCourts=2`
+- both courts remained internal-only during this proof slice; no public High Court routes were exposed for either court
+
+### What Cleared
+
+- the live operator path now has fresh same-day proof that it still works across the final remaining queued single-jurisdiction High Courts
+- both courts retained the explicit `captured_at` reference-date posture, so the current High Court date contract still holds
+- the full queued single-jurisdiction High Court list now has publish, replay, and rollback evidence
+
+### Recommendation
+
+Meghalaya and Manipur are now internal-ready, and the queued single-jurisdiction High Court list is exhausted. Any next High Court expansion decision should now be explicitly about a public-beta widening call or a multi-jurisdiction schema change, not about missing internal proof on the remaining queued courts.
