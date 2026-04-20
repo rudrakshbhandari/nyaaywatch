@@ -20,7 +20,7 @@ The original seven-court public High Court beta is no longer the terminal public
 - Uttar Pradesh via Allahabad High Court
 - Rajasthan
 
-Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, and the court-first multi-jurisdiction model has already cleared the Punjab and Haryana, Delhi, Kerala, and Madras public beta launches. The next gating problem is no longer whether Wave 1 should exist; it is only whether the Wave 1 stable window stays clean enough to move to Wave 2 deliberately.
+Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, and the court-first multi-jurisdiction model has already cleared the Punjab and Haryana, Delhi, Kerala, and Madras public beta launches. The next gating problem is no longer whether Wave 1 should exist. The only remaining near-term gate is to keep the Wave 1 stable window clean enough to justify the Wave 2 internal proof batch and public rollout deliberately.
 
 The initial design answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`.
 The first execution-plan answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
@@ -90,6 +90,14 @@ Calcutta High Court, Bombay High Court, and Gauhati High Court are now the corre
 The point of Wave 2 is not to reopen the model debate.
 
 The point of Wave 2 is to prove that the repo can keep expanding the public High Court beta in larger deliberate batches once the narrower Wave 1 courts stay stable.
+
+The immediate repo slice before any public flip is now concrete:
+
+- Bombay High Court configured as reviewed internal profile via HC NJDG selector `27~1`
+- Calcutta High Court configured as reviewed internal profile via HC NJDG selector `19~16`
+- Gauhati High Court configured as reviewed internal profile via HC NJDG selector `18~6`
+- live `fetch -> publish -> replay -> rollback` proof for all three courts
+- only then the three-court public route flip plus purge and rollout-evidence sync
 
 ## Wave 1 Launch Evidence
 
@@ -424,4 +432,6 @@ The harder questions that originally blocked a public multi-jurisdiction court n
 - multi-jurisdiction High Courts fit the product and schema through a court-first identity plus explicit `coveredGeographies[]`
 - the public methodology language now remains honest once court-to-state mapping is no longer one-to-one
 - Punjab and Haryana is the first public multi-jurisdiction High Court beta page, and the remaining deferred court-first High Courts are now approved for sequential public-beta waves larger than two courts at a time through `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
-- Delhi High Court, High Court of Kerala, and Madras High Court are now configured as reviewed internal Wave 1 courts; the remaining live gate for that batch is `fetch -> publish -> replay -> rollback` proof plus the final public route rollout
+- Delhi High Court, High Court of Kerala, and Madras High Court are now live public Wave 1 courts
+- Bombay High Court, Calcutta High Court, and Gauhati High Court are now the reviewed internal Wave 2 courts
+- the immediate live gate is no longer source review or model design; it is the three-court `fetch -> publish -> replay -> rollback` proof batch for Wave 2

@@ -30,10 +30,13 @@ export interface HighCourtProfile {
 export const SUPPORTED_HIGH_COURT_CODES = [
   "HPHC",
   "APHC",
+  "BOHC",
+  "CLHC",
   "TSHC",
   "CGHC",
   "DLHC",
   "GJHC",
+  "GHHC",
   "JHHC",
   "KAHC",
   "KLHC",
@@ -87,6 +90,37 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       officialSite: "https://aphc.gov.in/",
     },
   }),
+  BOHC: buildHighCourtProfile({
+    courtCode: "BOHC",
+    courtSlug: "bombay",
+    courtName: "Bombay High Court",
+    hcNjdgStateValue: "27~1",
+    coveredGeographies: [
+      buildStateCourtGeography("MH"),
+      buildStateCourtGeography("GA"),
+      buildUnionTerritoryCourtGeography("DNHDD", "Dadra and Nagar Haveli and Daman and Diu"),
+    ],
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://bombayhighcourt.nic.in/",
+    },
+  }),
+  CLHC: buildHighCourtProfile({
+    courtCode: "CLHC",
+    courtSlug: "calcutta",
+    courtName: "Calcutta High Court",
+    hcNjdgStateValue: "19~16",
+    coveredGeographies: [
+      buildStateCourtGeography("WB"),
+      buildUnionTerritoryCourtGeography("AN", "Andaman and Nicobar Islands"),
+    ],
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://calcuttahighcourt.gov.in/",
+    },
+  }),
   TSHC: buildHighCourtProfile({
     courtCode: "TSHC",
     courtSlug: "telangana",
@@ -131,6 +165,23 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
       officialSite: "https://gujarathighcourt.nic.in/",
+    },
+  }),
+  GHHC: buildHighCourtProfile({
+    courtCode: "GHHC",
+    courtSlug: "gauhati",
+    courtName: "Gauhati High Court",
+    hcNjdgStateValue: "18~6",
+    coveredGeographies: [
+      buildStateCourtGeography("AS"),
+      buildStateCourtGeography("NL"),
+      buildStateCourtGeography("MZ"),
+      buildStateCourtGeography("AR"),
+    ],
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://ghconline.gov.in/",
     },
   }),
   JHHC: buildHighCourtProfile({
