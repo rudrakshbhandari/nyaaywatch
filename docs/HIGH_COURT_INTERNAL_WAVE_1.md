@@ -83,13 +83,13 @@ After this slice, the repo still does **not** claim:
 
 ## Next Decision After Setup
 
-Use this wave to choose the next one or two queued courts after the current seven-court public beta for real operator-cycle validation.
+The queued single-jurisdiction validation list is now exhausted.
 
 The next serious gate is still operational evidence:
 
 - repeated internal fetch and publish cycles
 - replay and rollback proof
-- source-review writeups for the next court(s)
+- source-review writeups for any newly modeled court shape
 - a methodologically honest reason to expose any public High Court beta beyond the current seven-court set
 
 The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
@@ -100,5 +100,5 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - Sikkim and Tripura have now also cleared the internal proof bar
 - Meghalaya and Manipur have now also cleared the internal proof bar
 - the queued single-jurisdiction High Court validation list is now exhausted
-- keep using `npm run high-court:wave-readiness` for each deliberate pair
-- treat each additional pair as an internal proof step, not automatic public-beta approval
+- keep the current seven-court public beta fixed until multi-jurisdiction High Courts are intentionally designed
+- treat any future court addition as a product and methodology decision, not automatic public-beta approval

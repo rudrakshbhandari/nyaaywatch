@@ -8,7 +8,19 @@ This document answers one narrow question:
 
 ## Recommendation
 
-Do **not** try to validate the whole internal High Court wave at once.
+Do **not** expand the public High Court beta further right now.
+
+Keep the current seven-court public High Court beta fixed:
+
+- Himachal
+- Andhra Pradesh
+- Telangana
+- Gujarat
+- Madhya Pradesh
+- Uttar Pradesh via Allahabad High Court
+- Rajasthan
+
+Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, so the next gating problem is no longer "which court should be proven next." The next gating problem is whether the multi-jurisdiction court model, public methodology, and product framing are good enough to justify another public wave.
 
 The first validation pair was:
 
@@ -84,10 +96,10 @@ Both held up, so the repo has now closed the entire remaining single-jurisdictio
 
 ## Validation Command
 
-Use the batch readiness sweep:
+Use the batch readiness sweep for any future internal proof pair:
 
 ```bash
-npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=karnataka,odisha
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=<court-a>,<court-b>
 ```
 
 Requires:
@@ -179,7 +191,7 @@ Current repo posture after later High Court launches:
 - Andhra Pradesh and Telangana are also now live inside the public High Court beta set
 - the seven-court public High Court beta is now Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan
 - the next decision is no longer "which already-proven court should go live next"
-- the next decision is which still-queued single-jurisdiction court pair should become the next deliberate internal proof step after the current seven-court beta
+- the next decision is whether the repo should hold this seven-court beta fixed until a multi-jurisdiction High Court design is ready
 
 Follow-up live check on **April 20, 2026** for the then-recommended Chhattisgarh and Jharkhand pair:
 
@@ -341,6 +353,7 @@ Current conclusion from live evidence:
 - every queued single-jurisdiction High Court in the current registry now has live publish, replay, and rollback evidence
 - the next remaining question is not whether more internal queued-court proof is needed
 - the next remaining question is whether any additional public High Court wave or any multi-jurisdiction expansion is methodologically defensible
+- the current decision is to keep the seven-court public High Court beta fixed until the multi-jurisdiction court problem is intentionally designed
 
 ## What Counts As Success
 
@@ -368,7 +381,8 @@ Do not:
 
 Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, and Chhattisgarh plus Jharkhand, Karnataka plus Odisha, Bihar plus Uttarakhand, Sikkim plus Tripura, and Meghalaya plus Manipur have now cleared the internal proof bar, the queued single-jurisdiction High Court list is exhausted.
 
-Only after that should the repo revisit:
+The repo should now hold the current seven-court public beta fixed until it can answer three harder questions intentionally:
 
-- whether a broader queued-court batch should be run automatically
-- whether any second broader public High Court wave is methodologically defensible
+- how multi-jurisdiction High Courts fit the product and schema
+- what public methodology language remains honest once court-to-state mapping is no longer one-to-one
+- whether any second public High Court wave improves the product enough to justify the broader trust surface
