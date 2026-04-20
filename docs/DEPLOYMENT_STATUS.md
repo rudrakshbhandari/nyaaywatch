@@ -553,6 +553,13 @@ Latest confirmed operator validation:
   - the live `/operator/high-courts/punjab-and-haryana` profile returned court code `PHHC` with explicit covered geographies for Punjab, Haryana, and Chandigarh while remaining outside the public High Court beta
   - fetch `run_642f9d1d-5246-42a5-b3e0-1b5bb78def50`, publish `publication_83b3d316-cdaf-4729-bcea-a875599af83f`, replay `run_84726b0e-7732-4d4b-8a6b-da3c10d17ae4`, replay publication `publication_adade273-f47c-4b4e-8501-75ea35e06814`, and rollback `publication_797e59da-9032-42dc-a891-f68f3d83fc0b` all succeeded on `https://nyaaywatch.in`
   - `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana` returned `operatorAuthProtected=true`, `runCount=2`, `publicationCount=3`, `publishCount=2`, `rollbackCount=1`, `replayedRunCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
+- Punjab and Haryana High Court public beta exposure completed on 2026-04-20 after PR `#137` merged:
+  - GitHub deploy run `24658794657` completed successfully, with `verify` green, `deploy` green, and `preview` skipped on `main`
+  - the live ECS service rolled to task definition `:130` and reached steady state at `2026-04-20T02:30:04-07:00`
+  - all three internal scheduler targets now point to task definition `:130`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, and `nyaaywatch-staging-high-courts-internal-fetch`
+  - the live public Punjab and Haryana route family now returns `200`: `/high-courts/punjab-and-haryana`, `/high-courts/punjab-and-haryana/data`, `/high-courts/punjab-and-haryana/methodology`, `/high-courts/punjab-and-haryana/api`, and `/v1/high-courts/punjab-and-haryana/stats`
+  - `/high-courts` and `/` both now expose High Court of Punjab and Haryana in the public High Court switcher and card set
+  - this is the first live public multi-jurisdiction High Court beta page, and its public copy names coverage across Punjab, Haryana, and Chandigarh instead of pretending one High Court equals one state
 - Internal fetch scheduler deploy-role scope repair completed on 2026-04-20:
   - the first attempt of GitHub deploy run `24653526489` failed in `Reconcile daily internal fetch schedule` because `nyaaywatch-github-deploy-role` still allowed scheduler operations only on `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
   - the live IAM policy was widened to include `nyaaywatch-staging-supreme-court-internal-fetch` and `nyaaywatch-staging-high-courts-internal-fetch` alongside the existing lower-court schedule ARN
