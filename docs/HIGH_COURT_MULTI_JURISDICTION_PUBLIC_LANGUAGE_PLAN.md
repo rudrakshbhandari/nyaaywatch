@@ -209,11 +209,17 @@ Keep this phase reviewable through narrow PRs.
 - update homepage High Court section wording
 - ensure the homepage does not imply one-state equivalence
 
-### PR 4. Multi-Jurisdiction Public-Beta Decision
+### PR 4. First Multi-Jurisdiction Public-Beta Decision
 
 - only after the copy pass lands
 - decide whether Punjab and Haryana High Court should remain internal-only or become the first public multi-jurisdiction beta page
 - current result: Punjab and Haryana is now the first public multi-jurisdiction High Court beta page
+
+### PR 5. Remaining Public-Beta Waves
+
+- after Punjab and Haryana, keep the same court-first public copy contract for the remaining deferred courts
+- do not reopen the semantics debate for every remaining court
+- follow `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md` for the approved two-wave rollout shape of the remaining six deferred courts
 
 ## Acceptance Criteria
 
@@ -228,4 +234,4 @@ This language phase is done only when:
 
 This public-language phase is now landed in the shipped High Court overview, methodology, data, API, index, and homepage surfaces, so the repo has an honest court-first copy contract.
 
-Punjab and Haryana can now be exposed publicly without inventing fake one-state semantics, and the first public multi-jurisdiction High Court beta decision is now affirmative.
+Punjab and Haryana has already used that contract successfully as the first public multi-jurisdiction High Court beta page, and the remaining deferred courts should now follow that same contract in approved batches larger than two.

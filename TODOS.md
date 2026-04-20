@@ -39,8 +39,10 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 - [x] Turned the High Court public-methodology and route-language problem into a concrete plan in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`, with explicit copy rules, route-surface decisions, and a reviewable PR sequence before any Punjab and Haryana public-beta decision.
 - [x] Implemented the public High Court language pass from `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md` across the overview, methodology, data, API, index, and homepage High Court surfaces; the public High Court layer now uses court-first coverage labels and explicit `coveredGeographies[]` framing on the shipped surfaces.
 - [x] Promoted High Court of Punjab and Haryana into the public High Court beta as the first public multi-jurisdiction High Court page, expanding the public beta set from seven courts to eight after the court-first schema, proof, and language gates were all satisfied.
-- [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
-- [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
+- [x] Approved the remaining deferred court-first High Courts for public beta in larger sequential waves instead of pairs or one-court launches, and wrote the concrete two-wave rollout plan in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`.
+- [ ] Execute public High Court multi-jurisdiction Wave 1 as one deliberate batch of three courts: Delhi High Court, High Court of Kerala, and Madras High Court.
+- [ ] After Wave 1 has a clean stable window plus release evidence, execute public High Court multi-jurisdiction Wave 2 as one deliberate batch of three courts: Calcutta High Court, Bombay High Court, and Gauhati High Court.
+- [ ] Keep the remaining High Court expansion discipline batch-based: do not fall back to pairs or isolated one-court public launches unless a concrete operational blocker forces the exception and the docs record why.
 
 ## Recently Completed
 
