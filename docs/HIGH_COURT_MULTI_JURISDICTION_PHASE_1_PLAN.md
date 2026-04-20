@@ -267,6 +267,6 @@ Phase 1 has now succeeded, and the next move is not automatic public rollout.
 
 The next move is:
 
-1. update the public-methodology and UX language for explicit jurisdiction coverage
+1. follow `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md` to update public methodology, route copy, and homepage/index framing for explicit jurisdiction coverage
 2. decide whether any multi-jurisdiction High Court deserves public beta exposure
 3. only then consider a separate public-beta decision for Punjab and Haryana or another deferred multi-jurisdiction court
