@@ -77,17 +77,17 @@ export function renderNationalHome(input: {
         <p class="national-hero__eyebrow">NATIONAL FRONT DOOR</p>
         <h1 class="national-hero__hed">${
           model.supremeCourt.snapshot
-            ? "Start at the Supreme Court. Then move down the system."
-            : "Open the judiciary from the top, then follow it downward."
+            ? "The courts, in the latest published snapshots."
+            : "Published court snapshots, in one place."
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch now opens with the Supreme Court, then stages High Courts and district/subordinate courts below it. The point is not to flatten the tiers into one fake ranking system. It is to make each tier legible, inspectable, and accountable from one front door."
-            : "NyaayWatch is structured as one judicial observability product across tiers. When a tier snapshot is public, it appears here as a dated, accountable surface rather than a live or predictive feed."
+            ? "NyaayWatch brings the Supreme Court, High Courts, and lower courts into one accountable public view, with dated snapshots, clear methodology, and official source links."
+            : "When a court tier has a public snapshot, NyaayWatch shows it here as a dated, accountable public surface rather than a live or predictive feed."
         }</p>
         <div class="national-hero__cta">
           <a class="btn btn--primary" href="${model.supremeCourt.snapshot ? supremeRoutes.home : input.lowerCourtContext.routes.home}">${
-            model.supremeCourt.snapshot ? "Open Supreme Court beta" : "Open lower-court layer"
+            model.supremeCourt.snapshot ? "View Supreme Court" : "View lower courts"
           }</a>
           <a class="btn btn--ghost" href="/high-courts">Browse High Courts</a>
         </div>
@@ -138,9 +138,9 @@ export function renderNationalHome(input: {
 
     <section class="national-section">
       ${renderSectionHead({
-        headline: "High Courts come next, without pretending they are one national leaderboard.",
+        headline: "High Courts, in the current public beta.",
         lede:
-          "The homepage uses the already-live High Court beta pages as real entry points. It does not invent a single cross-court score or pretend the tiers are directly comparable just because they sit in one product shell.",
+          "These pages are live and linked here directly. Each court keeps its own source semantics and methodology, and NyaayWatch does not collapse them into one national High Court score.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
       <p class="national-section__linkline"><a href="/high-courts">Open the High Courts index</a></p>
@@ -148,9 +148,9 @@ export function renderNationalHome(input: {
 
     <section class="national-section">
       ${renderSectionHead({
-        headline: "Most public case volume still sits below the apex court.",
+        headline: "Most public case volume sits in the lower courts.",
         lede:
-          "District and subordinate courts remain the main proof surface for scale, delay, and district-level pressure. Himachal stays the default lower-court lens, but it no longer has to carry the whole homepage alone.",
+          "District and subordinate courts remain the main public proof surface for scale, delay, and district-level pressure. Himachal stays the default lower-court lens, but the homepage no longer has to be only Himachal.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
@@ -185,9 +185,9 @@ export function renderNationalHome(input: {
 
     <section class="national-section">
       ${renderSectionHead({
-        headline: "State lower-court pages stay visible, but later in the scroll.",
+        headline: "Lower-court state pages.",
         lede:
-          "This is the calmer directory layer for the public state pages. It replaces the current top-of-page chip wall so the homepage can open with the Supreme Court story instead of a geography switcher.",
+          "This directory keeps the public state pages easy to reach without turning the first screen into a geography switcher.",
       })}
       <div class="state-directory">
         <p class="state-directory__summary">${model.lowerCourts.publicStateCount} public lower-court state pages are currently live.</p>
