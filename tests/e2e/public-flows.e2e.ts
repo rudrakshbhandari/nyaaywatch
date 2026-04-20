@@ -3,9 +3,9 @@ import { expect, test } from "@playwright/test";
 test("citizen flow loads the homepage, district workspace, and district permalink", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Start at the Supreme Court. Then move down the system." })).toBeVisible();
-  await expect(page.getByText("Same-day source window")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Open Supreme Court beta/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The courts, in the latest published snapshots." })).toBeVisible();
+  await expect(page.locator(".national-hero__accountability")).toContainText(/Captured|Source snapshot/);
+  await expect(page.getByRole("link", { name: /View Supreme Court/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Open Himachal lower-court overview/i })).toBeVisible();
 
   await page.getByRole("link", { name: /Inspect districts/i }).click();
