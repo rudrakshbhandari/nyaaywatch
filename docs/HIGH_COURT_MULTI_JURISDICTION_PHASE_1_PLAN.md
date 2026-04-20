@@ -226,7 +226,7 @@ Status:
 - completed on branch `high-court-service-wiring-punjab-haryana`
 - High Court ownership checks and readiness/reporting surfaces now validate canonical `scope_type=high_court` plus `scope_code=<courtCode>` instead of implicitly trusting the compatibility `state_code`
 - the internal-only Punjab and Haryana High Court profile is now configured as `PHHC` with explicit Punjab, Haryana, and Chandigarh coverage
-- the current seven-court public beta remains unchanged, and `/high-courts/punjab-and-haryana` still stays outside the public route family
+- the original seven-court public beta remained unchanged through phase 1 implementation, and `/high-courts/punjab-and-haryana` stayed outside the public route family until the separate public-beta decision
 
 ### PR 4. Live Internal Proof
 
@@ -258,12 +258,12 @@ Phase 1 is done only when:
 - the canonical identity for High Court and Supreme Court records is `scope_type` plus `scope_code`
 - High Court payload metadata can express multiple covered geographies honestly
 - Punjab and Haryana High Court can exist internally in the registry without fake one-state metadata
-- the current seven-court public High Court beta remains stable
+- the public High Court beta can add one multi-jurisdiction court without falling back to fake one-state metadata
 - the repo is ready for a separate internal proof pass, not forced into public launch
 
 ## After Phase 1
 
-Phase 1 has now succeeded, and the next move is not automatic public rollout.
+Phase 1 has now succeeded, and the public-beta decision can stand on product judgment rather than schema or proof gaps.
 
 The next move is:
 

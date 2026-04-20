@@ -246,7 +246,7 @@ describe("HTTP routes", () => {
     const punjabHaryanaListing = listedHighCourts.body.highCourts.find(
       (entry: { court: { courtSlug: string } }) => entry.court.courtSlug === "punjab-and-haryana",
     );
-    expect(punjabHaryanaListing?.court.publicBeta).toBe(false);
+    expect(punjabHaryanaListing?.court.publicBeta).toBe(true);
     expect(punjabHaryanaListing?.court.coveredGeographies).toHaveLength(3);
 
     const fetched = await request(app)
@@ -314,8 +314,8 @@ describe("HTTP routes", () => {
     expect(rollback.body.action).toBe("rollback");
     expect(rollback.body.scopeCode).toBe("HPHC");
 
-    const internalOnlyPublicRoute = await request(app).get("/high-courts/punjab-and-haryana");
-    expect(internalOnlyPublicRoute.status).toBe(404);
+    const publicRouteWithoutPublication = await request(app).get("/high-courts/punjab-and-haryana");
+    expect(publicRouteWithoutPublication.status).toBe(503);
   });
 
   it("exposes the internal Supreme Court read surface and operator lifecycle on the dedicated namespace", async () => {
@@ -400,6 +400,7 @@ describe("HTTP routes", () => {
     await seedTestHighCourtSnapshot(context.highCourtServices.TSHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GJHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MPHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.PHHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.RJHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.UPHC!);
 
@@ -413,6 +414,7 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("High Court for State of Telangana");
     expect(index.text).toContain("High Court of Gujarat");
     expect(index.text).toContain("High Court of Madhya Pradesh");
+    expect(index.text).toContain("High Court of Punjab and Haryana");
     expect(index.text).toContain("High Court of Rajasthan");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
@@ -457,8 +459,17 @@ describe("HTTP routes", () => {
     expect(uttarPradeshOverview.status).toBe(200);
     expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
     expect(uttarPradeshOverview.text).toContain(
-      "This page tracks Allahabad High Court across Uttar Pradesh. 6 other public High Court pages are linked in the switcher.",
+      "This page tracks Allahabad High Court across Uttar Pradesh. 7 other public High Court pages are linked in the switcher.",
     );
+
+    const punjabHaryanaOverview = await request(app).get("/high-courts/punjab-and-haryana");
+    expect(punjabHaryanaOverview.status).toBe(200);
+    expect(punjabHaryanaOverview.text).toContain("High Court of Punjab and Haryana");
+    expect(punjabHaryanaOverview.text).toContain("Punjab, Haryana, and Chandigarh");
+
+    const punjabHaryanaStats = await request(app).get("/v1/high-courts/punjab-and-haryana/stats");
+    expect(punjabHaryanaStats.status).toBe(200);
+    expect(punjabHaryanaStats.body.snapshot.courtCode).toBe("PHHC");
 
     const andhraPradeshOverview = await request(app).get("/high-courts/andhra-pradesh");
     expect(andhraPradeshOverview.status).toBe(200);
