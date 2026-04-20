@@ -153,7 +153,7 @@ describe("high court profiles", () => {
           geographyType: "union_territory",
         },
       ],
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -180,7 +180,7 @@ describe("high court profiles", () => {
           geographyType: "union_territory",
         },
       ],
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -207,7 +207,7 @@ describe("high court profiles", () => {
           geographyType: "union_territory",
         },
       ],
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -236,7 +236,10 @@ describe("high court profiles", () => {
       "himachal",
       "andhra-pradesh",
       "telangana",
+      "delhi",
       "gujarat",
+      "kerala",
+      "madras",
       "madhya-pradesh",
       "punjab-and-haryana",
       "rajasthan",

@@ -29,7 +29,7 @@ What is shipped now:
 - a national homepage at `/` that stages Supreme Court, High Courts, and district/subordinate courts in one scroll
 - explicit Himachal lower-court overview at `/states/himachal`, plus lower-court district, data, methodology, and API routes
 - narrow public Supreme Court beta routes under `/supreme-court`
-- narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Gujarat, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
@@ -171,10 +171,22 @@ Public routes:
 - `/high-courts/telangana/data`
 - `/high-courts/telangana/methodology`
 - `/high-courts/telangana/api`
+- `/high-courts/delhi`
+- `/high-courts/delhi/data`
+- `/high-courts/delhi/methodology`
+- `/high-courts/delhi/api`
 - `/high-courts/gujarat`
 - `/high-courts/gujarat/data`
 - `/high-courts/gujarat/methodology`
 - `/high-courts/gujarat/api`
+- `/high-courts/kerala`
+- `/high-courts/kerala/data`
+- `/high-courts/kerala/methodology`
+- `/high-courts/kerala/api`
+- `/high-courts/madras`
+- `/high-courts/madras/data`
+- `/high-courts/madras/methodology`
+- `/high-courts/madras/api`
 - `/high-courts/madhya-pradesh`
 - `/high-courts/madhya-pradesh/data`
 - `/high-courts/madhya-pradesh/methodology`
@@ -207,7 +219,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - Supreme Court now has a narrow public beta route family under `/supreme-court`
-- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Gujarat, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
@@ -223,8 +235,14 @@ Public API:
 - `GET /v1/high-courts/andhra-pradesh/trends`
 - `GET /v1/high-courts/telangana/stats`
 - `GET /v1/high-courts/telangana/trends`
+- `GET /v1/high-courts/delhi/stats`
+- `GET /v1/high-courts/delhi/trends`
 - `GET /v1/high-courts/gujarat/stats`
 - `GET /v1/high-courts/gujarat/trends`
+- `GET /v1/high-courts/kerala/stats`
+- `GET /v1/high-courts/kerala/trends`
+- `GET /v1/high-courts/madras/stats`
+- `GET /v1/high-courts/madras/trends`
 - `GET /v1/high-courts/madhya-pradesh/stats`
 - `GET /v1/high-courts/madhya-pradesh/trends`
 - `GET /v1/high-courts/punjab-and-haryana/stats`

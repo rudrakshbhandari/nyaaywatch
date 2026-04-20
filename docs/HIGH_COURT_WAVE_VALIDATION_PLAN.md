@@ -8,7 +8,7 @@ This document answers one narrow question:
 
 ## Recommendation
 
-Do **not** expand the public High Court beta further right now.
+The next public High Court beta expansion is now concrete rather than theoretical.
 
 The original seven-court public High Court beta is no longer the terminal public set:
 
@@ -20,11 +20,11 @@ The original seven-court public High Court beta is no longer the terminal public
 - Uttar Pradesh via Allahabad High Court
 - Rajasthan
 
-Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, so the next gating problem is no longer "which court should be proven next." The next gating problem is whether the multi-jurisdiction court model, public methodology, and product framing are good enough to justify another public wave.
+Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, and the court-first multi-jurisdiction model has already cleared the Punjab and Haryana public beta launch. The next gating problem is no longer whether another public wave should exist; it is only whether the approved Wave 1 batch is fully carried through to live public rollout and recorded cleanly.
 
 The initial design answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`.
 The first execution-plan answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
-PR 3 from that plan is now landed too, so Punjab and Haryana High Court is configured internally with explicit Punjab, Haryana, and Chandigarh coverage while still staying outside the public beta.
+PR 3 from that plan is now landed too, so Punjab and Haryana High Court is configured with explicit Punjab, Haryana, and Chandigarh coverage and is already live in the public beta.
 
 The first validation pair was:
 
@@ -75,7 +75,9 @@ The seventh validation pair was:
 
 That pair has now also cleared the internal proof bar on the live operator lane.
 
-This is a product and operations recommendation from current repo state, not an official source fact.
+Delhi High Court, High Court of Kerala, and Madras High Court have now also cleared live internal `fetch -> publish -> replay -> rollback` proof on `https://nyaaywatch.in`, so the approved Wave 1 public-beta launch no longer lacks operational evidence.
+
+This is a repo recommendation from current project state, not an official source fact.
 
 ## Why This Court
 

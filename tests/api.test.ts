@@ -398,7 +398,10 @@ describe("HTTP routes", () => {
     await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.APHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.TSHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.DLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GJHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.KLHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.MDHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MPHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.PHHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.RJHC!);
@@ -412,7 +415,10 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("High Court of Himachal Pradesh");
     expect(index.text).toContain("High Court of Andhra Pradesh");
     expect(index.text).toContain("High Court for State of Telangana");
+    expect(index.text).toContain("High Court of Delhi");
     expect(index.text).toContain("High Court of Gujarat");
+    expect(index.text).toContain("High Court of Kerala");
+    expect(index.text).toContain("Madras High Court");
     expect(index.text).toContain("High Court of Madhya Pradesh");
     expect(index.text).toContain("High Court of Punjab and Haryana");
     expect(index.text).toContain("High Court of Rajasthan");
@@ -459,7 +465,7 @@ describe("HTTP routes", () => {
     expect(uttarPradeshOverview.status).toBe(200);
     expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
     expect(uttarPradeshOverview.text).toContain(
-      "This page tracks Allahabad High Court across Uttar Pradesh. 7 other public High Court pages are linked in the switcher.",
+      "This page tracks Allahabad High Court across Uttar Pradesh. 10 other public High Court pages are linked in the switcher.",
     );
 
     const punjabHaryanaOverview = await request(app).get("/high-courts/punjab-and-haryana");
@@ -467,9 +473,36 @@ describe("HTTP routes", () => {
     expect(punjabHaryanaOverview.text).toContain("High Court of Punjab and Haryana");
     expect(punjabHaryanaOverview.text).toContain("Punjab, Haryana, and Chandigarh");
 
+    const delhiOverview = await request(app).get("/high-courts/delhi");
+    expect(delhiOverview.status).toBe(200);
+    expect(delhiOverview.text).toContain("High Court of Delhi");
+    expect(delhiOverview.text).toContain("Current coverage:</strong> Delhi");
+
+    const keralaOverview = await request(app).get("/high-courts/kerala");
+    expect(keralaOverview.status).toBe(200);
+    expect(keralaOverview.text).toContain("High Court of Kerala");
+    expect(keralaOverview.text).toContain("Kerala and Lakshadweep");
+
+    const madrasOverview = await request(app).get("/high-courts/madras");
+    expect(madrasOverview.status).toBe(200);
+    expect(madrasOverview.text).toContain("Madras High Court");
+    expect(madrasOverview.text).toContain("Tamil Nadu and Puducherry");
+
     const punjabHaryanaStats = await request(app).get("/v1/high-courts/punjab-and-haryana/stats");
     expect(punjabHaryanaStats.status).toBe(200);
     expect(punjabHaryanaStats.body.snapshot.courtCode).toBe("PHHC");
+
+    const delhiStats = await request(app).get("/v1/high-courts/delhi/stats");
+    expect(delhiStats.status).toBe(200);
+    expect(delhiStats.body.snapshot.courtCode).toBe("DLHC");
+
+    const keralaTrends = await request(app).get("/v1/high-courts/kerala/trends");
+    expect(keralaTrends.status).toBe(200);
+    expect(keralaTrends.body.snapshot.courtCode).toBe("KLHC");
+
+    const madrasStats = await request(app).get("/v1/high-courts/madras/stats");
+    expect(madrasStats.status).toBe(200);
+    expect(madrasStats.body.snapshot.courtCode).toBe("MDHC");
 
     const andhraPradeshOverview = await request(app).get("/high-courts/andhra-pradesh");
     expect(andhraPradeshOverview.status).toBe(200);

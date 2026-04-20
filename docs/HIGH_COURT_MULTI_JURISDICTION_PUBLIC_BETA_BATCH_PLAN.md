@@ -20,7 +20,7 @@ The remaining questions are execution order, batch shape, and rollout discipline
 
 ## Remaining Deferred Courts
 
-After Punjab and Haryana, the remaining deferred court-first High Courts are:
+After Punjab and Haryana, the original remaining deferred court-first High Courts were:
 
 - Delhi High Court
 - High Court of Kerala
@@ -54,6 +54,8 @@ Why this wave first:
 - Kerala and Madras both force honest state-plus-union-territory coverage language without the larger geography fan-out of Bombay or Gauhati
 - Delhi closes the last obvious "court-first but not lower-court-state-shell-first" gap
 - together, these three courts are a real batch, but still a legible one
+
+Wave 1 is now the active public launch batch in repo code after all three courts cleared live internal proof.
 
 ## Wave 2
 
