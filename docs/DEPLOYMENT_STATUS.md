@@ -570,6 +570,16 @@ Latest confirmed operator validation:
   - the live public Madras route family now returns `200`: `/high-courts/madras`, `/high-courts/madras/data`, `/high-courts/madras/methodology`, `/high-courts/madras/api`, `/v1/high-courts/madras/stats`, and `/v1/high-courts/madras/trends`
   - `/high-courts` and `/` both now expose High Court of Delhi, High Court of Kerala, and Madras High Court in the public High Court card set and switcher
   - the live public High Court beta set is now Himachal, Andhra Pradesh, Telangana, Delhi, Gujarat, Kerala, Madras, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
+- Bombay, Calcutta, and Gauhati High Court public beta exposure completed on 2026-04-20 after PR `#144` merged:
+  - GitHub deploy run `24691704672` completed successfully on `main`, with `verify`, `secret-scan`, and `deploy` all green and `preview` skipped
+  - the live ECS service rolled to task definition `:137` and reached steady state
+  - all three internal scheduler targets now point to task definition `:137`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, and `nyaaywatch-staging-high-courts-internal-fetch`
+  - the explicit Cloudflare purge completed for all three new High Court route families through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`, with one `public_cache_invalidated` event per court and `urlCount=7`
+  - the live public Bombay route family now returns `200`: `/high-courts/bombay`, `/high-courts/bombay/data`, `/high-courts/bombay/methodology`, `/high-courts/bombay/api`, `/v1/high-courts/bombay/stats`, and `/v1/high-courts/bombay/trends`
+  - the live public Calcutta route family now returns `200`: `/high-courts/calcutta`, `/high-courts/calcutta/data`, `/high-courts/calcutta/methodology`, `/high-courts/calcutta/api`, `/v1/high-courts/calcutta/stats`, and `/v1/high-courts/calcutta/trends`
+  - the live public Gauhati route family now returns `200`: `/high-courts/gauhati`, `/high-courts/gauhati/data`, `/high-courts/gauhati/methodology`, `/high-courts/gauhati/api`, `/v1/high-courts/gauhati/stats`, and `/v1/high-courts/gauhati/trends`
+  - `/high-courts` and `/` both now expose Bombay High Court, Calcutta High Court, and Gauhati High Court in the public High Court card set and switcher
+  - the live public High Court beta set is now Himachal, Andhra Pradesh, Bombay, Calcutta, Telangana, Delhi, Gujarat, Gauhati, Kerala, Madras, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
 - Internal fetch scheduler deploy-role scope repair completed on 2026-04-20:
   - the first attempt of GitHub deploy run `24653526489` failed in `Reconcile daily internal fetch schedule` because `nyaaywatch-github-deploy-role` still allowed scheduler operations only on `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
   - the live IAM policy was widened to include `nyaaywatch-staging-supreme-court-internal-fetch` and `nyaaywatch-staging-high-courts-internal-fetch` alongside the existing lower-court schedule ARN
