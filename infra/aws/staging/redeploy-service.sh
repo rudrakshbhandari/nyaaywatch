@@ -22,6 +22,16 @@ lookup_stack_resource() {
     2>/dev/null || true
 }
 
+lookup_stack_output() {
+  local output_key="$1"
+  aws cloudformation describe-stacks \
+    --region "$region" \
+    --stack-name "$stack_name" \
+    --query "Stacks[0].Outputs[?OutputKey=='$output_key'].OutputValue | [0]" \
+    --output text \
+    2>/dev/null || true
+}
+
 tmpdir="$(mktemp -d)"
 cleanup() {
   rm -rf "$tmpdir"
@@ -68,8 +78,17 @@ if [[ -z "$service_url" || "$service_url" == "None" ]]; then
   exit 1
 fi
 
-database_url_secret_arn="$(lookup_stack_resource DatabaseUrlSecret)"
-operator_api_token_secret_arn="$(lookup_stack_resource OperatorApiTokenSecret)"
+database_url_secret_arn="$(lookup_stack_output DatabaseUrlSecretArn)"
+operator_api_token_secret_arn="$(lookup_stack_output OperatorApiTokenSecretArn)"
+cloudflare_api_token_secret_arn="$(lookup_stack_output CloudflareApiTokenSecretArn)"
+
+if [[ -z "$database_url_secret_arn" || "$database_url_secret_arn" == "None" ]]; then
+  database_url_secret_arn="$(lookup_stack_resource DatabaseUrlSecret)"
+fi
+
+if [[ -z "$operator_api_token_secret_arn" || "$operator_api_token_secret_arn" == "None" ]]; then
+  operator_api_token_secret_arn="$(lookup_stack_resource OperatorApiTokenSecret)"
+fi
 
 if [[ -n "$database_url_secret_arn" && "$database_url_secret_arn" != "None" ]]; then
   export DATABASE_URL_SECRET_ARN="$database_url_secret_arn"
@@ -77,6 +96,10 @@ fi
 
 if [[ -n "$operator_api_token_secret_arn" && "$operator_api_token_secret_arn" != "None" ]]; then
   export OPERATOR_API_TOKEN_SECRET_ARN="$operator_api_token_secret_arn"
+fi
+
+if [[ -n "$cloudflare_api_token_secret_arn" && "$cloudflare_api_token_secret_arn" != "None" ]]; then
+  export CLOUDFLARE_API_TOKEN_SECRET_ARN="$cloudflare_api_token_secret_arn"
 fi
 
 task_definition_arn="$(
