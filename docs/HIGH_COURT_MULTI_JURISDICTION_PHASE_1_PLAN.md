@@ -223,7 +223,10 @@ Status:
 
 Status:
 
-- next implementation slice
+- completed on branch `high-court-service-wiring-punjab-haryana`
+- High Court ownership checks and readiness/reporting surfaces now validate canonical `scope_type=high_court` plus `scope_code=<courtCode>` instead of implicitly trusting the compatibility `state_code`
+- the internal-only Punjab and Haryana High Court profile is now configured as `PHHC` with explicit Punjab, Haryana, and Chandigarh coverage
+- the current seven-court public beta remains unchanged, and `/high-courts/punjab-and-haryana` still stays outside the public route family
 
 ### PR 4. Live Internal Proof
 
