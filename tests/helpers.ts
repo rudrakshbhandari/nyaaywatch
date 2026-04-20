@@ -139,10 +139,12 @@ export async function insertHistoricalPublishedSnapshot(
 
   await pool.query(
     `INSERT INTO runs (
-      id, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note, completed_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+      id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note, completed_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
     [
       overrides.runId,
+      "lower_court_state",
+      "HP",
       "HP",
       payload.snapshot.sourceName,
       overrides.sourceSnapshotAt,
@@ -155,16 +157,33 @@ export async function insertHistoricalPublishedSnapshot(
 
   await pool.query(
     `INSERT INTO published_snapshots (
-      id, run_id, state_code, payload_version, payload, checksum_sha256
-    ) VALUES ($1, $2, $3, $4, $5::jsonb, $6)`,
-    [overrides.snapshotId, overrides.runId, "HP", 1, JSON.stringify(payload), `checksum-${overrides.snapshotId}`],
+      id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)`,
+    [
+      overrides.snapshotId,
+      overrides.runId,
+      "lower_court_state",
+      "HP",
+      "HP",
+      1,
+      JSON.stringify(payload),
+      `checksum-${overrides.snapshotId}`,
+    ],
   );
 
   await pool.query(
     `INSERT INTO publication_history (
-      id, state_code, published_snapshot_id, action, note
-    ) VALUES ($1, $2, $3, $4, $5)`,
-    [overrides.publicationId, "HP", overrides.snapshotId, "publish", "Historical publication for tests"],
+      id, scope_type, scope_code, state_code, published_snapshot_id, action, note
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [
+      overrides.publicationId,
+      "lower_court_state",
+      "HP",
+      "HP",
+      overrides.snapshotId,
+      "publish",
+      "Historical publication for tests",
+    ],
   );
 }
 
@@ -183,10 +202,12 @@ export async function insertPublishedSnapshot(
 ) {
   await pool.query(
     `INSERT INTO runs (
-      id, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note, completed_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())`,
+      id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note, completed_at
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
     [
       input.runId,
+      "lower_court_state",
+      input.stateCode,
       input.stateCode,
       input.payload.snapshot.sourceName,
       input.payload.snapshot.sourceSnapshotAt,
@@ -199,11 +220,13 @@ export async function insertPublishedSnapshot(
 
   await pool.query(
     `INSERT INTO published_snapshots (
-      id, run_id, state_code, payload_version, payload, checksum_sha256
-    ) VALUES ($1, $2, $3, $4, $5::jsonb, $6)`,
+      id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)`,
     [
       input.snapshotId,
       input.runId,
+      "lower_court_state",
+      input.stateCode,
       input.stateCode,
       1,
       JSON.stringify(input.payload),
@@ -213,10 +236,12 @@ export async function insertPublishedSnapshot(
 
   await pool.query(
     `INSERT INTO publication_history (
-      id, state_code, published_snapshot_id, action, note, previous_publication_id
-    ) VALUES ($1, $2, $3, $4, $5, $6)`,
+      id, scope_type, scope_code, state_code, published_snapshot_id, action, note, previous_publication_id
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
     [
       input.publicationId,
+      "lower_court_state",
+      input.stateCode,
       input.stateCode,
       input.snapshotId,
       input.action ?? "publish",

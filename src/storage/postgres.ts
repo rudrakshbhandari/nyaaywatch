@@ -13,8 +13,12 @@ import { toIsoString } from "../lib/time.js";
 
 type Queryable = Pick<Pool, "query"> | PoolClient;
 
+export type ScopeType = "lower_court_state" | "high_court" | "supreme_court";
+
 export interface RunRecord {
   id: string;
+  scopeType: ScopeType;
+  scopeCode: string;
   stateCode: string;
   sourceLabel: string;
   sourceSnapshotAt: string;
@@ -42,6 +46,8 @@ export interface ArtifactRecord {
 export interface PublishedSnapshotRecord {
   id: string;
   runId: string;
+  scopeType: ScopeType;
+  scopeCode: string;
   stateCode: string;
   payloadVersion: number;
   payload: PublishedSnapshot;
@@ -52,6 +58,8 @@ export interface PublishedSnapshotRecord {
 export interface HighCourtPublishedSnapshotRecord {
   id: string;
   runId: string;
+  scopeType: ScopeType;
+  scopeCode: string;
   stateCode: string;
   payloadVersion: number;
   payload: HighCourtPublishedSnapshot;
@@ -62,6 +70,8 @@ export interface HighCourtPublishedSnapshotRecord {
 export interface SupremeCourtPublishedSnapshotRecord {
   id: string;
   runId: string;
+  scopeType: ScopeType;
+  scopeCode: string;
   stateCode: string;
   payloadVersion: number;
   payload: SupremeCourtPublishedSnapshot;
@@ -71,6 +81,8 @@ export interface SupremeCourtPublishedSnapshotRecord {
 
 export interface PublicationRecord {
   id: string;
+  scopeType: ScopeType;
+  scopeCode: string;
   stateCode: string;
   publishedSnapshotId: string;
   action: "publish" | "rollback";
@@ -82,6 +94,8 @@ export interface PublicationRecord {
 interface RunInsert {
   id: string;
   stateCode: string;
+  scopeType?: ScopeType;
+  scopeCode?: string;
   sourceLabel: string;
   sourceSnapshotAt: string;
   methodologyVersion: string;
@@ -112,6 +126,8 @@ interface PublishedSnapshotInsert {
   id: string;
   runId: string;
   stateCode: string;
+  scopeType?: ScopeType;
+  scopeCode?: string;
   payloadVersion: number;
   payload: PublishedSnapshot;
   checksumSha256: string;
@@ -121,6 +137,8 @@ interface HighCourtPublishedSnapshotInsert {
   id: string;
   runId: string;
   stateCode: string;
+  scopeType?: ScopeType;
+  scopeCode?: string;
   payloadVersion: number;
   payload: HighCourtPublishedSnapshot;
   checksumSha256: string;
@@ -130,6 +148,8 @@ interface SupremeCourtPublishedSnapshotInsert {
   id: string;
   runId: string;
   stateCode: string;
+  scopeType?: ScopeType;
+  scopeCode?: string;
   payloadVersion: number;
   payload: SupremeCourtPublishedSnapshot;
   checksumSha256: string;
@@ -138,6 +158,8 @@ interface SupremeCourtPublishedSnapshotInsert {
 interface PublicationInsert {
   id: string;
   stateCode: string;
+  scopeType?: ScopeType;
+  scopeCode?: string;
   publishedSnapshotId: string;
   action: "publish" | "rollback";
   note?: string | null;
@@ -175,13 +197,16 @@ export class PgWarehouseStore {
   }
 
   async insertRun(input: RunInsert): Promise<RunRecord> {
+    const identity = resolveScopeIdentity(input.stateCode, input.scopeType, input.scopeCode);
     const result = await this.db.query(
       `INSERT INTO runs (
-        id, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, replay_of_run_id, note, completed_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CASE WHEN $6 IN ('completed', 'published', 'replayed') THEN NOW() ELSE NULL END)
+        id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, replay_of_run_id, note, completed_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CASE WHEN $8 IN ('completed', 'published', 'replayed') THEN NOW() ELSE NULL END)
       RETURNING *`,
       [
         input.id,
+        identity.scopeType,
+        identity.scopeCode,
         input.stateCode,
         input.sourceLabel,
         input.sourceSnapshotAt,
@@ -237,14 +262,17 @@ export class PgWarehouseStore {
   }
 
   async insertPublishedSnapshot(input: PublishedSnapshotInsert): Promise<PublishedSnapshotRecord> {
+    const identity = resolveScopeIdentity(input.stateCode, input.scopeType, input.scopeCode);
     const result = await this.db.query(
       `INSERT INTO published_snapshots (
-        id, run_id, state_code, payload_version, payload, checksum_sha256
-      ) VALUES ($1, $2, $3, $4, $5::jsonb, $6)
+        id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)
       RETURNING *`,
       [
         input.id,
         input.runId,
+        identity.scopeType,
+        identity.scopeCode,
         input.stateCode,
         input.payloadVersion,
         JSON.stringify(input.payload),
@@ -256,14 +284,17 @@ export class PgWarehouseStore {
   }
 
   async insertHighCourtPublishedSnapshot(input: HighCourtPublishedSnapshotInsert): Promise<HighCourtPublishedSnapshotRecord> {
+    const identity = resolveScopeIdentity(input.stateCode, input.scopeType, input.scopeCode);
     const result = await this.db.query(
       `INSERT INTO published_snapshots (
-        id, run_id, state_code, payload_version, payload, checksum_sha256
-      ) VALUES ($1, $2, $3, $4, $5::jsonb, $6)
+        id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)
       RETURNING *`,
       [
         input.id,
         input.runId,
+        identity.scopeType,
+        identity.scopeCode,
         input.stateCode,
         input.payloadVersion,
         JSON.stringify(input.payload),
@@ -275,14 +306,17 @@ export class PgWarehouseStore {
   }
 
   async insertSupremeCourtPublishedSnapshot(input: SupremeCourtPublishedSnapshotInsert): Promise<SupremeCourtPublishedSnapshotRecord> {
+    const identity = resolveScopeIdentity(input.stateCode, input.scopeType, input.scopeCode);
     const result = await this.db.query(
       `INSERT INTO published_snapshots (
-        id, run_id, state_code, payload_version, payload, checksum_sha256
-      ) VALUES ($1, $2, $3, $4, $5::jsonb, $6)
+        id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)
       RETURNING *`,
       [
         input.id,
         input.runId,
+        identity.scopeType,
+        identity.scopeCode,
         input.stateCode,
         input.payloadVersion,
         JSON.stringify(input.payload),
@@ -294,13 +328,16 @@ export class PgWarehouseStore {
   }
 
   async insertPublication(input: PublicationInsert): Promise<PublicationRecord> {
+    const identity = resolveScopeIdentity(input.stateCode, input.scopeType, input.scopeCode);
     const result = await this.db.query(
       `INSERT INTO publication_history (
-        id, state_code, published_snapshot_id, action, note, previous_publication_id
-      ) VALUES ($1, $2, $3, $4, $5, $6)
+        id, scope_type, scope_code, state_code, published_snapshot_id, action, note, previous_publication_id
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *`,
       [
         input.id,
+        identity.scopeType,
+        identity.scopeCode,
         input.stateCode,
         input.publishedSnapshotId,
         input.action,
@@ -317,10 +354,10 @@ export class PgWarehouseStore {
     return result.rows[0] ? mapRun(result.rows[0]) : null;
   }
 
-  async listRuns(stateCode: string): Promise<RunRecord[]> {
+  async listRuns(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<RunRecord[]> {
     const result = await this.db.query(
-      "SELECT * FROM runs WHERE state_code = $1 ORDER BY created_at DESC",
-      [stateCode],
+      "SELECT * FROM runs WHERE scope_type = $1 AND scope_code = $2 ORDER BY created_at DESC",
+      [scopeType, scopeCode],
     );
     return result.rows.map(mapRun);
   }
@@ -351,56 +388,56 @@ export class PgWarehouseStore {
     return result.rows[0] ? mapHighCourtPublishedSnapshot(result.rows[0]) : null;
   }
 
-  async getLatestPublishedSnapshot(stateCode: string): Promise<PublishedSnapshotRecord | null> {
+  async getLatestPublishedSnapshot(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<PublishedSnapshotRecord | null> {
     const result = await this.db.query(
       `SELECT ps.*
       FROM publication_history ph
       JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
-      WHERE ph.state_code = $1
+      WHERE ph.scope_type = $1 AND ph.scope_code = $2
       ORDER BY ph.created_at DESC
       LIMIT 1`,
-      [stateCode],
+      [scopeType, scopeCode],
     );
 
     return result.rows[0] ? mapPublishedSnapshot(result.rows[0]) : null;
   }
 
-  async getLatestHighCourtPublishedSnapshot(stateCode: string): Promise<HighCourtPublishedSnapshotRecord | null> {
+  async getLatestHighCourtPublishedSnapshot(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<HighCourtPublishedSnapshotRecord | null> {
     const result = await this.db.query(
       `SELECT ps.*
       FROM publication_history ph
       JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
-      WHERE ph.state_code = $1
+      WHERE ph.scope_type = $1 AND ph.scope_code = $2
       ORDER BY ph.created_at DESC
       LIMIT 1`,
-      [stateCode],
+      [scopeType, scopeCode],
     );
 
     return result.rows[0] ? mapHighCourtPublishedSnapshot(result.rows[0]) : null;
   }
 
-  async getLatestSupremeCourtPublishedSnapshot(stateCode: string): Promise<SupremeCourtPublishedSnapshotRecord | null> {
+  async getLatestSupremeCourtPublishedSnapshot(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<SupremeCourtPublishedSnapshotRecord | null> {
     const result = await this.db.query(
       `SELECT ps.*
       FROM publication_history ph
       JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
-      WHERE ph.state_code = $1
+      WHERE ph.scope_type = $1 AND ph.scope_code = $2
       ORDER BY ph.created_at DESC
       LIMIT 1`,
-      [stateCode],
+      [scopeType, scopeCode],
     );
 
     return result.rows[0] ? mapSupremeCourtPublishedSnapshot(result.rows[0]) : null;
   }
 
-  async getLatestPublication(stateCode: string): Promise<PublicationRecord | null> {
+  async getLatestPublication(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<PublicationRecord | null> {
     const result = await this.db.query(
       `SELECT *
       FROM publication_history
-      WHERE state_code = $1
+      WHERE scope_type = $1 AND scope_code = $2
       ORDER BY created_at DESC
       LIMIT 1`,
-      [stateCode],
+      [scopeType, scopeCode],
     );
 
     return result.rows[0] ? mapPublication(result.rows[0]) : null;
@@ -411,10 +448,10 @@ export class PgWarehouseStore {
     return result.rows[0] ? mapPublication(result.rows[0]) : null;
   }
 
-  async listPublications(stateCode: string): Promise<PublicationRecord[]> {
+  async listPublications(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<PublicationRecord[]> {
     const result = await this.db.query(
-      "SELECT * FROM publication_history WHERE state_code = $1 ORDER BY created_at DESC",
-      [stateCode],
+      "SELECT * FROM publication_history WHERE scope_type = $1 AND scope_code = $2 ORDER BY created_at DESC",
+      [scopeType, scopeCode],
     );
     return result.rows.map(mapPublication);
   }
@@ -442,8 +479,12 @@ export class PgWarehouseStore {
 }
 
 function mapRun(row: QueryResultRow): RunRecord {
+  const scopeType = parseScopeType(row.scope_type, row.state_code);
+  const scopeCode = row.scope_code ?? row.state_code;
   return {
     id: row.id,
+    scopeType,
+    scopeCode,
     stateCode: row.state_code,
     sourceLabel: row.source_label,
     sourceSnapshotAt: toIsoString(row.source_snapshot_at),
@@ -473,9 +514,13 @@ function mapArtifact(row: QueryResultRow): ArtifactRecord {
 
 function mapPublishedSnapshot(row: QueryResultRow): PublishedSnapshotRecord {
   const payload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  const scopeType = parseScopeType(row.scope_type, row.state_code);
+  const scopeCode = row.scope_code ?? row.state_code;
   return {
     id: row.id,
     runId: row.run_id,
+    scopeType,
+    scopeCode,
     stateCode: row.state_code,
     payloadVersion: Number(row.payload_version),
     payload: PublishedSnapshotSchema.parse(payload),
@@ -486,9 +531,13 @@ function mapPublishedSnapshot(row: QueryResultRow): PublishedSnapshotRecord {
 
 function mapHighCourtPublishedSnapshot(row: QueryResultRow): HighCourtPublishedSnapshotRecord {
   const payload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  const scopeType = parseScopeType(row.scope_type, row.state_code);
+  const scopeCode = row.scope_code ?? row.state_code;
   return {
     id: row.id,
     runId: row.run_id,
+    scopeType,
+    scopeCode,
     stateCode: row.state_code,
     payloadVersion: Number(row.payload_version),
     payload: HighCourtPublishedSnapshotSchema.parse(payload),
@@ -499,9 +548,13 @@ function mapHighCourtPublishedSnapshot(row: QueryResultRow): HighCourtPublishedS
 
 function mapSupremeCourtPublishedSnapshot(row: QueryResultRow): SupremeCourtPublishedSnapshotRecord {
   const payload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  const scopeType = parseScopeType(row.scope_type, row.state_code);
+  const scopeCode = row.scope_code ?? row.state_code;
   return {
     id: row.id,
     runId: row.run_id,
+    scopeType,
+    scopeCode,
     stateCode: row.state_code,
     payloadVersion: Number(row.payload_version),
     payload: SupremeCourtPublishedSnapshotSchema.parse(payload),
@@ -511,8 +564,12 @@ function mapSupremeCourtPublishedSnapshot(row: QueryResultRow): SupremeCourtPubl
 }
 
 function mapPublication(row: QueryResultRow): PublicationRecord {
+  const scopeType = parseScopeType(row.scope_type, row.state_code);
+  const scopeCode = row.scope_code ?? row.state_code;
   return {
     id: row.id,
+    scopeType,
+    scopeCode,
     stateCode: row.state_code,
     publishedSnapshotId: row.published_snapshot_id,
     action: row.action,
@@ -520,4 +577,31 @@ function mapPublication(row: QueryResultRow): PublicationRecord {
     previousPublicationId: row.previous_publication_id,
     createdAt: toIsoString(row.created_at),
   };
+}
+
+function resolveScopeIdentity(stateCode: string, scopeType?: ScopeType, scopeCode?: string): { scopeType: ScopeType; scopeCode: string } {
+  return {
+    scopeType: scopeType ?? inferScopeType(stateCode),
+    scopeCode: scopeCode ?? stateCode,
+  };
+}
+
+function inferScopeType(stateCode: string): ScopeType {
+  if (stateCode === "SCI") {
+    return "supreme_court";
+  }
+
+  if (stateCode.endsWith("HC")) {
+    return "high_court";
+  }
+
+  return "lower_court_state";
+}
+
+function parseScopeType(value: unknown, stateCode: string): ScopeType {
+  if (value === "lower_court_state" || value === "high_court" || value === "supreme_court") {
+    return value;
+  }
+
+  return inferScopeType(stateCode);
 }

@@ -26,6 +26,8 @@ describe("PublishedSupremeCourtSnapshotService", () => {
     pools.push(context.pool);
 
     const capture = await context.service.captureRun("Test Supreme Court capture.");
+    expect(capture.run.scopeType).toBe("supreme_court");
+    expect(capture.run.scopeCode).toBe("SCI");
     expect(capture.run.stateCode).toBe("SCI");
     expect(capture.candidate?.snapshot.courtTier).toBe("supreme_court");
     expect(capture.candidate?.snapshot.referenceDateKind).toBe("captured_at");

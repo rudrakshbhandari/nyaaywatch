@@ -57,7 +57,7 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   async getPublishedSnapshot(): Promise<SupremeCourtPublishedSnapshotRecord | null> {
-    return this.store.getLatestSupremeCourtPublishedSnapshot(this.profile.courtCode);
+    return this.store.getLatestSupremeCourtPublishedSnapshot(this.profile.courtCode, "supreme_court");
   }
 
   async getStats(): Promise<{ snapshot: SupremeCourtPublishedSnapshot["snapshot"]; stats: SupremeCourtPublishedSnapshot["stats"] } | null> {
@@ -71,15 +71,15 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   async listRuns(): Promise<RunRecord[]> {
-    return this.store.listRuns(this.profile.courtCode);
+    return this.store.listRuns(this.profile.courtCode, "supreme_court");
   }
 
   async listPublications(): Promise<PublicationRecord[]> {
-    return this.store.listPublications(this.profile.courtCode);
+    return this.store.listPublications(this.profile.courtCode, "supreme_court");
   }
 
   async listPublicationHistory(): Promise<SupremeCourtPublicationHistoryEntry[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode);
+    const publications = await this.store.listPublications(this.profile.courtCode, "supreme_court");
     const entries = await Promise.all(
       publications.map(async (publication, index) => {
         const snapshot = await this.store.getSupremeCourtPublishedSnapshotById(publication.publishedSnapshotId);
@@ -149,6 +149,8 @@ export class PublishedSupremeCourtSnapshotService {
     const run = await this.store.insertRun({
       id: createId("run"),
       stateCode: this.profile.courtCode,
+      scopeType: "supreme_court",
+      scopeCode: this.profile.courtCode,
       sourceLabel: extracted.sourceName,
       sourceSnapshotAt: referenceDateAt,
       methodologyVersion: "2026.04-supreme-court-draft",
@@ -236,15 +238,19 @@ export class PublishedSupremeCourtSnapshotService {
         id: createId("snapshot"),
         runId,
         stateCode: this.profile.courtCode,
+        scopeType: "supreme_court",
+        scopeCode: this.profile.courtCode,
         payloadVersion: 1,
         payload,
         checksumSha256: sha256(JSON.stringify(payload)),
       });
 
-      const previousPublication = await tx.getLatestPublication(this.profile.courtCode);
+      const previousPublication = await tx.getLatestPublication(this.profile.courtCode, "supreme_court");
       const publication = await tx.insertPublication({
         id: createId("publication"),
         stateCode: this.profile.courtCode,
+        scopeType: "supreme_court",
+        scopeCode: this.profile.courtCode,
         publishedSnapshotId: snapshot.id,
         action: "publish",
         note: note ?? defaultPublishNote(inspection.run),
@@ -289,6 +295,8 @@ export class PublishedSupremeCourtSnapshotService {
     const replayRun = await this.store.insertRun({
       id: createId("run"),
       stateCode: this.profile.courtCode,
+      scopeType: "supreme_court",
+      scopeCode: this.profile.courtCode,
       sourceLabel: sourceInspection.run.sourceLabel,
       sourceSnapshotAt: sourceInspection.run.sourceSnapshotAt,
       methodologyVersion: sourceInspection.run.methodologyVersion,
@@ -359,7 +367,7 @@ export class PublishedSupremeCourtSnapshotService {
       throw new Error(`Publication ${publicationId} was not found.`);
     }
 
-    const latest = await this.store.getLatestPublication(this.profile.courtCode);
+    const latest = await this.store.getLatestPublication(this.profile.courtCode, "supreme_court");
     if (!latest) {
       throw new Error("Rollback requires an existing publication history.");
     }
@@ -372,6 +380,8 @@ export class PublishedSupremeCourtSnapshotService {
     const rollback = await this.store.insertPublication({
       id: createId("publication"),
       stateCode: this.profile.courtCode,
+      scopeType: "supreme_court",
+      scopeCode: this.profile.courtCode,
       publishedSnapshotId: targetSnapshot.id,
       action: "rollback",
       note: note ?? `Rollback to publication ${target.id}`,
@@ -432,7 +442,7 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   private async loadHistoricalSnapshots(): Promise<SupremeCourtPublishedSnapshot[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode);
+    const publications = await this.store.listPublications(this.profile.courtCode, "supreme_court");
     const snapshots: SupremeCourtPublishedSnapshot[] = [];
     const seenSnapshotIds = new Set<string>();
 
