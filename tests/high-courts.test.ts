@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { buildPublicHighCourtRoutes } from "../src/api/public-high-court.js";
+import {
+  buildHighCourtCoverageSentence,
+  buildPublicHighCourtRoutes,
+  formatHighCourtCoverageLabel,
+} from "../src/api/public-high-court.js";
 import { HighCourtCaptureBundleSchema } from "../src/domain/high-court-capture-schema.js";
 import { HighCourtPublishedSnapshotSchema } from "../src/domain/high-court-snapshot-schema.js";
 import { HighCourtSnapshotCandidateSchema } from "../src/domain/high-court-snapshot-candidate-schema.js";
@@ -189,6 +193,15 @@ describe("high court routes", () => {
       statsApi: "/v1/high-courts/uttar-pradesh/stats",
       trendsApi: "/v1/high-courts/uttar-pradesh/trends",
     });
+  });
+
+  it("formats court-first coverage labels and sentences", () => {
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("HPHC"))).toBe("Himachal Pradesh");
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("PHHC"))).toBe("Punjab, Haryana, and Chandigarh");
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("GJHC"))).toBe("This page tracks High Court of Gujarat across Gujarat.");
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("PHHC"))).toBe(
+      "This page tracks High Court of Punjab and Haryana across Punjab, Haryana, and Chandigarh.",
+    );
   });
 });
 

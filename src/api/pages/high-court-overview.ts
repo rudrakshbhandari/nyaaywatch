@@ -19,9 +19,24 @@ export function renderHighCourtOverviewPage(
       eyebrow: "HIGH COURT BETA",
       headline: `${profile.courtName} in the latest published snapshot.`,
       lede:
-        "This page shows one published aggregate High Court snapshot with explicit freshness, methodology, and official source links. It does not pretend to be a case-search tool or a cross-tier ranking surface.",
+        `${context.coverageSentence} This page shows one published aggregate High Court snapshot with explicit freshness, methodology, and official source links. It does not pretend to be a case-search tool or a cross-tier ranking surface.`,
       isHero: true,
     })}
+
+    <section class="hc-section hc-section--compact">
+      <div class="card-grid card-grid--2">
+        <article class="card">
+          <h3>Coverage</h3>
+          <p><strong>Current coverage:</strong> ${escapeHtml(context.coverageLabel)}</p>
+          <p>The unit here is one High Court publication, even when that court spans more than one state or union territory.</p>
+        </article>
+        <article class="card">
+          <h3>Page scope</h3>
+          <p>${escapeHtml(context.publicScopeDescription)}</p>
+          <p>NyaayWatch keeps the court identity explicit instead of flattening this page into a one-state shell.</p>
+        </article>
+      </div>
+    </section>
 
     <section class="stat-grid">
       ${renderStatTile({
@@ -56,7 +71,7 @@ export function renderHighCourtOverviewPage(
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Publication posture</h3>
-          <p>${escapeHtml(context.publicScopeDescription)} It is snapshot-based, not live, and every public number comes from a stored published artifact.</p>
+          <p>${escapeHtml(context.coverageSentence)} It is snapshot-based, not live, and every public number comes from a stored published artifact.</p>
           <p>${renderBadge({ label: snapshot.snapshot.qualityState, tone: snapshot.snapshot.qualityState === "complete" ? "complete" : "flag" })}</p>
         </article>
         <article class="card">
@@ -147,6 +162,7 @@ function renderAgeBucket(label: string, value: number, total: number) {
 
 const HIGH_COURT_OVERVIEW_CSS = `
   .hc-section { margin-bottom: 72px; }
+  .hc-section--compact { margin-bottom: 28px; }
   .card-grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   @media (max-width: 1100px) {
     .card-grid--5 { grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -20,7 +20,7 @@ export function renderHighCourtDataPage(
       eyebrow: "HIGH COURT DATA",
       headline: "Fetch the same published High Court snapshot the page is showing.",
       lede:
-        "This first High Court beta is JSON-first. It exposes the current published stats and trend points, while raw captures and operator evidence stay private.",
+        `This first High Court beta is JSON-first. It exposes the current published stats and trend points for ${profile.courtName} across ${context.coverageLabel}, while raw captures and operator evidence stay private.`,
       isHero: true,
     })}
 
@@ -54,13 +54,13 @@ export function renderHighCourtDataPage(
         <article class="card">
           <h3>High Court stats</h3>
           <p><code>${context.routes.statsApi}</code></p>
-          <p>Headline metadata plus civil, criminal, and total pending / instituted / disposed values.</p>
+          <p>Headline metadata plus <code>coveredGeographies[]</code> and aggregate civil, criminal, and total pending / instituted / disposed values for this one High Court publication.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.statsApi}">Open stats JSON</a></p>
         </article>
         <article class="card">
           <h3>High Court trends</h3>
           <p><code>${context.routes.trendsApi}</code></p>
-          <p>Published trend points for pending load and last-month institution / disposal totals.</p>
+          <p>Published court-wide trend points for pending load and last-month institution / disposal totals. This beta does not split trends by covered geography.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.trendsApi}">Open trends JSON</a></p>
         </article>
       </div>

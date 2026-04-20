@@ -388,8 +388,8 @@ Current conclusion from live evidence:
 - the internal Punjab and Haryana pilot has now cleared the live High Court proof bar
 - the first court-first multi-jurisdiction High Court phase is now technically complete
 - the next remaining question is no longer whether the operator lane can handle a multi-jurisdiction court
-- the next remaining question is how the public methodology and route language should describe explicit covered geographies before any public beta decision
-- the concrete next-step answer to that question now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`
+- the public methodology and route language pass for explicit covered geographies is now landed across the shipped High Court public surfaces
+- the next remaining question is whether any multi-jurisdiction High Court, starting with Punjab and Haryana, deserves public beta exposure at all
 
 ## What Counts As Success
 

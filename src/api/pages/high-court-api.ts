@@ -8,7 +8,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
       eyebrow: "HIGH COURT API",
       headline: "The public High Court API matches the latest published High Court snapshot.",
       lede:
-        "If a public High Court beta page shows a number, the published JSON can expose it. If it is still in operator review, it stays private.",
+        `If the public ${context.profile.courtName} page shows a number, the published JSON can expose it for the court across ${context.coverageLabel}. If it is still in operator review, it stays private.`,
       isHero: true,
     })}
 
@@ -18,12 +18,12 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
-          <p>High Court metadata plus aggregate pending, institution, and disposal fields for the active publication.</p>
+          <p>High Court metadata plus <code>coveredGeographies[]</code> and aggregate pending, institution, and disposal fields for the active publication.</p>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
-          <p>Published High Court trend points only. No unpublished operator runs leak through this surface.</p>
+          <p>Published High Court trend points only. They stay court-wide rather than geography-split, and no unpublished operator runs leak through this surface.</p>
         </article>
       </div>
     </section>
@@ -37,7 +37,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
         </article>
         <article class="card">
           <h3>Tier-aware semantics</h3>
-          <p>This beta is High Court-specific. It does not reuse district-only fields or imply cross-tier ranking comparability.</p>
+          <p>This beta is High Court-specific. A High Court page is not the same scope as a lower-court state page, so the API does not reuse district-only fields or imply cross-tier ranking comparability.</p>
         </article>
       </div>
     </section>

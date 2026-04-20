@@ -227,6 +227,6 @@ This language phase is done only when:
 
 Do not expose Punjab and Haryana publicly yet.
 
-First land this public-language phase so the repo has an honest court-first copy contract.
+This public-language phase is now landed in the shipped High Court overview, methodology, data, API, index, and homepage surfaces, so the repo has an honest court-first copy contract.
 
-Only then make the separate product decision about whether the first public multi-jurisdiction High Court beta is worth widening the trust surface.
+The next decision is separate and narrower: whether the first public multi-jurisdiction High Court beta is worth widening the trust surface at all.

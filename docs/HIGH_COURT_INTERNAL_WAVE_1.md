@@ -103,6 +103,6 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - the queued single-jurisdiction High Court validation list is now exhausted
 - `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md` now records the court-first model needed before the remaining deferred multi-jurisdiction courts can move again
 - `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` now has PR 1 through PR 4 completed, and Punjab and Haryana High Court has live internal fetch, publish, replay, and rollback proof with explicit Punjab, Haryana, and Chandigarh coverage
-- the next live validation move is no longer another proof cycle; the concrete methodology and UX follow-up now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`
+- the next live validation move is no longer another proof cycle; the concrete methodology and UX follow-up is now landed on the shipped public High Court surfaces
 - keep the current seven-court public beta fixed until multi-jurisdiction High Courts are intentionally designed
-- treat any future court addition as a product and methodology decision, not automatic public-beta approval
+- treat any future court addition, including Punjab and Haryana, as a product and methodology decision, not automatic public-beta approval

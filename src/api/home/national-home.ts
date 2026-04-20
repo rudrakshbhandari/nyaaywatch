@@ -1,5 +1,5 @@
 import type { NjdgStateProfile } from "../../geographies.js";
-import { buildPublicHighCourtRoutes } from "../public-high-court.js";
+import { buildPublicHighCourtRoutes, formatHighCourtCoverageLabel } from "../public-high-court.js";
 import { buildPublicSupremeCourtRoutes } from "../public-supreme-court.js";
 import { buildPublicStateRoutes, type PublicPageContext } from "../public-state.js";
 import { renderPageShell } from "../design/shell.js";
@@ -32,6 +32,7 @@ export function renderNationalHome(input: {
               <p class="tier-card__eyebrow">HIGH COURT BETA</p>
               <h3>${escapeHtml(profile.courtName)}</h3>
               <p>${escapeHtml(referenceLabel)}</p>
+              <p class="tier-card__coverage">Coverage: ${escapeHtml(formatHighCourtCoverageLabel(profile))}</p>
               <dl class="tier-card__metrics">
                 <div>
                   <dt>Pending</dt>
@@ -82,7 +83,7 @@ export function renderNationalHome(input: {
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch brings the Supreme Court, High Courts, and lower courts into one accountable public view, with dated snapshots, clear methodology, and official source links."
+            ? "NyaayWatch brings the Supreme Court, High Courts, and lower courts into one accountable public view, with dated snapshots, clear methodology, official source links, and court-first coverage labels where one court spans more than one geography."
             : "When a court tier has a public snapshot, NyaayWatch shows it here as a dated, accountable public surface rather than a live or predictive feed."
         }</p>
         <div class="national-hero__cta">
@@ -140,7 +141,7 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "High Courts, in the current public beta.",
         lede:
-          "These pages are live and linked here directly. Each court keeps its own source semantics and methodology, and NyaayWatch does not collapse them into one national High Court score.",
+          "These pages are live and linked here directly. Each court keeps its own source semantics, methodology, and explicit coverage label, and NyaayWatch does not collapse them into one national High Court score or fake one-state shells.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
       <p class="national-section__linkline"><a href="/high-courts">Open the High Courts index</a></p>
@@ -331,6 +332,11 @@ const NATIONAL_HOME_CSS = `
     display: grid;
     gap: 10px;
     margin: 18px 0 18px;
+  }
+  .tier-card__coverage {
+    margin: 0;
+    color: var(--ink-soft);
+    font-weight: 500;
   }
   .tier-card__metrics div {
     display: flex;

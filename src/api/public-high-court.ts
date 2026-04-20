@@ -27,6 +27,8 @@ export interface PublicHighCourtPageContext {
   highCourtLinks: PublicHighCourtLink[];
   brandHref: string;
   brandTag: string;
+  coverageLabel: string;
+  coverageSentence: string;
   publicScopeDescription: string;
 }
 
@@ -67,18 +69,45 @@ export function buildPublicHighCourtPageContext(
     })),
     brandHref: routes.home,
     brandTag: `${currentProfile.courtName} observability`,
+    coverageLabel: formatHighCourtCoverageLabel(currentProfile),
+    coverageSentence: buildHighCourtCoverageSentence(currentProfile),
     publicScopeDescription: buildPublicScopeDescription(currentProfile, visibleProfiles),
   };
 }
 
 function buildPublicScopeDescription(currentProfile: HighCourtProfile, visibleProfiles: HighCourtProfile[]) {
   const otherCourtCount = Math.max(visibleProfiles.length - 1, 0);
+  const coverageSentence = buildHighCourtCoverageSentence(currentProfile);
 
   if (otherCourtCount === 0) {
-    return `The public High Court beta currently covers ${currentProfile.courtName} only.`;
+    return `${coverageSentence} It is the only public High Court page in this runtime.`;
   }
 
-  return `This page covers ${currentProfile.courtName}. ${otherCourtCount} other public High Court page${
+  return `${coverageSentence} ${otherCourtCount} other public High Court page${
     otherCourtCount === 1 ? " is" : "s are"
   } linked in the switcher.`;
+}
+
+export function formatHighCourtCoverageLabel(profile: HighCourtProfile): string {
+  return formatHumanList(profile.coveredGeographies.map((geography) => geography.geographyName));
+}
+
+export function buildHighCourtCoverageSentence(profile: HighCourtProfile): string {
+  return `This page tracks ${profile.courtName} across ${formatHighCourtCoverageLabel(profile)}.`;
+}
+
+function formatHumanList(items: string[]): string {
+  if (items.length === 0) {
+    return "";
+  }
+
+  if (items.length === 1) {
+    return items[0]!;
+  }
+
+  if (items.length === 2) {
+    return `${items[0]} and ${items[1]}`;
+  }
+
+  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
 }
