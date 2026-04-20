@@ -8,7 +8,7 @@ export interface ScheduledHighCourtFetchResult {
   courtCode: string;
   courtSlug: string;
   courtName: string;
-  stateCode: string;
+  coveredGeographies: HighCourtProfile["coveredGeographies"];
   ok: boolean;
   runId?: string;
   error?: string;
@@ -57,7 +57,7 @@ export async function runScheduledHighCourtFetches(
         courtCode: profile.courtCode,
         courtSlug: profile.courtSlug,
         courtName: profile.courtName,
-        stateCode: profile.stateCode,
+        coveredGeographies: profile.coveredGeographies,
         ok: true,
         runId,
       });
@@ -69,7 +69,7 @@ export async function runScheduledHighCourtFetches(
         courtCode: profile.courtCode,
         courtSlug: profile.courtSlug,
         courtName: profile.courtName,
-        stateCode: profile.stateCode,
+        coveredGeographies: profile.coveredGeographies,
         ok: false,
         error: message,
       });

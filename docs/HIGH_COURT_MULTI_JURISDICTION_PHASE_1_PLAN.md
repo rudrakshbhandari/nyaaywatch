@@ -211,13 +211,19 @@ Status:
 
 Status:
 
-- next implementation slice
+- completed on branch `high-court-covered-geographies`
+- `HighCourtProfile` now carries explicit `coveredGeographies[]` plus narrow primary-geography helpers for current single-jurisdiction call sites
+- High Court capture, candidate, and published snapshot contracts now parse to canonical `coveredGeographies[]`, while legacy single-state artifacts and published payloads still read through compatibility transforms
 
 ### PR 3. Service Wiring And Internal Pilot Config
 
 - move High Court service reads and writes to the new scope identity
 - add the Punjab and Haryana High Court internal profile
 - update readiness and wave docs
+
+Status:
+
+- next implementation slice
 
 ### PR 4. Live Internal Proof
 
@@ -231,7 +237,7 @@ Before calling phase 1 complete:
 
 - relevant unit and schema tests pass locally
 - migration coverage proves old records still read correctly during compatibility mode
-- existing public High Court beta routes still return the same payload shape where they are already live
+- existing public High Court beta routes stay stable, even as canonical High Court payload metadata moves from fake singular `stateCode` / `stateName` fields to honest `coveredGeographies[]`
 - internal operator lifecycle still works for one existing single-jurisdiction High Court
 - the repo can configure Punjab and Haryana High Court internally with explicit covered geographies
 

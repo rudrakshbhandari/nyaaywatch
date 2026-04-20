@@ -1,4 +1,9 @@
-import { getStateProfile, type SupportedStateCode } from "./geographies.js";
+import {
+  buildStateCourtGeography,
+  getStateProfile,
+  type CourtGeography,
+  type SupportedStateCode,
+} from "./geographies.js";
 
 export interface HighCourtSourceUrls {
   hcNjdg: string;
@@ -14,9 +19,8 @@ export interface HighCourtProfile {
   courtCode: SupportedHighCourtCode;
   courtSlug: string;
   courtName: string;
-  stateCode: SupportedStateCode;
-  stateName: string;
   hcNjdgStateValue: string;
+  coveredGeographies: CourtGeography[];
   publicBeta: boolean;
   sourceReviewStatus: HighCourtSourceReviewStatus;
   sourceUrls: HighCourtSourceUrls;
@@ -54,8 +58,8 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtCode: "HPHC",
     courtSlug: "himachal",
     courtName: "High Court of Himachal Pradesh",
-    stateCode: "HP",
     hcNjdgStateValue: "2~5",
+    coveredGeographies: [buildStateCourtGeography("HP")],
     publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
@@ -69,8 +73,8 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtCode: "APHC",
     courtSlug: "andhra-pradesh",
     courtName: "High Court of Andhra Pradesh",
-    stateCode: "AP",
     hcNjdgStateValue: "28~2",
+    coveredGeographies: [buildStateCourtGeography("AP")],
     publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
@@ -82,8 +86,8 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtCode: "TSHC",
     courtSlug: "telangana",
     courtName: "High Court for State of Telangana",
-    stateCode: "TS",
     hcNjdgStateValue: "36~29",
+    coveredGeographies: [buildStateCourtGeography("TS")],
     publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
@@ -95,15 +99,15 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtCode: "CGHC",
     courtSlug: "chhattisgarh",
     courtName: "High Court of Chhattisgarh",
-    stateCode: "CG",
     hcNjdgStateValue: "22~18",
+    coveredGeographies: [buildStateCourtGeography("CG")],
   }),
   GJHC: buildHighCourtProfile({
     courtCode: "GJHC",
     courtSlug: "gujarat",
     courtName: "High Court of Gujarat",
-    stateCode: "GJ",
     hcNjdgStateValue: "24~17",
+    coveredGeographies: [buildStateCourtGeography("GJ")],
     publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
@@ -115,22 +119,22 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtCode: "JHHC",
     courtSlug: "jharkhand",
     courtName: "High Court of Jharkhand",
-    stateCode: "JH",
     hcNjdgStateValue: "20~7",
+    coveredGeographies: [buildStateCourtGeography("JH")],
   }),
   KAHC: buildHighCourtProfile({
     courtCode: "KAHC",
     courtSlug: "karnataka",
     courtName: "High Court of Karnataka",
-    stateCode: "KA",
     hcNjdgStateValue: "29~3",
+    coveredGeographies: [buildStateCourtGeography("KA")],
   }),
   MPHC: buildHighCourtProfile({
     courtCode: "MPHC",
     courtSlug: "madhya-pradesh",
     courtName: "High Court of Madhya Pradesh",
-    stateCode: "MP",
     hcNjdgStateValue: "23~23",
+    coveredGeographies: [buildStateCourtGeography("MP")],
     publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
@@ -142,29 +146,29 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtCode: "MNHC",
     courtSlug: "manipur",
     courtName: "High Court of Manipur",
-    stateCode: "MN",
     hcNjdgStateValue: "14~25",
+    coveredGeographies: [buildStateCourtGeography("MN")],
   }),
   MLHC: buildHighCourtProfile({
     courtCode: "MLHC",
     courtSlug: "meghalaya",
     courtName: "High Court of Meghalaya",
-    stateCode: "ML",
     hcNjdgStateValue: "17~21",
+    coveredGeographies: [buildStateCourtGeography("ML")],
   }),
   ODHC: buildHighCourtProfile({
     courtCode: "ODHC",
     courtSlug: "odisha",
     courtName: "High Court of Orissa",
-    stateCode: "OD",
     hcNjdgStateValue: "21~11",
+    coveredGeographies: [buildStateCourtGeography("OD")],
   }),
   RJHC: buildHighCourtProfile({
     courtCode: "RJHC",
     courtSlug: "rajasthan",
     courtName: "High Court of Rajasthan",
-    stateCode: "RJ",
     hcNjdgStateValue: "8~9",
+    coveredGeographies: [buildStateCourtGeography("RJ")],
     publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
@@ -176,36 +180,36 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtCode: "SKHC",
     courtSlug: "sikkim",
     courtName: "High Court of Sikkim",
-    stateCode: "SK",
     hcNjdgStateValue: "11~24",
+    coveredGeographies: [buildStateCourtGeography("SK")],
   }),
   TRHC: buildHighCourtProfile({
     courtCode: "TRHC",
     courtSlug: "tripura",
     courtName: "High Court of Tripura",
-    stateCode: "TR",
     hcNjdgStateValue: "16~20",
+    coveredGeographies: [buildStateCourtGeography("TR")],
   }),
   UKHC: buildHighCourtProfile({
     courtCode: "UKHC",
     courtSlug: "uttarakhand",
     courtName: "High Court of Uttarakhand",
-    stateCode: "UK",
     hcNjdgStateValue: "5~15",
+    coveredGeographies: [buildStateCourtGeography("UK")],
   }),
   BRHC: buildHighCourtProfile({
     courtCode: "BRHC",
     courtSlug: "bihar",
     courtName: "Patna High Court",
-    stateCode: "BR",
     hcNjdgStateValue: "10~8",
+    coveredGeographies: [buildStateCourtGeography("BR")],
   }),
   UPHC: buildHighCourtProfile({
     courtCode: "UPHC",
     courtSlug: "uttar-pradesh",
     courtName: "Allahabad High Court",
-    stateCode: "UP",
     hcNjdgStateValue: "9~13",
+    coveredGeographies: [buildStateCourtGeography("UP")],
     publicBeta: true,
     sourceReviewStatus: "reviewed",
     sourceUrls: {
@@ -217,6 +221,11 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
 
 export function getHighCourtProfile(courtCode: SupportedHighCourtCode): HighCourtProfile {
   return HIGH_COURT_PROFILES[courtCode];
+}
+
+export function getHighCourtProfileByCode(courtCode: string): HighCourtProfile | null {
+  const normalized = courtCode.trim().toUpperCase();
+  return normalized in HIGH_COURT_PROFILES ? HIGH_COURT_PROFILES[normalized as SupportedHighCourtCode] : null;
 }
 
 export function listHighCourtProfiles(): HighCourtProfile[] {
@@ -241,21 +250,37 @@ function buildHighCourtProfile(input: {
   courtCode: SupportedHighCourtCode;
   courtSlug: string;
   courtName: string;
-  stateCode: SupportedStateCode;
   hcNjdgStateValue: string;
+  coveredGeographies: CourtGeography[];
   publicBeta?: boolean;
   sourceReviewStatus?: HighCourtSourceReviewStatus;
   sourceUrls?: HighCourtSourceUrls;
 }): HighCourtProfile {
+  if (input.coveredGeographies.length === 0) {
+    throw new Error(`High Court ${input.courtCode} must define at least one covered geography.`);
+  }
+
   return {
     courtCode: input.courtCode,
     courtSlug: input.courtSlug,
     courtName: input.courtName,
-    stateCode: input.stateCode,
-    stateName: getStateProfile(input.stateCode).stateName,
     hcNjdgStateValue: input.hcNjdgStateValue,
+    coveredGeographies: input.coveredGeographies,
     publicBeta: input.publicBeta ?? false,
     sourceReviewStatus: input.sourceReviewStatus ?? "queued",
     sourceUrls: input.sourceUrls ?? HIGH_COURT_SOURCE_BASE,
   };
+}
+
+export function getPrimaryHighCourtGeography(profile: HighCourtProfile): CourtGeography {
+  return profile.coveredGeographies[0]!;
+}
+
+export function getPrimaryHighCourtStateCode(profile: HighCourtProfile): SupportedStateCode | null {
+  return getPrimaryHighCourtGeography(profile).lowerCourtStateCode ?? null;
+}
+
+export function getPrimaryHighCourtStateName(profile: HighCourtProfile): string | null {
+  const stateCode = getPrimaryHighCourtStateCode(profile);
+  return stateCode ? getStateProfile(stateCode).stateName : null;
 }

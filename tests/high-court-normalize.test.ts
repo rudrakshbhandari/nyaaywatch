@@ -8,9 +8,16 @@ describe("buildHighCourtSnapshotCandidate", () => {
       {
         capturedAt: "2026-04-18T12:30:00.000Z",
         courtCode: "HPHC",
+        courtSlug: "himachal",
         courtName: "High Court of Himachal Pradesh",
-        stateCode: "HP",
-        stateName: "Himachal Pradesh",
+        coveredGeographies: [
+          {
+            geographyCode: "HP",
+            geographyName: "Himachal Pradesh",
+            geographyType: "state",
+            lowerCourtStateCode: "HP",
+          },
+        ],
         sourceName: "HC NJDG High Court of Himachal Pradesh dashboard",
         sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Himachal Pradesh",
         sourceSnapshotAt: null,
@@ -45,6 +52,7 @@ describe("buildHighCourtSnapshotCandidate", () => {
     expect(candidate.snapshot.sourceSnapshotAt).toBeNull();
     expect(candidate.snapshot.referenceDateAt).toBe("2026-04-18T12:30:00.000Z");
     expect(candidate.snapshot.referenceDateKind).toBe("captured_at");
+    expect(candidate.snapshot.coveredGeographies[0]?.geographyCode).toBe("HP");
     expect(candidate.stats.pendingTotalCases).toBe(105599);
     expect(candidate.trends).toEqual([
       {
@@ -62,9 +70,16 @@ describe("buildHighCourtSnapshotCandidate", () => {
       {
         capturedAt: "2026-04-18T12:30:00.000Z",
         courtCode: "HPHC",
+        courtSlug: "himachal",
         courtName: "High Court of Himachal Pradesh",
-        stateCode: "HP",
-        stateName: "Himachal Pradesh",
+        coveredGeographies: [
+          {
+            geographyCode: "HP",
+            geographyName: "Himachal Pradesh",
+            geographyType: "state",
+            lowerCourtStateCode: "HP",
+          },
+        ],
         sourceName: "HC NJDG High Court of Himachal Pradesh dashboard",
         sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Himachal Pradesh",
         sourceSnapshotAt: "2026-04-17T00:00:00.000Z",
@@ -111,8 +126,14 @@ describe("materializeHighCourtPublishedSnapshot", () => {
           courtCode: "HPHC",
           courtSlug: "himachal",
           courtName: "High Court of Himachal Pradesh",
-          stateCode: "HP",
-          stateName: "Himachal Pradesh",
+          coveredGeographies: [
+            {
+              geographyCode: "HP",
+              geographyName: "Himachal Pradesh",
+              geographyType: "state",
+              lowerCourtStateCode: "HP",
+            },
+          ],
           sourceName: "HC NJDG High Court of Himachal Pradesh dashboard",
           sourceSnapshotAt: null,
           referenceDateAt: "2026-04-18T12:30:00.000Z",

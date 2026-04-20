@@ -116,7 +116,16 @@ describe("High Court source client", () => {
     const bundle = await client.captureLatest();
 
     expect(bundle.courtCode).toBe("HPHC");
+    expect(bundle.courtSlug).toBe("himachal");
     expect(bundle.homePage.url).toBe("https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=2~5");
+    expect(bundle.coveredGeographies).toEqual([
+      {
+        geographyCode: "HP",
+        geographyName: "Himachal Pradesh",
+        geographyType: "state",
+        lowerCourtStateCode: "HP",
+      },
+    ]);
     expect(bundle.benchOptions).toEqual([{ benchCode: "1", benchName: "Principal Bench Himachal P" }]);
   });
 
@@ -136,9 +145,16 @@ describe("High Court source client", () => {
     const bundle = await client.captureLatest();
 
     expect(bundle.courtCode).toBe("UPHC");
+    expect(bundle.courtSlug).toBe("uttar-pradesh");
     expect(bundle.courtName).toBe("Allahabad High Court");
-    expect(bundle.stateCode).toBe("UP");
-    expect(bundle.stateName).toBe("Uttar Pradesh");
+    expect(bundle.coveredGeographies).toEqual([
+      {
+        geographyCode: "UP",
+        geographyName: "Uttar Pradesh",
+        geographyType: "state",
+        lowerCourtStateCode: "UP",
+      },
+    ]);
     expect(bundle.homePage.url).toBe("https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=9~13");
   });
 });
@@ -149,8 +165,15 @@ describe("High Court NJDG extraction", () => {
       capturedAt: "2026-04-19T00:00:00.000Z",
       courtCode: "HPHC",
       courtName: "High Court of Himachal Pradesh",
-      stateCode: "HP",
-      stateName: "Himachal Pradesh",
+      courtSlug: "himachal",
+      coveredGeographies: [
+        {
+          geographyCode: "HP",
+          geographyName: "Himachal Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "HP",
+        },
+      ],
       sourceName: "HC NJDG High Court of Himachal Pradesh dashboard",
       sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Himachal Pradesh",
       homePage: {
@@ -190,8 +213,15 @@ describe("High Court NJDG extraction", () => {
       capturedAt: "2026-04-19T00:00:00.000Z",
       courtCode: "UPHC",
       courtName: "Allahabad High Court",
-      stateCode: "UP",
-      stateName: "Uttar Pradesh",
+      courtSlug: "uttar-pradesh",
+      coveredGeographies: [
+        {
+          geographyCode: "UP",
+          geographyName: "Uttar Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "UP",
+        },
+      ],
       sourceName: "HC NJDG Allahabad High Court dashboard",
       sourceAttribution: "High Courts of India National Judicial Data Grid for Allahabad High Court",
       homePage: {

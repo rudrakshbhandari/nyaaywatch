@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-import { HighCourtPublishedSnapshotSchema, HighCourtReferenceDateKindSchema, HighCourtSnapshotMetadataSchema } from "../domain/high-court-snapshot-schema.js";
+import { HighCourtCoveredGeographySchema } from "../domain/high-court-capture-schema.js";
+import {
+  HighCourtPublishedSnapshotSchema,
+  HighCourtReferenceDateKindSchema,
+  HighCourtSnapshotMetadataSchema,
+  HighCourtStatsSchema,
+  HighCourtTrendPointSchema,
+} from "../domain/high-court-snapshot-schema.js";
 import { getHighCourtProfileBySlug } from "../high-courts.js";
 
 const OperatorUnauthorizedSchema = z.object({
@@ -52,8 +59,7 @@ const HighCourtDetailResponseSchema = z.object({
     courtCode: z.string().min(1),
     courtSlug: z.string().min(1),
     courtName: z.string().min(1),
-    stateCode: z.string().min(1),
-    stateName: z.string().min(1),
+    coveredGeographies: z.array(HighCourtCoveredGeographySchema).min(1),
     publicBeta: z.boolean(),
   }),
   snapshot: z.object({
@@ -65,8 +71,8 @@ const HighCourtDetailResponseSchema = z.object({
     checksumSha256: z.string().min(1),
     createdAt: z.string().datetime(),
   }).nullable(),
-  stats: HighCourtPublishedSnapshotSchema.shape.stats.nullable(),
-  trends: z.array(HighCourtPublishedSnapshotSchema.shape.trends.element).nullable(),
+  stats: HighCourtStatsSchema.nullable(),
+  trends: z.array(HighCourtTrendPointSchema).nullable(),
   publications: z.array(HighCourtPublicationHistoryEntrySchema),
 });
 
@@ -97,8 +103,7 @@ export interface HighCourtInternalReadinessSummary {
     courtCode: string;
     courtSlug: string;
     courtName: string;
-    stateCode: string;
-    stateName: string;
+    coveredGeographies: Array<z.infer<typeof HighCourtCoveredGeographySchema>>;
     detailPath: string;
     runsPath: string;
     publicationsPath: string;
@@ -234,8 +239,7 @@ function resolveHighCourtTarget(courtSlug: string) {
     courtCode: profile.courtCode,
     courtSlug: profile.courtSlug,
     courtName: profile.courtName,
-    stateCode: profile.stateCode,
-    stateName: profile.stateName,
+    coveredGeographies: profile.coveredGeographies,
     detailPath: `/operator/high-courts/${profile.courtSlug}`,
     runsPath: `/operator/high-courts/${profile.courtSlug}/runs`,
     publicationsPath: `/operator/high-courts/${profile.courtSlug}/publications`,

@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import { buildPublicHighCourtRoutes } from "../src/api/public-high-court.js";
+import { HighCourtCaptureBundleSchema } from "../src/domain/high-court-capture-schema.js";
 import { HighCourtPublishedSnapshotSchema } from "../src/domain/high-court-snapshot-schema.js";
 import { HighCourtSnapshotCandidateSchema } from "../src/domain/high-court-snapshot-candidate-schema.js";
-import { getHighCourtProfile, getHighCourtProfileBySlug, listHighCourtProfiles, listPublicHighCourtProfiles } from "../src/high-courts.js";
+import {
+  getHighCourtProfile,
+  getHighCourtProfileBySlug,
+  getPrimaryHighCourtStateCode,
+  listHighCourtProfiles,
+  listPublicHighCourtProfiles,
+} from "../src/high-courts.js";
 
 describe("high court profiles", () => {
   it("defines the currently public High Court beta profiles with reviewed source metadata", () => {
@@ -11,9 +18,15 @@ describe("high court profiles", () => {
       courtCode: "HPHC",
       courtSlug: "himachal",
       courtName: "High Court of Himachal Pradesh",
-      stateCode: "HP",
-      stateName: "Himachal Pradesh",
       hcNjdgStateValue: "2~5",
+      coveredGeographies: [
+        {
+          geographyCode: "HP",
+          geographyName: "Himachal Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "HP",
+        },
+      ],
       publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
@@ -113,6 +126,7 @@ describe("high court profiles", () => {
       "uttar-pradesh",
     ]);
     expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(7);
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("UPHC"))).toBe("UP");
   });
 });
 
@@ -150,8 +164,14 @@ describe("high court snapshot schemas", () => {
       courtCode: "HPHC",
       courtSlug: "himachal",
       courtName: "High Court of Himachal Pradesh",
-      stateCode: "HP",
-      stateName: "Himachal Pradesh",
+      coveredGeographies: [
+        {
+          geographyCode: "HP",
+          geographyName: "Himachal Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "HP",
+        },
+      ],
       sourceName: "HC NJDG Himachal High Court dashboard",
       sourceSnapshotAt: null,
       referenceDateAt: "2026-04-18T09:00:00.000Z",
@@ -213,5 +233,38 @@ describe("high court snapshot schemas", () => {
     };
 
     expect(HighCourtPublishedSnapshotSchema.parse(publishedPayload)).toEqual(publishedPayload);
+  });
+
+  it("parses legacy single-state High Court metadata into coveredGeographies", () => {
+    const legacyCandidatePayload = {
+      ...candidatePayload,
+      snapshot: {
+        ...candidatePayload.snapshot,
+        stateCode: "HP",
+        stateName: "Himachal Pradesh",
+      },
+    };
+    delete (legacyCandidatePayload.snapshot as { coveredGeographies?: unknown }).coveredGeographies;
+
+    const parsedCandidate = HighCourtSnapshotCandidateSchema.parse(legacyCandidatePayload);
+    expect(parsedCandidate.snapshot.coveredGeographies).toEqual(candidatePayload.snapshot.coveredGeographies);
+
+    const parsedCapture = HighCourtCaptureBundleSchema.parse({
+      capturedAt: "2026-04-18T09:00:00.000Z",
+      courtCode: "HPHC",
+      courtName: "High Court of Himachal Pradesh",
+      stateCode: "HP",
+      stateName: "Himachal Pradesh",
+      sourceName: "HC NJDG Himachal High Court dashboard",
+      sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Himachal Pradesh",
+      homePage: {
+        url: "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=2~5",
+        html: "<html></html>",
+      },
+      benchOptions: [{ benchCode: "1", benchName: "Principal Bench Himachal P" }],
+    });
+
+    expect(parsedCapture.courtSlug).toBe("himachal");
+    expect(parsedCapture.coveredGeographies).toEqual(candidatePayload.snapshot.coveredGeographies);
   });
 });
