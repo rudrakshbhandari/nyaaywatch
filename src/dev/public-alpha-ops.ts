@@ -25,7 +25,7 @@ export interface PublicAlphaOpsStateSummary {
   latestSuccessfulRunId: string | null;
   latestSuccessfulRunSourceSnapshotAt: string | null;
   latestSuccessfulRunCompletedAt: string | null;
-  latestSuccessfulRunFreshnessDays: number | null;
+  latestSuccessfulRunLagDays: number | null;
   staleSnapshotDetected: boolean;
   dailyFetchLagDetected: boolean;
   verification?: ReleaseVerificationSummary;
@@ -70,11 +70,9 @@ export async function verifyPublicAlphaOperations(
       const currentFreshnessDays = verification.snapshot.currentFreshnessDays;
       const staleSnapshotDetected =
         verification.snapshot.qualityState === "stale" || currentFreshnessDays > STALE_SNAPSHOT_THRESHOLD_DAYS;
-      const latestSuccessfulRunFreshnessDays = latestSuccessfulRun
-        ? freshnessDays(latestSuccessfulRun.sourceSnapshotAt, checkedAt)
-        : null;
+      const latestSuccessfulRunLagDays = latestSuccessfulRun ? latestSuccessfulRunAgeDays(latestSuccessfulRun, checkedAt) : null;
       const dailyFetchLagDetected =
-        latestSuccessfulRunFreshnessDays === null || latestSuccessfulRunFreshnessDays > dailyFetchLagThresholdDays;
+        latestSuccessfulRunLagDays === null || latestSuccessfulRunLagDays > dailyFetchLagThresholdDays;
       states.push({
         stateCode: profile.stateCode,
         stateName: profile.stateName,
@@ -87,7 +85,7 @@ export async function verifyPublicAlphaOperations(
         latestSuccessfulRunId: latestSuccessfulRun?.id ?? null,
         latestSuccessfulRunSourceSnapshotAt: latestSuccessfulRun?.sourceSnapshotAt ?? null,
         latestSuccessfulRunCompletedAt: latestSuccessfulRun?.completedAt ?? null,
-        latestSuccessfulRunFreshnessDays,
+        latestSuccessfulRunLagDays,
         staleSnapshotDetected,
         dailyFetchLagDetected,
         verification,
@@ -105,7 +103,7 @@ export async function verifyPublicAlphaOperations(
         latestSuccessfulRunId: null,
         latestSuccessfulRunSourceSnapshotAt: null,
         latestSuccessfulRunCompletedAt: null,
-        latestSuccessfulRunFreshnessDays: null,
+        latestSuccessfulRunLagDays: null,
         staleSnapshotDetected: false,
         dailyFetchLagDetected: false,
         error: error instanceof Error ? error.message : String(error),
@@ -183,4 +181,11 @@ function isSuccessfulOperatorRun(value: unknown): value is OperatorRunRecord {
     SUCCESSFUL_RUN_STATUSES.has(record.status) &&
     (typeof record.completedAt === "string" || record.completedAt === null)
   );
+}
+
+function latestSuccessfulRunAgeDays(run: OperatorRunRecord, checkedAt: Date) {
+  // Completion time is the real cadence signal; source snapshot date can stay older
+  // when the internal scheduler reruns without changing the upstream day's data.
+  const measuredAt = run.completedAt ?? run.sourceSnapshotAt;
+  return freshnessDays(measuredAt, checkedAt);
 }

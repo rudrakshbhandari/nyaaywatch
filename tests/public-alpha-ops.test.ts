@@ -109,7 +109,7 @@ describe("public alpha ops verification", () => {
               {
                 id: "run_pb_latest",
                 stateCode: "PB",
-                sourceSnapshotAt: "2026-04-17T00:00:00.000Z",
+                sourceSnapshotAt: "2026-04-14T00:00:00.000Z",
                 status: "completed",
                 completedAt: "2026-04-18T08:12:00.000Z",
               },
@@ -253,7 +253,7 @@ describe("public alpha ops verification", () => {
     );
   });
 
-  it("does not treat an older published snapshot as internal fetch lag when a fresh unpublished run exists", async () => {
+  it("does not treat an older run source snapshot date as fetch lag when the successful run finished recently", async () => {
     listPublicStateProfiles.mockReturnValueOnce([{ stateCode: "HP", stateName: "Himachal Pradesh", stateSlug: "himachal-pradesh" }]);
     verifyPublicRelease.mockResolvedValueOnce({
       baseUrl: "https://nyaaywatch.in",
@@ -292,7 +292,7 @@ describe("public alpha ops verification", () => {
             {
               id: "run_hp_latest",
               stateCode: "HP",
-              sourceSnapshotAt: "2026-04-16T00:00:00.000Z",
+              sourceSnapshotAt: "2026-04-14T00:00:00.000Z",
               status: "completed",
               completedAt: "2026-04-17T20:10:06.000Z",
             },
@@ -321,8 +321,8 @@ describe("public alpha ops verification", () => {
       sourceSnapshotAt: "2026-04-10T00:00:00.000Z",
       currentFreshnessDays: 8,
       latestSuccessfulRunId: "run_hp_latest",
-      latestSuccessfulRunSourceSnapshotAt: "2026-04-16T00:00:00.000Z",
-      latestSuccessfulRunFreshnessDays: 2,
+      latestSuccessfulRunSourceSnapshotAt: "2026-04-14T00:00:00.000Z",
+      latestSuccessfulRunLagDays: 0,
       dailyFetchLagDetected: false,
     });
   });
