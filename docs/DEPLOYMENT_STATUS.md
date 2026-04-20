@@ -29,10 +29,14 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
 - ECS task definition: `nyaaywatch-staging:103`
-- Internal raw fetch schedule: `nyaaywatch-staging-weekday-internal-fetch`
-- Internal raw fetch schedule ARN: `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
-- Internal raw fetch schedule cadence policy: every day at `8:00 AM Asia/Kolkata`
-- Internal raw fetch schedule scope policy: all implemented states
+- Internal raw fetch schedules:
+  - lower-court states: `nyaaywatch-staging-weekday-internal-fetch` at `8:00 AM Asia/Kolkata`
+  - Supreme Court: `nyaaywatch-staging-supreme-court-internal-fetch` at `8:10 AM Asia/Kolkata`
+  - reviewed High Courts: `nyaaywatch-staging-high-courts-internal-fetch` at `8:20 AM Asia/Kolkata`
+- Internal raw fetch schedule scope policy:
+  - lower-court states: all implemented states
+  - Supreme Court: the single configured Supreme Court profile
+  - High Courts: only profiles whose `sourceReviewStatus` is `reviewed`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
 - CloudWatch log group: `/ecs/nyaaywatch-staging`
@@ -45,7 +49,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
-- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the internal fetch schedule against the live task definition while reusing the existing scheduler role
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the lower-court, Supreme Court, and reviewed-High-Court internal fetch schedules against the live task definition while reusing the existing scheduler role
 
 Operational notes:
 
@@ -55,7 +59,7 @@ Operational notes:
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 - For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
-- The documented internal raw-fetch policy is to run `fetch` only every day at `8:00 AM Asia/Kolkata` across all implemented states. It does not publish or change the public snapshot.
+- The documented internal raw-fetch policy is to run lower-court state fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
 

@@ -28,14 +28,14 @@ describe("scheduled fetch", () => {
       .mockResolvedValueOnce({ run: { id: "run_up_789" } });
 
     const { runScheduledFetches } = await import("../src/dev/scheduled-fetch.js");
-    const summary = await runScheduledFetches("Scheduled daily internal raw fetch");
+    const summary = await runScheduledFetches("Scheduled daily lower-court internal raw fetch");
 
     expect(runOperatorInvocation.mock.calls).toEqual([
       [
         {
           command: "fetch",
           stateCode: "HP",
-          note: "Scheduled daily internal raw fetch for Himachal Pradesh [HP]",
+          note: "Scheduled daily lower-court internal raw fetch for Himachal Pradesh [HP]",
         },
         process.env,
       ],
@@ -43,7 +43,7 @@ describe("scheduled fetch", () => {
         {
           command: "fetch",
           stateCode: "PB",
-          note: "Scheduled daily internal raw fetch for Punjab [PB]",
+          note: "Scheduled daily lower-court internal raw fetch for Punjab [PB]",
         },
         process.env,
       ],
@@ -51,14 +51,14 @@ describe("scheduled fetch", () => {
         {
           command: "fetch",
           stateCode: "UP",
-          note: "Scheduled daily internal raw fetch for Uttar Pradesh [UP]",
+          note: "Scheduled daily lower-court internal raw fetch for Uttar Pradesh [UP]",
         },
         process.env,
       ],
     ]);
 
     expect(summary).toEqual({
-      notePrefix: "Scheduled daily internal raw fetch",
+      notePrefix: "Scheduled daily lower-court internal raw fetch",
       totalStates: 3,
       successfulStateCodes: ["HP", "PB", "UP"],
       failedStateCodes: [],
@@ -99,7 +99,7 @@ describe("scheduled fetch", () => {
     const { assertScheduledFetchSucceeded, runScheduledFetches } = await import("../src/dev/scheduled-fetch.js");
     const summary = await runScheduledFetches();
 
-    expect(summary.notePrefix).toBe("Scheduled daily internal raw fetch");
+    expect(summary.notePrefix).toBe("Scheduled daily lower-court internal raw fetch");
     expect(summary.successfulStateCodes).toEqual(["HP", "UP"]);
     expect(summary.failedStateCodes).toEqual(["PB"]);
     expect(summary.results).toEqual([
