@@ -31,7 +31,7 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 ### 3. Deliberate Post-Rollout Scope Decisions
 
 - [ ] Wire the Cloudflare API token into the live ECS task definition so the new Supreme Court and High Court public-route purge path can execute in production instead of only existing in repo code.
-- [ ] Decide which remaining queued single-jurisdiction courts should become the next public High Court wave after Himachal, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan.
+- [ ] Run source review plus `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=chhattisgarh,jharkhand` for the newly chosen Chhattisgarh plus Jharkhand pair before deciding whether either court deserves the next public High Court wave after the current seven-court beta.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
