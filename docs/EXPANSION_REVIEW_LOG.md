@@ -1606,7 +1606,7 @@ Meghalaya and Manipur are now internal-ready, and the queued single-jurisdiction
 - fetch `run_642f9d1d-5246-42a5-b3e0-1b5bb78def50`, publish `publication_83b3d316-cdaf-4729-bcea-a875599af83f`, replay `run_84726b0e-7732-4d4b-8a6b-da3c10d17ae4`, replay publication `publication_adade273-f47c-4b4e-8501-75ea35e06814`, and rollback `publication_797e59da-9032-42dc-a891-f68f3d83fc0b` all succeeded
 - the readiness verifier returned `operatorAuthProtected=true`, `runCount=2`, `publicationCount=3`, `publishCount=2`, `rollbackCount=1`, `replayedRunCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
 - the live internal operator profile reports court code `PHHC` with explicit covered geographies for Punjab, Haryana, and Chandigarh
-- `/high-courts/punjab-and-haryana` remained outside the public route family during this proof slice; this stayed internal-only throughout
+- `/high-courts/punjab-and-haryana` remained outside the public route family during this proof slice; that internal-only state was later lifted by the public beta launch recorded below
 
 ### What Cleared
 
@@ -1616,4 +1616,31 @@ Meghalaya and Manipur are now internal-ready, and the queued single-jurisdiction
 
 ### Recommendation
 
-Punjab and Haryana is now internal-ready. The next deliberate step is not another proof run; it is a methodology and UX decision about how explicit covered geographies should be described before any multi-jurisdiction High Court is considered for public beta.
+Punjab and Haryana cleared the internal proof bar first, then later cleared the separate methodology and public-language gates needed for live public beta.
+
+## Punjab and Haryana High Court Public Beta Launch
+
+- date: `2026-04-20`
+- court: `PHHC`
+- decision: `public beta live`
+- GitHub PR: `#137`
+- GitHub deploy run: `24658794657`
+
+### Live Public Evidence
+
+- GitHub deploy run `24658794657` completed successfully on `main`, with `verify` green and `deploy` green
+- the live ECS service rolled to task definition `:130` and reached steady state
+- all three live internal scheduler targets now point at task definition `:130`: lower-court, Supreme Court, and High Court internal fetch schedules
+- the public Punjab and Haryana route family now returns `200` on `https://nyaaywatch.in`: `/high-courts/punjab-and-haryana`, `/high-courts/punjab-and-haryana/data`, `/high-courts/punjab-and-haryana/methodology`, `/high-courts/punjab-and-haryana/api`, and `/v1/high-courts/punjab-and-haryana/stats`
+- `/high-courts` and `/` both now surface High Court of Punjab and Haryana in the public High Court card set
+- the public copy explicitly names Punjab, Haryana, and Chandigarh, so the first multi-jurisdiction High Court beta page stays court-first instead of collapsing back into fake one-state metadata
+
+### What Changed
+
+- the product no longer treats Punjab and Haryana as an internal-only multi-jurisdiction pilot; it is now the first live public multi-jurisdiction High Court beta page
+- the court-first `coveredGeographies[]` model, widened route language, and live proof path have all now been exercised under real public traffic surfaces
+- future multi-jurisdiction High Court additions are no longer blocked on the core model itself; they are blocked only on separate product and trust decisions
+
+### Recommendation
+
+Punjab and Haryana is now live public beta. The next deliberate step is not another Punjab and Haryana rollout task; it is deciding whether any further multi-jurisdiction High Court should join the public beta beyond this first court-first proof point.
