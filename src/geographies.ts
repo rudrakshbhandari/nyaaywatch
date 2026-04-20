@@ -253,3 +253,11 @@ export function buildStateCourtGeography(stateCode: SupportedStateCode): CourtGe
     lowerCourtStateCode: profile.stateCode,
   };
 }
+
+export function buildUnionTerritoryCourtGeography(geographyCode: string, geographyName: string): CourtGeography {
+  return {
+    geographyCode,
+    geographyName,
+    geographyType: "union_territory",
+  };
+}

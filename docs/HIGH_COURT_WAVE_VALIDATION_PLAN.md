@@ -24,6 +24,7 @@ Every queued single-jurisdiction High Court in the current registry now has live
 
 The initial design answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`.
 The first execution-plan answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
+PR 3 from that plan is now landed too, so Punjab and Haryana High Court is configured internally with explicit Punjab, Haryana, and Chandigarh coverage while still staying outside the public beta.
 
 The first validation pair was:
 
@@ -76,33 +77,32 @@ That pair has now also cleared the internal proof bar on the live operator lane.
 
 This is a product and operations recommendation from current repo state, not an official source fact.
 
-## Why This Pair
+## Why This Court
 
-These two courts were the correct final internal validation pair because they are:
+Punjab and Haryana is the correct next internal validation target because it is:
 
-- already inside the new single-jurisdiction High Court registry
-- already aligned with supported lower-court state profiles
+- already configured inside the new court-first High Court registry
+- the first real proof target for the widened `coveredGeographies[]` model
 - still internal-only instead of already public beta
-- already backed by live lower-court public state profiles, so the High Court trial does not need new geography scaffolding
-- meaningfully wider than the smallest remaining queued courts without forcing the repo into multi-jurisdiction logic
-- materially meaningful without jumping straight to multi-jurisdiction courts
-- still simple enough to fit the current one-state-per-High-Court snapshot contract
+- backed by live lower-court public state profiles for Punjab and Haryana, while also forcing the repo to represent Chandigarh honestly as a union territory
+- narrow enough to validate the model without jumping straight to the larger deferred multi-jurisdiction courts
 
-The point of this pair is not representativeness theater.
+The point of this court is not extra breadth for its own sake.
 
-The point of this pair was to close the last remaining single-jurisdiction evidence gap on:
+The point of this court is to prove that the internal operator lane, readiness tooling, and published High Court model all still hold once one High Court legitimately spans multiple geographies:
 
-- a north-east hill-state court that keeps the final queued proof step inside the current one-state-one-court contract: Meghalaya
-- another north-east court that closes out the remaining single-jurisdiction queue without inventing new schema logic: Manipur
+- Punjab
+- Haryana
+- Chandigarh as a union territory
 
-Both held up, so the repo has now closed the entire remaining single-jurisdiction High Court queue and can make the next public-wave or multi-jurisdiction decision from full internal evidence instead of partial coverage.
+This is the minimum honest multi-jurisdiction proof step before any broader public-wave discussion.
 
 ## Validation Command
 
-Use the batch readiness sweep for any future internal proof pair:
+Use the single-court readiness sweep for the next internal proof target:
 
 ```bash
-npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=<court-a>,<court-b>
+npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=punjab-and-haryana
 ```
 
 Requires:
@@ -123,6 +123,8 @@ The batch command reuses the existing High Court readiness verifier for each sel
 - rollback evidence
 - explicit High Court reference-date posture
 - aggregate ready / not-ready totals across the selected set
+
+The single-court command is now the right next move because Punjab and Haryana is an internal pilot, not a new pair-selection exercise.
 
 ## Current Live Evidence
 

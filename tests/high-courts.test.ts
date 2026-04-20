@@ -103,6 +103,39 @@ describe("high court profiles", () => {
         officialSite: "https://tshc.gov.in/",
       },
     });
+
+    expect(getHighCourtProfile("PHHC")).toEqual({
+      courtCode: "PHHC",
+      courtSlug: "punjab-and-haryana",
+      courtName: "High Court of Punjab and Haryana",
+      hcNjdgStateValue: "3~22",
+      coveredGeographies: [
+        {
+          geographyCode: "PB",
+          geographyName: "Punjab",
+          geographyType: "state",
+          lowerCourtStateCode: "PB",
+        },
+        {
+          geographyCode: "HR",
+          geographyName: "Haryana",
+          geographyType: "state",
+          lowerCourtStateCode: "HR",
+        },
+        {
+          geographyCode: "CHD",
+          geographyName: "Chandigarh",
+          geographyType: "union_territory",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://www.highcourtchd.gov.in/",
+      },
+    });
   });
 
   it("resolves high court profiles by slug", () => {
@@ -113,9 +146,10 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("madhya-pradesh")?.courtCode).toBe("MPHC");
     expect(getHighCourtProfileBySlug("andhra-pradesh")?.courtCode).toBe("APHC");
     expect(getHighCourtProfileBySlug("bihar")?.courtCode).toBe("BRHC");
+    expect(getHighCourtProfileBySlug("punjab-and-haryana")?.courtCode).toBe("PHHC");
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
-    expect(listHighCourtProfiles()).toHaveLength(17);
+    expect(listHighCourtProfiles()).toHaveLength(18);
     expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
       "himachal",
       "andhra-pradesh",
@@ -125,8 +159,9 @@ describe("high court profiles", () => {
       "rajasthan",
       "uttar-pradesh",
     ]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(7);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(8);
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("UPHC"))).toBe("UP");
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("PHHC"))).toBe("PB");
   });
 });
 

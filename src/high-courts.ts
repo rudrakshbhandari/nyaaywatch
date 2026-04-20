@@ -1,5 +1,6 @@
 import {
   buildStateCourtGeography,
+  buildUnionTerritoryCourtGeography,
   getStateProfile,
   type CourtGeography,
   type SupportedStateCode,
@@ -38,6 +39,7 @@ export const SUPPORTED_HIGH_COURT_CODES = [
   "MNHC",
   "MLHC",
   "ODHC",
+  "PHHC",
   "RJHC",
   "SKHC",
   "TRHC",
@@ -162,6 +164,22 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Orissa",
     hcNjdgStateValue: "21~11",
     coveredGeographies: [buildStateCourtGeography("OD")],
+  }),
+  PHHC: buildHighCourtProfile({
+    courtCode: "PHHC",
+    courtSlug: "punjab-and-haryana",
+    courtName: "High Court of Punjab and Haryana",
+    hcNjdgStateValue: "3~22",
+    coveredGeographies: [
+      buildStateCourtGeography("PB"),
+      buildStateCourtGeography("HR"),
+      buildUnionTerritoryCourtGeography("CHD", "Chandigarh"),
+    ],
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.highcourtchd.gov.in/",
+    },
   }),
   RJHC: buildHighCourtProfile({
     courtCode: "RJHC",

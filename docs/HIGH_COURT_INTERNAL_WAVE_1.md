@@ -29,6 +29,7 @@ The internal High Court registry now includes:
 - Manipur
 - Meghalaya
 - Odisha
+- Punjab and Haryana
 - Rajasthan
 - Sikkim
 - Tripura
@@ -38,7 +39,7 @@ The internal High Court registry now includes:
 
 Current posture:
 
-- `sourceReviewStatus=reviewed`: Himachal Pradesh, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
+- `sourceReviewStatus=reviewed`: Himachal Pradesh, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
 - `sourceReviewStatus=queued`: every other configured court in this wave
 - `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Rajasthan, and Uttar Pradesh
 - `publicBeta=false`: every other configured court in this wave
@@ -49,8 +50,9 @@ This wave is intentionally narrower than "all High Courts in India."
 
 It includes courts that fit the current model without pretending the model is broader than it is:
 
-- the current High Court snapshot schema still carries one `stateCode` and one `stateName`
-- these courts map cleanly to one already-supported state profile
+- the current canonical High Court model is now court-first and can carry explicit `coveredGeographies[]`
+- the single-jurisdiction courts still map cleanly to one already-supported state profile
+- Punjab and Haryana is now the one intentional internal multi-jurisdiction pilot after that model change
 - the HC NJDG selector values are explicit and stable enough to configure now
 
 ## Explicitly Deferred
@@ -62,7 +64,6 @@ This slice does **not** configure the multi-jurisdiction High Courts whose produ
 - Gauhati High Court
 - High Court of Kerala
 - Madras High Court
-- High Court of Punjab and Haryana
 
 Delhi High Court is also deferred for now because the current lower-court state registry does not yet include a Delhi state profile, and this slice intentionally stays aligned with the existing supported-state shell.
 
@@ -100,7 +101,8 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - Sikkim and Tripura have now also cleared the internal proof bar
 - Meghalaya and Manipur have now also cleared the internal proof bar
 - the queued single-jurisdiction High Court validation list is now exhausted
-- `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md` now records the first court-first model needed before the deferred multi-jurisdiction courts can move again
-- `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` now turns that design into a concrete first execution slice, with Punjab and Haryana High Court as the first internal multi-jurisdiction pilot once the identity and schema work lands
+- `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md` now records the court-first model needed before the remaining deferred multi-jurisdiction courts can move again
+- `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` now has PR 1 through PR 3 landed, and Punjab and Haryana High Court is configured internally as the first multi-jurisdiction pilot with explicit Punjab, Haryana, and Chandigarh coverage
+- the next live validation move is now the internal Punjab and Haryana proof cycle, not another single-jurisdiction pair
 - keep the current seven-court public beta fixed until multi-jurisdiction High Courts are intentionally designed
 - treat any future court addition as a product and methodology decision, not automatic public-beta approval

@@ -16,6 +16,8 @@ const OperatorUnauthorizedSchema = z.object({
 
 const RunRecordSchema = z.object({
   id: z.string().min(1),
+  scopeType: z.enum(["lower_court_state", "high_court", "supreme_court"]),
+  scopeCode: z.string().min(1),
   stateCode: z.string().min(1),
   sourceLabel: z.string().min(1),
   sourceSnapshotAt: z.string().datetime(),
@@ -30,6 +32,8 @@ const RunRecordSchema = z.object({
 
 const PublicationRecordSchema = z.object({
   id: z.string().min(1),
+  scopeType: z.enum(["lower_court_state", "high_court", "supreme_court"]),
+  scopeCode: z.string().min(1),
   stateCode: z.string().min(1),
   publishedSnapshotId: z.string().min(1),
   action: z.enum(["publish", "rollback"]),
@@ -65,6 +69,8 @@ const HighCourtDetailResponseSchema = z.object({
   snapshot: z.object({
     id: z.string().min(1),
     runId: z.string().min(1),
+    scopeType: z.enum(["lower_court_state", "high_court", "supreme_court"]),
+    scopeCode: z.string().min(1),
     stateCode: z.string().min(1),
     payloadVersion: z.number().int().positive(),
     payload: HighCourtPublishedSnapshotSchema,
@@ -129,7 +135,11 @@ export interface HighCourtInternalReadinessSummary {
     replayedRunCount: number;
     latestRunId: string | null;
     latestRunStatus: string | null;
+    latestRunScopeType: "lower_court_state" | "high_court" | "supreme_court" | null;
+    latestRunScopeCode: string | null;
     latestPublicationId: string | null;
+    latestPublicationScopeType: "lower_court_state" | "high_court" | "supreme_court" | null;
+    latestPublicationScopeCode: string | null;
     rollbackTargetPublicationId: string | null;
   };
   gates: {
@@ -137,6 +147,7 @@ export interface HighCourtInternalReadinessSummary {
     hasReplayEvidence: boolean;
     hasRollbackEvidence: boolean;
     referenceDateContractDefensible: boolean;
+    canonicalScopeAligned: boolean;
     internalProofBarSatisfied: boolean;
   };
 }
@@ -178,6 +189,12 @@ export async function verifyHighCourtInternalReadiness(
     (detail.snapshot.payload.snapshot.sourceSnapshotAt !== null || detail.snapshot.payload.snapshot.referenceDateKind === "captured_at");
   const hasReplayEvidence = replayedRunCount > 0;
   const hasRollbackEvidence = rollbackCount > 0;
+  const canonicalScopeAligned =
+    (detail.snapshot === null || (detail.snapshot.scopeType === "high_court" && detail.snapshot.scopeCode === target.courtCode)) &&
+    runsResponse.runs.every((run) => run.scopeType === "high_court" && run.scopeCode === target.courtCode) &&
+    publicationsResponse.publications.every(
+      (entry) => entry.publication.scopeType === "high_court" && entry.publication.scopeCode === target.courtCode,
+    );
 
   return {
     baseUrl: normalizedBaseUrl,
@@ -207,7 +224,11 @@ export async function verifyHighCourtInternalReadiness(
       replayedRunCount,
       latestRunId: runsResponse.runs[0]?.id ?? null,
       latestRunStatus: runsResponse.runs[0]?.status ?? null,
+      latestRunScopeType: runsResponse.runs[0]?.scopeType ?? null,
+      latestRunScopeCode: runsResponse.runs[0]?.scopeCode ?? null,
       latestPublicationId: publicationsResponse.publications[0]?.publication.id ?? null,
+      latestPublicationScopeType: publicationsResponse.publications[0]?.publication.scopeType ?? null,
+      latestPublicationScopeCode: publicationsResponse.publications[0]?.publication.scopeCode ?? null,
       rollbackTargetPublicationId: publicationsResponse.publications[1]?.publication.id ?? null,
     },
     gates: {
@@ -215,7 +236,9 @@ export async function verifyHighCourtInternalReadiness(
       hasReplayEvidence,
       hasRollbackEvidence,
       referenceDateContractDefensible,
-      internalProofBarSatisfied: hasPublishedSnapshot && hasReplayEvidence && hasRollbackEvidence && referenceDateContractDefensible,
+      canonicalScopeAligned,
+      internalProofBarSatisfied:
+        hasPublishedSnapshot && hasReplayEvidence && hasRollbackEvidence && referenceDateContractDefensible && canonicalScopeAligned,
     },
   };
 }
@@ -289,11 +312,19 @@ function assertMatchingHighCourt(
     throw new Error(`High Court detail route returned ${detail.court.courtSlug}, expected ${expectedCourtSlug}.`);
   }
 
+  if (detail.snapshot && (detail.snapshot.scopeType !== "high_court" || detail.snapshot.scopeCode !== detail.court.courtCode)) {
+    throw new Error(`High Court detail snapshot scope did not match ${detail.court.courtCode}.`);
+  }
+
   if (runs.court.courtSlug !== expectedCourtSlug) {
     throw new Error(`High Court runs route returned ${runs.court.courtSlug}, expected ${expectedCourtSlug}.`);
   }
 
   if (publications.court.courtSlug !== expectedCourtSlug) {
     throw new Error(`High Court publications route returned ${publications.court.courtSlug}, expected ${expectedCourtSlug}.`);
+  }
+
+  if (JSON.stringify(detail.court.coveredGeographies) !== JSON.stringify(getHighCourtProfileBySlug(expectedCourtSlug)?.coveredGeographies ?? [])) {
+    throw new Error(`High Court detail route returned unexpected covered geographies for ${expectedCourtSlug}.`);
   }
 }

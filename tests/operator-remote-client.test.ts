@@ -131,6 +131,10 @@ describe("remote operator client", () => {
     });
   });
 
+  it("resolves the internal Punjab and Haryana pilot slug", () => {
+    expect(resolveRemoteOperatorHighCourtSlug("punjab-and-haryana")).toBe("punjab-and-haryana");
+  });
+
   it("targets the Supreme Court operator namespace when the Supreme Court selector is enabled", async () => {
     let requestSummary: { host: string; path: string; token: string } | null = null;
     const server = createServer((request, response) => {

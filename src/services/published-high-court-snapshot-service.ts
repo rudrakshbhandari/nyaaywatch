@@ -120,7 +120,7 @@ export class PublishedHighCourtSnapshotService {
 
   async inspectRun(runId: string): Promise<HighCourtRunInspection | null> {
     const run = await this.store.getRunById(runId);
-    if (!run || run.stateCode !== this.profile.courtCode) {
+    if (!run || !belongsToHighCourtScope(run, this.profile.courtCode)) {
       return null;
     }
 
@@ -373,7 +373,7 @@ export class PublishedHighCourtSnapshotService {
     if (!target) {
       throw new Error(`Publication ${publicationId} was not found.`);
     }
-    if (target.stateCode !== this.profile.courtCode) {
+    if (!belongsToHighCourtScope(target, this.profile.courtCode)) {
       throw new Error(`Publication ${publicationId} does not belong to ${this.profile.courtCode}.`);
     }
 
@@ -557,4 +557,11 @@ function defaultPublishNote(run: RunRecord): string {
 function buildFailureNote(prefix: string, error: unknown): string {
   const detail = error instanceof Error ? error.message : "Unexpected error";
   return `${prefix}: ${detail}`;
+}
+
+function belongsToHighCourtScope(
+  record: Pick<RunRecord | PublicationRecord, "scopeType" | "scopeCode">,
+  courtCode: string,
+) {
+  return record.scopeType === "high_court" && record.scopeCode === courtCode;
 }

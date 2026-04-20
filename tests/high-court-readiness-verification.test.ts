@@ -57,10 +57,15 @@ describe("verifyHighCourtInternalReadiness", () => {
     expect(result.internalEvidence.publishCount).toBeGreaterThanOrEqual(2);
     expect(result.internalEvidence.rollbackCount).toBeGreaterThanOrEqual(1);
     expect(result.internalEvidence.replayedRunCount).toBeGreaterThanOrEqual(1);
+    expect(result.internalEvidence.latestRunScopeType).toBe("high_court");
+    expect(result.internalEvidence.latestRunScopeCode).toBe("HPHC");
+    expect(result.internalEvidence.latestPublicationScopeType).toBe("high_court");
+    expect(result.internalEvidence.latestPublicationScopeCode).toBe("HPHC");
     expect(result.gates.hasPublishedSnapshot).toBe(true);
     expect(result.gates.hasReplayEvidence).toBe(true);
     expect(result.gates.hasRollbackEvidence).toBe(true);
     expect(result.gates.referenceDateContractDefensible).toBe(true);
+    expect(result.gates.canonicalScopeAligned).toBe(true);
     expect(result.gates.internalProofBarSatisfied).toBe(true);
   });
 });

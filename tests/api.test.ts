@@ -234,10 +234,18 @@ describe("HTTP routes", () => {
     expect(listedHighCourts.body.highCourts.length).toBeGreaterThan(1);
     expect(listedHighCourts.body.highCourts.map((entry: { court: { courtSlug: string } }) => entry.court.courtSlug)).toContain("himachal");
     expect(listedHighCourts.body.highCourts.map((entry: { court: { courtSlug: string } }) => entry.court.courtSlug)).toContain("uttar-pradesh");
+    expect(listedHighCourts.body.highCourts.map((entry: { court: { courtSlug: string } }) => entry.court.courtSlug)).toContain(
+      "punjab-and-haryana",
+    );
     const himachalListing = listedHighCourts.body.highCourts.find(
       (entry: { court: { courtSlug: string } }) => entry.court.courtSlug === "himachal",
     );
     expect(himachalListing?.hasPublishedSnapshot).toBe(false);
+    const punjabHaryanaListing = listedHighCourts.body.highCourts.find(
+      (entry: { court: { courtSlug: string } }) => entry.court.courtSlug === "punjab-and-haryana",
+    );
+    expect(punjabHaryanaListing?.court.publicBeta).toBe(false);
+    expect(punjabHaryanaListing?.court.coveredGeographies).toHaveLength(3);
 
     const fetched = await request(app)
       .post("/operator/high-courts/himachal/runs/fetch")
@@ -245,6 +253,8 @@ describe("HTTP routes", () => {
       .send({ note: "Fetch Himachal High Court via HTTP" });
 
     expect(fetched.status).toBe(201);
+    expect(fetched.body.run.scopeType).toBe("high_court");
+    expect(fetched.body.run.scopeCode).toBe("HPHC");
     expect(fetched.body.run.stateCode).toBe("HPHC");
     expect(fetched.body.candidate.snapshot.courtTier).toBe("high_court");
     expect(fetched.body.candidate.snapshot.referenceDateKind).toBe("captured_at");
@@ -256,6 +266,7 @@ describe("HTTP routes", () => {
     expect(runs.status).toBe(200);
     expect(runs.body.runs).toHaveLength(1);
     expect(runs.body.runs[0].id).toBe(fetched.body.run.id);
+    expect(runs.body.runs[0].scopeCode).toBe("HPHC");
 
     const inspected = await request(app)
       .get(`/operator/high-courts/himachal/runs/${fetched.body.run.id}`)
@@ -279,7 +290,10 @@ describe("HTTP routes", () => {
     expect(detail.status).toBe(200);
     expect(detail.body.court.courtSlug).toBe("himachal");
     expect(detail.body.stats.pendingTotalCases).toBeGreaterThan(0);
+    expect(detail.body.snapshot.scopeType).toBe("high_court");
+    expect(detail.body.snapshot.scopeCode).toBe("HPHC");
     expect(detail.body.publications[0].publication.stateCode).toBe("HPHC");
+    expect(detail.body.publications[0].publication.scopeCode).toBe("HPHC");
 
     const replay = await request(app)
       .post(`/operator/high-courts/himachal/runs/${published.body.run.id}/replay`)
@@ -296,6 +310,10 @@ describe("HTTP routes", () => {
 
     expect(rollback.status).toBe(201);
     expect(rollback.body.action).toBe("rollback");
+    expect(rollback.body.scopeCode).toBe("HPHC");
+
+    const internalOnlyPublicRoute = await request(app).get("/high-courts/punjab-and-haryana");
+    expect(internalOnlyPublicRoute.status).toBe(404);
   });
 
   it("exposes the internal Supreme Court read surface and operator lifecycle on the dedicated namespace", async () => {
