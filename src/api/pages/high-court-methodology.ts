@@ -27,13 +27,29 @@ export function renderHighCourtMethodologyPage(
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>What this page covers</h3>
-          <p>${escapeHtml(profile.courtName)} aggregate observability only: pending load, last-month institution and disposal, age buckets, and published trend points.</p>
+          <p>${escapeHtml(context.coverageSentence)} Aggregate observability only: pending load, last-month institution and disposal, age buckets, and published trend points.</p>
           <p>It is a High Court module inside NyaayWatch, not a district ranking page and not a case-search surface.</p>
         </article>
         <article class="card">
           <h3>What it does not do</h3>
           <p>It does not predict outcomes, judge judges, or imply cross-tier comparability with district or Supreme Court surfaces.</p>
           <p>When the source does not expose a trustworthy source snapshot timestamp, the page says so directly and shows capture time instead.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="method">
+      ${renderSectionHead({ headline: "Coverage boundary" })}
+      <div class="card-grid card-grid--2">
+        <article class="card">
+          <h3>Explicit court-first coverage</h3>
+          <p>Current coverage on this page: ${escapeHtml(context.coverageLabel)}.</p>
+          <p>The public schema carries this boundary explicitly through <code>coveredGeographies[]</code>, so a High Court page can represent one court across multiple geographies without pretending it is a single-state surface.</p>
+        </article>
+        <article class="card">
+          <h3>Separate from lower-court geography pages</h3>
+          <p>A lower-court state page is a different scope from a High Court page. NyaayWatch does not reuse district-layer language to describe a High Court publication.</p>
+          <p>That keeps the hierarchy honest: district and subordinate courts sit under High Courts, but this page still reports one High Court aggregate publication.</p>
         </article>
       </div>
     </section>

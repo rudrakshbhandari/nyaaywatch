@@ -2,7 +2,11 @@ import type { HighCourtPublishedSnapshot } from "../../domain/high-court-snapsho
 import type { HighCourtProfile } from "../../high-courts.js";
 import { renderPageShell } from "../design/shell.js";
 import { renderSectionHead, renderStatTile } from "../design/ui.js";
-import { buildPublicHighCourtRoutes, type PublicHighCourtPageContext } from "../public-high-court.js";
+import {
+  buildPublicHighCourtRoutes,
+  formatHighCourtCoverageLabel,
+  type PublicHighCourtPageContext,
+} from "../public-high-court.js";
 import { formatDate } from "../home/view-model.js";
 
 export interface PublicHighCourtIndexEntry {
@@ -19,7 +23,7 @@ export function renderHighCourtsIndexPage(
       eyebrow: "HIGH COURTS",
       headline: "Public High Court observability is now live in a narrow beta.",
       lede:
-        "This tier sits inside the same NyaayWatch trust model: published snapshots, explicit methodology, and official source links. It is still narrower than the district layer and does not claim national High Court comparability yet.",
+        "This tier sits inside the same NyaayWatch trust model: published snapshots, explicit methodology, official source links, and court-first coverage labels. It is still narrower than the district layer and does not claim national High Court comparability yet.",
       isHero: true,
     })}
 
@@ -34,6 +38,7 @@ export function renderHighCourtsIndexPage(
                   ? `Captured ${formatDate(snapshot.snapshot.referenceDateAt)}`
                   : `Source snapshot ${formatDate(snapshot.snapshot.referenceDateAt)}`
               }</p>
+              <p class="hc-card__coverage"><strong>Coverage:</strong> ${formatHighCourtCoverageLabel(profile)}</p>
               <div class="stat-grid stat-grid--compact">
                 ${renderStatTile({
                   label: "Pending",
@@ -64,5 +69,13 @@ export function renderHighCourtsIndexPage(
       methodologyVersion: null,
       sourceAttribution: null,
     },
+    pageCss: HIGH_COURTS_INDEX_CSS,
   });
 }
+
+const HIGH_COURTS_INDEX_CSS = `
+  .hc-card__coverage {
+    margin: 0 0 18px;
+    color: var(--ink-soft);
+  }
+`;

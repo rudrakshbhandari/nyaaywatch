@@ -58,6 +58,8 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("View Supreme Court");
     expect(homepage.text).toContain("Most public case volume sits in the lower courts.");
     expect(homepage.text).toContain("Lower-court state pages.");
+    expect(homepage.text).toContain("Coverage: Himachal Pradesh");
+    expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
     expect(homepage.text).toContain("Open Himachal lower-court overview");
 
@@ -413,25 +415,32 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("High Court of Madhya Pradesh");
     expect(index.text).toContain("High Court of Rajasthan");
     expect(index.text).toContain("Allahabad High Court");
+    expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
     expect(overview.text).toContain("HIGH COURT BETA");
     expect(overview.text).toContain("High Court of Himachal Pradesh");
+    expect(overview.text).toContain("Coverage");
+    expect(overview.text).toContain("Current coverage:</strong> Himachal Pradesh");
     expect(overview.text).toContain("HC NJDG did not expose a trustworthy source snapshot timestamp");
 
     const data = await request(app).get("/high-courts/himachal/data");
     expect(data.status).toBe(200);
+    expect(data.text).toContain("across Himachal Pradesh");
     expect(data.text).toContain("/v1/high-courts/himachal/stats");
     expect(data.text).toContain("This public High Court beta ships the JSON surface before adding download formats.");
 
     const methodology = await request(app).get("/high-courts/himachal/methodology");
     expect(methodology.status).toBe(200);
     expect(methodology.text).toContain("Every public High Court number comes from one published aggregate snapshot.");
+    expect(methodology.text).toContain("coveredGeographies[]");
+    expect(methodology.text).toContain("Current coverage on this page: Himachal Pradesh.");
     expect(methodology.text).toContain("captured_at");
 
     const api = await request(app).get("/high-courts/himachal/api");
     expect(api.status).toBe(200);
+    expect(api.text).toContain("coveredGeographies[]");
     expect(api.text).toContain("/v1/high-courts/himachal/trends");
 
     const stats = await request(app).get("/v1/high-courts/himachal/stats");
@@ -447,7 +456,9 @@ describe("HTTP routes", () => {
     const uttarPradeshOverview = await request(app).get("/high-courts/uttar-pradesh");
     expect(uttarPradeshOverview.status).toBe(200);
     expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
-    expect(uttarPradeshOverview.text).toContain("This page covers Allahabad High Court. 6 other public High Court pages are linked in the switcher.");
+    expect(uttarPradeshOverview.text).toContain(
+      "This page tracks Allahabad High Court across Uttar Pradesh. 6 other public High Court pages are linked in the switcher.",
+    );
 
     const andhraPradeshOverview = await request(app).get("/high-courts/andhra-pradesh");
     expect(andhraPradeshOverview.status).toBe(200);
