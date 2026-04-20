@@ -6,6 +6,69 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_c5904e38-cced-477d-b184-5e586de6b8f4:start -->
+## publication_c5904e38-cced-477d-b184-5e586de6b8f4
+
+- Reviewed at: `2026-04-20T19:47:00.000Z`
+- Reviewer: `Codex Delhi High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/delhi`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-20T19:26:10.717Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-20T19:28:46.475Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_084a6007-3b85-4db0-965f-2343583c3cc4`
+- Rollback target: `publication_4196dc1a-60a2-473f-b5b3-737e2998ac2e`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Delhi High Court became publicly reachable on `2026-04-20` after PR `#141` merged and deploy run `24686545934` settled the ECS service on task definition `:134`. Stable public verification passed for `/high-courts/delhi`, `/high-courts/delhi/data`, `/high-courts/delhi/methodology`, `/high-courts/delhi/api`, `/v1/high-courts/delhi/stats`, and `/v1/high-courts/delhi/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`.
+
+<!-- release:publication_c5904e38-cced-477d-b184-5e586de6b8f4:end -->
+
+<!-- release:publication_1019bb05-14df-4e67-9538-f45cbcdeac86:start -->
+## publication_1019bb05-14df-4e67-9538-f45cbcdeac86
+
+- Reviewed at: `2026-04-20T19:47:00.000Z`
+- Reviewer: `Codex Kerala High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/kerala`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-20T19:26:12.097Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-20T19:28:46.490Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_da459086-77db-42c1-8d3d-fee4805d02ec`
+- Rollback target: `publication_eb11a6c7-5863-4e26-b932-8e1bf3d5a47d`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: High Court of Kerala became publicly reachable on `2026-04-20` after PR `#141` merged and deploy run `24686545934` settled the ECS service on task definition `:134`. Stable public verification passed for `/high-courts/kerala`, `/high-courts/kerala/data`, `/high-courts/kerala/methodology`, `/high-courts/kerala/api`, `/v1/high-courts/kerala/stats`, and `/v1/high-courts/kerala/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`.
+
+<!-- release:publication_1019bb05-14df-4e67-9538-f45cbcdeac86:end -->
+
+<!-- release:publication_38e72bb4-5fed-4305-ade4-4d7b8d60843a:start -->
+## publication_38e72bb4-5fed-4305-ade4-4d7b8d60843a
+
+- Reviewed at: `2026-04-20T19:47:00.000Z`
+- Reviewer: `Codex Madras High Court public beta`
+- Public URL: `https://nyaaywatch.in/high-courts/madras`
+- Action: `rollback`
+- Source snapshot date: `not exposed by upstream HC NJDG`
+- Reference date: `2026-04-20T19:26:10.130Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-04-20T19:28:44.474Z`
+- Methodology version: `2026.04-high-court-draft`
+- Quality state: `complete`
+- Published from run: `run_4f74b550-e58c-4314-b587-c1ead97f3b45`
+- Rollback target: `publication_42dbfe9b-9670-4a6b-ab3f-a0ec8d618287`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Note: Madras High Court became publicly reachable on `2026-04-20` after PR `#141` merged and deploy run `24686545934` settled the ECS service on task definition `:134`. Stable public verification passed for `/high-courts/madras`, `/high-courts/madras/data`, `/high-courts/madras/methodology`, `/high-courts/madras/api`, `/v1/high-courts/madras/stats`, and `/v1/high-courts/madras/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`.
+
+<!-- release:publication_38e72bb4-5fed-4305-ade4-4d7b8d60843a:end -->
+
 <!-- release:publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7:start -->
 ## publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7
 

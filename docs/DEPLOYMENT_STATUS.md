@@ -560,6 +560,16 @@ Latest confirmed operator validation:
   - the live public Punjab and Haryana route family now returns `200`: `/high-courts/punjab-and-haryana`, `/high-courts/punjab-and-haryana/data`, `/high-courts/punjab-and-haryana/methodology`, `/high-courts/punjab-and-haryana/api`, and `/v1/high-courts/punjab-and-haryana/stats`
   - `/high-courts` and `/` both now expose High Court of Punjab and Haryana in the public High Court switcher and card set
   - this is the first live public multi-jurisdiction High Court beta page, and its public copy names coverage across Punjab, Haryana, and Chandigarh instead of pretending one High Court equals one state
+- Delhi, Kerala, and Madras High Court public beta exposure completed on 2026-04-20 after PR `#141` merged:
+  - GitHub deploy run `24686545934` completed successfully on `main`, with `verify`, `secret-scan`, and `deploy` all green and `preview` skipped
+  - the live ECS service rolled to task definition `:134` and reached steady state at `2026-04-20T12:45:39-07:00`
+  - all three internal scheduler targets now point to task definition `:134`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, and `nyaaywatch-staging-high-courts-internal-fetch`
+  - the explicit Cloudflare purge completed for all three new High Court route families through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`, with one `public_cache_invalidated` event per court and `urlCount=7`
+  - the live public Delhi route family now returns `200`: `/high-courts/delhi`, `/high-courts/delhi/data`, `/high-courts/delhi/methodology`, `/high-courts/delhi/api`, `/v1/high-courts/delhi/stats`, and `/v1/high-courts/delhi/trends`
+  - the live public Kerala route family now returns `200`: `/high-courts/kerala`, `/high-courts/kerala/data`, `/high-courts/kerala/methodology`, `/high-courts/kerala/api`, `/v1/high-courts/kerala/stats`, and `/v1/high-courts/kerala/trends`
+  - the live public Madras route family now returns `200`: `/high-courts/madras`, `/high-courts/madras/data`, `/high-courts/madras/methodology`, `/high-courts/madras/api`, `/v1/high-courts/madras/stats`, and `/v1/high-courts/madras/trends`
+  - `/high-courts` and `/` both now expose High Court of Delhi, High Court of Kerala, and Madras High Court in the public High Court card set and switcher
+  - the live public High Court beta set is now Himachal, Andhra Pradesh, Telangana, Delhi, Gujarat, Kerala, Madras, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
 - Internal fetch scheduler deploy-role scope repair completed on 2026-04-20:
   - the first attempt of GitHub deploy run `24653526489` failed in `Reconcile daily internal fetch schedule` because `nyaaywatch-github-deploy-role` still allowed scheduler operations only on `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
   - the live IAM policy was widened to include `nyaaywatch-staging-supreme-court-internal-fetch` and `nyaaywatch-staging-high-courts-internal-fetch` alongside the existing lower-court schedule ARN

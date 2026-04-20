@@ -55,7 +55,7 @@ Why this wave first:
 - Delhi closes the last obvious "court-first but not lower-court-state-shell-first" gap
 - together, these three courts are a real batch, but still a legible one
 
-Wave 1 is now the active public launch batch in repo code after all three courts cleared live internal proof.
+Wave 1 is now live in the public beta after PR `#141` merged, deploy run `24686545934` completed successfully, and the Delhi, Kerala, and Madras public route families plus the explicit Cloudflare purge all cleared on `https://nyaaywatch.in`.
 
 ## Wave 2
 
@@ -68,8 +68,8 @@ Wave 2 should be:
 Why this wave second:
 
 - these are the broader and more operationally complex remaining courts
-- they benefit from the repo first proving that the new public-beta batch discipline works on Wave 1
-- once Wave 1 is stable, there is no product reason to keep these courts out of public beta
+- Wave 1 is now live, so the repo has already proven that the three-court public-beta batch discipline works
+- once the Wave 1 stable window stays clean, there is no product reason to keep these courts out of public beta
 
 ## Rollout Discipline
 
@@ -82,6 +82,8 @@ Recommended release discipline:
 3. record deploy, scheduler, purge, and route-verification evidence for the whole wave
 4. hold a short stable window long enough to prove no route, cache, or trust-surface regression
 5. then move to the next three-court wave
+
+Wave 1 has already completed steps 1 through 3. The current gate before Wave 2 is the stable-window check, not another Delhi, Kerala, or Madras rollout task.
 
 The stable window is between waves, not between individual courts inside the same approved wave.
 

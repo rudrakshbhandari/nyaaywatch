@@ -108,5 +108,5 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - the next live validation move is no longer another proof cycle; the concrete methodology and UX follow-up is now landed on the shipped public High Court surfaces
 - the original seven-court public beta is no longer fixed now that Punjab and Haryana has cleared the separate product and methodology decision
 - the next approved public-beta move for the remaining deferred court-first High Courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
-- Delhi, Kerala, and Madras are now the active Wave 1 public-beta launch batch
-- the remaining three deferred courts are now expected to follow as Wave 2 after Wave 1 proves stable
+- Delhi, Kerala, and Madras are now live in the public High Court beta as the completed Wave 1 batch
+- the remaining three deferred courts are now expected to follow as Wave 2 after the Wave 1 stable window proves clean

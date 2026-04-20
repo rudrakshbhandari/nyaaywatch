@@ -1644,3 +1644,33 @@ Punjab and Haryana cleared the internal proof bar first, then later cleared the 
 ### Recommendation
 
 Punjab and Haryana is now live public beta. The next deliberate step is not another Punjab and Haryana rollout task; it is deciding whether any further multi-jurisdiction High Court should join the public beta beyond this first court-first proof point.
+
+## Delhi, Kerala, and Madras High Court Public Beta Launch
+
+- date: `2026-04-20`
+- courts: `DLHC`, `KLHC`, and `MDHC`
+- decision: `public beta live`
+- GitHub PR: `#141`
+- GitHub deploy run: `24686545934`
+
+### Live Public Evidence
+
+- GitHub deploy run `24686545934` completed successfully on `main`, with `verify`, `secret-scan`, and `deploy` all green and `preview` skipped
+- the live ECS service rolled to task definition `:134` and reached steady state
+- all three live internal scheduler targets now point at task definition `:134`: lower-court, Supreme Court, and High Court internal fetch schedules
+- the explicit Cloudflare purge completed for the whole Wave 1 batch through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`, with one `public_cache_invalidated` event per court and `urlCount=7`
+- `/high-courts/delhi`, `/high-courts/delhi/data`, `/high-courts/delhi/methodology`, `/high-courts/delhi/api`, `/v1/high-courts/delhi/stats`, and `/v1/high-courts/delhi/trends` all returned `200` on `https://nyaaywatch.in`
+- `/high-courts/kerala`, `/high-courts/kerala/data`, `/high-courts/kerala/methodology`, `/high-courts/kerala/api`, `/v1/high-courts/kerala/stats`, and `/v1/high-courts/kerala/trends` all returned `200` on `https://nyaaywatch.in`
+- `/high-courts/madras`, `/high-courts/madras/data`, `/high-courts/madras/methodology`, `/high-courts/madras/api`, `/v1/high-courts/madras/stats`, and `/v1/high-courts/madras/trends` all returned `200` on `https://nyaaywatch.in`
+- `/high-courts` and `/` both now surface High Court of Delhi, High Court of Kerala, and Madras High Court in the public High Court card set and switcher
+- the currently active live publications are Delhi `publication_c5904e38-cced-477d-b184-5e586de6b8f4`, Kerala `publication_1019bb05-14df-4e67-9538-f45cbcdeac86`, and Madras `publication_38e72bb4-5fed-4305-ade4-4d7b8d60843a`
+
+### What Changed
+
+- the public High Court beta is no longer capped at the first Punjab and Haryana multi-jurisdiction proof point; the first three-court follow-on wave is now live
+- the court-first public-beta batch discipline now has real release evidence for a larger multi-jurisdiction-aware wave, not just a one-court pilot
+- the live public High Court beta set is now Himachal, Andhra Pradesh, Telangana, Delhi, Gujarat, Kerala, Madras, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
+
+### Recommendation
+
+Wave 1 is now live public beta. The next deliberate move is to hold the short stable window cleanly, then execute Wave 2 for Calcutta, Bombay, and Gauhati as the next larger batch.
