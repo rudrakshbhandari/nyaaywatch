@@ -171,7 +171,7 @@ The deploy job:
 - registers a fresh task definition revision pinned to the commit-SHA image
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
-- reconciles the internal raw-fetch schedule against the new live task definition
+- reconciles the lower-court, Supreme Court, and reviewed-High-Court internal raw-fetch schedules against the new live task definition
 - confirms the raw ALB `ServiceUrl` still answers `/health`
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
@@ -203,6 +203,10 @@ What it does:
 Bootstrap note:
 
 - the GitHub Actions deploy role can update the schedule target, but it cannot create or rewrite IAM roles
+- the GitHub Actions deploy role must allow `scheduler:GetSchedule`, `scheduler:UpdateSchedule`, and `scheduler:CreateSchedule` for all three schedule ARNs:
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-supreme-court-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-high-courts-internal-fetch`
 - first-time schedule bootstrap or scheduler-role policy changes still require an IAM-capable operator run
 - once the role exists, CI reconciles the schedule against the latest ECS task definition on every `main` deploy
 
