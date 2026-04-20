@@ -24,10 +24,17 @@ The second validation pair was:
 
 That pair has now also cleared both the internal proof bar and the public rollout bar.
 
-Validate this pair next:
+The third validation pair was:
 
 - Chhattisgarh
 - Jharkhand
+
+That pair has now also cleared the internal proof bar on the live operator lane.
+
+Validate this pair next:
+
+- Karnataka
+- Odisha
 
 This is a product and operations recommendation from current repo state, not an official source fact.
 
@@ -38,7 +45,8 @@ These two courts are the best next internal validation pair because they are:
 - already inside the new single-jurisdiction High Court registry
 - already aligned with supported lower-court state profiles
 - still internal-only instead of already public beta
-- adjacent to already-proven public-beta High Court territory without repeating the same courts again
+- already backed by live lower-court public state profiles, so the High Court trial does not need new geography scaffolding
+- meaningfully wider than the smaller remaining queued courts without forcing the repo into multi-jurisdiction logic
 - materially meaningful without jumping straight to multi-jurisdiction courts
 - still simple enough to fit the current one-state-per-High-Court snapshot contract
 
@@ -46,8 +54,8 @@ The point of this pair is not representativeness theater.
 
 The point is to widen evidence for the next deliberate public-wave decision on:
 
-- a central-eastern court that can prove the current contract still holds beyond the already-live western and north courts: Chhattisgarh
-- a neighboring eastern court that keeps the same one-state-one-court boundary while widening evidence in a different source context: Jharkhand
+- a large southern court that materially broadens the already-proven public-beta footprint without leaving the current contract: Karnataka
+- a large eastern court that pressures the same operator flow in a different source context while still fitting the current one-state-one-court boundary: Odisha
 
 If both hold up, the repo will have much better evidence that the next High Court wave can widen responsibly without skipping straight to the multi-jurisdiction court problem.
 
@@ -56,7 +64,7 @@ If both hold up, the repo will have much better evidence that the next High Cour
 Use the batch readiness sweep:
 
 ```bash
-npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=chhattisgarh,jharkhand
+npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=karnataka,odisha
 ```
 
 Requires:
@@ -144,6 +152,38 @@ Current repo posture after later High Court launches:
 - the next decision is no longer "which already-proven court should go live next"
 - the next decision is which still-queued single-jurisdiction court pair should become the next deliberate internal proof step after the current seven-court beta
 
+Follow-up live check on **April 20, 2026** for the then-recommended Chhattisgarh and Jharkhand pair:
+
+- `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=chhattisgarh,jharkhand`
+- result: `configuredCourts=2`, `readyCourts=2`, `publishedCourts=2`, `replayReadyCourts=2`, `rollbackReadyCourts=2`
+
+Live operator proof-cycle evidence now recorded:
+
+- Chhattisgarh:
+  - active publication `publication_65890e9d-5cdd-451b-81c6-408d809cf55e`
+  - active snapshot `snapshot_ba109b3b-cf7d-44eb-a448-d8d1baae5acc`
+  - first fetch run `run_4131351e-cab9-45e9-b77f-dd2c70ce132d`
+  - replay run `run_41fbbcb6-afc5-49b8-bfba-0ebba2603667`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+- Jharkhand:
+  - active publication `publication_8108ed78-c812-4302-8e6d-8c2d4dbba6d3`
+  - active snapshot `snapshot_a091da10-6bb2-4185-b2bd-72b709dc7d85`
+  - first fetch run `run_6bbadf6b-adfa-4680-bcb6-151a5c549ec8`
+  - replay run `run_fd46f10b-63ef-472b-91d9-6c454b33d82f`
+  - `runCount=2`
+  - `publicationCount=3`
+  - `rollbackCount=1`
+  - `internalProofBarSatisfied=true`
+
+Current conclusion from live evidence:
+
+- Chhattisgarh and Jharkhand have now both cleared the internal High Court proof bar
+- the next remaining question is not whether the internal operator path works for queued single-jurisdiction courts
+- the next remaining question is which queued pair should follow them before any additional public-beta decision
+
 ## What Counts As Success
 
 For each selected court, live operator evidence should show:
@@ -168,10 +208,8 @@ Do not:
 
 ## Follow-Up After This Pair
 
-Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, the remaining queued single-jurisdiction High Courts are:
+Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pradesh, and Rajasthan are already public beta High Courts, and Chhattisgarh plus Jharkhand have now cleared the internal proof bar, the remaining queued single-jurisdiction High Courts are:
 
-- Chhattisgarh
-- Jharkhand
 - Karnataka
 - Odisha
 - Bihar
@@ -181,12 +219,12 @@ Now that Himachal, Andhra Pradesh, Telangana, Gujarat, Madhya Pradesh, Uttar Pra
 - Meghalaya
 - Manipur
 
-If Chhattisgarh and Jharkhand clear the same gates, the likely next follow-on queue should come from:
+If Karnataka and Odisha clear the same gates, the likely next follow-on queue should come from:
 
-- Karnataka
-- Odisha
 - Bihar
 - Uttarakhand
+- Sikkim
+- Tripura
 
 Only after that should the repo revisit:
 
