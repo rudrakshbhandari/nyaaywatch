@@ -28,7 +28,16 @@ Parameters:
     NoEcho: true
   OperatorApiToken:
     Type: String
+    Default: ""
     NoEcho: true
+  ExistingDatabaseUrlSecretArn:
+    Type: String
+    Default: ""
+    Description: Optional Secrets Manager ARN for an already-managed DATABASE_URL secret.
+  ExistingOperatorApiTokenSecretArn:
+    Type: String
+    Default: ""
+    Description: Optional Secrets Manager ARN for an already-managed operator token secret.
   CertificateArn:
     Type: String
     Description: ACM certificate ARN for the public HTTPS listener.
@@ -48,12 +57,24 @@ Parameters:
     Type: String
     Default: ""
     Description: Optional Secrets Manager ARN containing the Cloudflare API token for cache invalidation.
+  ManageCanonicalRedirectRules:
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Whether this stack should create and manage the .com to .in ALB redirect listener rules.
 
 Conditions:
   HasAlarmEmail: !Not [!Equals [!Ref AlarmEmail, ""]]
   HasPublicBaseUrl: !Not [!Equals [!Ref PublicBaseUrl, ""]]
   HasCloudflareZoneName: !Not [!Equals [!Ref CloudflareZoneName, ""]]
   HasCloudflareApiTokenSecretArn: !Not [!Equals [!Ref CloudflareApiTokenSecretArn, ""]]
+  ShouldManageCanonicalRedirectRules: !Equals [!Ref ManageCanonicalRedirectRules, "true"]
+  HasExistingDatabaseUrlSecretArn: !Not [!Equals [!Ref ExistingDatabaseUrlSecretArn, ""]]
+  HasExistingOperatorApiTokenSecretArn: !Not [!Equals [!Ref ExistingOperatorApiTokenSecretArn, ""]]
+  CreateManagedDatabaseUrlSecret: !Equals [!Ref ExistingDatabaseUrlSecretArn, ""]
+  CreateManagedOperatorApiTokenSecret: !Equals [!Ref ExistingOperatorApiTokenSecretArn, ""]
 
 Resources:
   Vpc:
@@ -258,6 +279,7 @@ Resources:
 
   DatabaseUrlSecret:
     Type: AWS::SecretsManager::Secret
+    Condition: CreateManagedDatabaseUrlSecret
     Properties:
       Name: !Sub "${ProjectName}-${EnvironmentName}/database-url"
       Description: !Sub "DATABASE_URL for ${ProjectName} ${EnvironmentName}"
@@ -265,6 +287,7 @@ Resources:
 
   OperatorApiTokenSecret:
     Type: AWS::SecretsManager::Secret
+    Condition: CreateManagedOperatorApiTokenSecret
     Properties:
       Name: !Sub "${ProjectName}-${EnvironmentName}/operator-api-token"
       Description: !Sub "Operator API token for ${ProjectName} ${EnvironmentName}"
@@ -299,8 +322,8 @@ Resources:
                 Action:
                   - secretsmanager:GetSecretValue
                 Resource:
-                  - !Ref DatabaseUrlSecret
-                  - !Ref OperatorApiTokenSecret
+                  - !If [HasExistingDatabaseUrlSecretArn, !Ref ExistingDatabaseUrlSecretArn, !Ref DatabaseUrlSecret]
+                  - !If [HasExistingOperatorApiTokenSecretArn, !Ref ExistingOperatorApiTokenSecretArn, !Ref OperatorApiTokenSecret]
                   - !If [HasCloudflareApiTokenSecretArn, !Ref CloudflareApiTokenSecretArn, !Ref AWS::NoValue]
 
   TaskRole:
@@ -382,9 +405,9 @@ Resources:
               - !Ref AWS::NoValue
           Secrets:
             - Name: DATABASE_URL
-              ValueFrom: !Ref DatabaseUrlSecret
+              ValueFrom: !If [HasExistingDatabaseUrlSecretArn, !Ref ExistingDatabaseUrlSecretArn, !Ref DatabaseUrlSecret]
             - Name: OPERATOR_API_TOKEN
-              ValueFrom: !Ref OperatorApiTokenSecret
+              ValueFrom: !If [HasExistingOperatorApiTokenSecretArn, !Ref ExistingOperatorApiTokenSecretArn, !Ref OperatorApiTokenSecret]
             - !If
               - HasCloudflareApiTokenSecretArn
               - Name: CLOUDFLARE_API_TOKEN
@@ -439,6 +462,7 @@ Resources:
 
   CanonicalHttpRedirectRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Condition: ShouldManageCanonicalRedirectRules
     Properties:
       Actions:
         - Type: redirect
@@ -473,6 +497,7 @@ Resources:
 
   CanonicalHttpsRedirectRule:
     Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Condition: ShouldManageCanonicalRedirectRules
     Properties:
       Actions:
         - Type: redirect
@@ -633,13 +658,16 @@ Outputs:
   DatabaseEndpoint:
     Value: !GetAtt StagingDatabase.Endpoint.Address
   DatabaseUrlSecretArn:
-    Value: !Ref DatabaseUrlSecret
+    Value: !If [HasExistingDatabaseUrlSecretArn, !Ref ExistingDatabaseUrlSecretArn, !Ref DatabaseUrlSecret]
   LogGroupName:
     Value: !Ref ApplicationLogGroup
   ClusterName:
     Value: !Ref Cluster
   OperatorApiTokenSecretArn:
-    Value: !Ref OperatorApiTokenSecret
+    Value: !If [HasExistingOperatorApiTokenSecretArn, !Ref ExistingOperatorApiTokenSecretArn, !Ref OperatorApiTokenSecret]
+  CloudflareApiTokenSecretArn:
+    Condition: HasCloudflareApiTokenSecretArn
+    Value: !Ref CloudflareApiTokenSecretArn
   CertificateArn:
     Value: !Ref CertificateArn
   AlarmTopicArn:

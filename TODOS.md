@@ -30,14 +30,16 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
-- [ ] Reconcile the live `nyaaywatch-staging` CloudFormation stack onto the current `infra/aws/staging/stack.yaml` generation so the stack itself owns the `DATABASE_URL` and `OPERATOR_API_TOKEN` secret resources plus optional Cloudflare wiring, instead of relying on later ECS-side remediation on top of the older stack template.
-- [ ] Design the multi-jurisdiction High Court contract before exposing any public High Court beta beyond the current seven-court set. The single-jurisdiction internal proof queue is now exhausted, so the remaining gating problem is product and methodology design, not another internal proof pair.
+- [ ] Decide whether the legacy `.com -> .in` ALB redirect rules should stay externally managed or be imported/recreated so CloudFormation owns them too. The stack reconciliation now skips those pre-existing listener rules with `ManageCanonicalRedirectRules=false`, but everything else is back under stack control.
+- [ ] Turn the initial multi-jurisdiction High Court design into a phase-1 implementation plan: storage identity cleanup, profile/schema widening, and the first internal pilot court.
 - [ ] Do not add more geography just because the current state set is live. Any next expansion should clear `docs/MULTI_STATE_EXPANSION_GATES.md` after the operational loop above has held for a few stable windows.
 - [ ] If the next scope increase is not another state, evaluate a single narrow candidate such as a new court tier or deeper operating evidence, not a broad “nationwide platform” step.
 
 ## Recently Completed
 
 - [x] Implemented the Supreme Court-first national homepage so `/` now stages Supreme Court, High Courts, and district/subordinate courts in one scroll without fake cross-tier comparability; the Himachal lower-court overview moved to explicit `/states/himachal` while the unscoped district/data/methodology/API routes remain backward-compatible.
+- [x] Reconciled the live `nyaaywatch-staging` CloudFormation stack onto the current secret-aware staging template generation: the stack now outputs `DatabaseUrlSecretArn`, `OperatorApiTokenSecretArn`, and `CloudflareApiTokenSecretArn`, and the live ECS service is stable on task definition `:119` with those three values injected through ECS `secrets`.
+- [x] Wrote the first multi-jurisdiction High Court design doc in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`, grounding the next phase in the real one-state assumptions still present in `src/high-courts.ts`, the High Court snapshot schemas, and the warehouse `state_code` identity.
 - [x] Implemented the public Supreme Court route family in repo code under `/supreme-court` and `/v1/supreme-court/...`, reusing the published-snapshot contract plus the in-repo Supreme Court methodology draft instead of inventing a new public data path.
 - [x] Completed the live runtime secret posture for the current ECS service: the active service now runs task definition `:117`, which injects `DATABASE_URL`, `OPERATOR_API_TOKEN`, and `CLOUDFLARE_API_TOKEN` through ECS `secrets`; the remaining infra debt is stack-template parity, not live plaintext runtime env vars.
 - [x] Wired the Cloudflare API token into the live ECS task definition and task-execution role, so the Supreme Court and High Court public-route purge path can execute in production instead of only existing in repo code.

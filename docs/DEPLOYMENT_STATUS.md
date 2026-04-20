@@ -539,7 +539,12 @@ Latest confirmed operator validation:
   - the task-execution role policy now grants `secretsmanager:GetSecretValue` for the database, operator-token, and Cloudflare-token secrets
   - a new Secrets Manager secret now backs the Cloudflare token used for public-route cache invalidation
   - the runtime purge path for Supreme Court and High Court public routes is now configured on the live service
-  - remaining gap: the live `nyaaywatch-staging` CloudFormation stack is still on an older template generation and does not yet own those secret resources directly, so stack-as-code parity is still incomplete even though the runtime is now correctly secret-backed
+- Staging stack reconciliation completed on 2026-04-20 after the staging template was widened to accept pre-existing secret ARNs for existing stacks:
+  - the live `nyaaywatch-staging` CloudFormation stack now exposes `DatabaseUrlSecretArn`, `OperatorApiTokenSecretArn`, and `CloudflareApiTokenSecretArn` in its outputs
+  - the stack-managed ECS service is stable on task definition `:119`
+  - task definition `:119` injects `DATABASE_URL`, `OPERATOR_API_TOKEN`, and `CLOUDFLARE_API_TOKEN` through ECS `secrets`
+  - `https://nyaaywatch.in/health` still returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`
+  - remaining narrow drift: the older stack already had unmanaged `.com -> .in` listener rules at priority `10`, so the reconciliation uses `ManageCanonicalRedirectRules=false` and leaves those redirect rules outside CloudFormation ownership for now
 
 ## Release Use
 

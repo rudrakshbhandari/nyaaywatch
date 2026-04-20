@@ -22,6 +22,8 @@ Keep the current seven-court public High Court beta fixed:
 
 Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, so the next gating problem is no longer "which court should be proven next." The next gating problem is whether the multi-jurisdiction court model, public methodology, and product framing are good enough to justify another public wave.
 
+The initial design answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`.
+
 The first validation pair was:
 
 - Uttar Pradesh via Allahabad High Court
@@ -354,6 +356,7 @@ Current conclusion from live evidence:
 - the next remaining question is not whether more internal queued-court proof is needed
 - the next remaining question is whether any additional public High Court wave or any multi-jurisdiction expansion is methodologically defensible
 - the current decision is to keep the seven-court public High Court beta fixed until the multi-jurisdiction court problem is intentionally designed
+- the first explicit design pass for that problem now exists in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
 
 ## What Counts As Success
 

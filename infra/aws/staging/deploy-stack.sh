@@ -41,6 +41,18 @@ if [[ -n "${CLOUDFLARE_API_TOKEN_SECRET_ARN:-}" ]]; then
   deploy_args+=(CloudflareApiTokenSecretArn="$CLOUDFLARE_API_TOKEN_SECRET_ARN")
 fi
 
+if [[ -n "${EXISTING_DATABASE_URL_SECRET_ARN:-}" ]]; then
+  deploy_args+=(ExistingDatabaseUrlSecretArn="$EXISTING_DATABASE_URL_SECRET_ARN")
+fi
+
+if [[ -n "${EXISTING_OPERATOR_API_TOKEN_SECRET_ARN:-}" ]]; then
+  deploy_args+=(ExistingOperatorApiTokenSecretArn="$EXISTING_OPERATOR_API_TOKEN_SECRET_ARN")
+fi
+
+if [[ -n "${MANAGE_CANONICAL_REDIRECT_RULES:-}" ]]; then
+  deploy_args+=(ManageCanonicalRedirectRules="$MANAGE_CANONICAL_REDIRECT_RULES")
+fi
+
 if [[ -n "$alarm_email" ]]; then
   deploy_args+=(AlarmEmail="$alarm_email")
 fi

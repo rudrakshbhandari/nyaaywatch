@@ -63,6 +63,9 @@ Optional:
 - `PUBLIC_BASE_URL` if the runtime should emit stable public URLs for release verification and cache invalidation
 - `CLOUDFLARE_ZONE_NAME` if the runtime should resolve the Cloudflare zone by name
 - `CLOUDFLARE_API_TOKEN_SECRET_ARN` if publish / rollback should purge Cloudflare cache without storing the token in plaintext task-definition environment variables
+- `EXISTING_DATABASE_URL_SECRET_ARN` if an existing stack should reference a pre-created `DATABASE_URL` secret instead of creating a new one
+- `EXISTING_OPERATOR_API_TOKEN_SECRET_ARN` if an existing stack should reference a pre-created operator-token secret instead of creating a new one
+- `MANAGE_CANONICAL_REDIRECT_RULES=false` if an older stack already has unmanaged `.com -> .in` listener rules and CloudFormation should leave them alone during reconciliation
 
 The stack creates its own isolated VPC with:
 
@@ -75,7 +78,7 @@ Application config constraints to preserve during staging validation:
 - `EnvironmentName` must remain `staging` so `DEPLOY_ENV` satisfies the app env schema.
 - `ProjectName` must stay `nyaaywatch`-prefixed so the derived `S3_BUCKET` passes env validation.
 - The generated `DATABASE_URL` now uses `uselibpqcompat=true&sslmode=require` because the app container must connect to RDS over TLS without assuming a bundled CA chain.
-- The stack now stores the generated `DATABASE_URL` and operator token in AWS Secrets Manager and injects them through ECS `secrets`, not plain environment variables.
+- The stack now stores the generated `DATABASE_URL` and operator token in AWS Secrets Manager and injects them through ECS `secrets`, not plain environment variables. Existing stacks can instead point at already-created secret ARNs so CloudFormation can be reconciled without recreating those secrets.
 - The runtime image must include `dist/src/db/migrations/*.sql`; the container cannot rely on source-only migration files once compiled.
 - The task role must allow both `s3:GetBucketTagging` and `s3:PutBucketTagging`, and the app must not rewrite bucket tags when the desired app tags are already present on a CloudFormation-managed bucket.
 
@@ -106,6 +109,8 @@ Why the explicit platform:
 export PUBLIC_BASE_URL=https://nyaaywatch.in
 export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
 export CLOUDFLARE_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/cloudflare-api-token
+export EXISTING_DATABASE_URL_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/database-url
+export EXISTING_OPERATOR_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/operator-api-token
 
 ./infra/aws/staging/deploy-stack.sh \
   nyaaywatch-staging \
@@ -124,6 +129,7 @@ export CLOUDFLARE_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:1234567
    - `ArtifactsBucketName`
    - `DatabaseEndpoint`
    - `DatabaseUrlSecretArn`
+   - `CloudflareApiTokenSecretArn` if configured
    - `LogGroupName`
    - `AlarmTopicArn`
    - `DashboardName`
