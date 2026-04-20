@@ -422,3 +422,4 @@ The harder questions that originally blocked a public multi-jurisdiction court n
 - multi-jurisdiction High Courts fit the product and schema through a court-first identity plus explicit `coveredGeographies[]`
 - the public methodology language now remains honest once court-to-state mapping is no longer one-to-one
 - Punjab and Haryana is the first public multi-jurisdiction High Court beta page, and the remaining deferred court-first High Courts are now approved for sequential public-beta waves larger than two courts at a time through `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
+- Delhi High Court, High Court of Kerala, and Madras High Court are now configured as reviewed internal Wave 1 courts; the remaining live gate for that batch is `fetch -> publish -> replay -> rollback` proof plus the final public route rollout
