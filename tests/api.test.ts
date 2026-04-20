@@ -54,10 +54,10 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
-    expect(homepage.text).toContain("Start at the Supreme Court. Then move down the system.");
-    expect(homepage.text).toContain("Open Supreme Court beta");
-    expect(homepage.text).toContain("Most public case volume still sits below the apex court.");
-    expect(homepage.text).toContain("State lower-court pages stay visible, but later in the scroll.");
+    expect(homepage.text).toContain("The courts, in the latest published snapshots.");
+    expect(homepage.text).toContain("View Supreme Court");
+    expect(homepage.text).toContain("Most public case volume sits in the lower courts.");
+    expect(homepage.text).toContain("Lower-court state pages.");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
     expect(homepage.text).toContain("Open Himachal lower-court overview");
 
