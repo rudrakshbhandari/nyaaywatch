@@ -45,10 +45,12 @@ describe("PublishedSnapshotService", () => {
 
     await context.pool.query(
       `INSERT INTO runs (
-        id, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
       [
         "run_manual",
+        "lower_court_state",
+        "HP",
         "HP",
         "NJDG Himachal district dashboard",
         "2026-04-10T00:00:00.000Z",
@@ -140,6 +142,8 @@ describe("PublishedSnapshotService", () => {
 
     const captured = await context.service.captureRun("Punjab internal trial capture");
 
+    expect(captured.run.scopeType).toBe("lower_court_state");
+    expect(captured.run.scopeCode).toBe("PB");
     expect(captured.run.stateCode).toBe("PB");
     expect(captured.candidate?.snapshot.stateCode).toBe("PB");
     expect(captured.candidate?.snapshot.stateName).toBe("Punjab");
@@ -163,5 +167,6 @@ describe("PublishedSnapshotService", () => {
     expect(await himachalService.inspectRun(capturedPunjab.run.id)).toBeNull();
     expect(await himachalService.getPublishedSnapshot()).toBeNull();
     expect((await punjabService.getPublishedSnapshot())?.stateCode).toBe("PB");
+    expect((await punjabService.getPublishedSnapshot())?.scopeType).toBe("lower_court_state");
   });
 });

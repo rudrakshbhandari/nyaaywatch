@@ -31,6 +31,8 @@ describe("PublishedHighCourtSnapshotService", () => {
     const statsBeforePublish = await context.service.getStats();
 
     expect(captured.run.status).toBe("completed");
+    expect(captured.run.scopeType).toBe("high_court");
+    expect(captured.run.scopeCode).toBe("HPHC");
     expect(captured.run.stateCode).toBe("HPHC");
     expect(captured.run.sourceSnapshotAt).toBe("2026-04-19T00:00:00.000Z");
     expect(captured.candidate?.snapshot.sourceSnapshotAt).toBeNull();
@@ -64,6 +66,7 @@ describe("PublishedHighCourtSnapshotService", () => {
 
     expect(replayed.run.replayOfRunId).toBe(seeded.run.id);
     expect(replayed.run.status).toBe("replayed");
+    expect(replayed.run.scopeType).toBe("high_court");
     expect(replayInspection?.artifacts.map((artifact) => artifact.artifactType)).toEqual([
       "raw-high-court-html-bundle",
       "high-court-snapshot-candidate-json",

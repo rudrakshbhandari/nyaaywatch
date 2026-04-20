@@ -194,13 +194,24 @@ Keep phase 1 small and reviewable through separate PRs.
 
 - add `scope_type` and `scope_code`
 - update storage adapters
+- keep existing High Court and Supreme Court lifecycle reads and writes aligned to the new scope identity during compatibility mode
 - add migration and regression coverage
+
+Status:
+
+- completed on branch `warehouse-scope-identity-migration`
+- migration `002_scope_identity.sql` backfills `runs`, `published_snapshots`, and `publication_history`
+- existing lower-court reads stay backward-compatible through the retained `state_code` field
 
 ### PR 2. High Court Profile And Schema Refactor
 
 - refactor `HighCourtProfile`
 - widen High Court schemas and normalization
 - keep existing public single-jurisdiction behavior stable
+
+Status:
+
+- next implementation slice
 
 ### PR 3. Service Wiring And Internal Pilot Config
 
