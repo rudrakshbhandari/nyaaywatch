@@ -4,6 +4,19 @@ import { infoIcon } from "./ui.js";
 
 const FAVICON_DATA_URL = createFaviconDataUrl();
 
+export interface OgMeta {
+  /** Used for og:title, twitter:title, and (if og.title differs) the page title. */
+  title: string;
+  /** Used for meta description, og:description, twitter:description. */
+  description: string;
+  /** Absolute URL of the OG card image (1200×630 PNG). */
+  image?: string;
+  /** Alt text for the OG card image. */
+  imageAlt?: string;
+  /** Canonical URL for og:url. */
+  url?: string;
+}
+
 export interface PageShellOptions {
   title: string;
   body: string;
@@ -23,6 +36,8 @@ export interface PageShellOptions {
   pageCss?: string;
   /** Footer metadata (dates, source, methodology version). */
   footer: FooterMeta;
+  /** Open Graph / Twitter Card meta. When omitted the page has no social preview. */
+  og?: OgMeta;
 }
 
 export interface FooterMeta {
@@ -45,13 +60,26 @@ export function renderPageShell(options: PageShellOptions): string {
   const ticker = options.ticker ? `<div class="ticker">${escapeHtml(options.ticker)}</div>` : "";
   const footer = renderColophon(options.footer, options.brandTag ?? "Court transparency, Himachal Pradesh", options.navLinks);
 
+  const og = options.og;
+  const ogMeta = og
+    ? `
+  <meta name="description" content="${escapeHtml(og.description)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="NyaayWatch" />
+  <meta property="og:title" content="${escapeHtml(og.title)}" />
+  <meta property="og:description" content="${escapeHtml(og.description)}" />${og.url ? `\n  <meta property="og:url" content="${escapeHtml(og.url)}" />` : ""}${og.image ? `\n  <meta property="og:image" content="${escapeHtml(og.image)}" />\n  <meta property="og:image:width" content="1200" />\n  <meta property="og:image:height" content="630" />${og.imageAlt ? `\n  <meta property="og:image:alt" content="${escapeHtml(og.imageAlt)}" />` : ""}` : ""}
+  <meta name="twitter:card" content="${og.image ? "summary_large_image" : "summary"}" />
+  <meta name="twitter:title" content="${escapeHtml(og.title)}" />
+  <meta name="twitter:description" content="${escapeHtml(og.description)}" />${og.image ? `\n  <meta name="twitter:image" content="${escapeHtml(og.image)}" />` : ""}`
+    : "";
+
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(options.title)}</title>
-  <link rel="icon" href="${FAVICON_DATA_URL}" type="image/svg+xml" />
+  <link rel="icon" href="${FAVICON_DATA_URL}" type="image/svg+xml" />${ogMeta}
   ${FONTS_LINK}
   <style>${BASE_CSS}${options.pageCss ?? ""}</style>
 </head>

@@ -5,6 +5,7 @@ import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
+import { SITE_ORIGIN } from "../share/site-origin.js";
 
 /**
  * /districts/:id — district evidence page. Pairs the headline stats with the
@@ -128,6 +129,8 @@ export function renderDistrictPage(
     </section>
   `;
 
+  const ogDescription = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. The typical case has been waiting about ${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch`;
+
   return renderPageShell({
     title: `${district.districtName} — NyaayWatch`,
     body,
@@ -142,6 +145,12 @@ export function renderDistrictPage(
       sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
       methodologyVersion: snapshot.methodologyVersion,
       sourceAttribution: snapshot.sourceAttribution,
+    },
+    og: {
+      title: `${district.districtName} — District Evidence`,
+      description: ogDescription,
+      image: `${SITE_ORIGIN}/og/district/${district.districtId}.png`,
+      imageAlt: `NyaayWatch district evidence for ${district.districtName}`,
     },
   });
 }

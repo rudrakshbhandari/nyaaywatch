@@ -6,6 +6,7 @@ import { renderPageShell } from "../design/shell.js";
 import { renderSectionHead, renderStatTile } from "../design/ui.js";
 import { escapeHtml, formatDate } from "./view-model.js";
 import { buildNationalHomeViewModel, type NationalHighCourtEntry } from "./national-view-model.js";
+import { SITE_ORIGIN } from "../share/site-origin.js";
 
 export function renderNationalHome(input: {
   supremeCourtSnapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null;
@@ -250,6 +251,12 @@ export function renderNationalHome(input: {
         model.supremeCourt.snapshot?.snapshot.sourceAttribution ?? model.lowerCourts.snapshot.snapshot.sourceAttribution,
     },
     pageCss: NATIONAL_HOME_CSS,
+    og: {
+      title: "How long is India waiting for justice?",
+      description: "NyaayWatch tracks court backlogs and wait times across India's judiciary — Supreme Court, High Courts, and district courts — from public NJDG data.",
+      image: `${SITE_ORIGIN}/og/national.png`,
+      imageAlt: "NyaayWatch — India's court system at a glance",
+    },
   });
 }
 

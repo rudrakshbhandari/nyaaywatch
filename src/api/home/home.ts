@@ -9,6 +9,7 @@ import {
   formatMonth,
   type HomeViewModel,
 } from "./view-model.js";
+import { SITE_ORIGIN } from "../share/site-origin.js";
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
@@ -102,6 +103,9 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
     </section>
   `;
 
+  const stateSlug = context.profile.stateSlug;
+  const ogDescription = `${model.pendingLakh} cases are waiting in ${context.profile.stateName}'s courts. The typical case has been waiting about ${model.typicalWaitMonths} months. NyaayWatch — court transparency for India.`;
+
   return renderPageShell({
     title: `${copy.brand} \u2014 ${copy.headline}`,
     body,
@@ -116,6 +120,12 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
       sourceDateLabel: model.sourceDateLabel,
       methodologyVersion: model.methodologyVersion,
       sourceAttribution: model.sourceAttribution,
+    },
+    og: {
+      title: copy.headline,
+      description: ogDescription,
+      image: `${SITE_ORIGIN}/og/state/${stateSlug}.png`,
+      imageAlt: `NyaayWatch — ${copy.headline}`,
     },
   });
 }
