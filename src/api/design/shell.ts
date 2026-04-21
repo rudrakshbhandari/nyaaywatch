@@ -37,7 +37,7 @@ export interface FooterMeta {
  * because we ship HTML straight from the server with no asset pipeline.
  */
 export function renderPageShell(options: PageShellOptions): string {
-  const brandHref = options.brandHref ?? "/";
+  const brandHref = "/";
   const nav = renderNav(options.activeNav ?? null, options.navLinks);
   const stateSwitcher = renderStateSwitcher(options.stateLinks ?? []);
   const ticker = options.ticker ? `<div class="ticker">${escapeHtml(options.ticker)}</div>` : "";

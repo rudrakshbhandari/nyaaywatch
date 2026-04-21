@@ -16,9 +16,10 @@ export interface NationalHomeViewModel {
     referenceLabel: string | null;
     freshnessLabel: string | null;
     pendingTotalDisplay: string | null;
-    pendingRegisteredDisplay: string | null;
+    clearanceRateDisplay: string | null;
     disposedLastMonthDisplay: string | null;
-    institutedLastMonthDisplay: string | null;
+    monthlyGapDisplay: string | null;
+    monthlyGapNote: string | null;
   };
   highCourts: {
     count: number;
@@ -27,7 +28,9 @@ export interface NationalHomeViewModel {
       snapshot: HighCourtPublishedSnapshot;
       referenceLabel: string;
       pendingDisplay: string;
-      disposedLastMonthDisplay: string;
+      clearanceRateDisplay: string;
+      monthlyGapDisplay: string;
+      monthlyGapNote: string;
     }>;
   };
   lowerCourts: {
@@ -64,19 +67,33 @@ export function buildNationalHomeViewModel(input: {
       pendingTotalDisplay: input.supremeCourtSnapshot
         ? input.supremeCourtSnapshot.stats.pendingTotalCases.toLocaleString("en-IN")
         : null,
-      pendingRegisteredDisplay: input.supremeCourtSnapshot
-        ? input.supremeCourtSnapshot.stats.pendingRegisteredCases.toLocaleString("en-IN")
+      clearanceRateDisplay: input.supremeCourtSnapshot
+        ? formatClearanceRateDisplay(
+            input.supremeCourtSnapshot.stats.disposedLastMonthTotalCases,
+            input.supremeCourtSnapshot.stats.institutedLastMonthTotalCases,
+          )
         : null,
       disposedLastMonthDisplay: input.supremeCourtSnapshot
         ? input.supremeCourtSnapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN")
         : null,
-      institutedLastMonthDisplay: input.supremeCourtSnapshot
-        ? input.supremeCourtSnapshot.stats.institutedLastMonthTotalCases.toLocaleString("en-IN")
+      monthlyGapDisplay: input.supremeCourtSnapshot
+        ? describePileChange(
+            input.supremeCourtSnapshot.stats.institutedLastMonthTotalCases,
+            input.supremeCourtSnapshot.stats.disposedLastMonthTotalCases,
+          ).display
+        : null,
+      monthlyGapNote: input.supremeCourtSnapshot
+        ? describePileChange(
+            input.supremeCourtSnapshot.stats.institutedLastMonthTotalCases,
+            input.supremeCourtSnapshot.stats.disposedLastMonthTotalCases,
+          ).note
         : null,
     },
     highCourts: {
       count: input.highCourtEntries.length,
-      entries: input.highCourtEntries.map(({ profile, snapshot }) => ({
+      entries: [...input.highCourtEntries]
+        .sort((left, right) => left.profile.courtName.localeCompare(right.profile.courtName, "en"))
+        .map(({ profile, snapshot }) => ({
         profile,
         snapshot,
         referenceLabel:
@@ -84,7 +101,18 @@ export function buildNationalHomeViewModel(input: {
             ? `Captured ${formatDate(snapshot.snapshot.referenceDateAt)}`
             : `Source snapshot ${formatDate(snapshot.snapshot.referenceDateAt)}`,
         pendingDisplay: formatLakh(snapshot.stats.pendingTotalCases),
-        disposedLastMonthDisplay: snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"),
+        clearanceRateDisplay: formatClearanceRateDisplay(
+          snapshot.stats.disposedLastMonthTotalCases,
+          snapshot.stats.institutedLastMonthTotalCases,
+        ),
+        monthlyGapDisplay: describePileChange(
+          snapshot.stats.institutedLastMonthTotalCases,
+          snapshot.stats.disposedLastMonthTotalCases,
+        ).display,
+        monthlyGapNote: describePileChange(
+          snapshot.stats.institutedLastMonthTotalCases,
+          snapshot.stats.disposedLastMonthTotalCases,
+        ).note,
       })),
     },
     lowerCourts: {
@@ -98,6 +126,36 @@ export function buildNationalHomeViewModel(input: {
       topDistrictName: topDistrict?.districtName ?? input.lowerCourtProfile.stateName,
       topDistrictSummary: topDistrict?.summary ?? "The latest published snapshot is available for district-level inspection.",
     },
+  };
+}
+
+function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
+  if (institutedCases <= 0) {
+    return "—";
+  }
+
+  return ((disposedCases / institutedCases) * 100).toFixed(1);
+}
+
+function describePileChange(institutedCases: number, disposedCases: number) {
+  const difference = institutedCases - disposedCases;
+  if (difference === 0) {
+    return {
+      display: "0",
+      note: "Filed and cleared moved in lockstep in the latest monthly window.",
+    };
+  }
+
+  if (difference > 0) {
+    return {
+      display: `+${difference.toLocaleString("en-IN")}`,
+      note: "More matters were filed than cleared in the latest monthly window.",
+    };
+  }
+
+  return {
+    display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
+    note: "More matters were cleared than filed in the latest monthly window.",
   };
 }
 

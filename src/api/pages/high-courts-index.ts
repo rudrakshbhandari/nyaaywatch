@@ -18,17 +18,18 @@ export function renderHighCourtsIndexPage(
   entries: PublicHighCourtIndexEntry[],
   context: PublicHighCourtPageContext,
 ): string {
+  const sortedEntries = [...entries].sort((left, right) => left.profile.courtName.localeCompare(right.profile.courtName, "en"));
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURTS",
       headline: "Where is pressure building across India's High Courts?",
       lede:
-        "This index links the published High Court snapshots now live on NyaayWatch. Each page keeps the court, coverage, source date, and methodology explicit so the public can inspect the numbers without flattening these courts into one national score.",
+        "This index links the published High Court snapshots now live on NyaayWatch. Each card keeps the court identity explicit, while surfacing backlog, clearance pace, and monthly pile change so readers can scan pressure without flattening these courts into one national score.",
       isHero: true,
     })}
 
     <section class="card-grid card-grid--2">
-      ${entries
+      ${sortedEntries
         .map(
           ({ profile, snapshot }) => `
             <article class="card hc-card">
@@ -45,8 +46,18 @@ export function renderHighCourtsIndexPage(
                   value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
                 })}
                 ${renderStatTile({
-                  label: "Disposed last month",
-                  value: snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"),
+                  label: "Cleared / 100 filed",
+                  value: formatClearanceRateDisplay(
+                    snapshot.stats.disposedLastMonthTotalCases,
+                    snapshot.stats.institutedLastMonthTotalCases,
+                  ),
+                })}
+                ${renderStatTile({
+                  label: "Last-month pile change",
+                  value: formatPileChangeDisplay(
+                    snapshot.stats.institutedLastMonthTotalCases,
+                    snapshot.stats.disposedLastMonthTotalCases,
+                  ),
                 })}
               </div>
               <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Inspect High Court</a></p>
@@ -79,3 +90,20 @@ const HIGH_COURTS_INDEX_CSS = `
     color: var(--ink-soft);
   }
 `;
+
+function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
+  if (institutedCases <= 0) {
+    return "—";
+  }
+
+  return ((disposedCases / institutedCases) * 100).toFixed(1);
+}
+
+function formatPileChangeDisplay(institutedCases: number, disposedCases: number) {
+  const difference = institutedCases - disposedCases;
+  if (difference === 0) {
+    return "0";
+  }
+
+  return `${difference > 0 ? "+" : "−"}${Math.abs(difference).toLocaleString("en-IN")}`;
+}

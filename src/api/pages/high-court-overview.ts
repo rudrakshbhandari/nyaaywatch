@@ -13,13 +13,22 @@ export function renderHighCourtOverviewPage(
 ): string {
   const referenceLabel = describeReferenceDate(snapshot.snapshot);
   const ageTotal = Object.values(snapshot.ageBuckets).reduce((sum, value) => sum + value, 0);
+  const clearanceRateDisplay = formatClearanceRateDisplay(
+    snapshot.stats.disposedLastMonthTotalCases,
+    snapshot.stats.institutedLastMonthTotalCases,
+  );
+  const pileChange = describePileChange(
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
+  const olderThanTenYearsShare = ageTotal > 0 ? `${((snapshot.ageBuckets.aboveTenYears / ageTotal) * 100).toFixed(1)}%` : "0.0%";
 
   const body = `
     ${renderSectionHead({
-      eyebrow: "HIGH COURT BETA",
-      headline: `What does the latest published snapshot show in ${profile.courtName}?`,
+      eyebrow: "HIGH COURT",
+      headline: `What is the latest published snapshot showing in ${profile.courtName}?`,
       lede:
-        `${context.coverageSentence} This page tracks one published High Court snapshot so the public can inspect backlog, monthly movement, and age-bucket pressure at this court.`,
+        `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly pile change, and age-bucket burden from the latest published High Court snapshot. It stays court-first and explicit about what the source does and does not support.`,
       isHero: true,
     })}
 
@@ -45,19 +54,19 @@ export function renderHighCourtOverviewPage(
         note: "Open civil and criminal matters combined in the active publication.",
       })}
       ${renderStatTile({
-        label: "Instituted last month",
-        value: snapshot.stats.institutedLastMonthTotalCases.toLocaleString("en-IN"),
-        note: "New matters entering the High Court in the same source window.",
+        label: "Cleared / 100 filed",
+        value: clearanceRateDisplay,
+        note: "How quickly this High Court cleared incoming work in the latest monthly window.",
       })}
       ${renderStatTile({
-        label: "Disposed last month",
-        value: snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"),
-        note: "Matters cleared in the latest published High Court snapshot.",
+        label: "Last-month pile change",
+        value: pileChange.display,
+        note: pileChange.note,
       })}
       ${renderStatTile({
         label: "Older than 10 years",
         value: snapshot.ageBuckets.aboveTenYears.toLocaleString("en-IN"),
-        note: "The oldest visible age bucket in the official High Court dashboard.",
+        note: `${olderThanTenYearsShare} of visible pendency is already older than 10 years.`,
         tone: "accent",
       })}
     </section>
@@ -66,7 +75,7 @@ export function renderHighCourtOverviewPage(
       ${renderSectionHead({
         headline: "How to read this page",
         lede:
-          "This High Court page is intentionally narrow: one published snapshot, clear reference dates, and official source links alongside the numbers.",
+          "This High Court page stays anchored to one published aggregate snapshot, with explicit methodology and official source links.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
@@ -158,6 +167,36 @@ function renderAgeBucket(label: string, value: number, total: number) {
     value: value.toLocaleString("en-IN"),
     note: share,
   });
+}
+
+function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
+  if (institutedCases <= 0) {
+    return "—";
+  }
+
+  return ((disposedCases / institutedCases) * 100).toFixed(1);
+}
+
+function describePileChange(institutedCases: number, disposedCases: number) {
+  const difference = institutedCases - disposedCases;
+  if (difference === 0) {
+    return {
+      display: "0",
+      note: "Filed and cleared moved in lockstep in the latest monthly window.",
+    };
+  }
+
+  if (difference > 0) {
+    return {
+      display: `+${difference.toLocaleString("en-IN")}`,
+      note: "More matters were filed than cleared in the latest monthly window.",
+    };
+  }
+
+  return {
+    display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
+    note: "More matters were cleared than filed in the latest monthly window.",
+  };
 }
 
 const HIGH_COURT_OVERVIEW_CSS = `

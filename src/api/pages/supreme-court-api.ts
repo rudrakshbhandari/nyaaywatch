@@ -8,12 +8,12 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
       eyebrow: "SUPREME COURT API",
       headline: "The public Supreme Court API matches the latest published Supreme Court snapshot.",
       lede:
-        "If the Supreme Court beta page shows a number, the published JSON can expose it. If it is still in operator review, it stays private.",
+        "If the Supreme Court page shows a number, the published JSON can expose it. If it is still in operator review, it stays private.",
       isHero: true,
     })}
 
     <section class="endpoints">
-      ${renderSectionHead({ headline: "Routes available in this beta" })}
+      ${renderSectionHead({ headline: "Routes available on this page" })}
       <div class="card-grid card-grid--1">
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
@@ -37,7 +37,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
         </article>
         <article class="card">
           <h3>Tier-aware semantics</h3>
-          <p>This beta is Supreme Court-specific. It does not pretend to be a national all-courts leaderboard or a cross-tier ranking framework.</p>
+          <p>This API is Supreme Court-specific. It does not pretend to be a national all-courts leaderboard or a cross-tier ranking framework.</p>
         </article>
       </div>
     </section>

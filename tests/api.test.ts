@@ -2,6 +2,7 @@ import request from "supertest";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  buildHaryanaTestSnapshot,
   buildPunjabTestSnapshot,
   createTestApp,
   createTestContext,
@@ -42,6 +43,20 @@ describe("HTTP routes", () => {
         },
       },
     });
+    await insertPublishedSnapshot(context.pool, {
+      runId: "run_pb_public",
+      snapshotId: "snapshot_pb_public",
+      publicationId: "publication_pb_public",
+      stateCode: "PB",
+      payload: buildPunjabTestSnapshot(),
+    });
+    await insertPublishedSnapshot(context.pool, {
+      runId: "run_hr_public",
+      snapshotId: "snapshot_hr_public",
+      publicationId: "publication_hr_public",
+      stateCode: "HR",
+      payload: buildHaryanaTestSnapshot(),
+    });
     await seedTestSnapshot(context.service);
     await seedTestSupremeCourtSnapshot(context.supremeCourtService);
     await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
@@ -72,6 +87,8 @@ describe("HTTP routes", () => {
     expect(districtsPage.text).toContain("Scan the districts under the most pressure.");
     expect(districtsPage.text).toContain("Watchlist only");
     expect(districtsPage.text).toContain("Kangra");
+    expect(districtsPage.text.indexOf("Haryana")).toBeLessThan(districtsPage.text.indexOf("Himachal Pradesh"));
+    expect(districtsPage.text.indexOf("Himachal Pradesh")).toBeLessThan(districtsPage.text.indexOf("Punjab"));
 
     const districtPage = await request(app).get("/districts/kangra");
     expect(districtPage.status).toBe(200);
@@ -441,20 +458,25 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("High Court of Rajasthan");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
+    expect(index.text.indexOf("Allahabad High Court")).toBeLessThan(index.text.indexOf("Bombay High Court"));
+    expect(index.text.indexOf("Bombay High Court")).toBeLessThan(index.text.indexOf("Calcutta High Court"));
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
-    expect(overview.text).toContain("HIGH COURT BETA");
+    expect(overview.text).toContain('href="/" class="masthead__brand"');
+    expect(overview.text).toContain("What is the latest published snapshot showing in High Court of Himachal Pradesh?");
     expect(overview.text).toContain("High Court of Himachal Pradesh");
     expect(overview.text).toContain("Coverage");
     expect(overview.text).toContain("Current coverage:</strong> Himachal Pradesh");
     expect(overview.text).toContain("HC NJDG did not expose a trustworthy source snapshot timestamp");
+    expect(overview.text).toContain("Cleared / 100 filed");
+    expect(overview.text).toContain("Last-month pile change");
 
     const data = await request(app).get("/high-courts/himachal/data");
     expect(data.status).toBe(200);
     expect(data.text).toContain("across Himachal Pradesh");
     expect(data.text).toContain("/v1/high-courts/himachal/stats");
-    expect(data.text).toContain("This public High Court beta ships the JSON surface before adding download formats.");
+    expect(data.text).toContain("This public High Court page ships the JSON surface before adding download formats.");
 
     const methodology = await request(app).get("/high-courts/himachal/methodology");
     expect(methodology.status).toBe(200);
@@ -608,14 +630,15 @@ describe("HTTP routes", () => {
 
     const overview = await request(app).get("/supreme-court");
     expect(overview.status).toBe(200);
-    expect(overview.text).toContain("SUPREME COURT BETA");
-    expect(overview.text).toContain("What does the latest published snapshot show in the Supreme Court?");
+    expect(overview.text).toContain("Where is pressure building at the apex court?");
     expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
+    expect(overview.text).toContain("Cleared / 100 filed");
+    expect(overview.text).toContain("Last-month pile change");
 
     const data = await request(app).get("/supreme-court/data");
     expect(data.status).toBe(200);
     expect(data.text).toContain("/v1/supreme-court/stats");
-    expect(data.text).toContain("This first public Supreme Court beta ships the JSON surface before adding download formats.");
+    expect(data.text).toContain("This public Supreme Court page ships the JSON surface before adding download formats.");
 
     const methodology = await request(app).get("/supreme-court/methodology");
     expect(methodology.status).toBe(200);

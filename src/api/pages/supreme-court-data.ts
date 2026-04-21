@@ -18,7 +18,7 @@ export function renderSupremeCourtDataPage(
       eyebrow: "SUPREME COURT DATA",
       headline: "Fetch the same published Supreme Court snapshot the page is showing.",
       lede:
-        "The first public Supreme Court beta is JSON-first. It exposes the current published stats and trend points, while raw captures, operator notes, and replay evidence stay private.",
+        "This Supreme Court page is JSON-first. It exposes the current published stats and trend points, while raw captures, operator notes, and replay evidence stay private.",
       isHero: true,
     })}
 
@@ -41,7 +41,7 @@ export function renderSupremeCourtDataPage(
       ${renderStatTile({
         label: "CSV posture",
         value: "Not yet",
-        note: "This first public Supreme Court beta ships the JSON surface before adding download formats.",
+        note: "This public Supreme Court page ships the JSON surface before adding download formats.",
         tone: "flag",
       })}
     </section>
@@ -65,7 +65,7 @@ export function renderSupremeCourtDataPage(
     </section>
 
     <section class="sc-section">
-      ${renderSectionHead({ headline: "What this beta does not expose" })}
+      ${renderSectionHead({ headline: "What this page does not expose" })}
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Raw artifacts stay private</h3>
@@ -73,7 +73,7 @@ export function renderSupremeCourtDataPage(
         </article>
         <article class="card">
           <h3>No case-level export yet</h3>
-          <p>NyaayWatch links to the official Supreme Court site instead of pretending this beta is a case-search or judgment archive surface.</p>
+          <p>NyaayWatch links to the official Supreme Court site instead of pretending this page is a case-search or judgment archive surface.</p>
           <p><a class="btn btn--ghost btn--small" href="${context.profile.sourceUrls.officialSite}">Open official Supreme Court site</a></p>
         </article>
       </div>
