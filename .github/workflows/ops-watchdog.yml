@@ -1,0 +1,264 @@
+name: Ops Watchdog
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+concurrency:
+  group: ops-watchdog
+  cancel-in-progress: false
+
+jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+      PUBLIC_BASE_URL: https://nyaaywatch.in
+      STAGING_STACK_NAME: nyaaywatch-staging
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
+
+      - name: Load live operator token and alarm topic
+        run: |
+          operator_token_secret_arn="$(
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" \
+              --stack-name "$STAGING_STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='OperatorApiTokenSecretArn'].OutputValue | [0]" \
+              --output text
+          )"
+          alarm_topic_arn="$(
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" \
+              --stack-name "$STAGING_STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='AlarmTopicArn'].OutputValue | [0]" \
+              --output text
+          )"
+          operator_token="$(
+            aws secretsmanager get-secret-value \
+              --region "$AWS_REGION" \
+              --secret-id "$operator_token_secret_arn" \
+              --query SecretString \
+              --output text
+          )"
+          echo "::add-mask::$operator_token"
+          echo "OPERATOR_API_TOKEN=$operator_token" >> "$GITHUB_ENV"
+          echo "ALARM_TOPIC_ARN=$alarm_topic_arn" >> "$GITHUB_ENV"
+
+      - name: Run public alpha ops sweep
+        id: public_alpha
+        continue-on-error: true
+        run: |
+          set +e
+          npm run ops:verify-public-alpha -- --base-url="$PUBLIC_BASE_URL" > public-alpha-summary.json
+          status=$?
+          [[ -f public-alpha-summary.json ]] && cat public-alpha-summary.json
+          exit "$status"
+
+      - name: Run internal fetch schedule watchdog
+        id: internal_fetch
+        continue-on-error: true
+        run: |
+          set +e
+          npm run ops:verify-internal-fetch-schedule -- \
+            --base-url="$PUBLIC_BASE_URL" \
+            --stack-name="$STAGING_STACK_NAME" \
+            > internal-fetch-schedule-summary.json
+          status=$?
+          [[ -f internal-fetch-schedule-summary.json ]] && cat internal-fetch-schedule-summary.json
+          exit "$status"
+
+      - name: Compose watchdog alert
+        if: always()
+        env:
+          PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
+          INTERNAL_FETCH_OUTCOME: ${{ steps.internal_fetch.outcome }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const publicOutcome = process.env.PUBLIC_ALPHA_OUTCOME ?? "failure";
+          const internalFetchOutcome = process.env.INTERNAL_FETCH_OUTCOME ?? "failure";
+          const failed = publicOutcome !== "success" || internalFetchOutcome !== "success";
+          const publicSummary = fs.existsSync("public-alpha-summary.json")
+            ? JSON.parse(fs.readFileSync("public-alpha-summary.json", "utf8"))
+            : null;
+          const scheduleSummary = fs.existsSync("internal-fetch-schedule-summary.json")
+            ? JSON.parse(fs.readFileSync("internal-fetch-schedule-summary.json", "utf8"))
+            : null;
+
+          const marker = "<!-- nyaaywatch-ops-watchdog -->";
+          const lines = [
+            marker,
+            `Updated: ${new Date().toISOString()}`,
+            `Workflow run: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+            "",
+            failed ? "The scheduled ops watchdog is failing." : "The scheduled ops watchdog is green.",
+            "",
+            "## Checks",
+            `- Public alpha sweep: ${publicOutcome}`,
+            `- Internal fetch schedule watchdog: ${internalFetchOutcome}`,
+            "",
+          ];
+
+          if (publicSummary) {
+            lines.push("## Public Alpha Sweep");
+            lines.push(`- Healthy states: ${publicSummary.healthyStates.length}/${publicSummary.totalStates}`);
+            lines.push(`- Stale states: ${publicSummary.staleStates.length ? publicSummary.staleStates.join(", ") : "none"}`);
+            lines.push(
+              `- Daily fetch lag states: ${publicSummary.dailyFetchLagStates.length ? publicSummary.dailyFetchLagStates.join(", ") : "none"}`,
+            );
+            lines.push(
+              `- Verification failures: ${publicSummary.failingStates.length ? publicSummary.failingStates.join(", ") : "none"}`,
+            );
+            lines.push("");
+          }
+
+          if (scheduleSummary) {
+            lines.push("## Internal Fetch Schedules");
+            lines.push(`- Failing tiers: ${scheduleSummary.failingTiers.length ? scheduleSummary.failingTiers.join(", ") : "none"}`);
+            for (const tier of scheduleSummary.tiers) {
+              lines.push(`### ${tier.tier}`);
+              lines.push(`- Schedule: ${tier.scheduleName}`);
+              lines.push(`- State: ${tier.scheduleState ?? "unknown"}`);
+              lines.push(`- Expression: ${tier.scheduleExpression ?? "unknown"} (${tier.scheduleExpressionTimezone ?? "unknown"})`);
+              lines.push(`- Live task definition: ${tier.liveTaskDefinitionArn ?? "unknown"}`);
+              lines.push(`- Schedule target task definition: ${tier.scheduleTaskDefinitionArn ?? "unknown"}`);
+              lines.push(`- Target matches service: ${tier.schedulerTargetMatchesService ? "yes" : "no"}`);
+              lines.push(`- Uses scheduled fetch entrypoint: ${tier.usesScheduledFetchEntrypoint ? "yes" : "no"}`);
+              lines.push(`- Latest scheduled run: ${tier.latestScheduledRunId ?? "none"} (${tier.latestScheduledRunStatus ?? "unknown"})`);
+              lines.push(`- Latest scheduled freshness: ${tier.latestScheduledRunFreshnessDays ?? "unknown"} day(s)`);
+              lines.push(`- Latest scheduled note: ${tier.latestScheduledRunNote ?? "none"}`);
+              lines.push("");
+            }
+          }
+
+          fs.writeFileSync("watchdog-alert.md", `${lines.join("\n")}\n`);
+
+          const snsLines = [
+            failed ? "NyaayWatch ops watchdog failed." : "NyaayWatch ops watchdog recovered.",
+            `Public alpha sweep: ${publicOutcome}`,
+            `Internal fetch schedule watchdog: ${internalFetchOutcome}`,
+          ];
+
+          if (publicSummary?.staleStates?.length) {
+            snsLines.push(`Stale states: ${publicSummary.staleStates.join(", ")}`);
+          }
+          if (publicSummary?.dailyFetchLagStates?.length) {
+            snsLines.push(`Daily fetch lag states: ${publicSummary.dailyFetchLagStates.join(", ")}`);
+          }
+          if (scheduleSummary?.failingTiers?.length) {
+            snsLines.push(`Failing tiers: ${scheduleSummary.failingTiers.join(", ")}`);
+          }
+
+          fs.writeFileSync("watchdog-alert.txt", `${snsLines.join("\n")}\n`);
+          NODE
+
+      - name: Sync watchdog issue
+        if: always()
+        id: sync_issue
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        env:
+          PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
+          INTERNAL_FETCH_OUTCOME: ${{ steps.internal_fetch.outcome }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("node:fs");
+            const marker = "<!-- nyaaywatch-ops-watchdog -->";
+            const title = "Ops watchdog failure";
+            const failed = process.env.PUBLIC_ALPHA_OUTCOME !== "success" || process.env.INTERNAL_FETCH_OUTCOME !== "success";
+            const body = fs.readFileSync("watchdog-alert.md", "utf8");
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+
+            const existing = issues.find((issue) => issue.title === title || issue.body?.includes(marker));
+            let action = "noop";
+            let issueNumber = existing?.number ?? "";
+
+            if (failed) {
+              if (existing) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  title,
+                  body,
+                });
+                action = "updated";
+              } else {
+                const created = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                });
+                action = "created";
+                issueNumber = String(created.data.number);
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Watchdog recovered at ${new Date().toISOString()}.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: "closed",
+              });
+              action = "closed";
+              issueNumber = String(existing.number);
+            }
+
+            core.setOutput("action", action);
+            core.setOutput("issue-number", issueNumber);
+
+      - name: Publish first-incident SNS alert
+        if: always() && steps.sync_issue.outputs.action == 'created' && env.ALARM_TOPIC_ARN != ''
+        run: |
+          aws sns publish \
+            --region "$AWS_REGION" \
+            --topic-arn "$ALARM_TOPIC_ARN" \
+            --subject "NyaayWatch ops watchdog failure" \
+            --message file://watchdog-alert.txt
+
+      - name: Fail when any watchdog check failed
+        if: always()
+        env:
+          PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
+          INTERNAL_FETCH_OUTCOME: ${{ steps.internal_fetch.outcome }}
+        run: |
+          if [[ "$PUBLIC_ALPHA_OUTCOME" != "success" || "$INTERNAL_FETCH_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
