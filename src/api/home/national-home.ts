@@ -7,6 +7,7 @@ import { renderSectionHead, renderStatTile } from "../design/ui.js";
 import { escapeHtml, formatDate } from "./view-model.js";
 import { buildNationalHomeViewModel, type NationalHighCourtEntry } from "./national-view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
+import { renderIndiaMap } from "./india-map.js";
 
 export function renderNationalHome(input: {
   supremeCourtSnapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null;
@@ -191,17 +192,7 @@ export function renderNationalHome(input: {
       </div>
     </section>
 
-    <section class="national-section">
-      ${renderSectionHead({
-        headline: "Lower-court state pages.",
-        lede:
-          "This directory keeps the live state pages easy to reach without turning the homepage into a wall of geography links.",
-      })}
-      <div class="state-directory">
-        <p class="state-directory__summary">${model.lowerCourts.publicStateCount} public lower-court state pages are currently live.</p>
-        <ul class="state-directory__list">${stateDirectory}</ul>
-      </div>
-    </section>
+    ${renderIndiaMap(input.availableStateProfiles)}
 
     <section class="national-section national-section--accountability">
       ${renderSectionHead({

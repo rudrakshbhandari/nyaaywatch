@@ -10,6 +10,7 @@ import {
   type HomeViewModel,
 } from "./view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
+import { computeWaitingRoomRates, renderWaitingRoom } from "../landing/waiting-room.js";
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
@@ -43,7 +44,10 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
     })
     .join("");
 
+  const waitingRoom = renderWaitingRoom(computeWaitingRoomRates(snapshot));
+
   const body = `
+    ${waitingRoom}
     <section class="hero">
       <p class="hero__eyebrow">${escapeHtml(copy.eyebrow)}</p>
       <h1 class="hero__hed">${escapeHtml(copy.headline)}</h1>
