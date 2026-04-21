@@ -1,4 +1,5 @@
 import express, { type NextFunction, type Request, type Response } from "express";
+import { registerOgRoutes } from "./share/og-routes.js";
 
 import type { AppConfig } from "../config/env.js";
 import type { SupportedStateCode, NjdgStateProfile } from "../geographies.js";
@@ -1184,6 +1185,9 @@ export function createApp(
       }),
     );
   }
+
+  // OG card image routes (/og/*)
+  app.use("/og", registerOgRoutes(publicServices, highCourtServices, supremeCourtService));
 
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";
