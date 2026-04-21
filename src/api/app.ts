@@ -71,6 +71,7 @@ export function createApp(
   const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
   app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
   app.set("trust proxy", true);
   app.use((request, response, next) => {
     const requestHost = readRequestHost(request);
