@@ -3,7 +3,7 @@ set -euo pipefail
 
 if [[ $# -gt 1 ]]; then
   echo "Usage: $0 [stack-name]" >&2
-  echo "Env overrides: STATE_INTERNAL_FETCH_*, SUPREME_COURT_INTERNAL_FETCH_*, HIGH_COURT_INTERNAL_FETCH_*, INTERNAL_FETCH_SCHEDULER_ROLE_ARN" >&2
+  echo "Env overrides: STATE_INTERNAL_FETCH_*, SUPREME_COURT_INTERNAL_FETCH_*, HIGH_COURT_INTERNAL_FETCH_*, PUBLIC_ALPHA_OPS_*, INTERNAL_FETCH_SCHEDULER_ROLE_ARN" >&2
   exit 1
 fi
 
@@ -24,6 +24,11 @@ high_court_schedule_timezone="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asi
 high_court_schedule_state="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
 high_court_schedule_name="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-high-courts-internal-fetch}"
 high_court_note_prefix="${HIGH_COURT_INTERNAL_FETCH_NOTE_PREFIX:-Scheduled daily High Court internal raw fetch}"
+public_alpha_ops_schedule_expression="${PUBLIC_ALPHA_OPS_SCHEDULE_EXPRESSION:-cron(0/30 * * * ? *)}"
+public_alpha_ops_schedule_timezone="${PUBLIC_ALPHA_OPS_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
+public_alpha_ops_schedule_state="${PUBLIC_ALPHA_OPS_SCHEDULE_STATE:-ENABLED}"
+public_alpha_ops_schedule_name="${PUBLIC_ALPHA_OPS_SCHEDULE_NAME:-${stack_name}-public-alpha-ops-monitor}"
+public_alpha_ops_note_prefix="${PUBLIC_ALPHA_OPS_NOTE_PREFIX:-Scheduled public alpha ops verification}"
 role_name="${INTERNAL_FETCH_SCHEDULER_ROLE_NAME:-${stack_name}-internal-fetch-scheduler}"
 role_policy_name="${INTERNAL_FETCH_SCHEDULER_POLICY_NAME:-${stack_name}-internal-fetch-scheduler}"
 role_arn_override="${INTERNAL_FETCH_SCHEDULER_ROLE_ARN:-}"
@@ -422,3 +427,12 @@ reconcile_schedule \
   "Daily internal raw fetch across reviewed High Court profiles. This schedule does not publish public snapshots." \
   "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js" \
   "$high_court_note_prefix"
+
+reconcile_schedule \
+  "$public_alpha_ops_schedule_name" \
+  "$public_alpha_ops_schedule_expression" \
+  "$public_alpha_ops_schedule_timezone" \
+  "$public_alpha_ops_schedule_state" \
+  "Scheduled public alpha verification across every live public state. Failures emit alert log lines and trigger the staging SNS alarm path." \
+  "dist/src/dev/ecs-public-alpha-ops-entrypoint.js" \
+  "$public_alpha_ops_note_prefix"

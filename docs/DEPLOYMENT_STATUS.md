@@ -33,6 +33,7 @@ Use this document as the live environment map. For routine release go/no-go deci
   - lower-court states: `nyaaywatch-staging-weekday-internal-fetch` at `8:00 AM Asia/Kolkata`
   - Supreme Court: `nyaaywatch-staging-supreme-court-internal-fetch` at `8:10 AM Asia/Kolkata`
   - reviewed High Courts: `nyaaywatch-staging-high-courts-internal-fetch` at `8:20 AM Asia/Kolkata`
+  - public alpha ops monitor: `nyaaywatch-staging-public-alpha-ops-monitor` every `30` minutes
 - Internal raw fetch schedule scope policy:
   - lower-court states: all implemented states
   - Supreme Court: the single configured Supreme Court profile
@@ -46,10 +47,11 @@ Use this document as the live environment map. For routine release go/no-go deci
   - `nyaaywatch-staging-health-endpoint`
   - `nyaaywatch-staging-alb-target-5xx`
   - `nyaaywatch-staging-app-errors`
+  - `nyaaywatch-staging-public-alpha-ops`
 - Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: operator validation, pre-release public-alpha verification, domain cutover target
-- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the lower-court, Supreme Court, and reviewed-High-Court internal fetch schedules against the live task definition while reusing the existing scheduler role
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the lower-court, Supreme Court, reviewed-High-Court, and public-alpha monitor schedules against the live task definition while reusing the existing scheduler role
 
 Operational notes:
 
@@ -60,6 +62,7 @@ Operational notes:
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 - For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
 - The documented internal raw-fetch policy is to run lower-court state fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
+- The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
 
@@ -275,6 +278,7 @@ Expected:
 - `/health` returns `ok: true`
 - public API responses come from a published snapshot, not an empty or unpublished state
 - `npm run ops:verify-public-alpha` stays green across every public state and fails if any state has parity drift, a stale snapshot, or a latest successful internal fetch run old enough to imply the daily internal fetch cadence is slipping
+- the CloudWatch alarm `nyaaywatch-staging-public-alpha-ops` stays `OK`; if it flips to `ALARM`, inspect the matching `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` line in `/ecs/nyaaywatch-staging`
 - `.github/workflows/ops-watchdog.yml` now runs the public-alpha sweep plus `npm run ops:verify-internal-fetch-schedule` on a daily schedule, loading `OPERATOR_API_TOKEN` from the live `OperatorApiTokenSecretArn` stack output instead of scraping task-definition env, opening or updating a durable GitHub issue on failure, and publishing a first-incident SNS alert through `AlarmTopicArn`
 
 ## Operator Verification
