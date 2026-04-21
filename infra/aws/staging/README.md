@@ -171,7 +171,7 @@ The deploy job:
 - registers a fresh task definition revision pinned to the commit-SHA image
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
-- reconciles the lower-court, Supreme Court, and reviewed-High-Court internal raw-fetch schedules against the new live task definition
+- reconciles the lower-court, Supreme Court, reviewed-High-Court, and public-alpha-ops schedules against the new live task definition
 - confirms the raw ALB `ServiceUrl` still answers `/health`
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
@@ -185,6 +185,7 @@ Default schedules:
 - lower-court states: every day at `8:00 AM Asia/Kolkata` across all implemented states
 - Supreme Court: every day at `8:10 AM Asia/Kolkata`
 - reviewed High Courts: every day at `8:20 AM Asia/Kolkata` across High Court profiles whose `sourceReviewStatus` is `reviewed`
+- public-alpha ops monitor: every `30` minutes against the deployed `PUBLIC_BASE_URL`
 - behavior: each schedule launches its own one-off ECS task, keeps failures isolated by tier, and leaves public publication unchanged
 
 Manual reconcile command:
@@ -197,18 +198,24 @@ What it does:
 
 - discovers the current live ECS service, task definition, and awsvpc network settings
 - creates or updates the scheduler IAM role
-- creates or updates the EventBridge Scheduler schedules for lower courts, Supreme Court, and reviewed High Courts
+- creates or updates the EventBridge Scheduler schedules for lower courts, Supreme Court, reviewed High Courts, and the public-alpha monitor
 - keeps all schedules pointed at the current ECS task definition after each deploy
 
 Bootstrap note:
 
 - the GitHub Actions deploy role can update the schedule target, but it cannot create or rewrite IAM roles
-- the GitHub Actions deploy role must allow `scheduler:GetSchedule`, `scheduler:UpdateSchedule`, and `scheduler:CreateSchedule` for all three schedule ARNs:
+- the GitHub Actions deploy role must allow `scheduler:GetSchedule`, `scheduler:UpdateSchedule`, and `scheduler:CreateSchedule` for all four schedule ARNs:
   - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
   - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-supreme-court-internal-fetch`
   - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-high-courts-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-public-alpha-ops-monitor`
 - first-time schedule bootstrap or scheduler-role policy changes still require an IAM-capable operator run
 - once the role exists, CI reconciles the schedule against the latest ECS task definition on every `main` deploy
+
+Alerting note:
+
+- the staging stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
+- CloudWatch alarm `${ProjectName}-${EnvironmentName}-public-alpha-ops` fans that signal out through the existing SNS alert topic
 
 ## Heavy-State Operator Lane
 

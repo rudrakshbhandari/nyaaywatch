@@ -141,13 +141,14 @@ npm run release:purge-public-routes -- --high-court=uttar-pradesh,rajasthan
 Use `npm run operator:remote` for live remote operator access from a local terminal. Use `npm run operator:staging` as the default heavy-state lane on the live AWS stack when long-running fetches should execute inside a one-off ECS task instead of through the Cloudflare-fronted public operator path.
 Use `npm run release:purge-public-routes` when a newly exposed Supreme Court or High Court public-beta route family needs an explicit Cloudflare purge after a deploy-only rollout.
 
-The live deploy path now supports three daily internal raw-fetch schedules that stay separate by tier:
+The live deploy path now supports three daily internal raw-fetch schedules plus a recurring public-alpha monitor:
 
 - lower-court states at `8:00 AM Asia/Kolkata` across all implemented states
 - Supreme Court at `8:10 AM Asia/Kolkata`
 - reviewed High Courts at `8:20 AM Asia/Kolkata`
+- public-alpha ops monitor at every `30` minutes, checking `https://nyaaywatch.in` through the same deployed runtime and operator history
 
-Reconcile them against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the deploy helper keeps all three schedules pointed at the latest ECS task definition without changing the public snapshot. The lower-court schedule automatically picks up newly implemented states through `listStateProfiles()`, while the High Court schedule automatically picks up only courts whose `sourceReviewStatus` is `reviewed`. Public publishes remain operator-reviewed and manual on their existing cadence.
+Reconcile them against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the deploy helper keeps all four schedules pointed at the latest ECS task definition without changing the public snapshot. The lower-court schedule automatically picks up newly implemented states through `listStateProfiles()`, while the High Court schedule automatically picks up only courts whose `sourceReviewStatus` is `reviewed`. The public-alpha monitor emits a dedicated alert log line when parity drift, stale public snapshots, or internal fetch lag is detected. Public publishes remain operator-reviewed and manual on their existing cadence.
 
 ## Public Surface
 
