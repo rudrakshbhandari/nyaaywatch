@@ -93,6 +93,17 @@ export function createApp(
     response.json({ ok: true, region: config.AWS_REGION, stateCode: config.STATE_CODE });
   });
 
+  app.get("/robots.txt", (_request, response) => {
+    response.type("text/plain").send(
+      [
+        "User-agent: *",
+        "Allow: /",
+        "Disallow: /operator/",
+        "",
+      ].join("\n"),
+    );
+  });
+
   app.get(
     "/v1/stats/himachal",
     asyncRoute(async (_request, response) => {

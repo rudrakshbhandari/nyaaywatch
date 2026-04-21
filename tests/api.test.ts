@@ -140,6 +140,20 @@ describe("HTTP routes", () => {
     expect(response.headers.location).toBe("https://nyaaywatch.in/districts?view=flagged");
   });
 
+  it("serves a robots.txt that allows public crawl and disallows the operator namespace", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+
+    const response = await request(app).get("/robots.txt");
+
+    expect(response.status).toBe(200);
+    expect(response.headers["content-type"]).toMatch(/text\/plain/);
+    expect(response.text).toContain("User-agent: *");
+    expect(response.text).toContain("Allow: /");
+    expect(response.text).toContain("Disallow: /operator/");
+  });
+
   it("emits structured request logs for non-health routes and skips the ALB health check noise", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
