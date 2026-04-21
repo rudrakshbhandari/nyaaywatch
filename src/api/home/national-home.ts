@@ -147,7 +147,7 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "High Courts across India.",
         lede:
-          "Each court keeps its own source semantics and explicit coverage label, but the cards below now surface backlog, clearance pace, and monthly pile change so readers can scan where High Court pressure is building.",
+          "Each court keeps its own source semantics and explicit coverage label, but the cards below surface backlog, clearance pace, and monthly pile change with the highest-pressure courts shown first.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
       <p class="national-section__linkline"><a href="/high-courts">See all High Courts</a></p>
@@ -157,13 +157,13 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "Most delay sits in the lower courts.",
         lede:
-          "District and subordinate courts remain the clearest public window into scale, delay, and local pressure. Himachal stays the default lower-court lens, with district pages built for close inspection.",
+          "District and subordinate courts remain the clearest public window into scale, delay, and local pressure. The lower-court workspace opens directly into the featured published snapshot, with district pages built for close inspection.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
-          label: "Himachal pending",
+          label: "Featured lower-court backlog",
           value: model.lowerCourts.pendingDisplay,
-          note: "Lower-court backlog in the current Himachal published snapshot.",
+          note: "Lower-court backlog in the currently featured published snapshot.",
         })}
         ${renderStatTile({
           label: "Flagged districts",
@@ -185,7 +185,7 @@ export function renderNationalHome(input: {
         })}
       </div>
       <div class="national-section__actions">
-        <a class="btn btn--primary" href="${input.lowerCourtContext.routes.home}">See Himachal lower courts</a>
+        <a class="btn btn--primary" href="${input.lowerCourtContext.routes.home}">Browse lower courts</a>
         <a class="btn btn--ghost" href="${input.lowerCourtContext.routes.districts}">Inspect districts</a>
       </div>
     </section>

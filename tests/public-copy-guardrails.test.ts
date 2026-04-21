@@ -88,6 +88,10 @@ describe("public copy guardrails", () => {
       expect(response.text, `${route.path} should not dump a joined state list`).not.toContain(
         "Himachal Pradesh and Punjab and Haryana",
       );
+      if (route.path === "/") {
+        expect(response.text).not.toContain("See Himachal lower courts");
+        expect(response.text).toContain("Browse lower courts");
+      }
 
       for (const pattern of disallowedPublicPhrases) {
         expect(response.text, `${route.path} should not match ${pattern}`).not.toMatch(pattern);
