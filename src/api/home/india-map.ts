@@ -72,7 +72,11 @@ export function renderIndiaMap(availableStateProfiles: NjdgStateProfile[]): stri
     const attrs = href ? ` href="${escapeHtml(href)}"` : "";
     const liveClass = isLive ? " map__cell--live" : " map__cell--dim";
 
-    return `<${tag}${attrs} class="map__cell${liveClass}" style="grid-column:${gridColumn};grid-row:${cell.row}" ${href ? "" : 'tabindex="0" aria-label="' + escapeHtml(cell.name) + ' — not yet published"'}>
+    const extraAttrs = href
+      ? ` aria-label="${escapeHtml(cell.name)}"`
+      : ` aria-hidden="true"`;
+
+    return `<${tag}${attrs}${extraAttrs} class="map__cell${liveClass}" style="grid-column:${gridColumn};grid-row:${cell.row}">
       <span class="map__cell-code">${escapeHtml(cell.code)}</span>
       <span class="map__cell-name">${escapeHtml(cell.name)}</span>
     </${tag}>`;

@@ -73,10 +73,16 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
   font-weight: 500;
   color: var(--ink);
   opacity: 0;
+  visibility: hidden;
   transform: translateY(8px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s 0.5s;
 }
-.wr__line--visible { opacity: 1; transform: translateY(0); }
+.wr__line--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease, visibility 0s;
+}
 .wr__line strong { font-weight: 900; }
 .wr__skip {
   margin-top: 40px;
@@ -86,12 +92,16 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
   font-size: 12px; font-weight: 600;
   letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--ink-muted); cursor: pointer;
-  opacity: 0; transition: opacity 0.4s ease 1s, background 120ms;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s ease 1s, background 120ms, visibility 0s 1s;
 }
 .wr__skip:hover { background: var(--rule); color: var(--ink); }
-.wr__skip--visible { opacity: 1; }
+.wr__skip--visible { opacity: 1; visibility: visible; transition: opacity 0.4s ease, background 120ms, visibility 0s; }
 @media (prefers-reduced-motion: reduce) {
-  .wr__line, .wr__skip { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .wr__line, .wr__skip {
+    opacity: 1 !important; visibility: visible !important;
+    transform: none !important; transition: none !important;
+  }
   .wr { transition: none !important; }
 }
 </style>
