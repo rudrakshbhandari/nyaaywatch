@@ -136,6 +136,7 @@ At least once each week, even without a publish:
 - confirm the dashboard still reflects the real stack resources
 - run `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`
 - confirm `nyaaywatch-staging-public-alpha-ops` has not entered `ALARM` and that any previous alarm has a reviewed root cause
+- if the repo-level ops watchdog is being audited or repaired, also run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` so the three live scheduler tiers are checked directly against EventBridge and recent operator history
 - treat any reported daily-fetch lag as an operator issue even if the public snapshot is not yet old enough to count as stale by the product trust model, because the sweep now checks internal run history rather than published snapshot age
 
 ## Practical Release Rule
