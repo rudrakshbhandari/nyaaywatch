@@ -381,6 +381,16 @@ export const BASE_CSS = `
       min-width: 0; max-width: calc(100vw - 36px);
       width: max-content;
     }
+    /* Ensure table wrappers never push beyond viewport */
+    .data-table-wrap, [class*="-table-wrap"] { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Minimum tap target size for all interactive elements */
+    .btn, button, a[role="button"],
+    .masthead__nav a, .colophon a { min-height: 44px; }
+  }
+  @media (max-width: 480px) {
+    .stat-grid { row-gap: 20px; }
+    .stat-tile__value { font-size: clamp(28px, 10vw, 48px); }
+    .card-grid--2, .card-grid--3 { gap: 2px; }
   }
 
   /* --- honor reader motion preferences --- */

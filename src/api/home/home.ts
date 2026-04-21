@@ -10,6 +10,7 @@ import {
   type HomeViewModel,
 } from "./view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
+import { computeWaitingRoomRates, renderWaitingRoom } from "../landing/waiting-room.js";
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
@@ -43,7 +44,10 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
     })
     .join("");
 
+  const waitingRoom = renderWaitingRoom(computeWaitingRoomRates(snapshot));
+
   const body = `
+    ${waitingRoom}
     <section class="hero">
       <p class="hero__eyebrow">${escapeHtml(copy.eyebrow)}</p>
       <h1 class="hero__hed">${escapeHtml(copy.headline)}</h1>
@@ -56,28 +60,48 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
 
     <section class="numbers" aria-label="Headline numbers">
       <div class="numbers__grid">
-        <article class="numbers__cell">
+        <article class="numbers__cell numbers__cell--reveal">
           <div class="numbers__value">${escapeHtml(extractLakhDigits(model.pendingLakh))}<span class="numbers__unit">${escapeHtml(extractLakhUnit(model.pendingLakh))}</span></div>
           <div class="numbers__label">${escapeHtml(n.pending.label)} ${infoIcon("backlog")}</div>
           <p class="numbers__caption">${escapeHtml(n.pending.caption)}</p>
         </article>
-        <article class="numbers__cell">
+        <article class="numbers__cell numbers__cell--reveal">
           <div class="numbers__value">~${model.typicalWaitMonths}<span class="numbers__unit">mo</span></div>
           <div class="numbers__label">${escapeHtml(n.wait.label)} ${infoIcon("typicalWait")}</div>
           <p class="numbers__caption">${escapeHtml(n.wait.caption)}</p>
         </article>
-        <article class="numbers__cell">
+        <article class="numbers__cell numbers__cell--reveal">
           <div class="numbers__value">${model.clearanceRate.toFixed(0)}<span class="numbers__unit">/ 100</span></div>
           <div class="numbers__label">${escapeHtml(n.clearance.label)} ${infoIcon("clearance")}</div>
           <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
         </article>
-        <article class="numbers__cell">
+        <article class="numbers__cell numbers__cell--reveal">
           <div class="numbers__value">${model.flaggedCount}</div>
           <div class="numbers__label">${escapeHtml(n.flagged.label)} ${infoIcon("watchlist")}</div>
           <p class="numbers__caption">${escapeHtml(n.flagged.caption)}</p>
         </article>
       </div>
     </section>
+
+    <script>
+    (function() {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var cells = document.querySelectorAll(".numbers__cell--reveal");
+      if (!cells.length || !window.IntersectionObserver) return;
+      var triggered = false;
+      var observer = new IntersectionObserver(function(entries) {
+        if (triggered) return;
+        var visible = entries.some(function(e) { return e.isIntersecting; });
+        if (!visible) return;
+        triggered = true;
+        observer.disconnect();
+        cells.forEach(function(cell, i) {
+          setTimeout(function() { cell.classList.add("numbers__cell--visible"); }, i * 180);
+        });
+      }, { threshold: 0.2 });
+      cells.forEach(function(cell) { observer.observe(cell); });
+    })();
+    </script>
 
     <section class="watchlist">
       <header class="section-head">
@@ -273,6 +297,15 @@ const HOME_PAGE_CSS = `
   .numbers__cell:first-child .numbers__label {
     border-top: 2px solid var(--accent);
     color: var(--accent-dark);
+  }
+  .numbers__cell--reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .numbers__cell--visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   /* --- watchlist cards --- */

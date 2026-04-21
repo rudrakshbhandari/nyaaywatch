@@ -77,6 +77,8 @@ export function renderDistrictPage(
       })}
     </section>
 
+    ${renderWaitingClock(typicalWaitMonths, district.districtName)}
+
     <section class="district-grid">
       <div class="district-col">
         <article class="card">
@@ -215,6 +217,30 @@ export function renderDistrictPage(
       imageAlt: `NyaayWatch district evidence for ${district.districtName}`,
     },
   });
+}
+
+function renderWaitingClock(months: number, districtName: string): string {
+  const capped = Math.min(months, 48);
+  const squares = Array.from({ length: capped }, (_, i) =>
+    `<span class="wc__sq" aria-hidden="true" style="animation-delay:${(i * 30)}ms"></span>`
+  ).join("");
+  return `
+    <section class="waiting-clock" aria-label="Waiting Clock for ${escapeHtml(districtName)}">
+      <div class="waiting-clock__inner">
+        <div class="wc__label-col" aria-hidden="true">
+          <span class="wc__axis-label">0</span>
+          <span class="wc__axis-label wc__axis-label--mid">${Math.round(capped / 2)}</span>
+          <span class="wc__axis-label wc__axis-label--end">${capped}</span>
+        </div>
+        <div class="wc__grid">${squares}</div>
+        <div class="wc__caption">
+          <span class="wc__caption__value">~${months}</span>
+          <span class="wc__caption__unit">months</span>
+          <span class="wc__caption__label">Each square = one month the middle of the pile has been waiting</span>
+        </div>
+      </div>
+    </section>
+  `;
 }
 
 function renderHistoryBars(history: DistrictHistoryPoint[]): string {
@@ -382,6 +408,60 @@ const DISTRICT_PAGE_CSS = `
   }
   .citation-list dd { margin: 0; font-size: 14px; color: var(--ink); word-break: break-word; }
   .district-col__cta { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .waiting-clock {
+    margin: 0 0 40px;
+    padding: 28px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .waiting-clock__inner { display: flex; align-items: flex-start; gap: 16px; }
+  .wc__label-col {
+    display: flex; flex-direction: column; justify-content: space-between;
+    height: 100%; padding: 0; min-width: 24px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 9px; color: var(--ink-muted); font-weight: 500;
+    text-align: right;
+  }
+  .wc__axis-label { line-height: 1; }
+  .wc__axis-label--mid { margin: auto 0; }
+  .wc__axis-label--end { }
+  .wc__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 8px);
+    grid-auto-rows: 8px;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .wc__sq {
+    display: block;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    opacity: 0;
+    animation: wc-fade-in 0.3s ease forwards;
+  }
+  @keyframes wc-fade-in {
+    from { opacity: 0; transform: scale(0.6); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wc__sq { animation: none; opacity: 1; }
+  }
+  .wc__caption {
+    display: flex; flex-direction: column; gap: 4px; justify-content: flex-start;
+    padding-top: 2px;
+  }
+  .wc__caption__value {
+    font-size: 48px; font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: var(--ink);
+  }
+  .wc__caption__unit {
+    font-size: 14px; font-weight: 600; color: var(--ink-muted); font-family: "IBM Plex Mono", ui-monospace, monospace;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .wc__caption__label {
+    font-size: 12px; color: var(--ink-muted); font-weight: 500;
+    max-width: 20ch; line-height: 1.45;
+  }
 
   .history-bars { margin: 10px 0 18px; padding: 0; list-style: none; }
   .history-row {
