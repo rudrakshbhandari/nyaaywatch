@@ -2,6 +2,8 @@ import { escapeHtml } from "../../lib/html.js";
 import { BASE_CSS, FONTS_LINK } from "./styles.js";
 import { infoIcon } from "./ui.js";
 
+const FAVICON_DATA_URL = createFaviconDataUrl();
+
 export interface PageShellOptions {
   title: string;
   body: string;
@@ -49,6 +51,7 @@ export function renderPageShell(options: PageShellOptions): string {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(options.title)}</title>
+  <link rel="icon" href="${FAVICON_DATA_URL}" type="image/svg+xml" />
   ${FONTS_LINK}
   <style>${BASE_CSS}${options.pageCss ?? ""}</style>
 </head>
@@ -66,6 +69,15 @@ export function renderPageShell(options: PageShellOptions): string {
   ${footer}
 </body>
 </html>`;
+}
+
+function createFaviconDataUrl(): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="4" fill="#0c0a08" />
+  <text x="32" y="36" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" letter-spacing="-1.6" fill="#f4efe3">NW</text>
+</svg>`;
+
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 function renderNav(

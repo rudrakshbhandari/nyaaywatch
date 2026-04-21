@@ -69,6 +69,8 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
+    expect(homepage.text).toContain('rel="icon"');
+    expect(homepage.text).toContain("data:image/svg+xml,");
     expect(homepage.text).toContain("How long is India waiting for justice?");
     expect(homepage.text).toContain("Track the Supreme Court");
     expect(homepage.text).toContain("Most delay sits in the lower courts.");
