@@ -219,65 +219,51 @@ jobs:
         env:
           IMAGE_SHA: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
         run: |
-          chmod +x infra/aws/preview/deploy-service.sh
-          set +e
-          preview_url="$(./infra/aws/preview/deploy-service.sh "$PREVIEW_SERVICE_NAME" "$IMAGE_SHA" "$APP_RUNNER_ACCESS_ROLE_ARN" 2>preview-stderr.log)"
-          status=$?
-          set -e
-          if [[ $status -eq 0 ]]; then
-            echo "status=ready" >> "$GITHUB_OUTPUT"
-            echo "url=$preview_url" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          cat preview-stderr.log >&2
-          if grep -q 'ServiceQuotaExceededException' preview-stderr.log; then
-            echo "status=quota-exceeded" >> "$GITHUB_OUTPUT"
-            echo "url=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          exit "$status"
-
-      - name: Retry preview after stale-service reconcile
-        if: steps.preview.outputs.status == 'quota-exceeded'
-        id: preview_retry
-        env:
-          IMAGE_SHA: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
-        run: |
           chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh infra/aws/preview/deploy-service.sh
-          ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
-          set +e
-          preview_url="$(./infra/aws/preview/deploy-service.sh "$PREVIEW_SERVICE_NAME" "$IMAGE_SHA" "$APP_RUNNER_ACCESS_ROLE_ARN" 2>preview-retry-stderr.log)"
-          status=$?
-          set -e
-          if [[ $status -eq 0 ]]; then
-            echo "status=ready" >> "$GITHUB_OUTPUT"
-            echo "url=$preview_url" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          cat preview-retry-stderr.log >&2
-          if grep -q 'ServiceQuotaExceededException' preview-retry-stderr.log; then
-            echo "status=quota-exceeded" >> "$GITHUB_OUTPUT"
-            echo "url=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          exit "$status"
+          deploy_once() {
+            local stderr_file="$1"
+            set +e
+            preview_url="$(./infra/aws/preview/deploy-service.sh "$PREVIEW_SERVICE_NAME" "$IMAGE_SHA" "$APP_RUNNER_ACCESS_ROLE_ARN" 2>"$stderr_file")"
+            status=$?
+            set -e
+            return "$status"
+          }
 
-      - name: Finalize preview result
-        id: preview_result
-        run: |
-          if [[ -n "${{ steps.preview_retry.outputs.status }}" ]]; then
-            echo "status=${{ steps.preview_retry.outputs.status }}" >> "$GITHUB_OUTPUT"
-            echo "url=${{ steps.preview_retry.outputs.url }}" >> "$GITHUB_OUTPUT"
+          final_status=""
+          final_url=""
+
+          if deploy_once preview-stderr.log; then
+            final_status="ready"
+            final_url="$preview_url"
           else
-            echo "status=${{ steps.preview.outputs.status }}" >> "$GITHUB_OUTPUT"
-            echo "url=${{ steps.preview.outputs.url }}" >> "$GITHUB_OUTPUT"
+            cat preview-stderr.log >&2
+            if grep -q 'ServiceQuotaExceededException' preview-stderr.log; then
+              ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
+              if deploy_once preview-retry-stderr.log; then
+                final_status="ready"
+                final_url="$preview_url"
+              else
+                cat preview-retry-stderr.log >&2
+                if grep -q 'ServiceQuotaExceededException' preview-retry-stderr.log; then
+                  final_status="quota-exceeded"
+                  final_url=""
+                else
+                  exit "$status"
+                fi
+              fi
+            else
+              exit "$status"
+            fi
           fi
+
+          echo "status=$final_status" >> "$GITHUB_OUTPUT"
+          echo "url=$final_url" >> "$GITHUB_OUTPUT"
 
       - name: Comment preview URL
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         env:
-          PREVIEW_URL: ${{ steps.preview_result.outputs.url }}
-          PREVIEW_STATUS: ${{ steps.preview_result.outputs.status }}
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+          PREVIEW_STATUS: ${{ steps.preview.outputs.status }}
           SERVICE_NAME: ${{ env.PREVIEW_SERVICE_NAME }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
