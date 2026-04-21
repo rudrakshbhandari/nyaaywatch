@@ -156,7 +156,6 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     needs:
       - secret-scan
-      - verify
     runs-on: ubuntu-latest
     concurrency:
       group: preview-pr-${{ github.event.pull_request.number }}
@@ -185,6 +184,29 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-preview-role
 
+      - name: Compute active preview allowlist
+        id: preview-allowlist
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const path = `${process.env.RUNNER_TEMP}/open-preview-services.txt`;
+            const pulls = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const lines = pulls.map((pull) => `nyaaywatch-pr-${pull.number}`);
+            fs.writeFileSync(path, lines.join("\n") + (lines.length > 0 ? "\n" : ""));
+            core.setOutput("path", path);
+
+      - name: Reconcile stale preview services
+        run: |
+          chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh
+          ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
+
       - name: Build and push preview image
         env:
           IMAGE_SHA: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
@@ -197,23 +219,45 @@ jobs:
         env:
           IMAGE_SHA: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
         run: |
-          chmod +x infra/aws/preview/deploy-service.sh
-          set +e
-          preview_url="$(./infra/aws/preview/deploy-service.sh "$PREVIEW_SERVICE_NAME" "$IMAGE_SHA" "$APP_RUNNER_ACCESS_ROLE_ARN" 2>preview-stderr.log)"
-          status=$?
-          set -e
-          if [[ $status -eq 0 ]]; then
-            echo "status=ready" >> "$GITHUB_OUTPUT"
-            echo "url=$preview_url" >> "$GITHUB_OUTPUT"
-            exit 0
+          chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh infra/aws/preview/deploy-service.sh
+          deploy_once() {
+            local stderr_file="$1"
+            set +e
+            preview_url="$(./infra/aws/preview/deploy-service.sh "$PREVIEW_SERVICE_NAME" "$IMAGE_SHA" "$APP_RUNNER_ACCESS_ROLE_ARN" 2>"$stderr_file")"
+            status=$?
+            set -e
+            return "$status"
+          }
+
+          final_status=""
+          final_url=""
+
+          if deploy_once preview-stderr.log; then
+            final_status="ready"
+            final_url="$preview_url"
+          else
+            cat preview-stderr.log >&2
+            if grep -q 'ServiceQuotaExceededException' preview-stderr.log; then
+              ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
+              if deploy_once preview-retry-stderr.log; then
+                final_status="ready"
+                final_url="$preview_url"
+              else
+                cat preview-retry-stderr.log >&2
+                if grep -q 'ServiceQuotaExceededException' preview-retry-stderr.log; then
+                  final_status="quota-exceeded"
+                  final_url=""
+                else
+                  exit "$status"
+                fi
+              fi
+            else
+              exit "$status"
+            fi
           fi
-          cat preview-stderr.log >&2
-          if grep -q 'ServiceQuotaExceededException' preview-stderr.log; then
-            echo "status=quota-exceeded" >> "$GITHUB_OUTPUT"
-            echo "url=" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          exit "$status"
+
+          echo "status=$final_status" >> "$GITHUB_OUTPUT"
+          echo "url=$final_url" >> "$GITHUB_OUTPUT"
 
       - name: Comment preview URL
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
@@ -228,11 +272,11 @@ jobs:
             const body =
               process.env.PREVIEW_STATUS === "quota-exceeded"
                 ? `${marker}
-            Preview unavailable: AWS App Runner preview quota is currently full, so this PR could not get a temporary preview service.
+            Preview unavailable: AWS App Runner preview quota is currently full, even after stale preview cleanup and one retry.
 
             Service: \`${process.env.SERVICE_NAME}\`
             Mode: fixture-backed public web preview
-            Status: quota exceeded; rerun after stale preview services are cleaned up`
+            Status: quota exceeded after reconcile and retry`
                 : `${marker}
             Preview ready: ${process.env.PREVIEW_URL}
 

@@ -21,9 +21,9 @@ export function renderHighCourtsIndexPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURTS",
-      headline: "Public High Court observability is now live in a narrow beta.",
+      headline: "Where is pressure building across India's High Courts?",
       lede:
-        "This tier sits inside the same NyaayWatch trust model: published snapshots, explicit methodology, official source links, and court-first coverage labels. It is still narrower than the district layer and does not claim national High Court comparability yet.",
+        "This index links the published High Court snapshots now live on NyaayWatch. Each page keeps the court, coverage, source date, and methodology explicit so the public can inspect the numbers without flattening these courts into one national score.",
       isHero: true,
     })}
 
@@ -49,7 +49,7 @@ export function renderHighCourtsIndexPage(
                   value: snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"),
                 })}
               </div>
-              <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Open High Court page</a></p>
+              <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Inspect High Court</a></p>
             </article>
           `,
         )

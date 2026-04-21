@@ -1,0 +1,49 @@
+name: Preview Reconcile
+
+on:
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-preview-role
+
+      - name: Compute active preview allowlist
+        id: preview-allowlist
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const path = `${process.env.RUNNER_TEMP}/open-preview-services.txt`;
+            const pulls = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const lines = pulls.map((pull) => `nyaaywatch-pr-${pull.number}`);
+            fs.writeFileSync(path, lines.join("\n") + (lines.length > 0 ? "\n" : ""));
+            core.setOutput("path", path);
+
+      - name: Reconcile stale preview services
+        run: |
+          chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh
+          ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"

@@ -53,7 +53,7 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/",
-        requiredText: "The courts, in the latest published snapshots.",
+        requiredText: "How long is India waiting for justice?",
       },
       {
         path: "/states/himachal",
