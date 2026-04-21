@@ -155,7 +155,13 @@ const INDIA_MAP_CSS = `<style>
 .map__cell--live:focus-visible .map__cell-name {
   color: var(--paper);
 }
-.map__cell--dim { opacity: 0.35; cursor: default; }
+.map__cell--dim {
+  cursor: default;
+  border-color: var(--rule-soft);
+  background: var(--paper);
+}
+.map__cell--dim .map__cell-code { color: var(--ink-muted); }
+.map__cell--dim .map__cell-name { color: var(--ink-muted); }
 .map__cell-code {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 11px; font-weight: 700;
