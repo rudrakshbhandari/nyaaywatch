@@ -262,11 +262,22 @@ jobs:
           fi
           exit "$status"
 
+      - name: Finalize preview result
+        id: preview_result
+        run: |
+          if [[ -n "${{ steps.preview_retry.outputs.status }}" ]]; then
+            echo "status=${{ steps.preview_retry.outputs.status }}" >> "$GITHUB_OUTPUT"
+            echo "url=${{ steps.preview_retry.outputs.url }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=${{ steps.preview.outputs.status }}" >> "$GITHUB_OUTPUT"
+            echo "url=${{ steps.preview.outputs.url }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Comment preview URL
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         env:
-          PREVIEW_URL: ${{ steps.preview_retry.outputs.url || steps.preview.outputs.url }}
-          PREVIEW_STATUS: ${{ steps.preview_retry.outputs.status || steps.preview.outputs.status }}
+          PREVIEW_URL: ${{ steps.preview_result.outputs.url }}
+          PREVIEW_STATUS: ${{ steps.preview_result.outputs.status }}
           SERVICE_NAME: ${{ env.PREVIEW_SERVICE_NAME }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
