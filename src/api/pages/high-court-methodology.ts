@@ -18,7 +18,7 @@ export function renderHighCourtMethodologyPage(
       eyebrow: "HIGH COURT METHOD",
       headline: "Every public High Court number comes from one published aggregate snapshot.",
       lede:
-        "The High Court beta keeps the same trust discipline as the rest of NyaayWatch: stored evidence, published snapshots, explicit methodology versioning, and no leakage from unpublished operator runs.",
+        "The public High Court pages keep the same trust discipline as the rest of NyaayWatch: stored evidence, published snapshots, explicit methodology versioning, and no leakage from unpublished operator runs.",
       isHero: true,
     })}
 
@@ -78,7 +78,7 @@ export function renderHighCourtMethodologyPage(
         <article class="card">
           <h3>When HC NJDG does not expose one</h3>
           <p>The page uses the captured page timestamp as <code>referenceDateAt</code> and labels it as <code>captured_at</code> instead of inventing a source date.</p>
-          <p>This is the current posture for the live public High Court beta pages.</p>
+          <p>This is the current posture for the live public High Court pages.</p>
         </article>
       </div>
     </section>

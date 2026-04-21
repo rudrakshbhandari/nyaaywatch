@@ -41,7 +41,7 @@ export function buildPublicPageContext(
   availableProfiles: NjdgStateProfile[],
 ): PublicPageContext {
   const routes = buildPublicStateRoutes(currentProfile);
-  const visibleProfiles = availableProfiles.length > 0 ? availableProfiles : [currentProfile];
+  const visibleProfiles = sortPublicStateProfiles(availableProfiles.length > 0 ? availableProfiles : [currentProfile]);
 
   return {
     profile: currentProfile,
@@ -61,6 +61,10 @@ export function buildPublicPageContext(
     brandTag: `Court transparency, ${currentProfile.stateName}`,
     publicScopeDescription: buildPublicScopeDescription(currentProfile, visibleProfiles),
   };
+}
+
+function sortPublicStateProfiles(profiles: NjdgStateProfile[]) {
+  return [...profiles].sort((left, right) => left.stateName.localeCompare(right.stateName, "en"));
 }
 
 export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRoutes {

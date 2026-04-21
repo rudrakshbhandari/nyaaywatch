@@ -41,10 +41,13 @@ test("developer parity flow matches homepage toplines to the published stats API
   const statsResponse = await request.get("/v1/supreme-court/stats");
   expect(statsResponse.ok()).toBeTruthy();
   const statsPayload = await statsResponse.json();
+  const monthlyGap = statsPayload.stats.institutedLastMonthTotalCases - statsPayload.stats.disposedLastMonthTotalCases;
+  const monthlyGapDisplay =
+    monthlyGap === 0 ? "0" : `${monthlyGap > 0 ? "+" : "−"}${Math.abs(monthlyGap).toLocaleString("en-IN")}`;
 
   await page.goto("/");
 
   await expect(page.getByText(statsPayload.stats.pendingTotalCases.toLocaleString("en-IN"))).toBeVisible();
-  await expect(page.getByText(statsPayload.stats.pendingRegisteredCases.toLocaleString("en-IN"))).toBeVisible();
   await expect(page.getByText(statsPayload.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"))).toBeVisible();
+  await expect(page.getByText(monthlyGapDisplay)).toBeVisible();
 });

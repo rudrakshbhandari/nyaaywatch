@@ -26,10 +26,10 @@ export function renderNationalHome(input: {
   const highCourtCards =
     model.highCourts.entries.length > 0
       ? model.highCourts.entries
-          .map(({ profile, referenceLabel, pendingDisplay, disposedLastMonthDisplay }) => {
+          .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, monthlyGapDisplay, monthlyGapNote }) => {
             const routes = buildPublicHighCourtRoutes(profile);
             return `<article class="card tier-card">
-              <p class="tier-card__eyebrow">HIGH COURT BETA</p>
+              <p class="tier-card__eyebrow">HIGH COURT</p>
               <h3>${escapeHtml(profile.courtName)}</h3>
               <p>${escapeHtml(referenceLabel)}</p>
               <p class="tier-card__coverage">Coverage: ${escapeHtml(formatHighCourtCoverageLabel(profile))}</p>
@@ -39,10 +39,15 @@ export function renderNationalHome(input: {
                   <dd>${escapeHtml(pendingDisplay)}</dd>
                 </div>
                 <div>
-                  <dt>Disposed last month</dt>
-                  <dd>${escapeHtml(disposedLastMonthDisplay)}</dd>
+                  <dt>Cleared / 100 filed</dt>
+                  <dd>${escapeHtml(clearanceRateDisplay)}</dd>
+                </div>
+                <div>
+                  <dt>Last-month pile change</dt>
+                  <dd>${escapeHtml(monthlyGapDisplay)}</dd>
                 </div>
               </dl>
+              <p class="tier-card__note">${escapeHtml(monthlyGapNote)}</p>
               <p><a class="btn btn--ghost btn--small" href="${routes.home}">Open High Court page</a></p>
             </article>`;
           })
@@ -53,7 +58,8 @@ export function renderNationalHome(input: {
           <p>The homepage keeps this tier in the structure even when a local test runtime has not seeded any public High Court pages yet.</p>
         </article>`;
 
-  const stateDirectory = input.availableStateProfiles
+  const stateDirectory = [...input.availableStateProfiles]
+    .sort((left, right) => left.stateName.localeCompare(right.stateName, "en"))
     .map(
       (profile) => `<li><a href="${buildPublicStateRoutes(profile).home}">${escapeHtml(profile.stateName)}</a></li>`,
     )
@@ -83,7 +89,7 @@ export function renderNationalHome(input: {
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch tracks pressure across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building, where the backlog is heaviest, and where public scrutiny is most needed."
+            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly pile change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
             : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers are live or predictive."
         }</p>
         <div class="national-hero__cta">
@@ -104,9 +110,9 @@ export function renderNationalHome(input: {
                 note: "Backlog at the top of the court system in the latest published snapshot.",
               })}
               ${renderStatTile({
-                label: "Pending registered",
-                value: model.supremeCourt.pendingRegisteredDisplay ?? "—",
-                note: "Registered matters shown separately so the main total is easier to inspect.",
+                label: "Cleared / 100 filed",
+                value: model.supremeCourt.clearanceRateDisplay ?? "—",
+                note: "How quickly the apex court is clearing incoming work in the latest monthly window.",
                 tone: "accent",
               })}
               ${renderStatTile({
@@ -115,9 +121,9 @@ export function renderNationalHome(input: {
                 note: "How many matters the Court cleared in the latest published month.",
               })}
               ${renderStatTile({
-                label: "Instituted last month",
-                value: model.supremeCourt.institutedLastMonthDisplay ?? "—",
-                note: "How many new matters entered in the latest published month.",
+                label: "Last-month pile change",
+                value: model.supremeCourt.monthlyGapDisplay ?? "—",
+                note: model.supremeCourt.monthlyGapNote ?? "Monthly incoming and outgoing work are both visible.",
               })}
             `
             : `
@@ -141,7 +147,7 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "High Courts across India.",
         lede:
-          "These pages track published High Court snapshots across the country. Each court keeps its own coverage, source date, and methodology so readers can inspect it on its own terms.",
+          "Each court keeps its own source semantics and explicit coverage label, but the cards below now surface backlog, clearance pace, and monthly pile change so readers can scan where High Court pressure is building.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
       <p class="national-section__linkline"><a href="/high-courts">See all High Courts</a></p>
@@ -205,15 +211,15 @@ export function renderNationalHome(input: {
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>Supreme Court</h3>
-          <p>The Supreme Court page carries its own methodology, API, and data links.</p>
+          <p>The apex-court layer carries its own methodology, API, and data surface.</p>
           <p><a href="${supremeRoutes.methodology}">Methodology</a></p>
           <p><a href="${supremeRoutes.data}">Data</a></p>
           <p><a href="${supremeRoutes.api}">API</a></p>
         </article>
         <article class="card">
           <h3>High Courts</h3>
-          <p>Each High Court page keeps its own source date, coverage, and supporting links clear.</p>
-          <p><a href="/high-courts">High Courts</a></p>
+          <p>The High Court layer stays explicit about court-specific source semantics and covered geographies.</p>
+          <p><a href="/high-courts">High Courts index</a></p>
         </article>
         <article class="card">
           <h3>District and subordinate courts</h3>
@@ -354,6 +360,10 @@ const NATIONAL_HOME_CSS = `
     margin: 0;
     font-weight: 700;
     font-variant-numeric: lining-nums tabular-nums;
+  }
+  .tier-card__note {
+    margin: 0 0 18px;
+    color: var(--ink-soft);
   }
   .state-directory {
     border-top: 1px solid var(--rule);

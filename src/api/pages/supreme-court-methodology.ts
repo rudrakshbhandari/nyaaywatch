@@ -16,7 +16,7 @@ export function renderSupremeCourtMethodologyPage(
       eyebrow: "SUPREME COURT METHOD",
       headline: "Every public Supreme Court number comes from one published aggregate snapshot.",
       lede:
-        "The Supreme Court beta keeps the same trust discipline as the rest of NyaayWatch: stored evidence, published snapshots, explicit methodology versioning, and no leakage from unpublished operator runs.",
+        "The public Supreme Court page keeps the same trust discipline as the rest of NyaayWatch: stored evidence, published snapshots, explicit methodology versioning, and no leakage from unpublished operator runs.",
       isHero: true,
     })}
 
