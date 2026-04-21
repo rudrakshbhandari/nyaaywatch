@@ -13,7 +13,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
     })}
 
     <section class="endpoints">
-      ${renderSectionHead({ headline: "Routes available in this beta" })}
+      ${renderSectionHead({ headline: "Routes available on this page" })}
       <div class="card-grid card-grid--1">
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
@@ -37,7 +37,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
         </article>
         <article class="card">
           <h3>Tier-aware semantics</h3>
-          <p>This beta is High Court-specific. A High Court page is not the same scope as a lower-court state page, so the API does not reuse district-only fields or imply cross-tier ranking comparability.</p>
+          <p>This API is High Court-specific. A High Court page is not the same scope as a lower-court state page, so the API does not reuse district-only fields or imply cross-tier ranking comparability.</p>
         </article>
       </div>
     </section>

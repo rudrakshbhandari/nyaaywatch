@@ -51,7 +51,7 @@ export function buildPublicHighCourtPageContext(
   availableProfiles: HighCourtProfile[],
 ): PublicHighCourtPageContext {
   const routes = buildPublicHighCourtRoutes(currentProfile);
-  const visibleProfiles = availableProfiles.length > 0 ? availableProfiles : [currentProfile];
+  const visibleProfiles = sortPublicHighCourtProfiles(availableProfiles.length > 0 ? availableProfiles : [currentProfile]);
 
   return {
     profile: currentProfile,
@@ -73,6 +73,10 @@ export function buildPublicHighCourtPageContext(
     coverageSentence: buildHighCourtCoverageSentence(currentProfile),
     publicScopeDescription: buildPublicScopeDescription(currentProfile, visibleProfiles),
   };
+}
+
+function sortPublicHighCourtProfiles(profiles: HighCourtProfile[]) {
+  return [...profiles].sort((left, right) => left.courtName.localeCompare(right.courtName, "en"));
 }
 
 function buildPublicScopeDescription(currentProfile: HighCourtProfile, visibleProfiles: HighCourtProfile[]) {

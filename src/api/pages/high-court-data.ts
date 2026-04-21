@@ -20,7 +20,7 @@ export function renderHighCourtDataPage(
       eyebrow: "HIGH COURT DATA",
       headline: "Fetch the same published High Court snapshot the page is showing.",
       lede:
-        `This first High Court beta is JSON-first. It exposes the current published stats and trend points for ${profile.courtName} across ${context.coverageLabel}, while raw captures and operator evidence stay private.`,
+        `This High Court page is JSON-first. It exposes the current published stats and trend points for ${profile.courtName} across ${context.coverageLabel}, while raw captures and operator evidence stay private.`,
       isHero: true,
     })}
 
@@ -43,7 +43,7 @@ export function renderHighCourtDataPage(
       ${renderStatTile({
         label: "CSV posture",
         value: "Not yet",
-        note: "This public High Court beta ships the JSON surface before adding download formats.",
+        note: "This public High Court page ships the JSON surface before adding download formats.",
         tone: "flag",
       })}
     </section>
@@ -60,14 +60,14 @@ export function renderHighCourtDataPage(
         <article class="card">
           <h3>High Court trends</h3>
           <p><code>${context.routes.trendsApi}</code></p>
-          <p>Published court-wide trend points for pending load and last-month institution / disposal totals. This beta does not split trends by covered geography.</p>
+          <p>Published court-wide trend points for pending load and last-month institution / disposal totals. This page does not split trends by covered geography.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.trendsApi}">Open trends JSON</a></p>
         </article>
       </div>
     </section>
 
     <section class="hc-section">
-      ${renderSectionHead({ headline: "What this beta does not expose" })}
+      ${renderSectionHead({ headline: "What this page does not expose" })}
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Raw artifacts stay private</h3>
@@ -75,7 +75,7 @@ export function renderHighCourtDataPage(
         </article>
         <article class="card">
           <h3>No case-level export yet</h3>
-          <p>NyaayWatch links to official High Court Services and the official court site instead of pretending this beta is a case-search system.</p>
+          <p>NyaayWatch links to official High Court Services and the official court site instead of pretending this page is a case-search system.</p>
           <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.hcServices}">Open official High Court Services</a></p>
         </article>
       </div>

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("citizen flow loads the homepage, district workspace, and district permalink", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "The courts, in the latest published snapshots." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Where is pressure building across India's courts?" })).toBeVisible();
   await expect(page.locator(".national-hero__accountability")).toContainText(/Captured|Source snapshot/);
   await expect(page.getByRole("link", { name: /View Supreme Court/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Open Himachal lower-court overview/i })).toBeVisible();
@@ -41,10 +41,13 @@ test("developer parity flow matches homepage toplines to the published stats API
   const statsResponse = await request.get("/v1/supreme-court/stats");
   expect(statsResponse.ok()).toBeTruthy();
   const statsPayload = await statsResponse.json();
+  const monthlyGap = statsPayload.stats.institutedLastMonthTotalCases - statsPayload.stats.disposedLastMonthTotalCases;
+  const monthlyGapDisplay =
+    monthlyGap === 0 ? "0" : `${monthlyGap > 0 ? "+" : "−"}${Math.abs(monthlyGap).toLocaleString("en-IN")}`;
 
   await page.goto("/");
 
   await expect(page.getByText(statsPayload.stats.pendingTotalCases.toLocaleString("en-IN"))).toBeVisible();
-  await expect(page.getByText(statsPayload.stats.pendingRegisteredCases.toLocaleString("en-IN"))).toBeVisible();
   await expect(page.getByText(statsPayload.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"))).toBeVisible();
+  await expect(page.getByText(monthlyGapDisplay)).toBeVisible();
 });

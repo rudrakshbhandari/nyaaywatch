@@ -11,13 +11,21 @@ export function renderSupremeCourtOverviewPage(
   context: PublicSupremeCourtPageContext,
 ): string {
   const referenceLabel = describeReferenceDate(snapshot.snapshot);
+  const clearanceRateDisplay = formatClearanceRateDisplay(
+    snapshot.stats.disposedLastMonthTotalCases,
+    snapshot.stats.institutedLastMonthTotalCases,
+  );
+  const pileChange = describePileChange(
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
 
   const body = `
     ${renderSectionHead({
-      eyebrow: "SUPREME COURT BETA",
-      headline: "The apex court in the latest published snapshot.",
+      eyebrow: "SUPREME COURT",
+      headline: "Where is pressure building at the apex court?",
       lede:
-        "This page shows one published aggregate Supreme Court snapshot with explicit freshness, methodology, and official source links. It is an apex-court observability surface, not a case-search tool and not a national all-courts ranking layer.",
+        "This page shows one published aggregate Supreme Court snapshot, but focuses the first view on backlog pressure, clearance pace, and monthly pile change so the current direction is obvious at a glance.",
       isHero: true,
     })}
 
@@ -28,19 +36,19 @@ export function renderSupremeCourtOverviewPage(
         note: "Registered and unregistered pending matters combined in the active publication.",
       })}
       ${renderStatTile({
-        label: "Pending registered",
-        value: snapshot.stats.pendingRegisteredCases.toLocaleString("en-IN"),
-        note: "Registered pending matters in the same published source window.",
+        label: "Cleared / 100 filed",
+        value: clearanceRateDisplay,
+        note: "How quickly the apex court cleared incoming work in the latest monthly window.",
+      })}
+      ${renderStatTile({
+        label: "Last-month pile change",
+        value: pileChange.display,
+        note: pileChange.note,
       })}
       ${renderStatTile({
         label: "Pending unregistered",
         value: snapshot.stats.pendingUnregisteredCases.toLocaleString("en-IN"),
-        note: "Unregistered pending matters remain visible instead of being folded away.",
-      })}
-      ${renderStatTile({
-        label: "Disposed last month",
-        value: snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN"),
-        note: "Civil and criminal matters cleared in the latest published snapshot.",
+        note: "Unregistered matters remain visible instead of being folded away.",
         tone: "accent",
       })}
     </section>
@@ -49,7 +57,7 @@ export function renderSupremeCourtOverviewPage(
       ${renderSectionHead({
         headline: "Trust boundary",
         lede:
-          "The first public Supreme Court beta is intentionally narrow: published aggregate observability only, with tier-specific caveats and no hidden leap into all-courts comparability.",
+          "This Supreme Court page stays anchored to one published aggregate snapshot, with tier-specific caveats and no hidden leap into all-courts comparability.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
@@ -73,7 +81,7 @@ export function renderSupremeCourtOverviewPage(
       ${renderSectionHead({
         headline: "Movement in the current publication",
         lede:
-          "The first public beta keeps registered and unregistered backlog visible, while showing month and year movement directly from the aggregate source boundary.",
+          "This page keeps registered and unregistered backlog visible, while showing month and year movement directly from the aggregate source boundary.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
@@ -86,7 +94,7 @@ export function renderSupremeCourtOverviewPage(
           <h3>Current year</h3>
           <p><strong>Instituted:</strong> ${snapshot.stats.institutedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
           <p><strong>Disposed:</strong> ${snapshot.stats.disposedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
-          <p>The beta exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
+          <p>This page exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
         </article>
       </div>
     </section>
@@ -115,7 +123,7 @@ export function renderSupremeCourtOverviewPage(
         </article>
         <article class="card">
           <h3>FAQ / ready reckoner</h3>
-          <p>Official guidance for obtaining Supreme Court information without pretending this beta replaces those record-level workflows.</p>
+          <p>Official guidance for obtaining Supreme Court information without pretending this page replaces those record-level workflows.</p>
           <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.faq}">Open FAQ</a></p>
         </article>
       </div>
@@ -137,6 +145,36 @@ export function renderSupremeCourtOverviewPage(
       sourceAttribution: snapshot.snapshot.sourceAttribution,
     },
   });
+}
+
+function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
+  if (institutedCases <= 0) {
+    return "—";
+  }
+
+  return ((disposedCases / institutedCases) * 100).toFixed(1);
+}
+
+function describePileChange(institutedCases: number, disposedCases: number) {
+  const difference = institutedCases - disposedCases;
+  if (difference === 0) {
+    return {
+      display: "0",
+      note: "Filed and cleared moved in lockstep in the latest monthly window.",
+    };
+  }
+
+  if (difference > 0) {
+    return {
+      display: `+${difference.toLocaleString("en-IN")}`,
+      note: "More matters were instituted than disposed in the latest monthly window.",
+    };
+  }
+
+  return {
+    display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
+    note: "More matters were disposed than instituted in the latest monthly window.",
+  };
 }
 
 function describeReferenceDate(snapshot: SupremeCourtPublishedSnapshot["snapshot"]) {
