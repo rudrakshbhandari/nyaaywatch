@@ -18,8 +18,8 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 1. Public Alpha Operations And Alerting
 
-- [ ] Wire `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` into a scheduled monitor with a real alert path. The repo now has the verification sweep; the missing piece is dependable wake-up behavior when it fails.
-- [ ] Add a scheduler-execution watchdog for `nyaaywatch-staging-weekday-internal-fetch` so the team can distinguish “public snapshot is still acceptable” from “the daily internal fetch stopped firing.”
+- [x] Wired `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` into the scheduled `.github/workflows/ops-watchdog.yml` monitor, which now assumes the GitHub deploy role, loads `OPERATOR_API_TOKEN` from Secrets Manager, opens or updates a durable GitHub issue, and publishes a first-incident SNS alert through the staging alarm topic when the public-alpha sweep fails.
+- [x] Added a repo-native scheduler-execution watchdog via `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in`, covering the current three live schedules together instead of the old single lower-court schedule: lower courts, Supreme Court, and reviewed High Courts all now verify task-definition alignment, scheduled entrypoint wiring, and recent successful tier-specific scheduled operator runs.
 - [ ] Keep the operator review loop boring and enforced: release windows should always produce aligned evidence in `docs/RELEASE_HISTORY.md`, `docs/DEPLOYMENT_STATUS.md`, and the generated release-evidence artifacts.
 
 ### 2. Freshness And Trust-Surface Hardening
