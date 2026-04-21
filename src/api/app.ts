@@ -31,7 +31,6 @@ import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
 import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
 import { renderDistrictEmbedWidget, renderStateEmbedWidget } from "./pages/embed.js";
 import { buildViewModel } from "./home/view-model.js";
-import { buildPublicStateRoutes } from "./public-state.js";
 import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
 import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
 import { renderSupremeCourtMethodologyPage } from "./pages/supreme-court-methodology.js";
