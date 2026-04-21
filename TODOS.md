@@ -18,7 +18,7 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 1. Public Alpha Operations And Alerting
 
-- [ ] Wire `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` into a scheduled monitor with a real alert path. The repo now has the verification sweep; the missing piece is dependable wake-up behavior when it fails.
+- [x] Wired `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` into a scheduled monitor with a real alert path. The staging reconcile helper now keeps `nyaaywatch-staging-public-alpha-ops-monitor` pointed at the live ECS task definition every deploy, the runtime emits `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` on failures, and CloudWatch alarm `nyaaywatch-staging-public-alpha-ops` fans out through the existing SNS topic.
 - [ ] Add a scheduler-execution watchdog for `nyaaywatch-staging-weekday-internal-fetch` so the team can distinguish “public snapshot is still acceptable” from “the daily internal fetch stopped firing.”
 - [ ] Keep the operator review loop boring and enforced: release windows should always produce aligned evidence in `docs/RELEASE_HISTORY.md`, `docs/DEPLOYMENT_STATUS.md`, and the generated release-evidence artifacts.
 

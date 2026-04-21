@@ -208,6 +208,16 @@ Resources:
           MetricNamespace: NyaayWatch/Observability
           MetricValue: "1"
 
+  PublicAlphaOpsAlertMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: !Ref ApplicationLogGroup
+      FilterPattern: '"NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT="'
+      MetricTransformations:
+        - MetricName: !Sub "${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts"
+          MetricNamespace: NyaayWatch/Observability
+          MetricValue: "1"
+
   LoadBalancerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -583,6 +593,22 @@ Resources:
                   [ "NyaayWatch/Observability", "${ProjectName}-${EnvironmentName}-app-errors" ]
                 ]
               }
+            },
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 6,
+              "width": 24,
+              "height": 6,
+              "properties": {
+                "title": "Public alpha ops monitor alerts",
+                "view": "timeSeries",
+                "region": "ap-south-1",
+                "stacked": false,
+                "metrics": [
+                  [ "NyaayWatch/Observability", "${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts" ]
+                ]
+              }
             }
           ]
         }
@@ -637,6 +663,22 @@ Resources:
       AlarmDescription: !Sub "Structured application errors were emitted in ${EnvironmentName}."
       Namespace: NyaayWatch/Observability
       MetricName: !Sub "${ProjectName}-${EnvironmentName}-app-errors"
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions:
+        - !Ref AlarmTopic
+
+  PublicAlphaOpsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-${EnvironmentName}-public-alpha-ops"
+      AlarmDescription: !Sub "The ${EnvironmentName} scheduled public alpha operations monitor detected parity drift, stale snapshots, or internal fetch lag."
+      Namespace: NyaayWatch/Observability
+      MetricName: !Sub "${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts"
       Statistic: Sum
       Period: 300
       EvaluationPeriods: 1

@@ -96,6 +96,7 @@ Treat a release as blocked if any one of these is true:
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
    ```
    This must stay green before treating the release window as operationally quiet. It fails if any public state has route/parity drift, a stale public snapshot, or a latest successful internal fetch run old enough to suggest the daily internal fetch cadence is slipping.
+   Outside the release window, the live stack now reruns the same sweep every `30` minutes through the `nyaaywatch-staging-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-staging-public-alpha-ops` CloudWatch alarm if the sweep fails.
 6. Run prepublish verification for the candidate run and note the rollback target:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -134,6 +135,7 @@ At least once each week, even without a publish:
 - review app errors for recurring patterns
 - confirm the dashboard still reflects the real stack resources
 - run `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`
+- confirm `nyaaywatch-staging-public-alpha-ops` has not entered `ALARM` and that any previous alarm has a reviewed root cause
 - treat any reported daily-fetch lag as an operator issue even if the public snapshot is not yet old enough to count as stale by the product trust model, because the sweep now checks internal run history rather than published snapshot age
 
 ## Practical Release Rule
