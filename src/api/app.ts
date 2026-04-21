@@ -27,6 +27,11 @@ import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
 import { renderPressPage } from "./pages/press.js";
+import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
+import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
+import { renderDistrictEmbedWidget, renderStateEmbedWidget } from "./pages/embed.js";
+import { buildViewModel } from "./home/view-model.js";
+import { buildPublicStateRoutes } from "./public-state.js";
 import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
 import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
 import { renderSupremeCourtMethodologyPage } from "./pages/supreme-court-methodology.js";
@@ -420,6 +425,105 @@ export function createApp(
           buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
         ),
       );
+    }),
+  );
+
+  // ── Comparator (/compare/:a-vs-:b) ───────────────────────────────────────
+  app.get(
+    "/compare/:slug",
+    asyncRoute(async (request, response) => {
+      const slug = readRouteParam(request.params.slug);
+      const vsIndex = slug.indexOf("-vs-");
+      if (vsIndex === -1) {
+        response.status(404).send(renderEmptyState("Comparison Not Found", "Use /compare/district-a-vs-district-b"));
+        return;
+      }
+      const idA = slug.slice(0, vsIndex);
+      const idB = slug.slice(vsIndex + 4);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderCompareNotFound(context));
+        return;
+      }
+      const districtA = snapshot.payload.districts.find((d) => d.districtId === idA);
+      const districtB = snapshot.payload.districts.find((d) => d.districtId === idB);
+      if (!districtA || !districtB) {
+        response.status(404).send(renderCompareNotFound(context));
+        return;
+      }
+      response.send(renderComparePage(snapshot.payload, districtA, districtB, context));
+    }),
+  );
+
+  // ── Movers (/movers) ──────────────────────────────────────────────────────
+  app.get(
+    "/movers",
+    asyncRoute(async (_request, response) => {
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      const result = await currentService.listMovers();
+      if (!result) {
+        response.send(renderMoversUnavailable(context));
+        return;
+      }
+      response.send(renderMoversPage(result, context));
+    }),
+  );
+
+  // State-scoped movers
+  app.get(
+    "/states/:stateSlug/movers",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      const result = await resolved.service.listMovers();
+      if (!result) {
+        response.send(renderMoversUnavailable(context));
+        return;
+      }
+      response.send(renderMoversPage(result, context));
+    }),
+  );
+
+  // ── Embed widgets (/embed/district/:id, /embed/state/:slug) ───────────────
+  app.get(
+    "/embed/district/:districtId",
+    asyncRoute(async (request, response) => {
+      const districtId = readRouteParam(request.params.districtId);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      const detail = await currentService.getDistrictDetail(districtId);
+      if (!detail) {
+        response.status(404).end();
+        return;
+      }
+      response.removeHeader("X-Frame-Options");
+      response.setHeader("Content-Security-Policy", "frame-ancestors *");
+      response.send(renderDistrictEmbedWidget(detail.snapshot, detail.district, context.routes.district(districtId)));
+    }),
+  );
+
+  app.get(
+    "/embed/state/:stateSlug",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) { response.status(404).end(); return; }
+      const record = await resolved.service.getPublishedSnapshot();
+      if (!record) { response.status(404).end(); return; }
+      const model = buildViewModel(record.payload);
+      const routes = buildPublicStateRoutes(resolved.profile);
+      response.removeHeader("X-Frame-Options");
+      response.setHeader("Content-Security-Policy", "frame-ancestors *");
+      response.send(renderStateEmbedWidget(record.payload.snapshot, model, routes.home));
     }),
   );
 

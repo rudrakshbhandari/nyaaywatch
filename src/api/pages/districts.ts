@@ -61,6 +61,12 @@ export function renderDistrictsPage(
       isHero: true,
     })}
 
+    <div class="your-district-chip" id="your-district-chip">
+      <span class="your-district-chip__label">Which district are you in?</span>
+      <input type="search" id="your-district-input" class="your-district-chip__input" placeholder="Type a district name…" autocomplete="off" aria-label="Find your district" />
+      <div id="your-district-suggestions" class="your-district-chip__suggestions" role="listbox" aria-label="District suggestions"></div>
+    </div>
+
     <section class="stat-grid">
       ${renderStatTile({
         label: "Biggest backlog",
@@ -94,6 +100,44 @@ export function renderDistrictsPage(
     ${renderControls(options, context)}
 
     ${districts.length > 0 ? renderTable(districts, context) : renderNoResults(options, context)}
+
+    <script>
+    (function() {
+      var DISTRICTS = ${JSON.stringify(
+        snapshot.districts.map((d) => ({
+          id: d.districtId,
+          name: d.districtName,
+          href: context.routes.district(d.districtId),
+          wait: Math.round(d.medianAgeDays / 30),
+          backlog: d.backlogCases,
+        }))
+      )};
+      var input = document.getElementById("your-district-input");
+      var box = document.getElementById("your-district-suggestions");
+      if (!input || !box) return;
+      input.addEventListener("input", function() {
+        var q = input.value.toLowerCase().trim();
+        box.innerHTML = "";
+        if (q.length < 2) { box.style.display = "none"; return; }
+        var matches = DISTRICTS.filter(function(d) { return d.name.toLowerCase().includes(q); }).slice(0, 6);
+        if (matches.length === 0) { box.style.display = "none"; return; }
+        matches.forEach(function(d) {
+          var el = document.createElement("a");
+          el.className = "your-district-chip__option";
+          el.href = d.href;
+          el.setAttribute("role", "option");
+          el.innerHTML = "<strong>" + d.name + "</strong><span>" + d.backlog.toLocaleString("en-IN") + " cases waiting · ~" + d.wait + " mo typical wait</span>";
+          box.appendChild(el);
+        });
+        box.style.display = "block";
+      });
+      document.addEventListener("click", function(e) {
+        if (!document.getElementById("your-district-chip").contains(e.target)) {
+          box.style.display = "none";
+        }
+      });
+    })();
+    </script>
   `;
 
   return renderPageShell({
@@ -267,6 +311,53 @@ function buildDistrictsHref(options: DistrictsPageOptions): string {
 }
 
 const DISTRICTS_PAGE_CSS = `
+  .your-district-chip {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    padding: 12px 16px;
+    border: 1px dashed var(--rule);
+    background: transparent;
+    max-width: 480px;
+  }
+  .your-district-chip__label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+  .your-district-chip__input {
+    flex: 1; border: none; background: transparent;
+    font-family: "Inter Tight", sans-serif; font-size: 15px; font-weight: 600;
+    color: var(--ink); outline: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 2px 0;
+  }
+  .your-district-chip__input::placeholder { color: var(--ink-muted); font-weight: 500; }
+  .your-district-chip__suggestions {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    z-index: 10;
+    border-top: none;
+  }
+  .your-district-chip__option {
+    display: block;
+    padding: 10px 16px;
+    text-decoration: none;
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+  }
+  .your-district-chip__option:last-child { border-bottom: none; }
+  .your-district-chip__option:hover { background: var(--rule-soft); }
+  .your-district-chip__option strong { display: block; font-size: 14px; font-weight: 700; }
+  .your-district-chip__option span { display: block; font-size: 12px; color: var(--ink-muted); font-family: "IBM Plex Mono", ui-monospace, monospace; margin-top: 2px; }
+
   .controls {
     margin: 0 0 32px;
     padding: 20px 24px 22px;
