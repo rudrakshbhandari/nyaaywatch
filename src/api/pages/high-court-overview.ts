@@ -17,9 +17,9 @@ export function renderHighCourtOverviewPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURT BETA",
-      headline: `${profile.courtName} in the latest published snapshot.`,
+      headline: `What does the latest published snapshot show in ${profile.courtName}?`,
       lede:
-        `${context.coverageSentence} This page shows one published aggregate High Court snapshot with explicit freshness, methodology, and official source links. It does not pretend to be a case-search tool or a cross-tier ranking surface.`,
+        `${context.coverageSentence} This page tracks one published High Court snapshot so the public can inspect backlog, monthly movement, and age-bucket pressure at this court.`,
       isHero: true,
     })}
 
@@ -28,12 +28,12 @@ export function renderHighCourtOverviewPage(
         <article class="card">
           <h3>Coverage</h3>
           <p><strong>Current coverage:</strong> ${escapeHtml(context.coverageLabel)}</p>
-          <p>The unit here is one High Court publication, even when that court spans more than one state or union territory.</p>
+          <p>This page follows one High Court publication, even when the court serves more than one state or union territory.</p>
         </article>
         <article class="card">
           <h3>Page scope</h3>
           <p>${escapeHtml(context.publicScopeDescription)}</p>
-          <p>NyaayWatch keeps the court identity explicit instead of flattening this page into a one-state shell.</p>
+          <p>The court itself stays explicit here, even when its jurisdiction spans more than one geography.</p>
         </article>
       </div>
     </section>
@@ -64,13 +64,13 @@ export function renderHighCourtOverviewPage(
 
     <section class="hc-section">
       ${renderSectionHead({
-        headline: "Trust boundary",
+        headline: "How to read this page",
         lede:
-          "The High Court beta is intentionally narrow: aggregate observability only, anchored to one published snapshot and explicit official source links.",
+          "This High Court page is intentionally narrow: one published snapshot, clear reference dates, and official source links alongside the numbers.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Publication posture</h3>
+          <h3>Snapshot basis</h3>
           <p>${escapeHtml(context.coverageSentence)} It is snapshot-based, not live, and every public number comes from a stored published artifact.</p>
           <p>${renderBadge({ label: snapshot.snapshot.qualityState, tone: snapshot.snapshot.qualityState === "complete" ? "complete" : "flag" })}</p>
         </article>
@@ -90,7 +90,7 @@ export function renderHighCourtOverviewPage(
       ${renderSectionHead({
         headline: "Age-bucket burden",
         lede:
-          "These buckets are taken directly from the official High Court dashboard. They show where the pending load sits, not the story of any individual case.",
+          "These buckets come directly from the official High Court dashboard. They show where the pending load is sitting, not the story of any individual case.",
       })}
       <div class="card-grid card-grid--5">
         ${renderAgeBucket("Less than 1 year", snapshot.ageBuckets.lessThanOneYear, ageTotal)}
@@ -105,7 +105,7 @@ export function renderHighCourtOverviewPage(
       ${renderSectionHead({
         headline: "Official source links",
         lede:
-          "NyaayWatch uses High Court aggregates for observability and links out to official court systems for case status, orders, and institutional materials.",
+          "Use these links to go from public accountability data to the official court systems and institutional sources behind it.",
       })}
       <div class="card-grid card-grid--3">
         <article class="card">

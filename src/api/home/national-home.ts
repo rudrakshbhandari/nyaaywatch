@@ -69,26 +69,26 @@ export function renderNationalHome(input: {
     : `<div class="national-hero__accountability">
         <span>Snapshot-based publication only</span>
         <span>No live feed</span>
-        <span>Methodology stays visible on the tier pages</span>
+        <span>Methodology and source links stay available on every tier page</span>
       </div>`;
 
   const body = `
     <section class="national-hero">
       <div class="national-hero__copy">
-        <p class="national-hero__eyebrow">NATIONAL FRONT DOOR</p>
+        <p class="national-hero__eyebrow">INDIA'S COURT SYSTEM</p>
         <h1 class="national-hero__hed">${
           model.supremeCourt.snapshot
-            ? "The courts, in the latest published snapshots."
-            : "Published court snapshots, in one place."
+            ? "How long is India waiting for justice?"
+            : "Where is delay building in India's court system?"
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch brings the Supreme Court, High Courts, and lower courts into one accountable public view, with dated snapshots, clear methodology, official source links, and court-first coverage labels where one court spans more than one geography."
-            : "When a court tier has a public snapshot, NyaayWatch shows it here as a dated, accountable public surface rather than a live or predictive feed."
+            ? "NyaayWatch tracks pressure across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building, where the backlog is heaviest, and where public scrutiny is most needed."
+            : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers are live or predictive."
         }</p>
         <div class="national-hero__cta">
           <a class="btn btn--primary" href="${model.supremeCourt.snapshot ? supremeRoutes.home : input.lowerCourtContext.routes.home}">${
-            model.supremeCourt.snapshot ? "View Supreme Court" : "View lower courts"
+            model.supremeCourt.snapshot ? "Track the Supreme Court" : "Track lower courts"
           }</a>
           <a class="btn btn--ghost" href="/high-courts">Browse High Courts</a>
         </div>
@@ -101,35 +101,35 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
-                note: "Apex-court backlog in the latest published snapshot.",
+                note: "Backlog at the top of the court system in the latest published snapshot.",
               })}
               ${renderStatTile({
                 label: "Pending registered",
                 value: model.supremeCourt.pendingRegisteredDisplay ?? "—",
-                note: "Registered matters stay visible rather than being folded into one opaque total.",
+                note: "Registered matters shown separately so the main total is easier to inspect.",
                 tone: "accent",
               })}
               ${renderStatTile({
                 label: "Disposed last month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
-                note: "Published movement at the apex in the current source window.",
+                note: "How many matters the Court cleared in the latest published month.",
               })}
               ${renderStatTile({
                 label: "Instituted last month",
                 value: model.supremeCourt.institutedLastMonthDisplay ?? "—",
-                note: "Monthly incoming work shown without pretending it explains the whole system.",
+                note: "How many new matters entered in the latest published month.",
               })}
             `
             : `
               ${renderStatTile({
                 label: "Lower-court pending",
                 value: model.lowerCourts.pendingDisplay,
-                note: "District and subordinate courts remain the heaviest public layer on the site right now.",
+                note: "Most of the public case volume on the site still sits in the lower courts.",
               })}
               ${renderStatTile({
                 label: "Public states live",
                 value: model.lowerCourts.publicStateCount.toString(),
-                note: "Each state page stays explicit about its own published snapshot and caveats.",
+                note: "Each state page stays tied to its own published snapshot and supporting notes.",
                 tone: "accent",
               })}
             `
@@ -139,19 +139,19 @@ export function renderNationalHome(input: {
 
     <section class="national-section">
       ${renderSectionHead({
-        headline: "High Courts, in the current public beta.",
+        headline: "High Courts across India.",
         lede:
-          "These pages are live and linked here directly. Each court keeps its own source semantics, methodology, and explicit coverage label, and NyaayWatch does not collapse them into one national High Court score or fake one-state shells.",
+          "These pages track published High Court snapshots across the country. Each court keeps its own coverage, source date, and methodology so readers can inspect it on its own terms.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
-      <p class="national-section__linkline"><a href="/high-courts">Open the High Courts index</a></p>
+      <p class="national-section__linkline"><a href="/high-courts">See all High Courts</a></p>
     </section>
 
     <section class="national-section">
       ${renderSectionHead({
-        headline: "Most public case volume sits in the lower courts.",
+        headline: "Most delay sits in the lower courts.",
         lede:
-          "District and subordinate courts remain the main public proof surface for scale, delay, and district-level pressure. Himachal stays the default lower-court lens, but the homepage no longer has to be only Himachal.",
+          "District and subordinate courts remain the clearest public window into scale, delay, and local pressure. Himachal stays the default lower-court lens, with district pages built for close inspection.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
@@ -179,7 +179,7 @@ export function renderNationalHome(input: {
         })}
       </div>
       <div class="national-section__actions">
-        <a class="btn btn--primary" href="${input.lowerCourtContext.routes.home}">Open Himachal lower-court overview</a>
+        <a class="btn btn--primary" href="${input.lowerCourtContext.routes.home}">See Himachal lower courts</a>
         <a class="btn btn--ghost" href="${input.lowerCourtContext.routes.districts}">Inspect districts</a>
       </div>
     </section>
@@ -188,7 +188,7 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "Lower-court state pages.",
         lede:
-          "This directory keeps the public state pages easy to reach without turning the first screen into a geography switcher.",
+          "This directory keeps the live state pages easy to reach without turning the homepage into a wall of geography links.",
       })}
       <div class="state-directory">
         <p class="state-directory__summary">${model.lowerCourts.publicStateCount} public lower-court state pages are currently live.</p>
@@ -198,26 +198,26 @@ export function renderNationalHome(input: {
 
     <section class="national-section national-section--accountability">
       ${renderSectionHead({
-        headline: "Methodology, data, and API links stay easy to find.",
+        headline: "Methodology, data, and API.",
         lede:
-          "These links are here for accountability, reproduction, and citation. They support the story; they do not have to dominate the first screen to remain reachable.",
+          "The evidence is here if you want to verify, cite, or reuse the numbers.",
       })}
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>Supreme Court</h3>
-          <p>The apex-court beta carries its own methodology, API, and data surface.</p>
+          <p>The Supreme Court page carries its own methodology, API, and data links.</p>
           <p><a href="${supremeRoutes.methodology}">Methodology</a></p>
           <p><a href="${supremeRoutes.data}">Data</a></p>
           <p><a href="${supremeRoutes.api}">API</a></p>
         </article>
         <article class="card">
           <h3>High Courts</h3>
-          <p>The High Court layer stays explicit about court-specific source semantics and beta scope.</p>
-          <p><a href="/high-courts">High Courts index</a></p>
+          <p>Each High Court page keeps its own source date, coverage, and supporting links clear.</p>
+          <p><a href="/high-courts">High Courts</a></p>
         </article>
         <article class="card">
           <h3>District and subordinate courts</h3>
-          <p>The lower-court layer remains the deepest public drilldown on the site.</p>
+          <p>The lower-court layer remains the deepest public drilldown anywhere on the site.</p>
           <p><a href="${input.lowerCourtContext.routes.methodology}">Methodology</a></p>
           <p><a href="${input.lowerCourtContext.routes.data}">Data</a></p>
           <p><a href="${input.lowerCourtContext.routes.api}">API</a></p>

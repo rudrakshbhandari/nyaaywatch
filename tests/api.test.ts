@@ -54,14 +54,14 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
-    expect(homepage.text).toContain("The courts, in the latest published snapshots.");
-    expect(homepage.text).toContain("View Supreme Court");
-    expect(homepage.text).toContain("Most public case volume sits in the lower courts.");
+    expect(homepage.text).toContain("How long is India waiting for justice?");
+    expect(homepage.text).toContain("Track the Supreme Court");
+    expect(homepage.text).toContain("Most delay sits in the lower courts.");
     expect(homepage.text).toContain("Lower-court state pages.");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
-    expect(homepage.text).toContain("Open Himachal lower-court overview");
+    expect(homepage.text).toContain("See Himachal lower courts");
 
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
@@ -414,7 +414,7 @@ describe("HTTP routes", () => {
 
     const index = await request(app).get("/high-courts");
     expect(index.status).toBe(200);
-    expect(index.text).toContain("Public High Court observability is now live in a narrow beta.");
+    expect(index.text).toContain("Where is pressure building across India");
     expect(index.text).toContain("High Court of Himachal Pradesh");
     expect(index.text).toContain("High Court of Andhra Pradesh");
     expect(index.text).toContain("High Court for State of Telangana");
@@ -595,7 +595,7 @@ describe("HTTP routes", () => {
     const overview = await request(app).get("/supreme-court");
     expect(overview.status).toBe(200);
     expect(overview.text).toContain("SUPREME COURT BETA");
-    expect(overview.text).toContain("The apex court in the latest published snapshot.");
+    expect(overview.text).toContain("What does the latest published snapshot show in the Supreme Court?");
     expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
 
     const data = await request(app).get("/supreme-court/data");

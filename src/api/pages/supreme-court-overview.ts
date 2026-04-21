@@ -15,9 +15,9 @@ export function renderSupremeCourtOverviewPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "SUPREME COURT BETA",
-      headline: "The apex court in the latest published snapshot.",
+      headline: "What does the latest published snapshot show in the Supreme Court?",
       lede:
-        "This page shows one published aggregate Supreme Court snapshot with explicit freshness, methodology, and official source links. It is an apex-court observability surface, not a case-search tool and not a national all-courts ranking layer.",
+        "This page tracks one published aggregate snapshot of the Supreme Court of India so the public can inspect backlog and monthly movement at the top of the court system.",
       isHero: true,
     })}
 
@@ -47,13 +47,13 @@ export function renderSupremeCourtOverviewPage(
 
     <section class="sc-section">
       ${renderSectionHead({
-        headline: "Trust boundary",
+        headline: "How to read this page",
         lede:
-          "The first public Supreme Court beta is intentionally narrow: published aggregate observability only, with tier-specific caveats and no hidden leap into all-courts comparability.",
+          "This first public Supreme Court page is intentionally narrow: one published snapshot, clear reference dates, and official source links alongside the numbers.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Publication posture</h3>
+          <h3>Snapshot basis</h3>
           <p>Supreme Court data is snapshot-based, not live. Every public number comes from a stored published artifact and stays pinned until a later reviewed publication replaces it.</p>
           <p>${renderBadge({ label: snapshot.snapshot.qualityState, tone: snapshot.snapshot.qualityState === "complete" ? "complete" : "flag" })}</p>
         </article>
@@ -73,20 +73,20 @@ export function renderSupremeCourtOverviewPage(
       ${renderSectionHead({
         headline: "Movement in the current publication",
         lede:
-          "The first public beta keeps registered and unregistered backlog visible, while showing month and year movement directly from the aggregate source boundary.",
+          "The page keeps registered and unregistered backlog visible while showing the latest month and year movement from the published aggregate source.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Last month</h3>
           <p><strong>Instituted:</strong> ${snapshot.stats.institutedLastMonthTotalCases.toLocaleString("en-IN")}</p>
           <p><strong>Disposed:</strong> ${snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN")}</p>
-          <p>Those totals are published as sourced values, not inferred from downstream case records.</p>
+          <p>These totals come directly from the published aggregate source, not from reconstructed case records.</p>
         </article>
         <article class="card">
           <h3>Current year</h3>
           <p><strong>Instituted:</strong> ${snapshot.stats.institutedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
           <p><strong>Disposed:</strong> ${snapshot.stats.disposedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
-          <p>The beta exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
+          <p>The year-to-date counts stay visible without claiming they explain the whole story of delay.</p>
         </article>
       </div>
     </section>
@@ -95,7 +95,7 @@ export function renderSupremeCourtOverviewPage(
       ${renderSectionHead({
         headline: "Official source links",
         lede:
-          "NyaayWatch uses Supreme Court aggregates for observability and links out to the official court surfaces for case status, orders, judgments, and institutional material.",
+          "Use these links to move from public accountability data to the official court systems and reference material behind it.",
       })}
       <div class="card-grid card-grid--4">
         <article class="card">
