@@ -156,7 +156,6 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     needs:
       - secret-scan
-      - verify
     runs-on: ubuntu-latest
     concurrency:
       group: preview-pr-${{ github.event.pull_request.number }}
@@ -184,6 +183,29 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-preview-role
+
+      - name: Compute active preview allowlist
+        id: preview-allowlist
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const path = `${process.env.RUNNER_TEMP}/open-preview-services.txt`;
+            const pulls = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const lines = pulls.map((pull) => `nyaaywatch-pr-${pull.number}`);
+            fs.writeFileSync(path, lines.join("\n") + (lines.length > 0 ? "\n" : ""));
+            core.setOutput("path", path);
+
+      - name: Reconcile stale preview services
+        run: |
+          chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh
+          ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
 
       - name: Build and push preview image
         env:
@@ -215,11 +237,36 @@ jobs:
           fi
           exit "$status"
 
+      - name: Retry preview after stale-service reconcile
+        if: steps.preview.outputs.status == 'quota-exceeded'
+        id: preview_retry
+        env:
+          IMAGE_SHA: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
+        run: |
+          chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh infra/aws/preview/deploy-service.sh
+          ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
+          set +e
+          preview_url="$(./infra/aws/preview/deploy-service.sh "$PREVIEW_SERVICE_NAME" "$IMAGE_SHA" "$APP_RUNNER_ACCESS_ROLE_ARN" 2>preview-retry-stderr.log)"
+          status=$?
+          set -e
+          if [[ $status -eq 0 ]]; then
+            echo "status=ready" >> "$GITHUB_OUTPUT"
+            echo "url=$preview_url" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          cat preview-retry-stderr.log >&2
+          if grep -q 'ServiceQuotaExceededException' preview-retry-stderr.log; then
+            echo "status=quota-exceeded" >> "$GITHUB_OUTPUT"
+            echo "url=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          exit "$status"
+
       - name: Comment preview URL
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
         env:
-          PREVIEW_URL: ${{ steps.preview.outputs.url }}
-          PREVIEW_STATUS: ${{ steps.preview.outputs.status }}
+          PREVIEW_URL: ${{ steps.preview_retry.outputs.url || steps.preview.outputs.url }}
+          PREVIEW_STATUS: ${{ steps.preview_retry.outputs.status || steps.preview.outputs.status }}
           SERVICE_NAME: ${{ env.PREVIEW_SERVICE_NAME }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -228,11 +275,11 @@ jobs:
             const body =
               process.env.PREVIEW_STATUS === "quota-exceeded"
                 ? `${marker}
-            Preview unavailable: AWS App Runner preview quota is currently full, so this PR could not get a temporary preview service.
+            Preview unavailable: AWS App Runner preview quota is currently full, even after stale preview cleanup and one retry.
 
             Service: \`${process.env.SERVICE_NAME}\`
             Mode: fixture-backed public web preview
-            Status: quota exceeded; rerun after stale preview services are cleaned up`
+            Status: quota exceeded after reconcile and retry`
                 : `${marker}
             Preview ready: ${process.env.PREVIEW_URL}
 
@@ -260,3 +307,42 @@ jobs:
                 body,
               });
             }
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-preview-role
+
+      - name: Compute active preview allowlist
+        id: preview-allowlist
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const path = `${process.env.RUNNER_TEMP}/open-preview-services.txt`;
+            const pulls = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            const lines = pulls.map((pull) => `nyaaywatch-pr-${pull.number}`);
+            fs.writeFileSync(path, lines.join("\n") + (lines.length > 0 ? "\n" : ""));
+            core.setOutput("path", path);
+
+      - name: Reconcile stale preview services
+        run: |
+          chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh
+          ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
