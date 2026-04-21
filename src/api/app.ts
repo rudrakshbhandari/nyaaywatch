@@ -26,6 +26,7 @@ import { renderHighCourtMethodologyPage } from "./pages/high-court-methodology.j
 import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
+import { renderPressPage } from "./pages/press.js";
 import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
 import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
 import { renderSupremeCourtMethodologyPage } from "./pages/supreme-court-methodology.js";
@@ -33,9 +34,9 @@ import { renderSupremeCourtOverviewPage } from "./pages/supreme-court-overview.j
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
-import { buildPublicHighCourtPageContext } from "./public-high-court.js";
+import { buildPublicHighCourtPageContext, buildPublicHighCourtRoutes } from "./public-high-court.js";
 import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
-import { buildPublicPageContext } from "./public-state.js";
+import { buildPublicPageContext, buildPublicStateRoutes } from "./public-state.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
 
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
@@ -100,10 +101,60 @@ export function createApp(
         "User-agent: *",
         "Allow: /",
         "Disallow: /operator/",
+        "Sitemap: https://nyaaywatch.in/sitemap.xml",
         "",
       ].join("\n"),
     );
   });
+
+  app.get(
+    "/sitemap.xml",
+    asyncRoute(async (_request, response) => {
+      const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+      const urls: string[] = [
+        origin + "/",
+        origin + "/districts",
+        origin + "/data",
+        origin + "/methodology",
+        origin + "/api",
+        origin + "/press",
+        origin + "/high-courts",
+        origin + "/supreme-court",
+      ];
+
+      for (const profile of listPublicStateProfiles()) {
+        const routes = buildPublicStateRoutes(profile);
+        urls.push(origin + routes.home);
+        urls.push(origin + routes.districts);
+        urls.push(origin + routes.methodology);
+        urls.push(origin + routes.data);
+        urls.push(origin + routes.api);
+        const svc = serviceMap[profile.stateCode];
+        if (svc) {
+          const detail = await svc.listDistricts();
+          if (detail) {
+            for (const d of detail.districts) {
+              urls.push(origin + routes.district(d.districtId));
+            }
+          }
+        }
+      }
+
+      for (const profile of listPublicHighCourtProfiles()) {
+        const routes = buildPublicHighCourtRoutes(profile);
+        urls.push(origin + routes.home);
+      }
+
+      const xml = [
+        `<?xml version="1.0" encoding="UTF-8"?>`,
+        `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+        ...urls.map((u) => `  <url><loc>${u}</loc></url>`),
+        `</urlset>`,
+      ].join("\n");
+
+      response.type("application/xml").send(xml);
+    }),
+  );
 
   app.get(
     "/v1/stats/himachal",
@@ -421,6 +472,22 @@ export function createApp(
       );
     }),
   );
+
+  app.get("/press", (_request, response) => {
+    response.send(renderPressPage());
+  });
+
+  app.get("/press/logo-light.svg", (_request, response) => {
+    response.setHeader("Content-Type", "image/svg+xml");
+    response.setHeader("Content-Disposition", 'attachment; filename="nyaaywatch-logo-light.svg"');
+    response.send(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48"><rect width="48" height="48" rx="4" fill="#0c0a08"/><text x="24" y="26" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="-1.2" fill="#f4efe3">NW</text><text x="64" y="26" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" letter-spacing="-1" fill="#0c0a08">NyaayWatch</text></svg>`);
+  });
+
+  app.get("/press/logo-dark.svg", (_request, response) => {
+    response.setHeader("Content-Type", "image/svg+xml");
+    response.setHeader("Content-Disposition", 'attachment; filename="nyaaywatch-logo-dark.svg"');
+    response.send(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48"><rect width="240" height="48" rx="4" fill="#0c0a08"/><rect x="6" y="6" width="36" height="36" rx="3" fill="#f4efe3"/><text x="24" y="26" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="-1.2" fill="#0c0a08">NW</text><text x="56" y="26" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" letter-spacing="-1" fill="#f4efe3">NyaayWatch</text></svg>`);
+  });
 
   app.get(
     "/states/:stateSlug",

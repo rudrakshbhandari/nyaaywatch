@@ -111,9 +111,23 @@ export function renderDistrictPage(
             <div><dt>Methodology</dt><dd><code>${escapeHtml(snapshot.methodologyVersion)}</code></dd></div>
             <div><dt>Source</dt><dd>${escapeHtml(snapshot.sourceAttribution)}</dd></div>
           </dl>
+          <div class="cite-block">
+            <p class="cite-block__label">Cite this page</p>
+            <div class="cite-block__row">
+              <label class="cite-block__fmt-label" for="cite-select">Format</label>
+              <select id="cite-select" class="cite-block__select" onchange="updateCite(this.value)">
+                <option value="plain">Plain</option>
+                <option value="apa">APA</option>
+                <option value="mla">MLA</option>
+              </select>
+            </div>
+            <pre id="cite-text" class="cite-block__pre">${escapeHtml(buildPlainCitation(district.districtName, snapshot.sourceAttribution, formatDate(snapshot.sourceSnapshotAt), `${SITE_ORIGIN}${context.routes.district(district.districtId)}`))}</pre>
+            <button class="btn btn--ghost btn--small cite-block__copy" onclick="copyCite()">Copy</button>
+          </div>
           <div class="district-col__cta">
             <a class="btn btn--primary btn--small" href="${context.routes.districtCsv(district.districtId)}">Download district history CSV</a>
             <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">Statewide CSV</a>
+            <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. Typical wait: ~${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
           </div>
         </article>
 
@@ -127,6 +141,54 @@ export function renderDistrictPage(
         </article>
       </aside>
     </section>
+
+    <script>
+    (function() {
+      var PLAIN = ${JSON.stringify(buildPlainCitation(district.districtName, snapshot.sourceAttribution, formatDate(snapshot.sourceSnapshotAt), `${SITE_ORIGIN}${context.routes.district(district.districtId)}`))};
+      var APA = ${JSON.stringify(`NyaayWatch. (${new Date(snapshot.sourceSnapshotAt).getFullYear()}). ${district.districtName} district court backlog. ${snapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)};
+      var MLA = ${JSON.stringify(`NyaayWatch. "${district.districtName} District Court Backlog." ${snapshot.sourceAttribution}, ${formatDate(snapshot.sourceSnapshotAt)}, ${SITE_ORIGIN}${context.routes.district(district.districtId)}.`)};
+      window.updateCite = function(fmt) {
+        var t = fmt === "apa" ? APA : fmt === "mla" ? MLA : PLAIN;
+        document.getElementById("cite-text").textContent = t;
+      };
+      window.copyCite = function() {
+        var btn = document.querySelector(".cite-block__copy");
+        navigator.clipboard.writeText(document.getElementById("cite-text").textContent).then(function() {
+          btn.textContent = "Copied!";
+          btn.classList.add("is-copied");
+          setTimeout(function() { btn.textContent = "Copy"; btn.classList.remove("is-copied"); }, 2000);
+        });
+      };
+    })();
+    </script>
+
+    <div class="colophon-print">
+      <strong>NyaayWatch</strong> · ${escapeHtml(district.districtName)} district evidence ·
+      Source: ${escapeHtml(snapshot.sourceAttribution)} ·
+      Snapshot: ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} ·
+      Methodology: ${escapeHtml(snapshot.methodologyVersion)} ·
+      nyaaywatch.in${escapeHtml(context.routes.district(district.districtId))}
+    </div>
+
+    <script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": `${district.districtName} District Court Backlog Data — NyaayWatch`,
+      "description": `Published court backlog, disposal rate, and pending case data for ${district.districtName} district courts in ${snapshot.stateName}. Source: ${snapshot.sourceAttribution}. Methodology: ${snapshot.methodologyVersion}.`,
+      "url": `${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
+      "creator": { "@type": "Organization", "name": "NyaayWatch", "url": SITE_ORIGIN },
+      "datePublished": snapshot.publishedAt,
+      "dateModified": snapshot.publishedAt,
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "isAccessibleForFree": true,
+      "distribution": [
+        {
+          "@type": "DataDownload",
+          "encodingFormat": "text/csv",
+          "contentUrl": `${SITE_ORIGIN}${context.routes.districtCsv(district.districtId)}`,
+        },
+      ],
+    })}</script>
   `;
 
   const ogDescription = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. The typical case has been waiting about ${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch`;
@@ -253,6 +315,15 @@ function roundDelta(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
+function buildPlainCitation(
+  districtName: string,
+  sourceAttribution: string,
+  snapshotDate: string,
+  permalink: string,
+): string {
+  return `NyaayWatch. "${districtName} District Court Backlog." ${snapshotDate}. ${sourceAttribution}. ${permalink}`;
+}
+
 const DISTRICT_PAGE_CSS = `
   .district-hero { padding: 32px 0 40px; max-width: 900px; }
   .district-hero__crumb {
@@ -333,4 +404,46 @@ const DISTRICT_PAGE_CSS = `
   @media (max-width: 720px) {
     .history-row { grid-template-columns: 84px 1fr 72px; gap: 10px; font-size: 11px; }
   }
+  @media print {
+    .masthead, .state-switcher, .ticker, .district-hero__crumb, .district-col--aside .card:last-child,
+    .btn, .colophon { display: none !important; }
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .district-hero { padding: 0 0 18pt; }
+    .district-hero__hed { font-size: 36pt; }
+    .district-hero__lede { font-size: 12pt; }
+    .stat-grid { break-inside: avoid; }
+    .district-grid { grid-template-columns: 1fr; }
+    .card { break-inside: avoid; border: 1px solid #ccc; padding: 12pt; }
+    .history-table-wrap { overflow: visible; }
+    a[href]::after { content: none; }
+    .colophon-print { display: block !important; font-size: 9pt; color: #555; border-top: 1pt solid #ccc; padding-top: 6pt; margin-top: 24pt; }
+  }
+  .colophon-print { display: none; }
+
+  .cite-block { margin: 14px 0 18px; }
+  .cite-block__label {
+    margin: 0 0 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  .cite-block__row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .cite-block__fmt-label { font-size: 12px; color: var(--ink-muted); font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  .cite-block__select {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; padding: 3px 8px;
+    border: 1px solid var(--rule); background: var(--paper);
+    color: var(--ink); border-radius: 2px;
+  }
+  .cite-block__pre {
+    margin: 0 0 10px; padding: 12px;
+    background: var(--rule-soft);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; color: var(--ink);
+    white-space: pre-wrap; word-break: break-word;
+    border: 1px solid var(--rule); border-radius: 2px;
+    line-height: 1.6;
+  }
+  .cite-block__copy.is-copied { color: var(--accent); }
 `;

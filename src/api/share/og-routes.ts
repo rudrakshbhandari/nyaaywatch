@@ -27,6 +27,8 @@ import {
   renderDistrictOgCard,
   renderNationalOgCard,
   renderHighCourtOgCard,
+  renderSquareDistrictCard,
+  renderSquareStateCard,
   type StateOgCardData,
   type DistrictOgCardData,
   type NationalOgCardData,
@@ -133,6 +135,73 @@ export function registerOgRoutes(
       };
       const cacheKey = `district:${districtId}:${snapshot.publishedAt}`;
       const png = await renderDistrictOgCard(data, cacheKey);
+
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+      res.send(png);
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
+
+  // ── District square (WhatsApp) card ──────────────────────────────────────
+  router.get("/district/:districtId-square.png", async (req, res) => {
+    try {
+      const districtId = req.params.districtId ?? "";
+      const service = publicServices[DEFAULT_STATE_CODE];
+      if (!service) { res.status(404).end(); return; }
+
+      const detail = await service.getDistrictDetail(districtId);
+      if (!detail) { res.status(404).end(); return; }
+
+      const { district, snapshot } = detail;
+      const typicalWaitMonths = Math.round(district.medianAgeDays / 30);
+      const data: DistrictOgCardData = {
+        stateName: snapshot.stateName,
+        districtName: district.districtName,
+        rank: district.rank,
+        totalDistricts: 0,
+        summary: district.summary,
+        backlogCases: district.backlogCases,
+        typicalWaitMonths,
+        clearanceRate: district.disposalRate,
+        sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
+      };
+      const cacheKey = `district-sq:${districtId}:${snapshot.publishedAt}`;
+      const png = await renderSquareDistrictCard(data, cacheKey);
+
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+      res.send(png);
+    } catch (err) {
+      res.status(500).end();
+    }
+  });
+
+  // ── State square (WhatsApp) card ──────────────────────────────────────────
+  router.get("/state/:stateSlug-square.png", async (req, res) => {
+    try {
+      const profile = getPublicStateProfileBySlug(req.params.stateSlug ?? "");
+      if (!profile) { res.status(404).end(); return; }
+
+      const service = publicServices[profile.stateCode];
+      if (!service) { res.status(404).end(); return; }
+
+      const record = await service.getPublishedSnapshot();
+      if (!record) { res.status(404).end(); return; }
+
+      const model = buildViewModel(record.payload);
+      const data: StateOgCardData = {
+        stateName: record.payload.snapshot.stateName,
+        headline: `How long is the wait for justice in ${record.payload.snapshot.stateName}?`,
+        pendingLakh: model.pendingLakh,
+        typicalWaitMonths: model.typicalWaitMonths,
+        clearanceRate: model.clearanceRate,
+        flaggedCount: model.flaggedCount,
+        sourceDateLabel: model.sourceDateLabel,
+      };
+      const cacheKey = `state-sq:${profile.stateCode}:${record.payload.snapshot.publishedAt}`;
+      const png = await renderSquareStateCard(data, cacheKey);
 
       res.setHeader("Content-Type", "image/png");
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");

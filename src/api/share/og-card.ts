@@ -125,8 +125,8 @@ export type HighCourtOgCardData = {
 
 const PNG_CACHE = new Map<string, Buffer>();
 
-async function svgToPng(svg: string): Promise<Buffer> {
-  const resvg = new Resvg(svg, { fitTo: { mode: "width", value: 1200 } });
+async function svgToPng(svg: string, width: number): Promise<Buffer> {
+  const resvg = new Resvg(svg, { fitTo: { mode: "width", value: width } });
   return Buffer.from(resvg.render().asPng());
 }
 
@@ -141,7 +141,7 @@ async function generateCard(
 
   const fonts = await getFonts();
   const svg = await satori(vnode, { width, height, fonts });
-  const png = await svgToPng(svg);
+  const png = await svgToPng(svg, width);
   PNG_CACHE.set(cacheKey, png);
   return png;
 }
@@ -430,6 +430,244 @@ export async function renderHighCourtOgCard(data: HighCourtOgCardData, cacheKey:
   );
 
   return generateCard(cacheKey, vnode);
+}
+
+// ── Square card (1080×1080) for WhatsApp / Telegram / Instagram ──────────────
+
+export async function renderSquareDistrictCard(data: DistrictOgCardData, cacheKey: string): Promise<Buffer> {
+  const eyebrow = `${data.stateName.toUpperCase()} · RANK #${data.rank}`;
+  const summary = data.summary.length > 110 ? data.summary.slice(0, 107) + "…" : data.summary;
+
+  const vnode = col(
+    { background: PAPER, padding: "72px 72px 60px", width: "100%", height: "100%", gap: 0 },
+    [
+      // Header
+      row({ justifyContent: "space-between", alignItems: "center", marginBottom: 32 }, [
+        text(
+          { fontFamily: "Inter Tight", fontWeight: 800, fontSize: 22, color: INK, letterSpacing: "-0.03em" },
+          "NyaayWatch",
+        ),
+        text(
+          {
+            fontFamily: "IBM Plex Mono",
+            fontWeight: 500,
+            fontSize: 11,
+            color: INK_MUTED,
+            textTransform: "uppercase",
+            letterSpacing: "0.12em",
+          },
+          data.sourceDateLabel.toUpperCase(),
+        ),
+      ]),
+
+      // 2px divider
+      { type: "div", props: { style: { display: "flex", height: 2, background: INK, marginBottom: 32 } } },
+
+      // Eyebrow
+      text(
+        {
+          fontFamily: "IBM Plex Mono",
+          fontWeight: 500,
+          fontSize: 12,
+          color: ACCENT,
+          textTransform: "uppercase",
+          letterSpacing: "0.18em",
+          marginBottom: 18,
+        },
+        eyebrow,
+      ),
+
+      // District name — huge
+      text(
+        {
+          fontFamily: "Inter Tight",
+          fontWeight: 800,
+          fontSize: 100,
+          color: INK,
+          lineHeight: 0.88,
+          letterSpacing: "-0.04em",
+          marginBottom: 24,
+        },
+        data.districtName,
+      ),
+
+      // Summary
+      text(
+        {
+          fontFamily: "Inter Tight",
+          fontWeight: 600,
+          fontSize: 21,
+          color: INK_SOFT,
+          lineHeight: 1.45,
+          flex: 1,
+        },
+        summary,
+      ),
+
+      // Two key stats row
+      {
+        type: "div",
+        props: {
+          style: {
+            display: "flex",
+            flexDirection: "row",
+            borderTop: `2px solid ${INK}`,
+            paddingTop: 28,
+            gap: 0,
+          },
+          children: [
+            squareNumberCell(data.backlogCases.toLocaleString("en-IN"), "", "BACKLOG"),
+            squareNumberCell(`~${data.typicalWaitMonths}`, "mo", "TYPICAL WAIT"),
+            squareNumberCell(data.clearanceRate.toFixed(0), "/ 100", "CLEARED PER 100"),
+          ],
+        },
+      },
+
+      // Footer URL
+      text(
+        {
+          fontFamily: "IBM Plex Mono",
+          fontWeight: 500,
+          fontSize: 12,
+          color: INK_MUTED,
+          textTransform: "uppercase",
+          letterSpacing: "0.14em",
+          marginTop: 20,
+        },
+        "nyaaywatch.in",
+      ),
+    ],
+  );
+
+  return generateCard(cacheKey, vnode, 1080, 1080);
+}
+
+export async function renderSquareStateCard(data: StateOgCardData, cacheKey: string): Promise<Buffer> {
+  const pendingNum = data.pendingLakh.replace(/\s*(lakh|crore).*/i, "").trim();
+  const pendingUnit = data.pendingLakh.match(/(lakh|crore)/i)?.[1]?.toLowerCase() ?? "";
+
+  const vnode = col(
+    { background: PAPER, padding: "72px 72px 60px", width: "100%", height: "100%", gap: 0 },
+    [
+      row({ justifyContent: "space-between", alignItems: "center", marginBottom: 32 }, [
+        text(
+          { fontFamily: "Inter Tight", fontWeight: 800, fontSize: 22, color: INK, letterSpacing: "-0.03em" },
+          "NyaayWatch",
+        ),
+        text(
+          {
+            fontFamily: "IBM Plex Mono",
+            fontWeight: 500,
+            fontSize: 11,
+            color: INK_MUTED,
+            textTransform: "uppercase",
+            letterSpacing: "0.12em",
+          },
+          data.stateName.toUpperCase(),
+        ),
+      ]),
+
+      { type: "div", props: { style: { display: "flex", height: 2, background: INK, marginBottom: 28 } } },
+
+      text(
+        {
+          fontFamily: "IBM Plex Mono",
+          fontWeight: 500,
+          fontSize: 12,
+          color: ACCENT,
+          textTransform: "uppercase",
+          letterSpacing: "0.18em",
+          marginBottom: 16,
+        },
+        "THE WAIT",
+      ),
+
+      text(
+        {
+          fontFamily: "Inter Tight",
+          fontWeight: 800,
+          fontSize: 54,
+          color: INK,
+          lineHeight: 1.0,
+          letterSpacing: "-0.035em",
+          flex: 1,
+        },
+        data.headline,
+      ),
+
+      {
+        type: "div",
+        props: {
+          style: {
+            display: "flex",
+            flexDirection: "row",
+            borderTop: `2px solid ${INK}`,
+            paddingTop: 28,
+            gap: 0,
+          },
+          children: [
+            squareNumberCell(pendingNum, pendingUnit, "PENDING"),
+            squareNumberCell(`~${data.typicalWaitMonths}`, "mo", "TYPICAL WAIT"),
+            squareNumberCell(data.flaggedCount.toString(), "", "FLAGGED"),
+          ],
+        },
+      },
+
+      text(
+        {
+          fontFamily: "IBM Plex Mono",
+          fontWeight: 500,
+          fontSize: 12,
+          color: INK_MUTED,
+          textTransform: "uppercase",
+          letterSpacing: "0.14em",
+          marginTop: 20,
+        },
+        "nyaaywatch.in",
+      ),
+    ],
+  );
+
+  return generateCard(cacheKey, vnode, 1080, 1080);
+}
+
+function squareNumberCell(value: string, unit: string, label: string): object {
+  return col({ flex: 1, paddingRight: 12, gap: 0 }, [
+    row({ alignItems: "baseline", gap: 6 }, [
+      text(
+        {
+          fontFamily: "Inter Tight",
+          fontWeight: 800,
+          fontSize: 68,
+          color: INK,
+          letterSpacing: "-0.045em",
+          fontVariantNumeric: "tabular-nums",
+          lineHeight: 1,
+        },
+        value,
+      ),
+      unit
+        ? text(
+            { fontFamily: "Inter Tight", fontWeight: 700, fontSize: 20, color: INK_MUTED, letterSpacing: "-0.01em" },
+            unit,
+          )
+        : { type: "div", props: { style: { display: "flex" }, children: "" } },
+    ]),
+    text(
+      {
+        fontFamily: "IBM Plex Mono",
+        fontWeight: 500,
+        fontSize: 10,
+        color: INK_MUTED,
+        textTransform: "uppercase",
+        letterSpacing: "0.12em",
+        marginTop: 8,
+        borderTop: `1px solid ${RULE}`,
+        paddingTop: 8,
+      },
+      label,
+    ),
+  ]);
 }
 
 function numberCell(value: string, unit: string, label: string): object {

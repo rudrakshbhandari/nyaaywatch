@@ -1,5 +1,20 @@
 # NyaayWatch
 
+> **How long is India waiting for justice?**
+
+NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, High Courts, and district courts — drawn from public NJDG data with full methodology disclosure. Every number links to a dated source. Nothing is shown without a click-reachable citation.
+
+**Journalist quickstart** — pull the numbers without leaving your terminal:
+
+```bash
+curl https://nyaaywatch.in/v1/stats/himachal | jq
+curl https://nyaaywatch.in/v1/districts | jq '.districts[0]'
+```
+
+→ [Press & embed kit](https://nyaaywatch.in/press) · [Methodology](https://nyaaywatch.in/methodology) · [API reference](https://nyaaywatch.in/api) · [Data downloads](https://nyaaywatch.in/data)
+
+---
+
 NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh and expanding state by state only after the same trust bar is met.
 
 ## What This Repo Is
