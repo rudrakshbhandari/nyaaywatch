@@ -55,13 +55,13 @@ export function renderSupremeCourtOverviewPage(
 
     <section class="sc-section">
       ${renderSectionHead({
-        headline: "Trust boundary",
+        headline: "How to read this page",
         lede:
-          "This Supreme Court page stays anchored to one published aggregate snapshot, with tier-specific caveats and no hidden leap into all-courts comparability.",
+          "This Supreme Court page stays anchored to one published aggregate snapshot, with tier-specific caveats, clear reference dates, and no hidden leap into all-courts comparability.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Publication posture</h3>
+          <h3>Snapshot basis</h3>
           <p>Supreme Court data is snapshot-based, not live. Every public number comes from a stored published artifact and stays pinned until a later reviewed publication replaces it.</p>
           <p>${renderBadge({ label: snapshot.snapshot.qualityState, tone: snapshot.snapshot.qualityState === "complete" ? "complete" : "flag" })}</p>
         </article>
@@ -88,12 +88,13 @@ export function renderSupremeCourtOverviewPage(
           <h3>Last month</h3>
           <p><strong>Instituted:</strong> ${snapshot.stats.institutedLastMonthTotalCases.toLocaleString("en-IN")}</p>
           <p><strong>Disposed:</strong> ${snapshot.stats.disposedLastMonthTotalCases.toLocaleString("en-IN")}</p>
-          <p>Those totals are published as sourced values, not inferred from downstream case records.</p>
+          <p>These totals come directly from the published aggregate source, not from reconstructed case records.</p>
         </article>
         <article class="card">
           <h3>Current year</h3>
           <p><strong>Instituted:</strong> ${snapshot.stats.institutedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
           <p><strong>Disposed:</strong> ${snapshot.stats.disposedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
+          <p>This page exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
           <p>This page exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
         </article>
       </div>
@@ -103,7 +104,7 @@ export function renderSupremeCourtOverviewPage(
       ${renderSectionHead({
         headline: "Official source links",
         lede:
-          "NyaayWatch uses Supreme Court aggregates for observability and links out to the official court surfaces for case status, orders, judgments, and institutional material.",
+          "Use these links to move from public accountability data to the official court systems and reference material behind it.",
       })}
       <div class="card-grid card-grid--4">
         <article class="card">

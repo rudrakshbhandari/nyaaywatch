@@ -22,9 +22,9 @@ export function renderHighCourtsIndexPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURTS",
-      headline: "Where High Court pressure is building.",
+      headline: "Where is pressure building across India's High Courts?",
       lede:
-        "Each card keeps the court identity explicit, but surfaces backlog, clearance pace, and monthly pile change so readers can scan pressure across High Courts without flattening them into fake one-state shells.",
+        "This index links the published High Court snapshots now live on NyaayWatch. Each card keeps the court identity explicit, while surfacing backlog, clearance pace, and monthly pile change so readers can scan pressure without flattening these courts into one national score.",
       isHero: true,
     })}
 
@@ -60,7 +60,7 @@ export function renderHighCourtsIndexPage(
                   ),
                 })}
               </div>
-              <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Open High Court page</a></p>
+              <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Inspect High Court</a></p>
             </article>
           `,
         )

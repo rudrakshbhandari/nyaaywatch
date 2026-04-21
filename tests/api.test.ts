@@ -69,14 +69,14 @@ describe("HTTP routes", () => {
 
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
-    expect(homepage.text).toContain("Where is pressure building across India's courts?");
-    expect(homepage.text).toContain("View Supreme Court");
-    expect(homepage.text).toContain("Most public case volume sits in the lower courts.");
+    expect(homepage.text).toContain("How long is India waiting for justice?");
+    expect(homepage.text).toContain("Track the Supreme Court");
+    expect(homepage.text).toContain("Most delay sits in the lower courts.");
     expect(homepage.text).toContain("Lower-court state pages.");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
-    expect(homepage.text).toContain("Open Himachal lower-court overview");
+    expect(homepage.text).toContain("See Himachal lower courts");
 
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
@@ -431,7 +431,7 @@ describe("HTTP routes", () => {
 
     const index = await request(app).get("/high-courts");
     expect(index.status).toBe(200);
-    expect(index.text).toContain("Where High Court pressure is building.");
+    expect(index.text).toContain("Where is pressure building across India");
     expect(index.text).toContain("High Court of Himachal Pradesh");
     expect(index.text).toContain("High Court of Andhra Pradesh");
     expect(index.text).toContain("High Court for State of Telangana");
