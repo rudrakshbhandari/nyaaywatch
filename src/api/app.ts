@@ -1,4 +1,5 @@
 import express, { type NextFunction, type Request, type Response } from "express";
+import type { Pool } from "pg";
 import { registerOgRoutes } from "./share/og-routes.js";
 
 import type { AppConfig } from "../config/env.js";
@@ -38,10 +39,19 @@ import { renderSupremeCourtOverviewPage } from "./pages/supreme-court-overview.j
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
+import { NewsletterService } from "../services/newsletter-service.js";
 import { buildPublicHighCourtPageContext, buildPublicHighCourtRoutes } from "./public-high-court.js";
 import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
 import { buildPublicPageContext, buildPublicStateRoutes } from "./public-state.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
+import { renderRssFeed } from "./pages/rss.js";
+import {
+  renderSubscribePage,
+  renderSubscribeConfirmPending,
+  renderSubscribeConfirmed,
+  renderSubscribeAlreadyConfirmed,
+  renderUnsubscribed,
+} from "./pages/subscribe.js";
 
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
 type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
@@ -55,7 +65,9 @@ export function createApp(
   publicServices: PublicServiceMap = { [config.STATE_CODE]: service },
   highCourtServices: HighCourtServiceMap = {},
   supremeCourtService?: PublishedSupremeCourtSnapshotService,
+  pool?: Pool,
 ) {
+  const newsletterService = pool ? new NewsletterService(pool, config) : null;
   const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
   app.use(express.json());
@@ -1320,6 +1332,17 @@ export function createApp(
 
         const result = await resolved.service.publishRun(runId, request.body?.note);
         response.status(201).json(result);
+        if (newsletterService) {
+          const stateCode = result.snapshot.stateCode as SupportedStateCode;
+          const stateProfile = getStateProfile(stateCode);
+          const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+          const snap = await resolved.service.getPublishedSnapshot();
+          if (snap) {
+            newsletterService
+              .sendDigest(snap.payload, origin, stateProfile.stateCode, stateProfile.stateSlug)
+              .catch((err) => logError("[newsletter] sendDigest failed", err));
+          }
+        }
       }),
     );
 
@@ -1355,6 +1378,131 @@ export function createApp(
       }),
     );
   }
+
+  // RSS feed routes
+  app.get(
+    "/states/:stateSlug/feed.xml",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send("State not found");
+        return;
+      }
+
+      const [entries, snapshot] = await Promise.all([
+        resolved.service.listPublicationHistory(),
+        resolved.service.getPublishedSnapshot(),
+      ]);
+
+      const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+      const stateUrl = `${origin}/states/${resolved.profile.stateSlug}`;
+      const feedUrl = `${stateUrl}/feed.xml`;
+
+      response.setHeader("Content-Type", "application/rss+xml; charset=utf-8");
+      response.send(
+        renderRssFeed({
+          title: `NyaayWatch — ${resolved.profile.stateName}`,
+          description: `Court backlog snapshots for ${resolved.profile.stateName}`,
+          link: stateUrl,
+          feedUrl,
+          entries,
+          currentSnapshot: snapshot?.payload ?? null,
+        }),
+      );
+    }),
+  );
+
+  // Subscribe / unsubscribe routes
+  app.get(
+    "/subscribe",
+    asyncRoute(async (request, response) => {
+      const stateSlug = typeof request.query.state === "string" ? request.query.state : config.STATE_CODE;
+      const profile = resolvePublicStateProfile(stateSlug) ?? getStateProfile(config.STATE_CODE);
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+      response.send(renderSubscribePage(context));
+    }),
+  );
+
+  app.post(
+    "/subscribe",
+    asyncRoute(async (request, response) => {
+      const rawEmail = typeof request.body?.email === "string" ? request.body.email.trim() : "";
+      const rawScope = typeof request.body?.scope === "string" ? request.body.scope.trim() : config.STATE_CODE;
+      const profile = resolvePublicStateProfile(rawScope) ?? getStateProfile(config.STATE_CODE);
+
+      if (!rawEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+        const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+        const context = buildPublicPageContext(profile, availableProfiles);
+        response.status(400).send(renderSubscribePage(context, { error: "Please enter a valid email address." }));
+        return;
+      }
+
+      if (!newsletterService) {
+        const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+        const context = buildPublicPageContext(profile, availableProfiles);
+        response.status(503).send(renderSubscribePage(context, { error: "Subscriptions are not available at this time." }));
+        return;
+      }
+
+      const scope = profile.stateCode;
+      const { token, alreadyConfirmed } = await newsletterService.subscribe(rawEmail, scope);
+
+      const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+
+      if (alreadyConfirmed) {
+        response.send(renderSubscribeAlreadyConfirmed(context));
+        return;
+      }
+
+      await newsletterService.sendConfirmationEmail(rawEmail, token, origin).catch((err) =>
+        logError("[newsletter] sendConfirmationEmail failed", err),
+      );
+      response.send(renderSubscribeConfirmPending(rawEmail, context));
+    }),
+  );
+
+  app.get(
+    "/subscribe/confirm/:token",
+    asyncRoute(async (request, response) => {
+      const token = readRouteParam(request.params.token);
+      const profile = getStateProfile(config.STATE_CODE);
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+
+      if (!newsletterService) {
+        response.status(503).send(renderSubscribePage(context, { error: "Subscriptions are not available at this time." }));
+        return;
+      }
+
+      const confirmed = await newsletterService.confirm(token);
+      if (confirmed) {
+        response.send(renderSubscribeConfirmed(context));
+      } else {
+        response.send(renderSubscribeAlreadyConfirmed(context));
+      }
+    }),
+  );
+
+  app.get(
+    "/unsubscribe/:token",
+    asyncRoute(async (request, response) => {
+      const token = readRouteParam(request.params.token);
+      const profile = getStateProfile(config.STATE_CODE);
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+
+      if (!newsletterService) {
+        response.status(503).send(renderSubscribePage(context, { error: "Subscriptions are not available at this time." }));
+        return;
+      }
+
+      await newsletterService.unsubscribe(token);
+      response.send(renderUnsubscribed(context));
+    }),
+  );
 
   // OG card image routes (/og/*)
   app.use("/og", registerOgRoutes(publicServices, highCourtServices, supremeCourtService));

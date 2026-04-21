@@ -93,7 +93,7 @@ async function createRuntime(): Promise<AppRuntime> {
   );
 
   return {
-    app: createApp(config, service, publicServices, highCourtServices, supremeCourtService),
+    app: createApp(config, service, publicServices, highCourtServices, supremeCourtService, pool),
     config,
     async close() {
       await pool.end();
