@@ -7,6 +7,7 @@ import {
   formatHighCourtCoverageLabel,
   type PublicHighCourtPageContext,
 } from "../public-high-court.js";
+import { compareHighCourtPressure } from "../home/national-view-model.js";
 import { formatDate } from "../home/view-model.js";
 
 export interface PublicHighCourtIndexEntry {
@@ -18,13 +19,13 @@ export function renderHighCourtsIndexPage(
   entries: PublicHighCourtIndexEntry[],
   context: PublicHighCourtPageContext,
 ): string {
-  const sortedEntries = [...entries].sort((left, right) => left.profile.courtName.localeCompare(right.profile.courtName, "en"));
+  const sortedEntries = [...entries].sort(compareHighCourtPressure);
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURTS",
       headline: "Where is pressure building across India's High Courts?",
       lede:
-        "This index links the published High Court snapshots now live on NyaayWatch. Each card keeps the court identity explicit, while surfacing backlog, clearance pace, and monthly pile change so readers can scan pressure without flattening these courts into one national score.",
+        "This index links the published High Court snapshots now live on NyaayWatch. Cards are ordered by the clearest visible pressure signal first: latest pile growth, then clearance pace, then pending load.",
       isHero: true,
     })}
 

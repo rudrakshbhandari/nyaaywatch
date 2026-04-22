@@ -6,7 +6,7 @@ test("citizen flow loads the homepage, district workspace, and district permalin
   await expect(page.getByRole("heading", { name: "How long is India waiting for justice?" })).toBeVisible();
   await expect(page.locator(".national-hero__accountability")).toContainText(/Captured|Source snapshot/);
   await expect(page.getByRole("link", { name: /Track the Supreme Court/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /See Himachal lower courts/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Browse lower courts/i })).toBeVisible();
 
   await page.getByRole("link", { name: /Inspect districts/i }).click();
   await expect(page).toHaveURL(/\/districts$/);

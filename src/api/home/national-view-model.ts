@@ -10,6 +10,32 @@ export interface NationalHighCourtEntry {
   snapshot: HighCourtPublishedSnapshot;
 }
 
+export function compareHighCourtPressure(
+  left: Pick<NationalHighCourtEntry, "profile" | "snapshot">,
+  right: Pick<NationalHighCourtEntry, "profile" | "snapshot">,
+): number {
+  const monthlyGapDifference =
+    calculateMonthlyGap(right.snapshot.stats.institutedLastMonthTotalCases, right.snapshot.stats.disposedLastMonthTotalCases) -
+    calculateMonthlyGap(left.snapshot.stats.institutedLastMonthTotalCases, left.snapshot.stats.disposedLastMonthTotalCases);
+  if (monthlyGapDifference !== 0) {
+    return monthlyGapDifference;
+  }
+
+  const clearanceDifference =
+    calculateClearanceRate(left.snapshot.stats.disposedLastMonthTotalCases, left.snapshot.stats.institutedLastMonthTotalCases) -
+    calculateClearanceRate(right.snapshot.stats.disposedLastMonthTotalCases, right.snapshot.stats.institutedLastMonthTotalCases);
+  if (clearanceDifference !== 0) {
+    return clearanceDifference;
+  }
+
+  const pendingDifference = right.snapshot.stats.pendingTotalCases - left.snapshot.stats.pendingTotalCases;
+  if (pendingDifference !== 0) {
+    return pendingDifference;
+  }
+
+  return left.profile.courtName.localeCompare(right.profile.courtName, "en");
+}
+
 export interface NationalHomeViewModel {
   supremeCourt: {
     snapshot: SupremeCourtPublishedSnapshot | null;
@@ -92,7 +118,7 @@ export function buildNationalHomeViewModel(input: {
     highCourts: {
       count: input.highCourtEntries.length,
       entries: [...input.highCourtEntries]
-        .sort((left, right) => left.profile.courtName.localeCompare(right.profile.courtName, "en"))
+        .sort(compareHighCourtPressure)
         .map(({ profile, snapshot }) => ({
         profile,
         snapshot,
@@ -134,11 +160,11 @@ function formatClearanceRateDisplay(disposedCases: number, institutedCases: numb
     return "—";
   }
 
-  return ((disposedCases / institutedCases) * 100).toFixed(1);
+  return calculateClearanceRate(disposedCases, institutedCases).toFixed(1);
 }
 
 function describePileChange(institutedCases: number, disposedCases: number) {
-  const difference = institutedCases - disposedCases;
+  const difference = calculateMonthlyGap(institutedCases, disposedCases);
   if (difference === 0) {
     return {
       display: "0",
@@ -175,4 +201,16 @@ function describeFreshness(freshnessDays: number) {
   }
 
   return `${freshnessDays} days old`;
+}
+
+function calculateMonthlyGap(institutedCases: number, disposedCases: number) {
+  return institutedCases - disposedCases;
+}
+
+function calculateClearanceRate(disposedCases: number, institutedCases: number) {
+  if (institutedCases <= 0) {
+    return 0;
+  }
+
+  return (disposedCases / institutedCases) * 100;
 }

@@ -78,7 +78,9 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
-    expect(homepage.text).toContain("See Himachal lower courts");
+    expect(homepage.text).toContain("Browse lower courts");
+    expect(homepage.text).toContain("Featured lower-court backlog");
+    expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
 
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
@@ -460,8 +462,7 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("High Court of Rajasthan");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
-    expect(index.text.indexOf("Allahabad High Court")).toBeLessThan(index.text.indexOf("Bombay High Court"));
-    expect(index.text.indexOf("Bombay High Court")).toBeLessThan(index.text.indexOf("Calcutta High Court"));
+    expect(index.text).toContain("Cards are ordered by the clearest visible pressure signal first");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
