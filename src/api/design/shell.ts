@@ -2,6 +2,21 @@ import { escapeHtml } from "../../lib/html.js";
 import { BASE_CSS, FONTS_LINK } from "./styles.js";
 import { infoIcon } from "./ui.js";
 
+const FAVICON_DATA_URL = createFaviconDataUrl();
+
+export interface OgMeta {
+  /** Used for og:title, twitter:title, and (if og.title differs) the page title. */
+  title: string;
+  /** Used for meta description, og:description, twitter:description. */
+  description: string;
+  /** Absolute URL of the OG card image (1200×630 PNG). */
+  image?: string;
+  /** Alt text for the OG card image. */
+  imageAlt?: string;
+  /** Canonical URL for og:url. */
+  url?: string;
+}
+
 export interface PageShellOptions {
   title: string;
   body: string;
@@ -21,6 +36,8 @@ export interface PageShellOptions {
   pageCss?: string;
   /** Footer metadata (dates, source, methodology version). */
   footer: FooterMeta;
+  /** Open Graph / Twitter Card meta. When omitted the page has no social preview. */
+  og?: OgMeta;
 }
 
 export interface FooterMeta {
@@ -43,12 +60,26 @@ export function renderPageShell(options: PageShellOptions): string {
   const ticker = options.ticker ? `<div class="ticker">${escapeHtml(options.ticker)}</div>` : "";
   const footer = renderColophon(options.footer, options.brandTag ?? "Court transparency, Himachal Pradesh", options.navLinks);
 
+  const og = options.og;
+  const ogMeta = og
+    ? `
+  <meta name="description" content="${escapeHtml(og.description)}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="NyaayWatch" />
+  <meta property="og:title" content="${escapeHtml(og.title)}" />
+  <meta property="og:description" content="${escapeHtml(og.description)}" />${og.url ? `\n  <meta property="og:url" content="${escapeHtml(og.url)}" />` : ""}${og.image ? `\n  <meta property="og:image" content="${escapeHtml(og.image)}" />\n  <meta property="og:image:width" content="1200" />\n  <meta property="og:image:height" content="630" />${og.imageAlt ? `\n  <meta property="og:image:alt" content="${escapeHtml(og.imageAlt)}" />` : ""}` : ""}
+  <meta name="twitter:card" content="${og.image ? "summary_large_image" : "summary"}" />
+  <meta name="twitter:title" content="${escapeHtml(og.title)}" />
+  <meta name="twitter:description" content="${escapeHtml(og.description)}" />${og.image ? `\n  <meta name="twitter:image" content="${escapeHtml(og.image)}" />` : ""}`
+    : "";
+
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(options.title)}</title>
+  <link rel="icon" href="${FAVICON_DATA_URL}" type="image/svg+xml" />${ogMeta}
   ${FONTS_LINK}
   <style>${BASE_CSS}${options.pageCss ?? ""}</style>
 </head>
@@ -66,6 +97,15 @@ export function renderPageShell(options: PageShellOptions): string {
   ${footer}
 </body>
 </html>`;
+}
+
+function createFaviconDataUrl(): string {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="4" fill="#0c0a08" />
+  <text x="32" y="36" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="900" letter-spacing="-1.6" fill="#f4efe3">NW</text>
+</svg>`;
+
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 function renderNav(

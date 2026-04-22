@@ -42,6 +42,23 @@ export interface SnapshotHistoryEntry {
   stats: PublishedSnapshot["stats"];
 }
 
+export interface DistrictMover {
+  districtId: string;
+  districtName: string;
+  rank: number;
+  backlogCases: number;
+  backlogDelta: number;
+  disposalRate: number;
+  disposalDelta: number;
+  rankDelta: number;
+}
+
+export interface DistrictMoversResult {
+  currentSnapshot: PublishedSnapshot["snapshot"];
+  previousSnapshot: PublishedSnapshot["snapshot"];
+  movers: DistrictMover[];
+}
+
 export interface PublicationHistoryEntry {
   publication: PublicationRecord;
   snapshot: PublishedSnapshot["snapshot"] & { id: string };
@@ -141,6 +158,34 @@ export class PublishedSnapshotService {
       snapshot: snapshot.snapshot,
       stats: snapshot.stats,
     }));
+  }
+
+  async listMovers(): Promise<DistrictMoversResult | null> {
+    const history = await this.loadHistoricalSnapshots();
+    if (history.length < 2) return null;
+    const current = history[history.length - 1]!;
+    const previous = history[history.length - 2]!;
+    const prevMap = new Map(previous.districts.map((d) => [d.districtId, d]));
+    const movers: DistrictMover[] = [];
+    for (const d of current.districts) {
+      const prev = prevMap.get(d.districtId);
+      if (!prev) continue;
+      movers.push({
+        districtId: d.districtId,
+        districtName: d.districtName,
+        rank: d.rank,
+        backlogCases: d.backlogCases,
+        backlogDelta: d.backlogCases - prev.backlogCases,
+        disposalRate: d.disposalRate,
+        disposalDelta: Math.round((d.disposalRate - prev.disposalRate) * 10) / 10,
+        rankDelta: prev.rank - d.rank,
+      });
+    }
+    return {
+      currentSnapshot: current.snapshot,
+      previousSnapshot: previous.snapshot,
+      movers,
+    };
   }
 
   async listRuns(): Promise<RunRecord[]> {

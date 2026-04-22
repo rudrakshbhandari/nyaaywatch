@@ -87,6 +87,33 @@ jobs:
       - name: Browser E2E tests
         run: npm run test:e2e
 
+      - name: Install Lighthouse CI
+        run: npm install --no-save @lhci/cli
+
+      - name: Start E2E server for Lighthouse
+        run: |
+          NODE_ENV=test E2E_PORT=4211 npx tsx tests/e2e/test-server.ts &
+          echo $! > /tmp/lhci-server.pid
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:4211/health && break || sleep 1; done
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+          AWS_REGION: ap-south-1
+          AWS_ENDPOINT_URL_S3: http://127.0.0.1:4566
+          AWS_S3_FORCE_PATH_STYLE: "true"
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+          OPERATOR_API_TOKEN: operator-test-token
+
+      - name: Run Lighthouse CI
+        run: npx lhci autorun --config=.lighthouserc.cjs || echo "Lighthouse warnings present — not blocking"
+
+      - name: Stop E2E server
+        if: always()
+        run: |
+          if [ -f /tmp/lhci-server.pid ]; then
+            kill "$(cat /tmp/lhci-server.pid)" 2>/dev/null || true
+          fi
+
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs:

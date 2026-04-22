@@ -257,8 +257,9 @@ export function createTestApp(
   publicServices?: Partial<Record<SupportedStateCode, PublishedSnapshotService>>,
   highCourtServices?: Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>,
   supremeCourtService?: PublishedSupremeCourtSnapshotService,
+  pool?: Pool,
 ) {
-  return createApp(config, service, publicServices, highCourtServices, supremeCourtService);
+  return createApp(config, service, publicServices, highCourtServices, supremeCourtService, pool);
 }
 
 export function createScopedTestService(

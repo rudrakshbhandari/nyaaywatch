@@ -1,4 +1,6 @@
 import express, { type NextFunction, type Request, type Response } from "express";
+import type { Pool } from "pg";
+import { registerOgRoutes } from "./share/og-routes.js";
 
 import type { AppConfig } from "../config/env.js";
 import type { SupportedStateCode, NjdgStateProfile } from "../geographies.js";
@@ -25,6 +27,11 @@ import { renderHighCourtMethodologyPage } from "./pages/high-court-methodology.j
 import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
+import { renderPressPage } from "./pages/press.js";
+import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
+import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
+import { renderDistrictEmbedWidget, renderStateEmbedWidget } from "./pages/embed.js";
+import { buildViewModel } from "./home/view-model.js";
 import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
 import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
 import { renderSupremeCourtMethodologyPage } from "./pages/supreme-court-methodology.js";
@@ -32,10 +39,19 @@ import { renderSupremeCourtOverviewPage } from "./pages/supreme-court-overview.j
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
-import { buildPublicHighCourtPageContext } from "./public-high-court.js";
+import { NewsletterService } from "../services/newsletter-service.js";
+import { buildPublicHighCourtPageContext, buildPublicHighCourtRoutes } from "./public-high-court.js";
 import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
-import { buildPublicPageContext } from "./public-state.js";
+import { buildPublicPageContext, buildPublicStateRoutes } from "./public-state.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
+import { renderRssFeed } from "./pages/rss.js";
+import {
+  renderSubscribePage,
+  renderSubscribeConfirmPending,
+  renderSubscribeConfirmed,
+  renderSubscribeAlreadyConfirmed,
+  renderUnsubscribed,
+} from "./pages/subscribe.js";
 
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
 type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
@@ -49,10 +65,13 @@ export function createApp(
   publicServices: PublicServiceMap = { [config.STATE_CODE]: service },
   highCourtServices: HighCourtServiceMap = {},
   supremeCourtService?: PublishedSupremeCourtSnapshotService,
+  pool?: Pool,
 ) {
+  const newsletterService = pool ? new NewsletterService(pool, config) : null;
   const serviceMap = normalizeServiceMap(config, service, publicServices);
   const app = express();
   app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
   app.set("trust proxy", true);
   app.use((request, response, next) => {
     const requestHost = readRequestHost(request);
@@ -99,10 +118,60 @@ export function createApp(
         "User-agent: *",
         "Allow: /",
         "Disallow: /operator/",
+        "Sitemap: https://nyaaywatch.in/sitemap.xml",
         "",
       ].join("\n"),
     );
   });
+
+  app.get(
+    "/sitemap.xml",
+    asyncRoute(async (_request, response) => {
+      const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+      const urls: string[] = [
+        origin + "/",
+        origin + "/districts",
+        origin + "/data",
+        origin + "/methodology",
+        origin + "/api",
+        origin + "/press",
+        origin + "/high-courts",
+        origin + "/supreme-court",
+      ];
+
+      for (const profile of listPublicStateProfiles()) {
+        const routes = buildPublicStateRoutes(profile);
+        urls.push(origin + routes.home);
+        urls.push(origin + routes.districts);
+        urls.push(origin + routes.methodology);
+        urls.push(origin + routes.data);
+        urls.push(origin + routes.api);
+        const svc = serviceMap[profile.stateCode];
+        if (svc) {
+          const detail = await svc.listDistricts();
+          if (detail) {
+            for (const d of detail.districts) {
+              urls.push(origin + routes.district(d.districtId));
+            }
+          }
+        }
+      }
+
+      for (const profile of listPublicHighCourtProfiles()) {
+        const routes = buildPublicHighCourtRoutes(profile);
+        urls.push(origin + routes.home);
+      }
+
+      const xml = [
+        `<?xml version="1.0" encoding="UTF-8"?>`,
+        `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+        ...urls.map((u) => `  <url><loc>${u}</loc></url>`),
+        `</urlset>`,
+      ].join("\n");
+
+      response.type("application/xml").send(xml);
+    }),
+  );
 
   app.get(
     "/v1/stats/himachal",
@@ -371,6 +440,105 @@ export function createApp(
     }),
   );
 
+  // ── Comparator (/compare/:a-vs-:b) ───────────────────────────────────────
+  app.get(
+    "/compare/:slug",
+    asyncRoute(async (request, response) => {
+      const slug = readRouteParam(request.params.slug);
+      const vsIndex = slug.indexOf("-vs-");
+      if (vsIndex === -1) {
+        response.status(404).send(renderEmptyState("Comparison Not Found", "Use /compare/district-a-vs-district-b"));
+        return;
+      }
+      const idA = slug.slice(0, vsIndex);
+      const idB = slug.slice(vsIndex + 4);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderCompareNotFound(context));
+        return;
+      }
+      const districtA = snapshot.payload.districts.find((d) => d.districtId === idA);
+      const districtB = snapshot.payload.districts.find((d) => d.districtId === idB);
+      if (!districtA || !districtB) {
+        response.status(404).send(renderCompareNotFound(context));
+        return;
+      }
+      response.send(renderComparePage(snapshot.payload, districtA, districtB, context));
+    }),
+  );
+
+  // ── Movers (/movers) ──────────────────────────────────────────────────────
+  app.get(
+    "/movers",
+    asyncRoute(async (_request, response) => {
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      const result = await currentService.listMovers();
+      if (!result) {
+        response.send(renderMoversUnavailable(context));
+        return;
+      }
+      response.send(renderMoversPage(result, context));
+    }),
+  );
+
+  // State-scoped movers
+  app.get(
+    "/states/:stateSlug/movers",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        return;
+      }
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      const result = await resolved.service.listMovers();
+      if (!result) {
+        response.send(renderMoversUnavailable(context));
+        return;
+      }
+      response.send(renderMoversPage(result, context));
+    }),
+  );
+
+  // ── Embed widgets (/embed/district/:id, /embed/state/:slug) ───────────────
+  app.get(
+    "/embed/district/:districtId",
+    asyncRoute(async (request, response) => {
+      const districtId = readRouteParam(request.params.districtId);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      const detail = await currentService.getDistrictDetail(districtId);
+      if (!detail) {
+        response.status(404).end();
+        return;
+      }
+      response.removeHeader("X-Frame-Options");
+      response.setHeader("Content-Security-Policy", "frame-ancestors *");
+      response.send(renderDistrictEmbedWidget(detail.snapshot, detail.district, context.routes.district(districtId)));
+    }),
+  );
+
+  app.get(
+    "/embed/state/:stateSlug",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) { response.status(404).end(); return; }
+      const record = await resolved.service.getPublishedSnapshot();
+      if (!record) { response.status(404).end(); return; }
+      const model = buildViewModel(record.payload);
+      const routes = buildPublicStateRoutes(resolved.profile);
+      response.removeHeader("X-Frame-Options");
+      response.setHeader("Content-Security-Policy", "frame-ancestors *");
+      response.send(renderStateEmbedWidget(record.payload.snapshot, model, routes.home));
+    }),
+  );
+
   app.get(
     "/data",
     asyncRoute(async (_request, response) => {
@@ -420,6 +588,22 @@ export function createApp(
       );
     }),
   );
+
+  app.get("/press", (_request, response) => {
+    response.send(renderPressPage());
+  });
+
+  app.get("/press/logo-light.svg", (_request, response) => {
+    response.setHeader("Content-Type", "image/svg+xml");
+    response.setHeader("Content-Disposition", 'attachment; filename="nyaaywatch-logo-light.svg"');
+    response.send(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48"><rect width="48" height="48" rx="4" fill="#0c0a08"/><text x="24" y="26" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="-1.2" fill="#f4efe3">NW</text><text x="64" y="26" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" letter-spacing="-1" fill="#0c0a08">NyaayWatch</text></svg>`);
+  });
+
+  app.get("/press/logo-dark.svg", (_request, response) => {
+    response.setHeader("Content-Type", "image/svg+xml");
+    response.setHeader("Content-Disposition", 'attachment; filename="nyaaywatch-logo-dark.svg"');
+    response.send(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48"><rect width="240" height="48" rx="4" fill="#0c0a08"/><rect x="6" y="6" width="36" height="36" rx="3" fill="#f4efe3"/><text x="24" y="26" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="-1.2" fill="#0c0a08">NW</text><text x="56" y="26" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" letter-spacing="-1" fill="#f4efe3">NyaayWatch</text></svg>`);
+  });
 
   app.get(
     "/states/:stateSlug",
@@ -1149,6 +1333,17 @@ export function createApp(
 
         const result = await resolved.service.publishRun(runId, request.body?.note);
         response.status(201).json(result);
+        if (newsletterService) {
+          const stateCode = result.snapshot.stateCode as SupportedStateCode;
+          const stateProfile = getStateProfile(stateCode);
+          const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+          const snap = await resolved.service.getPublishedSnapshot();
+          if (snap) {
+            newsletterService
+              .sendDigest(snap.payload, origin, stateProfile.stateCode, stateProfile.stateSlug)
+              .catch((err) => logError("[newsletter] sendDigest failed", err));
+          }
+        }
       }),
     );
 
@@ -1184,6 +1379,134 @@ export function createApp(
       }),
     );
   }
+
+  // RSS feed routes
+  app.get(
+    "/states/:stateSlug/feed.xml",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send("State not found");
+        return;
+      }
+
+      const [entries, snapshot] = await Promise.all([
+        resolved.service.listPublicationHistory(),
+        resolved.service.getPublishedSnapshot(),
+      ]);
+
+      const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+      const stateUrl = `${origin}/states/${resolved.profile.stateSlug}`;
+      const feedUrl = `${stateUrl}/feed.xml`;
+
+      response.setHeader("Content-Type", "application/rss+xml; charset=utf-8");
+      response.send(
+        renderRssFeed({
+          title: `NyaayWatch — ${resolved.profile.stateName}`,
+          description: `Court backlog snapshots for ${resolved.profile.stateName}`,
+          link: stateUrl,
+          feedUrl,
+          entries,
+          currentSnapshot: snapshot?.payload ?? null,
+        }),
+      );
+    }),
+  );
+
+  // Subscribe / unsubscribe routes
+  app.get(
+    "/subscribe",
+    asyncRoute(async (request, response) => {
+      const stateSlug = typeof request.query.state === "string" ? request.query.state : config.STATE_CODE;
+      const profile = resolvePublicStateProfile(stateSlug) ?? getStateProfile(config.STATE_CODE);
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+      response.send(renderSubscribePage(context));
+    }),
+  );
+
+  app.post(
+    "/subscribe",
+    asyncRoute(async (request, response) => {
+      const rawEmail = typeof request.body?.email === "string" ? request.body.email.trim() : "";
+      const rawScope = typeof request.body?.scope === "string" ? request.body.scope.trim() : config.STATE_CODE;
+      const profile = resolvePublicStateProfile(rawScope) ?? getStateProfile(config.STATE_CODE);
+
+      if (!rawEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+        const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+        const context = buildPublicPageContext(profile, availableProfiles);
+        response.status(400).send(renderSubscribePage(context, { error: "Please enter a valid email address." }));
+        return;
+      }
+
+      if (!newsletterService) {
+        const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+        const context = buildPublicPageContext(profile, availableProfiles);
+        response.status(503).send(renderSubscribePage(context, { error: "Subscriptions are not available at this time." }));
+        return;
+      }
+
+      const scope = profile.stateCode;
+      const { token, alreadyConfirmed } = await newsletterService.subscribe(rawEmail, scope);
+
+      const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+
+      if (alreadyConfirmed) {
+        response.send(renderSubscribeAlreadyConfirmed(context));
+        return;
+      }
+
+      await newsletterService.sendConfirmationEmail(rawEmail, token, origin).catch((err) =>
+        logError("[newsletter] sendConfirmationEmail failed", err),
+      );
+      response.send(renderSubscribeConfirmPending(rawEmail, context));
+    }),
+  );
+
+  app.get(
+    "/subscribe/confirm/:token",
+    asyncRoute(async (request, response) => {
+      const token = readRouteParam(request.params.token);
+      const profile = getStateProfile(config.STATE_CODE);
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+
+      if (!newsletterService) {
+        response.status(503).send(renderSubscribePage(context, { error: "Subscriptions are not available at this time." }));
+        return;
+      }
+
+      const confirmed = await newsletterService.confirm(token);
+      if (confirmed) {
+        response.send(renderSubscribeConfirmed(context));
+      } else {
+        response.send(renderSubscribeAlreadyConfirmed(context));
+      }
+    }),
+  );
+
+  app.get(
+    "/unsubscribe/:token",
+    asyncRoute(async (request, response) => {
+      const token = readRouteParam(request.params.token);
+      const profile = getStateProfile(config.STATE_CODE);
+      const availableProfiles = await listAvailablePublicProfiles(publicServices, profile);
+      const context = buildPublicPageContext(profile, availableProfiles);
+
+      if (!newsletterService) {
+        response.status(503).send(renderSubscribePage(context, { error: "Subscriptions are not available at this time." }));
+        return;
+      }
+
+      await newsletterService.unsubscribe(token);
+      response.send(renderUnsubscribed(context));
+    }),
+  );
+
+  // OG card image routes (/og/*)
+  app.use("/og", registerOgRoutes(publicServices, highCourtServices, supremeCourtService));
 
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";
