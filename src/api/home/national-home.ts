@@ -80,8 +80,49 @@ export function renderNationalHome(input: {
         <span>Methodology and source links stay available on every tier page</span>
       </div>`;
 
+  // Hero sparkline series drawn from the snapshot's own trends. The Supreme
+  // Court snapshot carries a full monthly trend (pending + instituted +
+  // disposed per reference month); the lower-court snapshot only carries
+  // pending + disposal rate, so the fallback hero has two sparklines.
+  const scTrends = input.supremeCourtSnapshot?.trends ?? [];
+  const lcTrends = input.lowerCourtSnapshot.trends;
+  const scPendingSeries = scTrends.map((point) => point.pendingTotalCases);
+  const scClearanceSeries = scTrends.map((point) =>
+    point.institutedLastMonthTotalCases > 0
+      ? (point.disposedLastMonthTotalCases / point.institutedLastMonthTotalCases) * 100
+      : 0,
+  );
+  const scDisposedSeries = scTrends.map((point) => point.disposedLastMonthTotalCases);
+  const scGapSeries = scTrends.map(
+    (point) => point.institutedLastMonthTotalCases - point.disposedLastMonthTotalCases,
+  );
+  const lcPendingSeries = lcTrends.map((point) => point.pendingCases);
+
+  const tocItems = [
+    { id: "hero", index: "01", label: "At a glance" },
+    { id: "high-courts", index: "02", label: "High Courts" },
+    { id: "lower-courts", index: "03", label: "Lower courts" },
+    { id: "map", index: "04", label: "Browse by state" },
+    { id: "accountability", index: "05", label: "Methodology" },
+  ]
+    .map(
+      (item) => `<li>
+        <a href="#${item.id}" data-target="${item.id}">
+          <span class="toc__index">${item.index}</span>
+          <span class="toc__label">${escapeHtml(item.label)}</span>
+        </a>
+      </li>`,
+    )
+    .join("");
+
   const body = `
-    <section class="national-hero">
+    <div class="scrollspy-layout">
+      <aside class="toc" aria-label="On this page">
+        <p class="toc__heading">On this page</p>
+        <ol class="toc__list">${tocItems}</ol>
+      </aside>
+      <div class="scrollspy-content">
+    <section class="national-hero" id="hero" data-section="hero">${/* section id + data-section drive the scroll-spy rail */ ""}
       <div class="national-hero__copy">
         <p class="national-hero__eyebrow">INDIA'S COURT SYSTEM</p>
         <h1 class="national-hero__hed">${
@@ -110,22 +151,34 @@ export function renderNationalHome(input: {
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
                 note: "Backlog at the top of the court system in the latest published snapshot.",
+                series: scPendingSeries,
+                seriesLabel: "Pending total over recent months",
+                deltaDirectionHint: "up-is-bad",
               })}
               ${renderStatTile({
                 label: "Cleared / 100 filed",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
                 note: "How quickly the apex court is clearing incoming work in the latest monthly window.",
                 tone: "accent",
+                series: scClearanceSeries,
+                seriesLabel: "Clearance rate over recent months",
+                deltaDirectionHint: "up-is-good",
               })}
               ${renderStatTile({
                 label: "Disposed last month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
                 note: "How many matters the Court cleared in the latest published month.",
+                series: scDisposedSeries,
+                seriesLabel: "Disposed per month over recent months",
+                deltaDirectionHint: "up-is-good",
               })}
               ${renderStatTile({
                 label: "Last-month pile change",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
                 note: model.supremeCourt.monthlyGapNote ?? "Monthly incoming and outgoing work are both visible.",
+                series: scGapSeries,
+                seriesLabel: "Monthly pile change over recent months",
+                deltaDirectionHint: "up-is-bad",
               })}
             `
             : `
@@ -133,6 +186,9 @@ export function renderNationalHome(input: {
                 label: "Lower-court pending",
                 value: model.lowerCourts.pendingDisplay,
                 note: "Most of the public case volume on the site still sits in the lower courts.",
+                series: lcPendingSeries,
+                seriesLabel: "Lower-court pending over recent months",
+                deltaDirectionHint: "up-is-bad",
               })}
               ${renderStatTile({
                 label: "Public states live",
@@ -145,7 +201,7 @@ export function renderNationalHome(input: {
       </div>
     </section>
 
-    <section class="national-section">
+    <section class="national-section" id="high-courts" data-section="high-courts">
       ${renderSectionHead({
         headline: "High Courts across India.",
         lede:
@@ -155,7 +211,7 @@ export function renderNationalHome(input: {
       <p class="national-section__linkline"><a href="/high-courts">See all High Courts</a></p>
     </section>
 
-    <section class="national-section">
+    <section class="national-section" id="lower-courts" data-section="lower-courts">
       ${renderSectionHead({
         headline: "Most delay sits in the lower courts.",
         lede:
@@ -192,9 +248,9 @@ export function renderNationalHome(input: {
       </div>
     </section>
 
-    ${renderIndiaMap(input.availableStateProfiles)}
+    <div id="map" data-section="map">${renderIndiaMap(input.availableStateProfiles)}</div>
 
-    <section class="national-section national-section--accountability">
+    <section class="national-section national-section--accountability" id="accountability" data-section="accountability">
       ${renderSectionHead({
         headline: "Methodology, data, and API.",
         lede:
@@ -222,6 +278,9 @@ export function renderNationalHome(input: {
         </article>
       </div>
     </section>
+      </div>
+    </div>
+    <script>${SCROLLSPY_SCRIPT}</script>
   `;
 
   return renderPageShell({
@@ -251,7 +310,109 @@ export function renderNationalHome(input: {
   });
 }
 
+// Inline scroll-spy: IntersectionObserver keeps the TOC rail's active entry in
+// sync with whichever section is currently dominating the viewport. Smooth
+// scrolling + hash update on click. No external JS — the site ships HTML
+// straight from the server with no asset pipeline.
+const SCROLLSPY_SCRIPT = `
+(function () {
+  var links = document.querySelectorAll('.toc a[data-target]');
+  if (!links.length || typeof IntersectionObserver === 'undefined') return;
+  var linkById = {};
+  links.forEach(function (link) { linkById[link.getAttribute('data-target')] = link; });
+  function setActive(id) {
+    links.forEach(function (l) { l.classList.remove('is-active'); });
+    if (id && linkById[id]) linkById[id].classList.add('is-active');
+  }
+  var sections = document.querySelectorAll('[data-section]');
+  var visible = new Map();
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
+      else visible.delete(entry.target.id);
+    });
+    var best = null; var bestRatio = -1;
+    visible.forEach(function (ratio, id) { if (ratio > bestRatio) { bestRatio = ratio; best = id; } });
+    if (best) setActive(best);
+  }, { rootMargin: '-20% 0px -60% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] });
+  sections.forEach(function (s) { observer.observe(s); });
+  links.forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      var id = link.getAttribute('data-target');
+      var target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', '#' + id);
+    });
+  });
+})();
+`;
+
 const NATIONAL_HOME_CSS = `
+  /* --- scroll-spy two-column layout + left-rail TOC --- */
+  .scrollspy-layout {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 48px;
+    align-items: start;
+  }
+  .scrollspy-content { min-width: 0; }
+  .toc {
+    position: sticky;
+    top: 24px;
+    padding: 20px 0 20px 4px;
+    border-left: 1px solid var(--rule);
+  }
+  .toc__heading {
+    margin: 0 0 14px 14px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+  .toc__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .toc__list a {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    padding: 8px 12px 8px 14px;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--ink-muted);
+    text-decoration: none;
+    transition: color 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+  .toc__list a:hover { color: var(--ink-soft); }
+  .toc__list a.is-active {
+    color: var(--ink);
+    border-left-color: var(--accent);
+    transform: translateX(2px);
+  }
+  .toc__index {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+  }
+  .toc__list a.is-active .toc__index { color: var(--accent); }
+  .toc__label {
+    font-family: "Inter Tight", system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .scrollspy-content [data-section] { scroll-margin-top: 20px; }
+
   .national-hero {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.95fr);
@@ -393,6 +554,28 @@ const NATIONAL_HOME_CSS = `
   }
   .national-section--accountability .card p + p {
     margin-top: 8px;
+  }
+  @media (max-width: 1100px) {
+    .scrollspy-layout { grid-template-columns: 1fr; gap: 20px; }
+    .toc {
+      position: static;
+      border-left: none;
+      border-top: 1px solid var(--rule);
+      padding: 12px 0 0;
+    }
+    .toc__heading { margin-left: 0; }
+    .toc__list { flex-direction: row; flex-wrap: wrap; gap: 6px 14px; }
+    .toc__list a {
+      padding: 6px 10px;
+      border-left: none;
+      border-bottom: 2px solid transparent;
+      margin-left: 0;
+    }
+    .toc__list a.is-active {
+      border-left: none;
+      border-bottom-color: var(--accent);
+      transform: none;
+    }
   }
   @media (max-width: 1000px) {
     .national-hero {

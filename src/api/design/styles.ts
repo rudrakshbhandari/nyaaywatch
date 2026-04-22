@@ -282,6 +282,36 @@ export const BASE_CSS = `
   .stat-tile--accent .stat-tile__label { color: var(--accent-dark); }
   .stat-tile--flag .stat-tile__label { color: var(--flag); }
 
+  /* --- optional sparkline + delta chip on stat tiles --- */
+  .stat-tile--with-spark .stat-tile__value-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .sparkline {
+    width: 96px; height: 28px;
+    flex-shrink: 0;
+    color: var(--ink-muted);
+    opacity: 0.85;
+  }
+  .stat-tile--accent .sparkline { color: var(--accent-dark); opacity: 0.9; }
+  .stat-tile--flag .sparkline { color: var(--flag); opacity: 0.9; }
+  .stat-tile__delta {
+    align-self: flex-start;
+    display: inline-flex;
+    padding: 2px 7px 3px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+  }
+  .stat-tile__delta--good { color: #2a7a3f; }
+  .stat-tile__delta--bad { color: var(--accent-dark); }
+  .stat-tile__delta--flat { color: var(--ink-muted); }
+
   /* --- shared card surface used for callouts --- */
   .card {
     background: var(--paper-bright);
