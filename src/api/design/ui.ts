@@ -59,6 +59,18 @@ export interface StatTileOptions {
   /** "accent" = red-dark label; "flag" = amber label. */
   tone?: "default" | "accent" | "flag";
   infoKey?: GlossaryKey;
+  /**
+   * When set, the label text becomes a link to the methodology page anchor
+   * that explains the metric. The info-icon stays alongside for the
+   * glossary popover so the reader has two affordances: hover for a blurb,
+   * click the label to read the full method.
+   */
+  methodologyHref?: string;
+  /**
+   * Permalink id for the tile itself. Lets other pages deep-link directly
+   * to this tile (e.g. /districts/:id#stat-backlog from a comparator row).
+   */
+  anchorId?: string;
 }
 
 export function renderStatTile(options: StatTileOptions): string {
@@ -66,11 +78,25 @@ export function renderStatTile(options: StatTileOptions): string {
   const unit = options.unit ? `<span class="stat-tile__unit">${escapeHtml(options.unit)}</span>` : "";
   const note = options.note ? `<p class="stat-tile__note">${escapeHtml(options.note)}</p>` : "";
   const info = options.infoKey ? ` ${infoIcon(options.infoKey)}` : "";
-  return `<article class="stat-tile${tone}">
-    <div class="stat-tile__label">${escapeHtml(options.label)}${info}</div>
+  const labelText = options.methodologyHref
+    ? `<a class="stat-tile__link" href="${options.methodologyHref}">${escapeHtml(options.label)}</a>`
+    : escapeHtml(options.label);
+  const anchor = options.anchorId ? ` id="${options.anchorId}"` : "";
+  return `<article class="stat-tile${tone}"${anchor}>
+    <div class="stat-tile__label">${labelText}${info}</div>
     <div class="stat-tile__value">${escapeHtml(options.value)}${unit}</div>
     ${note}
   </article>`;
+}
+
+/**
+ * Small "#" permalink shown in the corner of a card. It appears on hover or
+ * focus and lets a reader grab a URL that jumps straight to this card — the
+ * core move that turns the editorial surface into a navigable citation
+ * graph. See the `.anchor-link` / `:target` rules in design/styles.ts.
+ */
+export function renderAnchorLink(targetId: string, label: string): string {
+  return `<a class="anchor-link" href="#${targetId}" aria-label="Permalink to ${escapeHtml(label)}">#</a>`;
 }
 
 export interface BadgeOptions {

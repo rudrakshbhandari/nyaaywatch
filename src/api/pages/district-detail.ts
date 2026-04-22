@@ -48,19 +48,23 @@ export function renderDistrictPage(
       <p class="district-hero__lede">${escapeHtml(district.summary)}</p>
     </section>
 
-    <section class="stat-grid">
+    <section class="stat-grid" id="district-overview">
       ${renderStatTile({
         label: "Cases waiting",
         value: district.backlogCases.toLocaleString("en-IN"),
         infoKey: "backlog",
         note: formatNumericDelta(backlogDelta, "vs. prior published snapshot"),
         tone: "accent",
+        methodologyHref: `${context.routes.methodology}#metric-backlog`,
+        anchorId: "stat-backlog",
       })}
       ${renderStatTile({
         label: "Cleared per 100",
         value: district.disposalRate.toFixed(1),
         infoKey: "clearance",
         note: formatDeltaWithUnit(disposalDelta, "percentage points vs. prior snapshot"),
+        methodologyHref: `${context.routes.methodology}#metric-clearance`,
+        anchorId: "stat-clearance",
       })}
       ${renderStatTile({
         label: "Typical wait",
@@ -68,12 +72,16 @@ export function renderDistrictPage(
         unit: "mo",
         infoKey: "typicalWait",
         note: "Middle of the local pile, estimated from published age buckets.",
+        methodologyHref: `${context.routes.methodology}#metric-typical-wait`,
+        anchorId: "stat-typical-wait",
       })}
       ${renderStatTile({
         label: "Watch rank",
         value: `#${district.rank}`,
         note: formatRankDelta(rankDelta),
         tone: "flag",
+        methodologyHref: `${context.routes.methodology}#metric-watchlist`,
+        anchorId: "stat-rank",
       })}
     </section>
 
@@ -81,7 +89,7 @@ export function renderDistrictPage(
 
     <section class="district-grid">
       <div class="district-col">
-        <article class="card">
+        <article class="card" id="district-flag">
           <header class="card__head">
             <p class="card__eyebrow">WHY IT IS FLAGGED</p>
             <h3>What this district is telling us</h3>
@@ -90,7 +98,7 @@ export function renderDistrictPage(
           <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</strong> percentage points in the latest published snapshot.</p>
         </article>
 
-        <article class="card">
+        <article class="card" id="district-history">
           <header class="card__head">
             <p class="card__eyebrow">HISTORICAL CONTEXT</p>
             <h3>Published district history</h3>
@@ -102,7 +110,7 @@ export function renderDistrictPage(
       </div>
 
       <aside class="district-col district-col--aside">
-        <article class="card">
+        <article class="card" id="district-citation">
           <header class="card__head">
             <p class="card__eyebrow">CITE AND EXPORT</p>
             <h3>Durable citation surface</h3>
@@ -225,7 +233,7 @@ function renderWaitingClock(months: number, districtName: string): string {
     `<span class="wc__sq" aria-hidden="true" style="animation-delay:${(i * 30)}ms"></span>`
   ).join("");
   return `
-    <section class="waiting-clock" aria-label="Waiting Clock for ${escapeHtml(districtName)}">
+    <section class="waiting-clock" id="waiting-clock" aria-label="Waiting Clock for ${escapeHtml(districtName)}">
       <div class="waiting-clock__inner">
         <div class="wc__label-col" aria-hidden="true">
           <span class="wc__axis-label">0</span>
@@ -485,20 +493,18 @@ const DISTRICT_PAGE_CSS = `
     .history-row { grid-template-columns: 84px 1fr 72px; gap: 10px; font-size: 11px; }
   }
   @media print {
-    .masthead, .state-switcher, .ticker, .district-hero__crumb, .district-col--aside .card:last-child,
-    .btn, .colophon { display: none !important; }
-    body { background: #fff; color: #000; font-size: 11pt; }
-    .district-hero { padding: 0 0 18pt; }
-    .district-hero__hed { font-size: 36pt; }
+    /* District-specific print: base print rules in styles.ts handle nav,
+       colophon, button hiding, URL footnotes, and page-break behavior.
+       Here we only collapse the aside (Caveats are already in the text)
+       and re-flow the two-column district grid into one column. */
+    .district-col--aside .card:last-child { display: none !important; }
+    .district-hero { padding: 0 0 14pt; }
+    .district-hero__hed { font-size: 30pt; line-height: 1; }
     .district-hero__lede { font-size: 12pt; }
-    .stat-grid { break-inside: avoid; }
-    .district-grid { grid-template-columns: 1fr; }
-    .card { break-inside: avoid; border: 1px solid #ccc; padding: 12pt; }
+    .district-grid { grid-template-columns: 1fr; gap: 10pt; }
     .history-table-wrap { overflow: visible; }
-    a[href]::after { content: none; }
-    .colophon-print { display: block !important; font-size: 9pt; color: #555; border-top: 1pt solid #ccc; padding-top: 6pt; margin-top: 24pt; }
+    .history-bars { page-break-inside: avoid; }
   }
-  .colophon-print { display: none; }
 
   .cite-block { margin: 14px 0 18px; }
   .cite-block__label {
