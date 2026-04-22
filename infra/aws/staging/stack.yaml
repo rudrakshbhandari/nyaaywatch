@@ -748,6 +748,137 @@ Resources:
       AlarmActions:
         - !Ref AlarmTopic
 
+  CanaryArtifactsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub "${ProjectName}-${EnvironmentName}-canary-${AWS::AccountId}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-runs
+            Status: Enabled
+            ExpirationInDays: 31
+      Tags:
+        - Key: project
+          Value: !Ref ProjectName
+        - Key: env
+          Value: !Ref EnvironmentName
+
+  CanaryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-${EnvironmentName}-canary"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: canary-permissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetBucketLocation
+                Resource: !Sub "${CanaryArtifactsBucket.Arn}/*"
+              - Effect: Allow
+                Action: s3:ListAllMyBuckets
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/cwsyn-*"
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    cloudwatch:namespace: CloudWatchSynthetics
+
+  UptimeCanary:
+    Type: AWS::Synthetics::Canary
+    DependsOn: HttpsListener
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}-up"
+      ExecutionRoleArn: !GetAtt CanaryRole.Arn
+      RuntimeVersion: syn-nodejs-puppeteer-9.1
+      ArtifactS3Location: !Sub "s3://${CanaryArtifactsBucket}/"
+      StartCanaryAfterCreation: true
+      Schedule:
+        Expression: "rate(5 minutes)"
+        DurationInSeconds: "0"
+      RunConfig:
+        TimeoutInSeconds: 60
+        MemoryInMB: 1024
+        EnvironmentVariables:
+          SYNTHETICS_BASE_URL: !If [HasPublicBaseUrl, !Ref PublicBaseUrl, "https://nyaaywatch.in"]
+      SuccessRetentionPeriod: 7
+      FailureRetentionPeriod: 31
+      Code:
+        Handler: index.handler
+        Script: |
+          const synthetics = require('Synthetics');
+          const log = require('SyntheticsLogger');
+
+          const run = async function () {
+            const baseUrl = process.env.SYNTHETICS_BASE_URL;
+            const page = await synthetics.getPage();
+
+            const healthResp = await page.goto(baseUrl + '/health', {
+              waitUntil: 'domcontentloaded',
+              timeout: 30000,
+            });
+            if (!healthResp.ok()) {
+              throw new Error('health ' + healthResp.status());
+            }
+
+            const homeResp = await page.goto(baseUrl + '/', {
+              waitUntil: 'networkidle0',
+              timeout: 30000,
+            });
+            if (!homeResp.ok()) {
+              throw new Error('home ' + homeResp.status());
+            }
+            await synthetics.takeScreenshot('home', 'loaded');
+          };
+
+          exports.handler = async () => {
+            return await run();
+          };
+
+  CanaryFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-${EnvironmentName}-canary-failures"
+      AlarmDescription: !Sub "The ${EnvironmentName} uptime canary has failed 2 consecutive runs."
+      Namespace: CloudWatchSynthetics
+      MetricName: SuccessPercent
+      Statistic: Minimum
+      Period: 300
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 2
+      Threshold: 99
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: breaching
+      Dimensions:
+        - Name: CanaryName
+          Value: !Ref UptimeCanary
+      AlarmActions:
+        - !Ref AlarmTopic
+
 Outputs:
   ServiceUrl:
     Value: !Sub "http://${LoadBalancer.DNSName}"
