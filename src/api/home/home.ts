@@ -60,24 +60,24 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
 
     <section class="numbers" aria-label="Headline numbers">
       <div class="numbers__grid">
-        <article class="numbers__cell numbers__cell--reveal">
+        <article class="numbers__cell numbers__cell--reveal" id="stat-pending">
           <div class="numbers__value">${escapeHtml(extractLakhDigits(model.pendingLakh))}<span class="numbers__unit">${escapeHtml(extractLakhUnit(model.pendingLakh))}</span></div>
-          <div class="numbers__label">${escapeHtml(n.pending.label)} ${infoIcon("backlog")}</div>
+          <div class="numbers__label"><a href="${context.routes.methodology}#metric-backlog">${escapeHtml(n.pending.label)}</a> ${infoIcon("backlog")}</div>
           <p class="numbers__caption">${escapeHtml(n.pending.caption)}</p>
         </article>
-        <article class="numbers__cell numbers__cell--reveal">
+        <article class="numbers__cell numbers__cell--reveal" id="stat-wait">
           <div class="numbers__value">~${model.typicalWaitMonths}<span class="numbers__unit">mo</span></div>
-          <div class="numbers__label">${escapeHtml(n.wait.label)} ${infoIcon("typicalWait")}</div>
+          <div class="numbers__label"><a href="${context.routes.methodology}#metric-typical-wait">${escapeHtml(n.wait.label)}</a> ${infoIcon("typicalWait")}</div>
           <p class="numbers__caption">${escapeHtml(n.wait.caption)}</p>
         </article>
-        <article class="numbers__cell numbers__cell--reveal">
+        <article class="numbers__cell numbers__cell--reveal" id="stat-clearance">
           <div class="numbers__value">${model.clearanceRate.toFixed(0)}<span class="numbers__unit">/ 100</span></div>
-          <div class="numbers__label">${escapeHtml(n.clearance.label)} ${infoIcon("clearance")}</div>
+          <div class="numbers__label"><a href="${context.routes.methodology}#metric-clearance">${escapeHtml(n.clearance.label)}</a> ${infoIcon("clearance")}</div>
           <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
         </article>
-        <article class="numbers__cell numbers__cell--reveal">
+        <article class="numbers__cell numbers__cell--reveal" id="stat-flagged">
           <div class="numbers__value">${model.flaggedCount}</div>
-          <div class="numbers__label">${escapeHtml(n.flagged.label)} ${infoIcon("watchlist")}</div>
+          <div class="numbers__label"><a href="${context.routes.methodology}#metric-watchlist">${escapeHtml(n.flagged.label)}</a> ${infoIcon("watchlist")}</div>
           <p class="numbers__caption">${escapeHtml(n.flagged.caption)}</p>
         </article>
       </div>

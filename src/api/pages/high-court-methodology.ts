@@ -3,7 +3,7 @@ import type { HighCourtProfile } from "../../high-courts.js";
 import type { HighCourtPublicationHistoryEntry } from "../../services/published-high-court-snapshot-service.js";
 import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
-import { renderSectionHead } from "../design/ui.js";
+import { renderAnchorLink, renderSectionHead } from "../design/ui.js";
 import type { PublicHighCourtPageContext } from "../public-high-court.js";
 import { formatDate } from "../home/view-model.js";
 
@@ -54,28 +54,32 @@ export function renderHighCourtMethodologyPage(
       </div>
     </section>
 
-    <section class="method">
+    <section class="method" id="metric-contract">
       ${renderSectionHead({ headline: "Metric contract" })}
       <div class="card-grid card-grid--2">
-        <article class="card">
+        <article class="card" id="metric-sourced">
+          ${renderAnchorLink("metric-sourced", "Directly sourced metrics")}
           <h3>Directly sourced</h3>
           <p>Pending civil, pending criminal, pending total, instituted last month, disposed last month, and age buckets come directly from the official HC NJDG High Court dashboard.</p>
         </article>
-        <article class="card">
+        <article class="card" id="metric-framing">
+          ${renderAnchorLink("metric-framing", "NyaayWatch framing")}
           <h3>NyaayWatch framing</h3>
           <p>NyaayWatch adds publication timestamps, freshness, methodology versioning, and the explicit reference-date contract so the snapshot is citeable and auditable.</p>
         </article>
       </div>
     </section>
 
-    <section class="method">
+    <section class="method" id="reference-date-contract">
       ${renderSectionHead({ headline: "Reference-date contract" })}
       <div class="card-grid card-grid--2">
-        <article class="card">
+        <article class="card" id="reference-date-source">
+          ${renderAnchorLink("reference-date-source", "Source-exposed reference date")}
           <h3>When HC NJDG exposes a source date</h3>
           <p>The page can show a source snapshot date directly.</p>
         </article>
-        <article class="card">
+        <article class="card" id="reference-date-captured">
+          ${renderAnchorLink("reference-date-captured", "Captured-at reference date")}
           <h3>When HC NJDG does not expose one</h3>
           <p>The page uses the captured page timestamp as <code>referenceDateAt</code> and labels it as <code>captured_at</code> instead of inventing a source date.</p>
           <p>This is the current posture for the live public High Court pages.</p>
@@ -83,7 +87,7 @@ export function renderHighCourtMethodologyPage(
       </div>
     </section>
 
-    <section class="method">
+    <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published snapshot lineage",
         lede: "Every public High Court publication is listed here with its reference date, publication time, and methodology version.",

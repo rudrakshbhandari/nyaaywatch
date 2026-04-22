@@ -356,6 +356,57 @@ export const BASE_CSS = `
   .masthead__brand:focus-visible, .masthead__nav a:focus-visible, .state-switcher a:focus-visible { outline-offset: 6px; }
   .info summary:focus-visible { outline: none; }
 
+  /* --- evidence deep-linking: every claim on the site can anchor to an
+         explanation elsewhere. When a URL hash lands on an element with a
+         matching id, flash the outline so the reader's eye goes to it. The
+         scroll-margin keeps the target clear of the sticky masthead. --- */
+  [id] { scroll-margin-top: 96px; }
+  :target { animation: target-flash 2.2s ease-out; }
+  @keyframes target-flash {
+    0%, 18% { outline: 3px solid var(--accent); outline-offset: 6px; }
+    100%    { outline: 3px solid transparent; outline-offset: 6px; }
+  }
+
+  /* --- anchor permalink affordance. Cards that carry a permalinkable claim
+         render a tiny "#" in the corner that appears on hover/focus. --- */
+  .card { position: relative; }
+  .anchor-link {
+    position: absolute; top: 14px; right: 16px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px; font-weight: 700; line-height: 1;
+    color: var(--ink-muted); text-decoration: none;
+    opacity: 0;
+    transition: opacity 120ms ease, color 120ms ease;
+    padding: 4px 6px; border-radius: 2px;
+  }
+  .card:hover .anchor-link,
+  .card:focus-within .anchor-link,
+  .anchor-link:focus-visible { opacity: 1; }
+  .anchor-link:hover, .anchor-link:focus-visible { color: var(--accent); }
+
+  /* --- stat-tile labels that link through to methodology. The underline is
+         suppressed so the tile reads as typography, but a small \u2197 glyph
+         appears on hover to signal the jump. --- */
+  .stat-tile__link, .numbers__label a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted transparent;
+  }
+  .stat-tile__link:hover, .stat-tile__link:focus-visible,
+  .numbers__label a:hover, .numbers__label a:focus-visible {
+    color: var(--accent);
+    border-bottom-color: currentColor;
+  }
+  .stat-tile__link::after, .numbers__label a::after {
+    content: "\u2009\u2197";
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+  .stat-tile__link:hover::after, .stat-tile__link:focus-visible::after,
+  .numbers__label a:hover::after, .numbers__label a:focus-visible::after {
+    opacity: 1;
+  }
+
   /* --- responsive --- */
   @media (max-width: 1100px) {
     .stat-grid { grid-template-columns: repeat(2, 1fr); row-gap: 32px; }
@@ -402,4 +453,56 @@ export const BASE_CSS = `
       scroll-behavior: auto !important;
     }
   }
+
+  /* --- print: journalists and researchers print methodology + district
+         pages for citation and filing. Strip navigation + share chrome, keep
+         the evidence, and append absolute URLs after external/internal
+         links so a printed page still reads as a citeable document. --- */
+  @media print {
+    @page { margin: 18mm; }
+    body {
+      background: #fff; color: #000;
+      font-size: 10.5pt; line-height: 1.45;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
+    .masthead, .state-switcher, .ticker, .colophon,
+    .btn, .info, .anchor-link, .hero__cta, .national-hero__cta,
+    .district-hero__crumb, .district-col__cta, .cite-block__copy,
+    .waiting-room, .waiting-room__overlay { display: none !important; }
+    main { max-width: none; padding: 0; }
+    a { color: #000; text-decoration: underline; }
+    a[href^="http"]::after,
+    a[href^="/"]::after {
+      content: " \u2039" attr(href) "\u203a";
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 8.5pt; color: #555;
+      word-break: break-all;
+      font-weight: normal;
+    }
+    a[href^="#"]::after,
+    .masthead__brand a::after,
+    .colophon a::after { content: none !important; }
+    h1, h2, h3 { page-break-after: avoid; break-after: avoid; color: #000; }
+    .card, .stat-grid, .data-table, .watch-card, .tier-card,
+    .numbers__cell, .waiting-clock, .trend, .history-table-wrap,
+    .method, .section-head {
+      break-inside: avoid; page-break-inside: avoid;
+    }
+    .section-head { break-after: avoid; }
+    .card-grid { display: block !important; }
+    .card-grid > .card + .card { margin-top: 10pt; }
+    .card { border: 0.5pt solid #999; padding: 10pt 12pt; background: #fff; }
+    .data-table th { background: #000 !important; color: #fff !important; }
+    .data-table tbody tr:hover { background: transparent !important; }
+    .numbers { border-color: #000 !important; margin-bottom: 18pt !important; }
+    .numbers::after { display: none !important; }
+    .stat-grid { border-color: #000 !important; padding: 14pt 0 !important; margin: 10pt 0 18pt !important; }
+    .stat-tile { border-left-color: #999 !important; }
+    .colophon-print {
+      display: block !important;
+      font-size: 9pt; color: #555;
+      border-top: 1pt solid #ccc; padding-top: 6pt; margin-top: 24pt;
+    }
+  }
+  .colophon-print { display: none; }
 `;
