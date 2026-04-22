@@ -1,4 +1,5 @@
 import { escapeHtml } from "../../lib/html.js";
+import { renderRumSnippet } from "./rum.js";
 import { BASE_CSS, FONTS_LINK } from "./styles.js";
 import { infoIcon } from "./ui.js";
 
@@ -82,6 +83,7 @@ export function renderPageShell(options: PageShellOptions): string {
   <link rel="icon" href="${FAVICON_DATA_URL}" type="image/svg+xml" />${ogMeta}
   ${FONTS_LINK}
   <style>${BASE_CSS}${options.pageCss ?? ""}</style>
+  ${renderRumSnippet()}
 </head>
 <body>
   <header class="masthead">

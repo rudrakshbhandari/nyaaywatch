@@ -43,6 +43,8 @@ const EnvSchema = z.object({
   CLOUDFLARE_ZONE_ID: z.string().min(1).optional(),
   CLOUDFLARE_ZONE_NAME: z.string().min(1).optional(),
   SES_SOURCE_EMAIL: z.string().email().optional(),
+  AWS_RUM_APP_MONITOR_ID: z.string().min(1).optional(),
+  AWS_RUM_IDENTITY_POOL_ID: z.string().min(1).optional(),
 });
 
 export type AppConfig = z.infer<typeof EnvSchema>;

@@ -64,6 +64,11 @@ Parameters:
       - "true"
       - "false"
     Description: Whether this stack should create and manage the .com to .in ALB redirect listener rules.
+  MonthlyBudgetUsd:
+    Type: Number
+    Default: 50
+    MinValue: 1
+    Description: Monthly AWS cost budget in USD. Budgets notify AlarmTopic at 80% actual and 100% forecasted.
 
 Conditions:
   HasAlarmEmail: !Not [!Equals [!Ref AlarmEmail, ""]]
@@ -183,7 +188,7 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/ecs/${ProjectName}-${EnvironmentName}"
-      RetentionInDays: 14
+      RetentionInDays: 30
 
   AlarmTopic:
     Type: AWS::SNS::Topic
@@ -197,6 +202,58 @@ Resources:
       Endpoint: !Ref AlarmEmail
       Protocol: email
       TopicArn: !Ref AlarmTopic
+
+  AlarmTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref AlarmTopic
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudWatchAlarmsPublish
+            Effect: Allow
+            Principal:
+              Service: cloudwatch.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref AlarmTopic
+            Condition:
+              StringEquals:
+                AWS:SourceAccount: !Ref AWS::AccountId
+          - Sid: AllowBudgetsPublish
+            Effect: Allow
+            Principal:
+              Service: budgets.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref AlarmTopic
+
+  CostBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: !Sub "${ProjectName}-${EnvironmentName}-monthly-cost"
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref MonthlyBudgetUsd
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: SNS
+              Address: !Ref AlarmTopic
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: SNS
+              Address: !Ref AlarmTopic
 
   ApplicationErrorMetricFilter:
     Type: AWS::Logs::MetricFilter
@@ -307,6 +364,9 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Sub "${ProjectName}-${EnvironmentName}"
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
 
   TaskExecutionRole:
     Type: AWS::IAM::Role
@@ -413,6 +473,10 @@ Resources:
               - Name: CLOUDFLARE_ZONE_NAME
                 Value: !Ref CloudflareZoneName
               - !Ref AWS::NoValue
+            - Name: AWS_RUM_APP_MONITOR_ID
+              Value: !GetAtt RumAppMonitor.Id
+            - Name: AWS_RUM_IDENTITY_POOL_ID
+              Value: !Ref RumIdentityPool
           Secrets:
             - Name: DATABASE_URL
               ValueFrom: !If [HasExistingDatabaseUrlSecretArn, !Ref ExistingDatabaseUrlSecretArn, !Ref DatabaseUrlSecret]
@@ -598,6 +662,46 @@ Resources:
               "type": "metric",
               "x": 0,
               "y": 6,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "title": "Uptime canary success %",
+                "view": "timeSeries",
+                "region": "ap-south-1",
+                "stacked": false,
+                "yAxis": { "left": { "min": 0, "max": 100 } },
+                "metrics": [
+                  [ "CloudWatchSynthetics", "SuccessPercent", "CanaryName", "${UptimeCanary}" ]
+                ],
+                "annotations": {
+                  "horizontal": [
+                    { "value": 99, "label": "alarm threshold", "color": "#d62728" }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 6,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "title": "ECS task CPU / memory",
+                "view": "timeSeries",
+                "region": "ap-south-1",
+                "stacked": false,
+                "yAxis": { "left": { "min": 0, "max": 100 } },
+                "metrics": [
+                  [ "AWS/ECS", "CPUUtilization", "ServiceName", "${Service.Name}", "ClusterName", "${Cluster}", { "stat": "Average", "label": "CPU %" } ],
+                  [ ".", "MemoryUtilization", ".", ".", ".", ".", { "stat": "Average", "label": "Memory %" } ]
+                ]
+              }
+            },
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 12,
               "width": 24,
               "height": 6,
               "properties": {
@@ -688,6 +792,218 @@ Resources:
       AlarmActions:
         - !Ref AlarmTopic
 
+  CanaryArtifactsBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub "${ProjectName}-${EnvironmentName}-canary-${AWS::AccountId}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-runs
+            Status: Enabled
+            ExpirationInDays: 31
+      Tags:
+        - Key: project
+          Value: !Ref ProjectName
+        - Key: env
+          Value: !Ref EnvironmentName
+
+  CanaryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-${EnvironmentName}-canary"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: canary-permissions
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetBucketLocation
+                Resource: !Sub "${CanaryArtifactsBucket.Arn}/*"
+              - Effect: Allow
+                Action: s3:ListAllMyBuckets
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/cwsyn-*"
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    cloudwatch:namespace: CloudWatchSynthetics
+
+  UptimeCanary:
+    Type: AWS::Synthetics::Canary
+    DependsOn: HttpsListener
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}-up"
+      ExecutionRoleArn: !GetAtt CanaryRole.Arn
+      RuntimeVersion: syn-nodejs-puppeteer-9.1
+      ArtifactS3Location: !Sub "s3://${CanaryArtifactsBucket}/"
+      StartCanaryAfterCreation: true
+      Schedule:
+        Expression: "rate(5 minutes)"
+        DurationInSeconds: "0"
+      RunConfig:
+        TimeoutInSeconds: 60
+        MemoryInMB: 1024
+        EnvironmentVariables:
+          SYNTHETICS_BASE_URL: !If [HasPublicBaseUrl, !Ref PublicBaseUrl, "https://nyaaywatch.in"]
+      SuccessRetentionPeriod: 7
+      FailureRetentionPeriod: 31
+      Code:
+        Handler: index.handler
+        Script: |
+          const synthetics = require('Synthetics');
+          const log = require('SyntheticsLogger');
+
+          const run = async function () {
+            const baseUrl = process.env.SYNTHETICS_BASE_URL;
+            const page = await synthetics.getPage();
+
+            const healthResp = await page.goto(baseUrl + '/health', {
+              waitUntil: 'domcontentloaded',
+              timeout: 30000,
+            });
+            if (!healthResp.ok()) {
+              throw new Error('health ' + healthResp.status());
+            }
+
+            const homeResp = await page.goto(baseUrl + '/', {
+              waitUntil: 'networkidle0',
+              timeout: 30000,
+            });
+            if (!homeResp.ok()) {
+              throw new Error('home ' + homeResp.status());
+            }
+            await synthetics.takeScreenshot('home', 'loaded');
+          };
+
+          exports.handler = async () => {
+            return await run();
+          };
+
+  CanaryFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-${EnvironmentName}-canary-failures"
+      AlarmDescription: !Sub "The ${EnvironmentName} uptime canary has failed 2 consecutive runs."
+      Namespace: CloudWatchSynthetics
+      MetricName: SuccessPercent
+      Statistic: Minimum
+      Period: 300
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 2
+      Threshold: 99
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: breaching
+      Dimensions:
+        - Name: CanaryName
+          Value: !Ref UptimeCanary
+      AlarmActions:
+        - !Ref AlarmTopic
+
+  RumIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: !Sub "${ProjectName}_${EnvironmentName}_rum"
+      AllowUnauthenticatedIdentities: true
+
+  RumUnauthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${ProjectName}-${EnvironmentName}-rum-unauth"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: cognito-identity.amazonaws.com
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "cognito-identity.amazonaws.com:aud": !Ref RumIdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": unauthenticated
+      Policies:
+        - PolicyName: rum-put-events
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: rum:PutRumEvents
+                Resource: !Sub "arn:aws:rum:${AWS::Region}:${AWS::AccountId}:appmonitor/${ProjectName}-${EnvironmentName}"
+
+  RumIdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref RumIdentityPool
+      Roles:
+        unauthenticated: !GetAtt RumUnauthRole.Arn
+
+  RumAppMonitor:
+    Type: AWS::RUM::AppMonitor
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}"
+      Domain: nyaaywatch.in
+      CwLogEnabled: false
+      AppMonitorConfiguration:
+        IdentityPoolId: !Ref RumIdentityPool
+        GuestRoleArn: !GetAtt RumUnauthRole.Arn
+        SessionSampleRate: 1
+        Telemetries:
+          - performance
+          - errors
+          - http
+        AllowCookies: false
+        EnableXRay: false
+
+  TopErrorEventsQuery:
+    Type: AWS::Logs::QueryDefinition
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}/top-error-events-24h"
+      LogGroupNames:
+        - !Ref ApplicationLogGroup
+      QueryString: |
+        fields @timestamp, event, @message
+        | filter level = "error"
+        | stats count() as occurrences by event
+        | sort occurrences desc
+        | limit 20
+
+  SlowRequestsByPathQuery:
+    Type: AWS::Logs::QueryDefinition
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}/slow-requests-p95-by-path"
+      LogGroupNames:
+        - !Ref ApplicationLogGroup
+      QueryString: |
+        fields @timestamp, path, durationMs, statusCode
+        | filter event = "http_request"
+        | stats pct(durationMs, 95) as p95_ms, count() as reqs by path
+        | sort p95_ms desc
+        | limit 20
+
 Outputs:
   ServiceUrl:
     Value: !Sub "http://${LoadBalancer.DNSName}"
@@ -718,3 +1034,11 @@ Outputs:
     Value: !Ref AlarmTopic
   DashboardName:
     Value: !Ref StagingDashboard
+  CanaryName:
+    Value: !Ref UptimeCanary
+  CanaryArtifactsBucketName:
+    Value: !Ref CanaryArtifactsBucket
+  RumAppMonitorId:
+    Value: !GetAtt RumAppMonitor.Id
+  RumIdentityPoolId:
+    Value: !Ref RumIdentityPool
