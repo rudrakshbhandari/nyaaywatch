@@ -132,6 +132,8 @@ If asking becomes necessary, include:
 - Do not present "PR opened" as completion if required validation is still pending or failing. Report the current state of checks and any real blockers precisely.
 - Treat `main` as protected even if branch protection is not configured yet.
 - Do not force-push shared branches unless the user explicitly asks for it.
+- Before pushing any follow-up commits to an existing branch (for example, after the user flags a regression on a PR you just opened), verify the branch's pull request is still open with `gh pr view <branch> --json state,mergedAt`. If the PR is already merged or closed, do not push to that branch — the commits will strand on a stale branch and nothing will deploy them. Instead, branch off the current `origin/main`, cherry-pick or re-apply the follow-up, and open a new PR.
+- When a user review lands after a PR has auto-merged, assume the merge raced the feedback. Re-check PR state before choosing where to commit the fix.
 - For PR bodies and substantial GitHub comments, use real multiline Markdown via stdin or a body file. Do not rely on escaped `\n` sequences for structure.
 
 ## Parallel Session Rule

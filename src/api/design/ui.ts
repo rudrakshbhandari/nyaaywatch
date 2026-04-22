@@ -98,21 +98,27 @@ export function renderStatTile(options: StatTileOptions): string {
     : escapeHtml(options.label);
   const anchor = options.anchorId ? ` id="${options.anchorId}"` : "";
 
+  // Only render a sparkline when we have ≥2 finite points *and* the series
+  // actually moves (otherwise a flat horizontal line next to a "flat" chip
+  // wastes attention without saying anything the big number doesn't already).
   const series = (options.series ?? []).filter((n) => Number.isFinite(n));
-  const hasSpark = series.length >= 2;
-  const sparkSvg = hasSpark ? renderSparklineSvg(series, options.seriesLabel ?? options.label) : "";
-  const deltaChip = hasSpark ? renderDeltaChip(series, options.deltaDirectionHint ?? "up-is-bad") : "";
-  const withSparkClass = hasSpark ? " stat-tile--with-spark" : "";
+  const seriesMoves = series.length >= 2 && Math.min(...series) !== Math.max(...series);
+  const sparkSvg = seriesMoves ? renderSparklineSvg(series, options.seriesLabel ?? options.label) : "";
+  const deltaChip = seriesMoves ? renderDeltaChip(series, options.deltaDirectionHint ?? "up-is-bad") : "";
+  const withSparkClass = seriesMoves ? " stat-tile--with-spark" : "";
 
-  const valueBlock = `<div class="stat-tile__value">${escapeHtml(options.value)}${unit}</div>`;
-  const valueRow = hasSpark
-    ? `<div class="stat-tile__value-row">${valueBlock}${sparkSvg}</div>`
-    : valueBlock;
+  // Sparkline + delta live on a row *below* the value, left-aligned with it,
+  // so tiles with different value widths (e.g. "94,158" vs "74.0") stay
+  // visually consistent — the earlier right-edge layout made short numbers
+  // feel detached from their chart.
+  const sparkRow = seriesMoves
+    ? `<div class="stat-tile__spark-row">${sparkSvg}${deltaChip}</div>`
+    : "";
 
   return `<article class="stat-tile${tone}${withSparkClass}"${anchor}>
     <div class="stat-tile__label">${labelText}${info}</div>
-    ${valueRow}
-    ${deltaChip}
+    <div class="stat-tile__value">${escapeHtml(options.value)}${unit}</div>
+    ${sparkRow}
     ${note}
   </article>`;
 }
@@ -155,8 +161,8 @@ function renderDeltaChip(series: number[], hint: "up-is-good" | "up-is-bad"): st
   if (first === 0) {
     const diff = last - first;
     if (diff === 0) {
-      display = "flat";
       direction = "flat";
+      display = "";
     } else if (diff > 0) {
       display = `+${formatCompactNumber(diff)}`;
       direction = "up";
@@ -168,8 +174,8 @@ function renderDeltaChip(series: number[], hint: "up-is-good" | "up-is-bad"): st
     const pct = ((last - first) / Math.abs(first)) * 100;
     const rounded = Math.round(pct * 10) / 10;
     if (rounded === 0) {
-      display = "flat";
       direction = "flat";
+      display = "";
     } else if (rounded > 0) {
       display = `+${rounded.toFixed(1)}%`;
       direction = "up";
@@ -178,16 +184,18 @@ function renderDeltaChip(series: number[], hint: "up-is-good" | "up-is-bad"): st
       direction = "down";
     }
   }
+  // "Flat" = no chip. A row of "flat flat flat flat" chips across the hero
+  // tiles read as noise, not signal; the sparkline itself already shows the
+  // series going nowhere.
+  if (direction === "flat") return "";
   const sentiment =
-    direction === "flat"
-      ? "flat"
-      : hint === "up-is-bad"
-        ? direction === "up"
-          ? "bad"
-          : "good"
-        : direction === "up"
-          ? "good"
-          : "bad";
+    hint === "up-is-bad"
+      ? direction === "up"
+        ? "bad"
+        : "good"
+      : direction === "up"
+        ? "good"
+        : "bad";
   return `<span class="stat-tile__delta stat-tile__delta--${sentiment}">${escapeHtml(display)}</span>`;
 }
 

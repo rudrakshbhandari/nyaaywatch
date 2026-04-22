@@ -2,9 +2,17 @@ import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import { escapeHtml } from "../../lib/html.js";
 
 export interface WaitingRoomRates {
-  filedPerSecond: number;
-  decidedPerSecond: number;
-  netPerSecond: number;
+  /**
+   * Cases filed in an average hour at the snapshot's implied rate. We
+   * derive hourly rates rather than per-second because for low-volume
+   * states the per-second number is a tiny fraction; over the ~8s intro
+   * window it rounded to zero ("0 new cases filed"), which read as a bug.
+   * Hourly units produce honest, non-zero integers for every state.
+   */
+  filedPerHour: number;
+  decidedPerHour: number;
+  /** filedPerHour − decidedPerHour. May be negative (clearance > filing). */
+  netPerHour: number;
   stateName: string;
 }
 
@@ -12,16 +20,16 @@ export function computeWaitingRoomRates(snapshot: PublishedSnapshot): WaitingRoo
   const { pendingCases, disposalRate, medianCaseAgeDays } = snapshot.stats;
   const medianWaitMonths = Math.max(medianCaseAgeDays / 30, 1);
   const disposalRateFraction = disposalRate / 100;
-  const secondsPerMonth = 30 * 24 * 3600;
+  const hoursPerMonth = 30 * 24;
 
   const decidedPerMonth = pendingCases / medianWaitMonths;
   const filedPerMonth =
     disposalRateFraction > 0 ? decidedPerMonth / disposalRateFraction : decidedPerMonth;
 
   return {
-    filedPerSecond: filedPerMonth / secondsPerMonth,
-    decidedPerSecond: decidedPerMonth / secondsPerMonth,
-    netPerSecond: (filedPerMonth - decidedPerMonth) / secondsPerMonth,
+    filedPerHour: filedPerMonth / hoursPerMonth,
+    decidedPerHour: decidedPerMonth / hoursPerMonth,
+    netPerHour: (filedPerMonth - decidedPerMonth) / hoursPerMonth,
     stateName: snapshot.snapshot.stateName,
   };
 }
@@ -34,15 +42,22 @@ export function computeWaitingRoomRates(snapshot: PublishedSnapshot): WaitingRoo
  * Respects prefers-reduced-motion: shows static text, no counter, no fade.
  */
 export function renderWaitingRoom(rates: WaitingRoomRates): string {
-  const { filedPerSecond, decidedPerSecond, netPerSecond, stateName } = rates;
+  const { filedPerHour, decidedPerHour, netPerHour, stateName } = rates;
+  const fmt = (n: number) => Math.round(n).toLocaleString("en-IN");
+  const filedDisplay = fmt(filedPerHour);
+  const decidedDisplay = fmt(decidedPerHour);
+  // If decidedPerHour > filedPerHour the pile shrunk — rare, but don't
+  // assert a positive growth number in that case.
+  const netIsPositive = netPerHour >= 0;
+  const netDisplay = netIsPositive ? `+${fmt(netPerHour)}` : `−${fmt(Math.abs(netPerHour))}`;
 
   return `
 <div id="wr" class="wr" aria-live="polite" role="dialog" aria-modal="true" aria-label="The Waiting Room">
   <div class="wr__inner">
     <p class="wr__eyebrow">THE WAITING ROOM</p>
     <p class="wr__line wr__line--1" id="wr-l1">In ${escapeHtml(stateName)}, the courts are open.</p>
-    <p class="wr__line wr__line--2" id="wr-l2">Since you opened this page: <strong><span id="wr-filed">—</span> new cases filed</strong>.</p>
-    <p class="wr__line wr__line--3" id="wr-l3"><strong><span id="wr-decided">—</span> decided</strong>. The pile grew by <strong><span id="wr-net">—</span></strong>.</p>
+    <p class="wr__line wr__line--2" id="wr-l2">Every hour at current rates: <strong>${escapeHtml(filedDisplay)} new cases filed</strong>.</p>
+    <p class="wr__line wr__line--3" id="wr-l3"><strong>${escapeHtml(decidedDisplay)} decided</strong>. The pile ${netIsPositive ? "grows" : "shrinks"} by <strong>${escapeHtml(netDisplay)}</strong>.</p>
     <p class="wr__line wr__line--4" id="wr-l4">This is the backlog. It is not an abstraction.</p>
     <button class="wr__skip" id="wr-skip" aria-label="Skip intro">Skip →</button>
   </div>
@@ -107,6 +122,12 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
 </style>
 <script>
 (function() {
+  // Rates are now rendered server-side (static per-hour values) so this script
+  // only handles the dismiss cookie, the line-by-line fade-in, and the Skip
+  // button. The earlier version ran a per-second ticker starting at zero —
+  // honest math, but for low-volume states the integers stayed at 0 across
+  // the entire intro window, which read as a broken UI. Per-hour is always
+  // non-zero and answers "what does this surface mean" in one glance.
   var COOKIE = "nw_seen_intro";
   function hasCookie() {
     return document.cookie.split(";").some(function(c) { return c.trim().startsWith(COOKIE + "="); });
@@ -119,17 +140,9 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
   if (hasCookie()) { wr.style.display = "none"; return; }
 
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var filedPerSecond = ${filedPerSecond.toFixed(6)};
-  var decidedPerSecond = ${decidedPerSecond.toFixed(6)};
-  var netPerSecond = ${netPerSecond.toFixed(6)};
-  var startTime = Date.now();
   var skipBtn = document.getElementById("wr-skip");
-  var timerRef = null;
-
-  function fmt(n) { return Math.round(n).toLocaleString ? Math.round(n).toLocaleString("en-IN") : String(Math.round(n)); }
 
   function dismiss() {
-    if (timerRef) clearInterval(timerRef);
     setCookie();
     wr.classList.add("wr--hidden");
     setTimeout(function() { wr.style.display = "none"; document.body.style.overflow = ""; }, 650);
@@ -140,13 +153,6 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
   document.body.style.overflow = "hidden";
 
   if (reducedMotion) {
-    var elapsed = 1;
-    var filed = document.getElementById("wr-filed");
-    var decided = document.getElementById("wr-decided");
-    var net = document.getElementById("wr-net");
-    if (filed) filed.textContent = fmt(filedPerSecond * elapsed);
-    if (decided) decided.textContent = fmt(decidedPerSecond * elapsed);
-    if (net) net.textContent = fmt(Math.max(0, netPerSecond * elapsed));
     if (skipBtn) skipBtn.classList.add("wr__skip--visible");
     setTimeout(dismiss, 5000);
     return;
@@ -163,16 +169,6 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
     setTimeout(function() { item.el.classList.add("wr__line--visible"); }, item.delay);
   });
   setTimeout(function() { if (skipBtn) skipBtn.classList.add("wr__skip--visible"); }, 2000);
-
-  timerRef = setInterval(function() {
-    var elapsed = (Date.now() - startTime) / 1000;
-    var filed = document.getElementById("wr-filed");
-    var decided = document.getElementById("wr-decided");
-    var net = document.getElementById("wr-net");
-    if (filed) filed.textContent = fmt(filedPerSecond * elapsed);
-    if (decided) decided.textContent = fmt(decidedPerSecond * elapsed);
-    if (net) net.textContent = fmt(Math.max(0, netPerSecond * elapsed));
-  }, 250);
 
   setTimeout(dismiss, 8000);
 })();

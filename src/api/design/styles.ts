@@ -283,14 +283,18 @@ export const BASE_CSS = `
   .stat-tile--flag .stat-tile__label { color: var(--flag); }
 
   /* --- optional sparkline + delta chip on stat tiles --- */
-  .stat-tile--with-spark .stat-tile__value-row {
+  /* Sparkline sits on its own row *below* the value, left-aligned. Earlier
+     iteration placed the sparkline on the right edge of the value row
+     (space-between), which made short values like "74.0" feel detached
+     from their chart and varied the visual x-position tile-to-tile. */
+  .stat-tile__spark-row {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 14px;
+    align-items: center;
+    gap: 12px;
+    margin-top: 6px;
   }
   .sparkline {
-    width: 96px; height: 28px;
+    width: 96px; height: 24px;
     flex-shrink: 0;
     color: var(--ink-muted);
     opacity: 0.85;
