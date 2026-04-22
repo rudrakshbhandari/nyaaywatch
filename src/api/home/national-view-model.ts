@@ -149,8 +149,15 @@ export function buildNationalHomeViewModel(input: {
       totalDistricts: input.lowerCourtSnapshot.districts.length,
       typicalWaitMonths: Math.round(input.lowerCourtSnapshot.stats.medianCaseAgeDays / 30),
       publicStateCount: input.publicStateCount,
-      topDistrictName: topDistrict?.districtName ?? input.lowerCourtProfile.stateName,
-      topDistrictSummary: topDistrict?.summary ?? "The latest published snapshot is available for district-level inspection.",
+      // Qualify with state name so readers don't mistake this tile for a
+      // national ranking. The featured district is the highest-rank entry
+      // *inside the currently-featured state snapshot* — not "worst in India".
+      topDistrictName: topDistrict
+        ? `${topDistrict.districtName}, ${input.lowerCourtProfile.stateName}`
+        : input.lowerCourtProfile.stateName,
+      topDistrictSummary: topDistrict
+        ? `Highest-rank district inside the featured ${input.lowerCourtProfile.stateName} snapshot. ${topDistrict.summary}`
+        : "The latest published snapshot is available for district-level inspection.",
     },
   };
 }

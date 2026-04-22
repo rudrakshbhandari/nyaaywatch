@@ -52,13 +52,17 @@ describe("renderStatTile — optional sparkline + delta", () => {
     expect(html).not.toContain("stat-tile__delta--bad");
   });
 
-  it("marks a flat series with the flat delta class", () => {
+  it("suppresses both the sparkline and the delta chip for a perfectly flat series", () => {
+    // Rationale: a horizontal sparkline next to a "flat" chip is visual noise,
+    // not signal — the big number already carries the information. We only
+    // render these affordances when the series actually moves.
     const html = renderStatTile({
       label: "Pending",
       value: "100",
       series: [100, 100, 100],
     });
-    expect(html).toContain("stat-tile__delta--flat");
-    expect(html).toContain(">flat<");
+    expect(html).not.toContain("stat-tile--with-spark");
+    expect(html).not.toContain("<svg class=\"sparkline");
+    expect(html).not.toContain("stat-tile__delta");
   });
 });
