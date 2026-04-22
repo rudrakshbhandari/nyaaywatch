@@ -129,8 +129,8 @@ The first public page should include:
 
 - Supreme Court headline plus apex-tier toplines
 - compact freshness/source/methodology metadata in a supporting position
-- High Courts beta section with only published-court entry cards
-- district/subordinate courts section that uses Himachal as the default proof surface
+- High Courts beta section with only published-court entry cards, ordered by the clearest visible pressure signals rather than alphabetically
+- district/subordinate courts section that opens the featured published lower-court snapshot without foregrounding one favored state in the homepage copy
 - later state-coverage directory and drilldowns
 - lightweight trust-action surfaces such as methodology, data, and API links
 
