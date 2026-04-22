@@ -67,18 +67,25 @@ export function renderNationalHome(input: {
     )
     .join("");
 
+  // Single-line provenance strip. Earlier version had four separate pills
+  // (captured, freshness, method, source) which wrapped to 3+ lines on the
+  // narrow hero copy column. The freshness pill ("Same-day source window")
+  // is dropped because the capture date already tells the reader how fresh
+  // the snapshot is; method + source live in the colophon anyway, so here
+  // we keep just what the reader needs at hero glance.
   const accountabilityLine = model.supremeCourt.snapshot
-    ? `<div class="national-hero__accountability">
+    ? `<p class="national-hero__accountability">
         <span>${escapeHtml(model.supremeCourt.referenceLabel ?? "")}</span>
-        <span>${escapeHtml(model.supremeCourt.freshnessLabel ?? "")}</span>
+        <span class="national-hero__accountability-sep" aria-hidden="true">·</span>
         <span>Method ${escapeHtml(model.supremeCourt.snapshot.snapshot.methodologyVersion)}</span>
+        <span class="national-hero__accountability-sep" aria-hidden="true">·</span>
         <span>${escapeHtml(model.supremeCourt.snapshot.snapshot.sourceAttribution)}</span>
-      </div>`
-    : `<div class="national-hero__accountability">
+      </p>`
+    : `<p class="national-hero__accountability">
         <span>Snapshot-based publication only</span>
-        <span>No live feed</span>
+        <span class="national-hero__accountability-sep" aria-hidden="true">·</span>
         <span>Methodology and source links stay available on every tier page</span>
-      </div>`;
+      </p>`;
 
   // Hero sparkline series drawn from the snapshot's own trends. The Supreme
   // Court snapshot carries a full monthly trend (pending + instituted +
@@ -453,15 +460,20 @@ const NATIONAL_HOME_CSS = `
     margin-bottom: 18px;
   }
   .national-hero__accountability {
+    margin: 0;
     display: flex;
-    gap: 10px 18px;
     flex-wrap: wrap;
+    gap: 4px 10px;
+    align-items: baseline;
     color: var(--ink-muted);
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    line-height: 1.5;
   }
+  .national-hero__accountability > span { white-space: nowrap; }
+  .national-hero__accountability-sep { opacity: 0.5; }
   .national-hero__stats {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

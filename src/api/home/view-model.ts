@@ -90,7 +90,10 @@ export function formatMonth(iso: string): string {
   if (Number.isNaN(parsed.getTime())) {
     return iso;
   }
-  return parsed.toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
+  // Full 4-digit year. A 2-digit year ("Apr 26") is ambiguous in date-heavy
+  // UI — readers could parse it as "April 26th" (day of month) rather than
+  // "April 2026". At one character more per label it's worth the clarity.
+  return parsed.toLocaleDateString("en-IN", { month: "short", year: "numeric" });
 }
 
 export function formatLakh(value: number): string {
