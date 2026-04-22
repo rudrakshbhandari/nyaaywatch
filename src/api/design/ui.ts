@@ -71,6 +71,21 @@ export interface StatTileOptions {
    * to this tile (e.g. /districts/:id#stat-backlog from a comparator row).
    */
   anchorId?: string;
+  /**
+   * Optional numeric series (oldest → newest) drawn as a small inline sparkline
+   * next to the value, with a %-change chip. Used for the hero tiles on
+   * renderNationalHome — the rest of the site can keep calling renderStatTile
+   * without passing series.
+   */
+  series?: number[];
+  /** Accessible label for the sparkline. */
+  seriesLabel?: string;
+  /**
+   * Semantic coloring for the delta chip. "up-is-bad" means a rising series is
+   * colored red (e.g. pending backlog); "up-is-good" means rising is green
+   * (e.g. clearance rate).
+   */
+  deltaDirectionHint?: "up-is-good" | "up-is-bad";
 }
 
 export function renderStatTile(options: StatTileOptions): string {
@@ -82,9 +97,22 @@ export function renderStatTile(options: StatTileOptions): string {
     ? `<a class="stat-tile__link" href="${options.methodologyHref}">${escapeHtml(options.label)}</a>`
     : escapeHtml(options.label);
   const anchor = options.anchorId ? ` id="${options.anchorId}"` : "";
-  return `<article class="stat-tile${tone}"${anchor}>
+
+  const series = (options.series ?? []).filter((n) => Number.isFinite(n));
+  const hasSpark = series.length >= 2;
+  const sparkSvg = hasSpark ? renderSparklineSvg(series, options.seriesLabel ?? options.label) : "";
+  const deltaChip = hasSpark ? renderDeltaChip(series, options.deltaDirectionHint ?? "up-is-bad") : "";
+  const withSparkClass = hasSpark ? " stat-tile--with-spark" : "";
+
+  const valueBlock = `<div class="stat-tile__value">${escapeHtml(options.value)}${unit}</div>`;
+  const valueRow = hasSpark
+    ? `<div class="stat-tile__value-row">${valueBlock}${sparkSvg}</div>`
+    : valueBlock;
+
+  return `<article class="stat-tile${tone}${withSparkClass}"${anchor}>
     <div class="stat-tile__label">${labelText}${info}</div>
-    <div class="stat-tile__value">${escapeHtml(options.value)}${unit}</div>
+    ${valueRow}
+    ${deltaChip}
     ${note}
   </article>`;
 }
@@ -97,6 +125,77 @@ export function renderStatTile(options: StatTileOptions): string {
  */
 export function renderAnchorLink(targetId: string, label: string): string {
   return `<a class="anchor-link" href="#${targetId}" aria-label="Permalink to ${escapeHtml(label)}">#</a>`;
+}
+
+function renderSparklineSvg(series: number[], ariaLabel: string): string {
+  const width = 96;
+  const height = 28;
+  const pad = 2;
+  const min = Math.min(...series);
+  const max = Math.max(...series);
+  const range = max - min || 1;
+  const points = series.map((value, index) => {
+    const x = pad + (index * (width - pad * 2)) / (series.length - 1);
+    const y = height - pad - ((value - min) / range) * (height - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const lastPoint = points[points.length - 1]?.split(",") ?? ["0", "0"];
+  return `<svg class="sparkline" viewBox="0 0 ${width} ${height}" aria-label="${escapeHtml(ariaLabel)}" role="img">
+    <polyline points="${points.join(" ")}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="${lastPoint[0]}" cy="${lastPoint[1]}" r="2" fill="currentColor" />
+  </svg>`;
+}
+
+function renderDeltaChip(series: number[], hint: "up-is-good" | "up-is-bad"): string {
+  const first = series[0];
+  const last = series[series.length - 1];
+  if (first === undefined || last === undefined) return "";
+  let display: string;
+  let direction: "up" | "down" | "flat";
+  if (first === 0) {
+    const diff = last - first;
+    if (diff === 0) {
+      display = "flat";
+      direction = "flat";
+    } else if (diff > 0) {
+      display = `+${formatCompactNumber(diff)}`;
+      direction = "up";
+    } else {
+      display = `−${formatCompactNumber(Math.abs(diff))}`;
+      direction = "down";
+    }
+  } else {
+    const pct = ((last - first) / Math.abs(first)) * 100;
+    const rounded = Math.round(pct * 10) / 10;
+    if (rounded === 0) {
+      display = "flat";
+      direction = "flat";
+    } else if (rounded > 0) {
+      display = `+${rounded.toFixed(1)}%`;
+      direction = "up";
+    } else {
+      display = `−${Math.abs(rounded).toFixed(1)}%`;
+      direction = "down";
+    }
+  }
+  const sentiment =
+    direction === "flat"
+      ? "flat"
+      : hint === "up-is-bad"
+        ? direction === "up"
+          ? "bad"
+          : "good"
+        : direction === "up"
+          ? "good"
+          : "bad";
+  return `<span class="stat-tile__delta stat-tile__delta--${sentiment}">${escapeHtml(display)}</span>`;
+}
+
+function formatCompactNumber(n: number): string {
+  const abs = Math.abs(n);
+  if (abs >= 1_00_000) return `${(n / 1_00_000).toFixed(1)} L`;
+  if (abs >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return n.toLocaleString("en-IN");
 }
 
 export interface BadgeOptions {
