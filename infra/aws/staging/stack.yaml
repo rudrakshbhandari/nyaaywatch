@@ -364,6 +364,9 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties:
       ClusterName: !Sub "${ProjectName}-${EnvironmentName}"
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
 
   TaskExecutionRole:
     Type: AWS::IAM::Role
