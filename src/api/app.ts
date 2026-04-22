@@ -380,7 +380,8 @@ export function createApp(
         return;
       }
 
-      const availableProfiles = await listAvailablePublicProfiles(publicServices, currentProfile);
+      const stateMapEntries = await listAvailablePublicStateMapEntries(publicServices);
+      const availableProfiles = stateMapEntries.map((entry) => entry.profile);
       const supremeCourtSnapshot = await supremeCourtService?.getPublishedSnapshot();
       const highCourtEntries = await listAvailablePublicHighCourtEntries(highCourtServices);
 
@@ -391,6 +392,7 @@ export function createApp(
           lowerCourtSnapshot: snapshot.payload,
           lowerCourtContext: buildPublicPageContext(currentProfile, availableProfiles),
           availableStateProfiles: availableProfiles,
+          stateMapEntries,
         }),
       );
     }),
@@ -1587,6 +1589,23 @@ function resolvePublicSupremeCourtRequest(service: SupremeCourtService) {
   }
 
   return { profile, service };
+}
+
+async function listAvailablePublicStateMapEntries(publicServices: PublicServiceMap) {
+  const entries = await Promise.all(
+    listPublicStateProfiles().map(async (profile) => {
+      const service = publicServices[profile.stateCode];
+      if (!service) return null;
+      const snapshot = await service.getPublishedSnapshot();
+      if (!snapshot) return null;
+      return {
+        profile,
+        stats: snapshot.payload.stats,
+        districtCount: snapshot.payload.districts.length,
+      };
+    }),
+  );
+  return entries.filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 }
 
 async function listAvailablePublicProfiles(publicServices: PublicServiceMap, currentProfile: NjdgStateProfile) {

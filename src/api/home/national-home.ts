@@ -7,7 +7,7 @@ import { renderSectionHead, renderStatTile } from "../design/ui.js";
 import { escapeHtml, formatDate } from "./view-model.js";
 import { buildNationalHomeViewModel, type NationalHighCourtEntry } from "./national-view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
-import { renderIndiaMap } from "./india-map.js";
+import { renderIndiaMap, type IndiaMapStateEntry } from "./india-map.js";
 
 export function renderNationalHome(input: {
   supremeCourtSnapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null;
@@ -15,6 +15,7 @@ export function renderNationalHome(input: {
   lowerCourtSnapshot: import("../../domain/snapshot-schema.js").PublishedSnapshot;
   lowerCourtContext: PublicPageContext;
   availableStateProfiles: NjdgStateProfile[];
+  stateMapEntries: IndiaMapStateEntry[];
 }): string {
   const model = buildNationalHomeViewModel({
     supremeCourtSnapshot: input.supremeCourtSnapshot,
@@ -109,7 +110,7 @@ export function renderNationalHome(input: {
     { id: "hero", index: "01", label: "At a glance" },
     { id: "high-courts", index: "02", label: "High Courts" },
     { id: "lower-courts", index: "03", label: "Lower courts" },
-    { id: "map", index: "04", label: "Browse by state" },
+    { id: "map", index: "04", label: "Pressure map" },
     { id: "accountability", index: "05", label: "Methodology" },
   ]
     .map(
@@ -255,7 +256,7 @@ export function renderNationalHome(input: {
       </div>
     </section>
 
-    <div id="map" data-section="map">${renderIndiaMap(input.availableStateProfiles)}</div>
+    <div id="map" data-section="map">${renderIndiaMap(input.stateMapEntries)}</div>
 
     <section class="national-section national-section--accountability" id="accountability" data-section="accountability">
       ${renderSectionHead({
