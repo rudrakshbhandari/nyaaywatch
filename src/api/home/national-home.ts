@@ -271,10 +271,11 @@ const NATIONAL_HOME_CSS = `
   .national-hero__hed {
     margin: 0 0 18px;
     font-size: clamp(46px, 7vw, 86px);
-    line-height: 0.92;
+    line-height: 1.02;
     letter-spacing: -0.05em;
     text-wrap: balance;
     max-width: 10ch;
+    padding-bottom: 0.06em;
   }
   .national-hero__lede {
     margin: 0 0 24px;
@@ -303,13 +304,20 @@ const NATIONAL_HOME_CSS = `
   .national-hero__stats {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0;
+    column-gap: 32px;
+    row-gap: 28px;
     border-top: 2px solid var(--ink);
     border-bottom: 2px solid var(--ink);
-    padding: 18px 0 20px;
+    padding: 24px 0 28px;
   }
   .national-hero__stats .stat-tile {
+    padding: 0;
+    border-left: none;
     min-height: 100%;
+  }
+  .national-hero__stats .stat-tile:nth-child(n + 3) {
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
   }
   .national-section {
     margin-bottom: 84px;
