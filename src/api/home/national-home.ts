@@ -32,8 +32,15 @@ export function renderNationalHome(input: {
     model.highCourts.entries.length > 0
       ? model.highCourts.entries
           .slice(0, HIGH_COURT_TEASER_LIMIT)
-          .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, monthlyGapDisplay, monthlyGapNote }) => {
+          .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, clearanceTrend, monthlyGapDisplay, monthlyGapNote, pileTrend }, index) => {
             const routes = buildPublicHighCourtRoutes(profile);
+            // Prototype: trend signals only on the first card so the unchanged
+            // cards below give a side-by-side comparison.
+            const showTrendSignal = index === 0;
+            const renderSignal = (signal: { tone: string; label: string }) =>
+              showTrendSignal && signal.tone !== "neutral"
+                ? `<span class="tier-card__signal tier-card__signal--${signal.tone}">${escapeHtml(signal.label)}</span>`
+                : "";
             return `<article class="card tier-card">
               <p class="tier-card__eyebrow">HIGH COURT</p>
               <h3>${escapeHtml(profile.courtName)}</h3>
@@ -46,11 +53,11 @@ export function renderNationalHome(input: {
                 </div>
                 <div>
                   <dt>Cleared / 100 filed</dt>
-                  <dd>${escapeHtml(clearanceRateDisplay)}</dd>
+                  <dd>${escapeHtml(clearanceRateDisplay)}${renderSignal(clearanceTrend)}</dd>
                 </div>
                 <div>
                   <dt>Last-month pile change</dt>
-                  <dd>${escapeHtml(monthlyGapDisplay)}</dd>
+                  <dd>${escapeHtml(monthlyGapDisplay)}${renderSignal(pileTrend)}</dd>
                 </div>
               </dl>
               <p class="tier-card__note">${escapeHtml(monthlyGapNote)}</p>
@@ -542,7 +549,20 @@ const NATIONAL_HOME_CSS = `
     margin: 0;
     font-weight: 700;
     font-variant-numeric: lining-nums tabular-nums;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
   }
+  .tier-card__signal {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .tier-card__signal--worsening { color: var(--accent); }
+  .tier-card__signal--improving { color: var(--ink-muted); }
   .tier-card__note {
     margin: 0 0 18px;
     color: var(--ink-soft);
