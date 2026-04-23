@@ -75,11 +75,7 @@ Operational notes:
 - Current public coverage:
   - unscoped default routes for Himachal Pradesh
   - narrow Supreme Court beta routes at `/supreme-court` and `/v1/supreme-court/...`
-  - narrow Himachal High Court beta routes at `/high-courts/himachal` and `/v1/high-courts/himachal/...`
-  - narrow Gujarat High Court beta routes at `/high-courts/gujarat` and `/v1/high-courts/gujarat/...`
-  - narrow Madhya Pradesh High Court beta routes at `/high-courts/madhya-pradesh` and `/v1/high-courts/madhya-pradesh/...`
-  - narrow Allahabad High Court beta routes at `/high-courts/uttar-pradesh` and `/v1/high-courts/uttar-pradesh/...`
-  - narrow Rajasthan High Court beta routes at `/high-courts/rajasthan` and `/v1/high-courts/rajasthan/...`
+  - narrow public High Court beta routes under `/high-courts/...` and `/v1/high-courts/...` for Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
   - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
@@ -293,14 +289,14 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
-- Jammu & Kashmir and Ladakh High Court internal proof completed on 2026-04-23:
+- Jammu & Kashmir and Ladakh High Court internal proof completed on 2026-04-23 before public-beta promotion:
   - the common High Court operator namespace remained auth-protected under `/operator/high-courts/jammu-kashmir-and-ladakh/...`
   - live High Court fetch run `run_e036f9ac-f0d2-4e73-b7c3-8017a054d677` completed successfully
   - live publication `publication_2957c01d-b451-4ae8-98a7-ecfe241d4297` created `snapshot_164f1f63-2d04-4685-b8ef-33261bdb064d`
   - replay run `run_3caa55b9-8e1a-4b50-8a45-58afbcf974b9` created publication `publication_93ca29e7-651b-430e-b564-7386cb50465c`
   - rollback publication `publication_e183dc01-887e-4b02-8c41-fd9e58ab471e` restored the initial publication chain and left `snapshot_164f1f63-2d04-4685-b8ef-33261bdb064d` active
   - `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=jammu-kashmir-and-ladakh` returned `runCount=2`, `publicationCount=3`, `replayedRunCount=1`, `rollbackCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
-  - `GET /high-courts/jammu-kashmir-and-ladakh` and `GET /v1/high-courts/jammu-kashmir-and-ladakh/stats` still returned `404`, confirming the court remains internal-only
+  - before the later public-beta promotion, `GET /high-courts/jammu-kashmir-and-ladakh` and `GET /v1/high-courts/jammu-kashmir-and-ladakh/stats` returned `404`, confirming the proof cycle did not accidentally expose the court
   - active internal snapshot stats are `pendingTotalCases=43849`, `institutedLastMonthTotalCases=1010`, and `disposedLastMonthTotalCases=781`
 - Supreme Court public beta exposure completed on 2026-04-19 after PR `#110` merged and GitHub deploy run `24624392748` rolled the live service to task definition `:98`:
   - the already-proven active Supreme Court publication `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` became publicly reachable under `/supreme-court`

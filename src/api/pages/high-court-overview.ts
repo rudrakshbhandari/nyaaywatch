@@ -144,7 +144,7 @@ export function renderHighCourtOverviewPage(
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.highCourtLinks,
-    ticker: `${escapeHtml(profile.courtName.toUpperCase())} · ${escapeHtml(referenceLabel.toUpperCase())} · ${escapeHtml(snapshot.snapshot.methodologyVersion)}`,
+    ticker: `${profile.courtName.toUpperCase()} · ${referenceLabel.toUpperCase()} · ${snapshot.snapshot.methodologyVersion}`,
     pageCss: HIGH_COURT_OVERVIEW_CSS,
     footer: {
       sourceDateLabel: referenceLabel,

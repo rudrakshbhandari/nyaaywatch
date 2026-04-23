@@ -441,6 +441,7 @@ describe("HTTP routes", () => {
     await seedTestHighCourtSnapshot(context.highCourtServices.DLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GJHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GHHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.JKLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.KLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MDHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MPHC!);
@@ -458,6 +459,7 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("High Court for State of Telangana");
     expect(index.text).toContain("High Court of Delhi");
     expect(index.text).toContain("High Court of Gujarat");
+    expect(index.text).toContain("High Court of Jammu & Kashmir and Ladakh");
     expect(index.text).toContain("High Court of Kerala");
     expect(index.text).toContain("Madras High Court");
     expect(index.text).toContain("High Court of Madhya Pradesh");
@@ -510,7 +512,7 @@ describe("HTTP routes", () => {
     expect(uttarPradeshOverview.status).toBe(200);
     expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
     expect(uttarPradeshOverview.text).toContain(
-      "This page tracks Allahabad High Court across Uttar Pradesh. 13 other public High Court pages are linked in the switcher.",
+      "This page tracks Allahabad High Court across Uttar Pradesh. 14 other public High Court pages are linked in the switcher.",
     );
 
     const punjabHaryanaOverview = await request(app).get("/high-courts/punjab-and-haryana");
@@ -537,6 +539,12 @@ describe("HTTP routes", () => {
     expect(gauhatiOverview.status).toBe(200);
     expect(gauhatiOverview.text).toContain("Gauhati High Court");
     expect(gauhatiOverview.text).toContain("Assam, Nagaland, Mizoram, and Arunachal Pradesh");
+
+    const jammuKashmirLadakhOverview = await request(app).get("/high-courts/jammu-kashmir-and-ladakh");
+    expect(jammuKashmirLadakhOverview.status).toBe(200);
+    expect(jammuKashmirLadakhOverview.text).toContain("High Court of Jammu &amp; Kashmir and Ladakh");
+    expect(jammuKashmirLadakhOverview.text).not.toContain("&amp;amp;");
+    expect(jammuKashmirLadakhOverview.text).toContain("Jammu and Kashmir and Ladakh");
 
     const keralaOverview = await request(app).get("/high-courts/kerala");
     expect(keralaOverview.status).toBe(200);
@@ -567,6 +575,10 @@ describe("HTTP routes", () => {
     const gauhatiStats = await request(app).get("/v1/high-courts/gauhati/stats");
     expect(gauhatiStats.status).toBe(200);
     expect(gauhatiStats.body.snapshot.courtCode).toBe("GHHC");
+
+    const jammuKashmirLadakhStats = await request(app).get("/v1/high-courts/jammu-kashmir-and-ladakh/stats");
+    expect(jammuKashmirLadakhStats.status).toBe(200);
+    expect(jammuKashmirLadakhStats.body.snapshot.courtCode).toBe("JKLHC");
 
     const keralaTrends = await request(app).get("/v1/high-courts/kerala/trends");
     expect(keralaTrends.status).toBe(200);
