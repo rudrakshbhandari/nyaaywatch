@@ -29,7 +29,7 @@ export function renderHighCourtsIndexPage(
       isHero: true,
     })}
 
-    <section class="card-grid card-grid--2">
+    <section class="card-grid hc-index-grid" aria-label="Published High Court snapshots">
       ${sortedEntries
         .map(
           ({ profile, snapshot }, index) => {
@@ -94,6 +94,45 @@ export function renderHighCourtsIndexPage(
 }
 
 const HIGH_COURTS_INDEX_CSS = `
+  main,
+  .masthead,
+  .colophon {
+    max-width: 1760px;
+  }
+  .page-hero {
+    max-width: 980px;
+  }
+  .hc-index-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+  .hc-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 460px;
+  }
+  .hc-card h2 {
+    margin: 28px 0 22px;
+    font-size: 32px;
+    line-height: 1.06;
+    letter-spacing: 0;
+  }
+  .hc-card .stat-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.75fr) minmax(0, 1.1fr);
+    margin: 20px 0 52px;
+  }
+  .hc-card .stat-tile {
+    min-width: 0;
+  }
+  .hc-card .stat-tile__value {
+    font-size: 52px;
+    overflow-wrap: anywhere;
+  }
+  .hc-card > p:last-child {
+    margin-top: auto;
+  }
   .hc-card__coverage {
     margin: 0 0 18px;
     color: var(--ink-soft);
@@ -119,6 +158,31 @@ const HIGH_COURTS_INDEX_CSS = `
     padding-left: 25px;
   }
   .hc-card--top .hc-card__rank { color: var(--accent-dark); }
+  @media (max-width: 1280px) {
+    .hc-index-grid {
+      grid-template-columns: 1fr;
+    }
+    .hc-card {
+      min-height: 0;
+    }
+  }
+  @media (max-width: 720px) {
+    main,
+    .masthead,
+    .colophon {
+      max-width: none;
+    }
+    .hc-card h2 {
+      font-size: 26px;
+    }
+    .hc-card .stat-grid {
+      grid-template-columns: 1fr;
+      margin-bottom: 36px;
+    }
+    .hc-card .stat-tile__value {
+      font-size: 42px;
+    }
+  }
 `;
 
 function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {

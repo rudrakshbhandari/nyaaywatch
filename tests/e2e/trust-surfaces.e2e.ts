@@ -1,7 +1,27 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const TRUST_ROUTES = ["/", "/districts", "/districts/kangra", "/data", "/methodology"];
+const TRUST_ROUTES = ["/", "/supreme-court", "/high-courts", "/districts", "/districts/kangra", "/data", "/methodology"];
+const RESPONSIVE_ROUTES = [
+  "/",
+  "/supreme-court",
+  "/supreme-court/data",
+  "/supreme-court/methodology",
+  "/supreme-court/api",
+  "/high-courts",
+  "/high-courts/himachal",
+  "/high-courts/himachal/data",
+  "/high-courts/himachal/methodology",
+  "/high-courts/himachal/api",
+  "/states/himachal",
+  "/states/himachal/data",
+  "/states/himachal/methodology",
+  "/states/himachal/api",
+  "/districts",
+  "/data",
+  "/methodology",
+  "/api",
+];
 
 test.describe("responsive trust surfaces", () => {
   test.use({ viewport: { width: 390, height: 844 } });
@@ -16,6 +36,49 @@ test.describe("responsive trust surfaces", () => {
 
     const fitsViewport = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
     expect(fitsViewport).toBe(true);
+  });
+});
+
+test.describe("public layout overflow", () => {
+  for (const route of RESPONSIVE_ROUTES) {
+    test(`keeps ${route} within the viewport on desktop and mobile`, async ({ page }) => {
+      for (const viewport of [
+        { width: 1440, height: 1000 },
+        { width: 390, height: 844 },
+      ]) {
+        await page.setViewportSize(viewport);
+        await page.goto(route);
+
+        const fitsViewport = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+        expect(fitsViewport).toBe(true);
+      }
+    });
+  }
+
+  test("uses the wide High Courts directory frame on large desktop", async ({ page }) => {
+    await page.setViewportSize({ width: 2048, height: 1200 });
+    await page.goto("/high-courts");
+
+    await expect(page.getByRole("heading", { name: "India's High Courts, ranked by pressure" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Published High Court snapshots" })).toBeVisible();
+
+    const layout = await page.evaluate(() => {
+      const main = document.querySelector("main")?.getBoundingClientRect();
+      const firstCard = document.querySelector(".hc-card")?.getBoundingClientRect();
+
+      return {
+        mainLeft: main?.left ?? 0,
+        mainWidth: main?.width ?? 0,
+        firstCardWidth: firstCard?.width ?? 0,
+        scrollWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth,
+      };
+    });
+
+    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.viewportWidth);
+    expect(layout.mainLeft).toBeLessThanOrEqual(170);
+    expect(layout.mainWidth).toBeGreaterThanOrEqual(1700);
+    expect(layout.firstCardWidth).toBeGreaterThanOrEqual(820);
   });
 });
 

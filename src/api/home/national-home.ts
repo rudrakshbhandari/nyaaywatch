@@ -603,6 +603,12 @@ const NATIONAL_HOME_CSS = `
     .national-hero {
       padding: 28px 0 52px;
     }
+    .national-hero > * {
+      min-width: 0;
+    }
+    .national-hero__accountability > span {
+      white-space: normal;
+    }
     .national-hero__stats {
       grid-template-columns: 1fr;
     }
