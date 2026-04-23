@@ -6,10 +6,11 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
   const body = `
     ${renderSectionHead({
       eyebrow: "SUPREME COURT API",
-      headline: "The public Supreme Court API matches the latest published Supreme Court snapshot.",
+      headline: "Supreme Court API reference",
       lede:
-        "If the Supreme Court page shows a number, the published JSON can expose it. If it is still in operator review, it stays private.",
+        "The API matches the latest published Supreme Court snapshot. If the public page shows a number, the JSON can expose it; if it is still in operator review, it stays private.",
       isHero: true,
+      variant: "compact",
     })}
 
     <section class="endpoints">

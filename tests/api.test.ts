@@ -452,7 +452,7 @@ describe("HTTP routes", () => {
 
     const index = await request(app).get("/high-courts");
     expect(index.status).toBe(200);
-    expect(index.text).toContain("Where is pressure building across India");
+    expect(index.text).toContain("India&#39;s High Courts, ranked by pressure");
     expect(index.text).toContain("High Court of Himachal Pradesh");
     expect(index.text).toContain("High Court of Andhra Pradesh");
     expect(index.text).toContain("High Court for State of Telangana");
@@ -465,7 +465,7 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("High Court of Rajasthan");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
-    expect(index.text).toContain("Cards are ordered by the clearest visible pressure signal first");
+    expect(index.text).toContain("ordered by the clearest pressure signal first");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);

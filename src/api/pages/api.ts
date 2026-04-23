@@ -11,10 +11,11 @@ export function renderApiPage(context: PublicPageContext): string {
   const body = `
     ${renderSectionHead({
       eyebrow: "DEVELOPER ACCESS",
-      headline: "The API matches the latest published snapshot.",
+      headline: "API reference",
       lede:
-        "If a number is public on the site, you can fetch it here. If it has not been published yet, the API does not expose it.",
+        "The API matches the latest published snapshot. If a number is public on the site, you can fetch it here; if it has not been published yet, the API does not expose it.",
       isHero: true,
+      variant: "compact",
     })}
 
     <section class="endpoints">

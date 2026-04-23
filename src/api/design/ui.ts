@@ -24,6 +24,13 @@ export interface SectionHeadOptions {
   lede?: string;
   /** If true, renders as <h1>; otherwise <h2>. Default false. */
   isHero?: boolean;
+  /**
+   * Hero size variant. `"default"` = full editorial hero (clamp to 56px).
+   * `"compact"` = reference-doc scale (clamp to 34px). Use compact for API
+   * reference, data downloads, and other pages where a 56px wall of text
+   * would overpower the body content below. Ignored when isHero is false.
+   */
+  variant?: "default" | "compact";
 }
 
 /**
@@ -38,7 +45,8 @@ export function renderSectionHead(options: SectionHeadOptions): string {
     ? `<p class="${options.isHero ? "page-hero__lede" : "section-head__lede"}">${escapeHtml(options.lede)}</p>`
     : "";
   if (options.isHero) {
-    return `<section class="page-hero">
+    const variantClass = options.variant === "compact" ? " page-hero--compact" : "";
+    return `<section class="page-hero${variantClass}">
       ${eyebrow}
       <h1 class="page-hero__hed">${escapeHtml(options.headline)}</h1>
       ${lede}
