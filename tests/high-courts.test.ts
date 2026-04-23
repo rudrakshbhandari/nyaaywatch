@@ -226,7 +226,7 @@ describe("high court profiles", () => {
         },
       ],
       publicBeta: false,
-      sourceReviewStatus: "queued",
+      sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
         hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
@@ -378,7 +378,7 @@ describe("high court profiles", () => {
       "rajasthan",
       "uttar-pradesh",
     ]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(14);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(15);
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("DLHC"))).toBeNull();
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("JKLHC"))).toBeNull();
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("BOHC"))).toBe("MH");

@@ -135,7 +135,7 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court telanga
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court gujarat fetch "Internal Gujarat High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court madhya-pradesh fetch "Internal Madhya Pradesh High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court uttar-pradesh fetch "Internal Allahabad High Court fetch"
-npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court jammu-kashmir-and-ladakh fetch "Initial Jammu & Kashmir and Ladakh High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court jammu-kashmir-and-ladakh fetch "Initial J-K and Ladakh High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal Supreme Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court publications
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal
