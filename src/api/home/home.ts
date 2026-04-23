@@ -188,7 +188,7 @@ function renderTrendChart(model: HomeViewModel): string {
  * numbers centerpiece + watchlist cards + trend list that exist on `/`.
  */
 const HOME_PAGE_CSS = `
-  .hero { padding: 40px 0 48px; max-width: 900px; }
+  .hero { padding: 40px 0 48px; }
   .hero__eyebrow {
     margin: 0 0 14px;
     font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -198,6 +198,7 @@ const HOME_PAGE_CSS = `
   }
   .hero__hed {
     margin: 0 0 22px;
+    max-width: 18ch;
     font-size: clamp(36px, 5.6vw, 68px);
     line-height: 0.98;
     letter-spacing: -0.035em;
