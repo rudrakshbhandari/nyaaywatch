@@ -22,6 +22,7 @@ export function renderNationalHome(input: {
     highCourtEntries: input.highCourtEntries,
     lowerCourtSnapshot: input.lowerCourtSnapshot,
     lowerCourtProfile: input.lowerCourtContext.profile,
+    stateMapEntries: input.stateMapEntries,
     publicStateCount: input.availableStateProfiles.length,
   });
   const supremeRoutes = buildPublicSupremeCourtRoutes();
@@ -221,38 +222,37 @@ export function renderNationalHome(input: {
 
     <section class="national-section" id="lower-courts" data-section="lower-courts">
       ${renderSectionHead({
-        headline: "Most delay sits in the lower courts.",
+        headline: "Lower courts show the broadest pressure.",
         lede:
-          "District and subordinate courts remain the clearest public window into scale, delay, and local pressure. The lower-court workspace opens directly into the featured published snapshot, with district pages built for close inspection.",
+          "This lower-court view spans the currently published state snapshots. Start with the pressure map for relative state pressure, then open any state page for the underlying snapshot and district drilldown.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
-          label: "Featured lower-court backlog",
+          label: "Pending across public states",
           value: model.lowerCourts.pendingDisplay,
-          note: "Lower-court backlog in the currently featured published snapshot.",
+          note: "Combined lower-court backlog across the currently published state snapshots.",
+        })}
+        ${renderStatTile({
+          label: "Public states live",
+          value: model.lowerCourts.publicStateCount.toString(),
+          note: "Each state page stays tied to its own published snapshot and supporting notes.",
         })}
         ${renderStatTile({
           label: "Flagged districts",
           value: model.lowerCourts.flaggedDistricts.toString(),
-          note: "Signals for closer inspection, not final conclusions.",
+          note: "Combined count of districts flagged for closer inspection across the public state cohort.",
           tone: "flag",
         })}
         ${renderStatTile({
-          label: "Typical wait",
-          value: model.lowerCourts.typicalWaitMonths.toString(),
-          unit: "mo",
-          note: "A lower-court wait estimate derived from published district age buckets.",
-        })}
-        ${renderStatTile({
-          label: "Inspect first",
-          value: model.lowerCourts.topDistrictName,
-          note: model.lowerCourts.topDistrictSummary,
+          label: "Highest-pressure state",
+          value: model.lowerCourts.topStateName,
+          note: model.lowerCourts.topStateSummary,
           tone: "accent",
         })}
       </div>
       <div class="national-section__actions">
-        <a class="btn btn--primary" href="${input.lowerCourtContext.routes.home}">Browse lower courts</a>
-        <a class="btn btn--ghost" href="${input.lowerCourtContext.routes.districts}">Inspect districts</a>
+        <a class="btn btn--primary" href="#map">Browse state pages</a>
+        <a class="btn btn--ghost" href="${model.lowerCourts.topStateHref}">Open top state</a>
       </div>
     </section>
 
@@ -302,11 +302,11 @@ export function renderNationalHome(input: {
       { id: "districts", href: input.lowerCourtContext.routes.districts, label: "Districts" },
     ],
     footer: {
-      sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(model.lowerCourts.snapshot.snapshot.sourceSnapshotAt),
+      sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(input.lowerCourtSnapshot.snapshot.sourceSnapshotAt),
       methodologyVersion:
-        model.supremeCourt.snapshot?.snapshot.methodologyVersion ?? model.lowerCourts.snapshot.snapshot.methodologyVersion,
+        model.supremeCourt.snapshot?.snapshot.methodologyVersion ?? input.lowerCourtSnapshot.snapshot.methodologyVersion,
       sourceAttribution:
-        model.supremeCourt.snapshot?.snapshot.sourceAttribution ?? model.lowerCourts.snapshot.snapshot.sourceAttribution,
+        model.supremeCourt.snapshot?.snapshot.sourceAttribution ?? input.lowerCourtSnapshot.snapshot.sourceAttribution,
     },
     pageCss: NATIONAL_HOME_CSS,
     og: {

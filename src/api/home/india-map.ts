@@ -14,6 +14,11 @@ export interface IndiaMapStateEntry {
   districtCount: number;
 }
 
+export interface RankedIndiaMapStateEntry {
+  entry: IndiaMapStateEntry;
+  score: number;
+}
+
 /**
  * Composite "judicial pressure index" — weighted blend of four stress signals
  * normalized to [0, 1] across the live states. Weights lean on pending volume
@@ -117,9 +122,21 @@ function deriveScales(entries: IndiaMapStateEntry[]): PressureScales {
   };
 }
 
-export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
+export function rankIndiaMapEntriesByPressure(entries: IndiaMapStateEntry[]): RankedIndiaMapStateEntry[] {
   const scales = deriveScales(entries);
-  const scored = entries.map((entry) => ({ entry, score: computePressure(entry, scales) }));
+  return entries
+    .map((entry) => ({ entry, score: computePressure(entry, scales) }))
+    .sort((left, right) => {
+      if (right.score !== left.score) {
+        return right.score - left.score;
+      }
+
+      return left.entry.profile.stateName.localeCompare(right.entry.profile.stateName, "en");
+    });
+}
+
+export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
+  const scored = rankIndiaMapEntriesByPressure(entries);
   const byCode = new Map(scored.map((s) => [s.entry.profile.stateCode, s]));
   const binByScored = assignBinsByRank(scored);
 
@@ -127,7 +144,7 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
     .map((code) => renderStatePath(code, byCode.get(code as SupportedStateCode), binByScored))
     .join("\n");
 
-  const topThree = [...scored].sort((a, b) => b.score - a.score).slice(0, 3);
+  const topThree = scored.slice(0, 3);
   const topList = topThree
     .map(
       ({ entry, score }) => `<li>
