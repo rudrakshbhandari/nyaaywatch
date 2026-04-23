@@ -52,8 +52,8 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
 
     <section class="movers-section">
       ${renderSectionHead({
-        headline: "Biggest rank rises.",
-        lede: "Districts whose Watch rank increased most — meaning the pressure signal worsened relative to other districts.",
+        headline: "Biggest rank declines.",
+        lede: "Districts whose Watch rank worsened most — the pressure signal moved them up the watchlist relative to their peers.",
       })}
       ${biggestRankRises.length > 0
         ? renderRankTable(biggestRankRises, context)
@@ -88,8 +88,11 @@ function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "
   if (movers.length === 0) return `<p class="movers-empty">No data available.</p>`;
   const rows = movers.map((m) => {
     const delta = m.backlogDelta;
-    const deltaStr = delta >= 0 ? `▲ ${Math.abs(delta).toLocaleString("en-IN")}` : `▼ ${Math.abs(delta).toLocaleString("en-IN")}`;
-    const tone = kind === "backlog-increase" ? "movers-delta--up" : "movers-delta--down";
+    const magnitude = Math.abs(delta).toLocaleString("en-IN");
+    // Red for worse (pile grew), green for improved (pile shrank). The arrow
+    // carries the sign; the color carries the sentiment.
+    const deltaStr = kind === "backlog-increase" ? `▲ ${magnitude} worse` : `▼ ${magnitude} better`;
+    const tone = kind === "backlog-increase" ? "movers-delta--worse" : "movers-delta--better";
     return `<tr>
       <td><a href="${context.routes.district(m.districtId)}">${escapeHtml(m.districtName)}</a></td>
       <td class="num">#${m.rank}</td>
@@ -119,10 +122,12 @@ function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "
 
 function renderRankTable(movers: DistrictMover[], context: PublicPageContext): string {
   const rows = movers.map((m) => {
+    const places = Math.abs(m.rankDelta);
+    const previousRank = m.rank - m.rankDelta;
     return `<tr>
       <td><a href="${context.routes.district(m.districtId)}">${escapeHtml(m.districtName)}</a></td>
-      <td class="num">#${m.rank}</td>
-      <td class="num movers-delta movers-delta--up">▲ ${Math.abs(m.rankDelta)} place${Math.abs(m.rankDelta) === 1 ? "" : "s"}</td>
+      <td class="num">#${previousRank} → #${m.rank}</td>
+      <td class="num movers-delta movers-delta--worse">Worsened ${places} place${places === 1 ? "" : "s"}</td>
       <td class="num">${m.backlogCases.toLocaleString("en-IN")}</td>
     </tr>`;
   }).join("");
@@ -133,7 +138,7 @@ function renderRankTable(movers: DistrictMover[], context: PublicPageContext): s
         <thead>
           <tr>
             <th>District</th>
-            <th>Current rank</th>
+            <th>Rank (prev → now)</th>
             <th>Rank change</th>
             <th>Cases waiting</th>
           </tr>
@@ -176,7 +181,7 @@ const MOVERS_PAGE_CSS = `
   .movers-section { margin-bottom: 60px; }
   .movers-table-wrap { overflow-x: auto; }
   .movers-delta { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; font-weight: 600; }
-  .movers-delta--up { color: var(--accent); }
-  .movers-delta--down { color: var(--flag); }
+  .movers-delta--worse { color: var(--accent-dark); }
+  .movers-delta--better { color: #2a7a3f; }
   .movers-empty { color: var(--ink-muted); font-size: 14px; margin: 0; }
 `;

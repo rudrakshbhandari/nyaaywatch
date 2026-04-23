@@ -396,8 +396,40 @@ export const BASE_CSS = `
   }
 
   .card-grid { display: grid; gap: 20px; }
+  .card-grid--1 { grid-template-columns: 1fr; }
   .card-grid--2 { grid-template-columns: repeat(2, 1fr); }
   .card-grid--3 { grid-template-columns: repeat(3, 1fr); }
+
+  /* --- endpoint card (shared by /api, /high-courts/:slug/api, /supreme-court/api) ---
+     GET + path sit tight on row 1, description flows below. Earlier layout
+     used a fixed 64px column for the verb, which stranded short paths with
+     a big gap to the badge. */
+  .endpoint {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 12px;
+    row-gap: 12px;
+    align-items: baseline;
+  }
+  .endpoint p { grid-column: 1 / -1; margin: 0; }
+  .endpoint__verb {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 4px 8px;
+    background: var(--ink); color: var(--paper);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em;
+    border-radius: 2px;
+  }
+  .endpoint__path {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 16px; font-weight: 600;
+    color: var(--ink);
+    background: transparent;
+    padding: 0;
+    word-break: break-all;
+  }
+  .endpoints { margin-bottom: 72px; }
 
   /* --- meta-row (tight list of label:value pairs) --- */
   .meta-row {

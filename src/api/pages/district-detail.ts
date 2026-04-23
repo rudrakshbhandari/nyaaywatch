@@ -163,10 +163,27 @@ export function renderDistrictPage(
       };
       window.copyCite = function() {
         var btn = document.querySelector(".cite-block__copy");
+        var reset = function() {
+          setTimeout(function() {
+            btn.textContent = "Copy";
+            btn.classList.remove("is-copied");
+            btn.classList.remove("is-error");
+          }, 2000);
+        };
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          btn.textContent = "Copy unavailable";
+          btn.classList.add("is-error");
+          reset();
+          return;
+        }
         navigator.clipboard.writeText(document.getElementById("cite-text").textContent).then(function() {
-          btn.textContent = "Copied!";
+          btn.textContent = "Copied";
           btn.classList.add("is-copied");
-          setTimeout(function() { btn.textContent = "Copy"; btn.classList.remove("is-copied"); }, 2000);
+          reset();
+        }, function() {
+          btn.textContent = "Copy failed";
+          btn.classList.add("is-error");
+          reset();
         });
       };
     })();
@@ -531,5 +548,6 @@ const DISTRICT_PAGE_CSS = `
     border: 1px solid var(--rule); border-radius: 2px;
     line-height: 1.6;
   }
-  .cite-block__copy.is-copied { color: var(--accent); }
+  .cite-block__copy.is-copied { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .cite-block__copy.is-error { color: var(--accent-dark); border-color: var(--accent-dark); }
 `;

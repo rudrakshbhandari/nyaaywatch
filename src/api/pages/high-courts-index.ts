@@ -32,8 +32,12 @@ export function renderHighCourtsIndexPage(
     <section class="card-grid card-grid--2">
       ${sortedEntries
         .map(
-          ({ profile, snapshot }) => `
-            <article class="card hc-card">
+          ({ profile, snapshot }, index) => {
+            const rank = index + 1;
+            const isTop = rank <= 2;
+            return `
+            <article class="card hc-card${isTop ? " hc-card--top" : ""}">
+              <div class="hc-card__rank">#${rank}${isTop ? ' <span class="hc-card__rank-note">highest pressure</span>' : ""}</div>
               <h2>${profile.courtName}</h2>
               <p>Latest reference: ${
                 snapshot.snapshot.referenceDateKind === "captured_at"
@@ -59,11 +63,13 @@ export function renderHighCourtsIndexPage(
                     snapshot.stats.institutedLastMonthTotalCases,
                     snapshot.stats.disposedLastMonthTotalCases,
                   ),
+                  tone: isTop ? "accent" : undefined,
                 })}
               </div>
               <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Inspect High Court</a></p>
             </article>
-          `,
+          `;
+          },
         )
         .join("")}
     </section>
@@ -92,6 +98,27 @@ const HIGH_COURTS_INDEX_CSS = `
     margin: 0 0 18px;
     color: var(--ink-soft);
   }
+  .hc-card__rank {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .hc-card__rank-note {
+    color: var(--accent-dark);
+    letter-spacing: 0.14em;
+  }
+  .hc-card--top {
+    border-left: 4px solid var(--accent);
+    padding-left: 25px;
+  }
+  .hc-card--top .hc-card__rank { color: var(--accent-dark); }
 `;
 
 function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
