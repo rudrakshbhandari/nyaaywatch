@@ -127,10 +127,22 @@ export function renderPressPage(): string {
     document.querySelectorAll(".press-copy-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         var text = btn.getAttribute("data-copy") || "";
+        var orig = btn.textContent;
+        var reset = function() { setTimeout(function() { btn.textContent = orig; btn.classList.remove("is-copied"); btn.classList.remove("is-error"); }, 2000); };
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          btn.textContent = "Copy unavailable";
+          btn.classList.add("is-error");
+          reset();
+          return;
+        }
         navigator.clipboard.writeText(text).then(function() {
-          var orig = btn.textContent;
-          btn.textContent = "Copied!";
-          setTimeout(function() { btn.textContent = orig; }, 2000);
+          btn.textContent = "Copied";
+          btn.classList.add("is-copied");
+          reset();
+        }, function() {
+          btn.textContent = "Copy failed";
+          btn.classList.add("is-error");
+          reset();
         });
       });
     });
@@ -234,6 +246,12 @@ const PRESS_PAGE_CSS = `
     white-space: pre-wrap; word-break: break-word;
     border: 1px solid var(--rule); border-radius: 2px;
     line-height: 1.6;
+  }
+  .press-copy-btn.is-copied {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .press-copy-btn.is-error {
+    color: var(--accent-dark); border-color: var(--accent-dark);
   }
 
   .press-api-row { margin-bottom: 20px; }

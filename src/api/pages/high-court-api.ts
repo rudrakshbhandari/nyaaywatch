@@ -52,7 +52,6 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.highCourtLinks,
-    pageCss: HIGH_COURT_API_CSS,
     footer: {
       sourceDateLabel: null,
       methodologyVersion: null,
@@ -60,33 +59,3 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
     },
   });
 }
-
-const HIGH_COURT_API_CSS = `
-  .card-grid--1 { grid-template-columns: 1fr; }
-  .endpoints { margin-bottom: 72px; }
-  .endpoint { display: grid; grid-template-columns: 64px 1fr; gap: 18px 24px; align-items: baseline; }
-  .endpoint p { grid-column: 2; margin: 0; }
-  .endpoint__verb {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 4px 8px;
-    background: var(--ink); color: var(--paper);
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.12em;
-    border-radius: 2px;
-    grid-row: 1;
-  }
-  .endpoint__path {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 16px; font-weight: 600;
-    color: var(--ink);
-    background: transparent;
-    padding: 0;
-    grid-row: 1;
-  }
-  @media (max-width: 720px) {
-    .endpoint { grid-template-columns: 1fr; gap: 8px; }
-    .endpoint p { grid-column: 1; }
-    .endpoint__verb { justify-self: start; }
-  }
-`;
