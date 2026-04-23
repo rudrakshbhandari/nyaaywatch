@@ -226,7 +226,7 @@ describe("state profiles", () => {
       stateSlug: "andaman-and-nicobar-islands",
       njdgStateValue: "35~28",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(getStateProfile("CHD")).toMatchObject({
@@ -235,7 +235,7 @@ describe("state profiles", () => {
       stateSlug: "chandigarh",
       njdgStateValue: "4~27",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(getStateProfile("DL")).toMatchObject({
@@ -244,7 +244,7 @@ describe("state profiles", () => {
       stateSlug: "delhi",
       njdgStateValue: "7~26",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(getStateProfile("JK")).toMatchObject({
@@ -253,7 +253,7 @@ describe("state profiles", () => {
       stateSlug: "jammu-and-kashmir",
       njdgStateValue: "1~12",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(getStateProfile("LA")).toMatchObject({
@@ -262,7 +262,7 @@ describe("state profiles", () => {
       stateSlug: "ladakh",
       njdgStateValue: "37~33",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(getStateProfile("LD")).toMatchObject({
@@ -271,7 +271,7 @@ describe("state profiles", () => {
       stateSlug: "lakshadweep",
       njdgStateValue: "31~37",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(getStateProfile("PY")).toMatchObject({
@@ -280,7 +280,7 @@ describe("state profiles", () => {
       stateSlug: "puducherry",
       njdgStateValue: "34~35",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(getStateProfile("DNHDD")).toMatchObject({
@@ -289,7 +289,7 @@ describe("state profiles", () => {
       stateSlug: "dadra-and-nagar-haveli-and-daman-and-diu",
       njdgStateValue: "38~38",
       publicAlpha: false,
-      internalFetchEnabled: false,
+      internalFetchEnabled: true,
     });
 
     expect(listStateProfiles().map((profile) => profile.stateCode)).toEqual([
@@ -389,6 +389,14 @@ describe("state profiles", () => {
       "GA",
       "SK",
       "MZ",
+      "AN",
+      "CHD",
+      "DL",
+      "JK",
+      "LA",
+      "LD",
+      "PY",
+      "DNHDD",
     ]);
     expect(getStateProfileByCode("hr")?.stateName).toBe("Haryana");
     expect(getStateProfileByCode("tn")?.stateName).toBe("Tamil Nadu");
