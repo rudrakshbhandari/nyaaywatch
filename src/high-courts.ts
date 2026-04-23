@@ -38,6 +38,7 @@ export const SUPPORTED_HIGH_COURT_CODES = [
   "GJHC",
   "GHHC",
   "JHHC",
+  "JKLHC",
   "KAHC",
   "KLHC",
   "MDHC",
@@ -193,6 +194,20 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Jharkhand",
     hcNjdgStateValue: "20~7",
     coveredGeographies: [buildStateCourtGeography("JH")],
+  }),
+  JKLHC: buildHighCourtProfile({
+    courtCode: "JKLHC",
+    courtSlug: "jammu-kashmir-and-ladakh",
+    courtName: "High Court of Jammu & Kashmir and Ladakh",
+    hcNjdgStateValue: "1~12",
+    coveredGeographies: [
+      buildUnionTerritoryCourtGeography("JK", "Jammu and Kashmir"),
+      buildUnionTerritoryCourtGeography("LA", "Ladakh"),
+    ],
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://jkhighcourt.nic.in/",
+    },
   }),
   KAHC: buildHighCourtProfile({
     courtCode: "KAHC",

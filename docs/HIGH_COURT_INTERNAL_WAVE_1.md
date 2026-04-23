@@ -4,6 +4,10 @@ First broader High Court configuration wave after the Himachal pilot.
 
 Verified against the live official HC NJDG selector list on **April 18, 2026**.
 
+This document now remains a historical record of the first broader internal High Court wave.
+
+Current repo state has moved past that first wave. Most notably, the repo now also carries an internal-only queued profile for the common **High Court of Jammu & Kashmir and Ladakh** under one HC NJDG selector with explicit `coveredGeographies[] = Jammu and Kashmir, Ladakh`.
+
 ## What This Slice Does
 
 This repo now configures a first internal High Court wave for the courts that already fit the current High Court snapshot contract:
@@ -15,6 +19,8 @@ This repo now configures a first internal High Court wave for the courts that al
 This document records the broader configured set, plus which courts have now advanced from internal-only status to public beta in repo code.
 
 ## Configured Internal Wave
+
+Historical first-wave set:
 
 The internal High Court registry now includes:
 
@@ -46,9 +52,9 @@ The internal High Court registry now includes:
 Current posture:
 
 - `sourceReviewStatus=reviewed`: Himachal Pradesh, Andhra Pradesh, Bombay High Court, Calcutta High Court, Telangana, Delhi High Court, Gauhati High Court, Gujarat, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
-- `sourceReviewStatus=queued`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, and Bihar via Patna High Court
+- `sourceReviewStatus=queued`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, Bihar via Patna High Court, and High Court of Jammu & Kashmir and Ladakh
 - `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Bombay High Court, Calcutta High Court, Telangana, Delhi High Court, Gujarat, Gauhati High Court, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
-- `publicBeta=false`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, and Bihar via Patna High Court
+- `publicBeta=false`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, Bihar via Patna High Court, and High Court of Jammu & Kashmir and Ladakh
 
 ## Why These Courts
 
