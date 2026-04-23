@@ -35,7 +35,7 @@ Use this document as the live environment map. For routine release go/no-go deci
   - reviewed High Courts: `nyaaywatch-staging-high-courts-internal-fetch` at `8:20 AM Asia/Kolkata`
   - public alpha ops monitor: `nyaaywatch-staging-public-alpha-ops-monitor` every `30` minutes
 - Internal raw fetch schedule scope policy:
-  - lower-court geographies: profiles returned by `listInternalFetchStateProfiles()`; the 8 UT/UT-style lower-court profiles are included after April 23, 2026 proof cycles, but remain excluded from public alpha until UT-aware copy and methodology review is complete
+  - lower-court geographies: profiles returned by `listInternalFetchStateProfiles()`; all 36 lower-court state/Union Territory profiles are included after April 23, 2026 proof cycles
   - Supreme Court: the single configured Supreme Court profile
   - High Courts: only profiles whose `sourceReviewStatus` is `reviewed`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
@@ -61,7 +61,7 @@ Operational notes:
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 - For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
-- On April 23, 2026, all 8 internal-only UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through `npm run operator:staging`; they are eligible for the lower-court daily internal-fetch schedule, but not public lower-court routes yet.
+- On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through `npm run operator:staging`; this repo change promotes them to public lower-court routes after the UT-aware copy and methodology pass.
 - The documented internal raw-fetch policy is to run lower-court geography fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
 - The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
@@ -104,6 +104,14 @@ Operational notes:
   - explicit Goa public routes at `/states/goa` and `/v1/states/goa/...`
   - explicit Sikkim public routes at `/states/sikkim` and `/v1/states/sikkim/...`
   - explicit Mizoram public routes at `/states/mizoram` and `/v1/states/mizoram/...`
+  - explicit Andaman and Nicobar Islands public routes at `/states/andaman-and-nicobar-islands` and `/v1/states/andaman-and-nicobar-islands/...`
+  - explicit Chandigarh public routes at `/states/chandigarh` and `/v1/states/chandigarh/...`
+  - explicit Delhi public routes at `/states/delhi` and `/v1/states/delhi/...`
+  - explicit Jammu and Kashmir public routes at `/states/jammu-and-kashmir` and `/v1/states/jammu-and-kashmir/...`
+  - explicit Ladakh public routes at `/states/ladakh` and `/v1/states/ladakh/...`
+  - explicit Lakshadweep public routes at `/states/lakshadweep` and `/v1/states/lakshadweep/...`
+  - explicit Puducherry public routes at `/states/puducherry` and `/v1/states/puducherry/...`
+  - explicit Dadra and Nagar Haveli and Daman and Diu public routes at `/states/dadra-and-nagar-haveli-and-daman-and-diu` and `/v1/states/dadra-and-nagar-haveli-and-daman-and-diu/...`
 - Current active Himachal Pradesh publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal Pradesh published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal Pradesh source snapshot date: `2026-04-10`

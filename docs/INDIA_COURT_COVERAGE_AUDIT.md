@@ -20,15 +20,14 @@ NyaayWatch is comprehensive for configured **court tiers** at the Supreme Court 
 - Supreme Court: configured and public beta.
 - High Courts: all 25 HC NJDG selectors are represented in `src/high-courts.ts`.
 
-NyaayWatch is now comprehensive at the **lower-court selector registry** level, but not yet comprehensive at the public lower-court publication level:
+NyaayWatch is now comprehensive at the **lower-court selector registry and public lower-court publication** level:
 
 - Lower-court NJDG exposes 36 state/Union Territory selector geographies.
 - `src/geographies.ts` implements all 36 lower-court state/Union Territory profiles.
 - All 36 lower-court profiles are daily internal-fetch enabled after proof.
-- 28 lower-court profiles are public alpha.
-- 8 Union Territory or UT-style profiles are internal-only until a UT-aware public copy and methodology review is complete.
+- All 36 lower-court profiles are public alpha after the UT-aware copy and methodology pass.
 
-Do not describe the product as fully all-India lower-court public comprehensive until the 8 internal-only lower-court geographies below are published.
+The route namespace remains `/states/:stateSlug` for compatibility with the existing lower-court URL contract, but the public copy now distinguishes states from Union Territories.
 
 ## Supreme Court
 
@@ -83,24 +82,24 @@ Naming note: the live HC NJDG selector still says `High Court of Jammu and Kashm
 
 ## District And Subordinate Courts
 
-Status: all 36 NJDG selectors are registered and daily internal-fetch enabled; 28 are public alpha.
+Status: all 36 NJDG selectors are registered, daily internal-fetch enabled, and public alpha.
 
 The live lower-court NJDG selector list exposes 36 state/Union Territory geographies. The repo now implements all 36 lower-court profiles.
 
-Internal-only lower-court geographies pending public exposure:
+Previously internal-only lower-court geographies now promoted to public alpha:
 
 | Lower-court NJDG selector | Selector label | Repo code | Public alpha | Daily internal fetch |
 | --- | --- | --- | --- | --- |
-| `35~28` | Andaman and Nicobar | `AN` | no | yes |
-| `4~27` | Chandigarh | `CHD` | no | yes |
-| `7~26` | Delhi | `DL` | no | yes |
-| `1~12` | Jammu and Kashmir | `JK` | no | yes |
-| `37~33` | Ladakh | `LA` | no | yes |
-| `31~37` | Lakshadweep | `LD` | no | yes |
-| `34~35` | Puducherry | `PY` | no | yes |
-| `38~38` | The Dadra And Nagar Haveli And Daman And Diu | `DNHDD` | no | yes |
+| `35~28` | Andaman and Nicobar | `AN` | yes | yes |
+| `4~27` | Chandigarh | `CHD` | yes | yes |
+| `7~26` | Delhi | `DL` | yes | yes |
+| `1~12` | Jammu and Kashmir | `JK` | yes | yes |
+| `37~33` | Ladakh | `LA` | yes | yes |
+| `31~37` | Lakshadweep | `LD` | yes | yes |
+| `34~35` | Puducherry | `PY` | yes | yes |
+| `38~38` | The Dadra And Nagar Haveli And Daman And Diu | `DNHDD` | yes | yes |
 
-These profiles are now included in `listInternalFetchStateProfiles()` after completing live staging `fetch -> inspect -> publish -> replay -> rollback` proof cycles. They remain excluded from `listPublicStateProfiles()` until public lower-court copy and methodology language is made state/Union Territory aware.
+These profiles are included in both `listInternalFetchStateProfiles()` and `listPublicStateProfiles()` after completing live staging `fetch -> inspect -> publish -> replay -> rollback` proof cycles and the state/Union Territory-aware public language pass.
 
 Proof-cycle evidence from April 23, 2026:
 
@@ -117,12 +116,12 @@ Proof-cycle evidence from April 23, 2026:
 
 ## Required Next Implementation Slice
 
-To make NyaayWatch public-comprehensive across all courts of India:
+After this change, the remaining implementation slice is operational verification, not schema coverage:
 
-1. Complete a UT-aware lower-court public copy and methodology pass so public routes do not describe Union Territories as states.
-2. Add public route and API exposure by switching `publicAlpha=true` only after that review.
-3. Verify stable public routes and API parity for each newly public lower-court geography.
+1. Deploy the UT-aware lower-court public routes.
+2. Verify stable public routes and API parity for each newly public lower-court geography on `https://nyaaywatch.in`.
+3. Record release evidence after the live deploy settles.
 
-Until then, the precise public claim is:
+The precise public claim after deploy is:
 
-NyaayWatch covers the Supreme Court, all High Court NJDG selectors in the internal registry, and all lower-court NJDG state/Union Territory selectors in the internal registry and daily internal fetch schedule. Public lower-court pages currently cover the 28 proven lower-court state profiles, not the 8 internal-only UT profiles.
+NyaayWatch covers the Supreme Court, all High Court NJDG selectors in the internal registry, and all 36 lower-court NJDG state/Union Territory selector geographies in the public lower-court route set and daily internal fetch schedule.
