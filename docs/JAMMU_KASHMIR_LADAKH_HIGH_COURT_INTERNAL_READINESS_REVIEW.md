@@ -4,7 +4,7 @@ Current internal-readiness record for the common High Court of Jammu & Kashmir a
 
 This document exists to answer one narrow question:
 
-- what is true in repo state now, and what still must happen before this court can be treated as internally proven or publicly ready?
+- what is true in repo state now, and what evidence supports treating this court as internally proven and publicly ready?
 
 Latest review captured here reflects live operator evidence on **April 23, 2026**.
 
@@ -18,16 +18,17 @@ Latest review captured here reflects live operator evidence on **April 23, 2026*
   - Jammu and Kashmir
   - Ladakh
 - repo posture:
-  - internal-only
-  - `publicBeta=false`
+  - public High Court beta
+  - `publicBeta=true`
   - `sourceReviewStatus=reviewed`
 
 What is true in repo state after this slice:
 
-- the common High Court now has an explicit court-first profile in repo code
+- the common High Court has an explicit court-first profile in repo code
 - the profile uses the current official institutional name in public-facing copy fields
 - the profile models both covered union territories explicitly through `coveredGeographies[]`
 - local, remote, and ECS-backed operator tooling can target the court slug
+- the public route family is intentionally exposed as one common-court page under `/high-courts/jammu-kashmir-and-ladakh`
 
 Live evidence now recorded:
 
@@ -37,12 +38,12 @@ Live evidence now recorded:
 - replay publication: `publication_93ca29e7-651b-430e-b564-7386cb50465c`
 - rollback publication: `publication_e183dc01-887e-4b02-8c41-fd9e58ab471e`
 - active snapshot after rollback: `snapshot_164f1f63-2d04-4685-b8ef-33261bdb064d`
-- current public High Court route family remains dark with `404`
+- public High Court route exposure is approved after the internal proof and source-review gates below
 
-What is **not** yet true:
+What remains true after public exposure:
 
-- no public High Court beta decision has been made for this court
-- this court is not exposed on `/high-courts/jammu-kashmir-and-ladakh`
+- do not create separate Jammu and Kashmir and Ladakh High Court pages
+- keep the upstream selector-label nuance visible in methodology and source-review docs
 
 ## Internal Proof Bar
 
@@ -88,9 +89,9 @@ Internal readiness here therefore depends on two separate truths staying aligned
 
 That naming mismatch is a documentation and methodology constraint, not a reason to create a fake second High Court.
 
-## Next Validation Command
+## Validation Commands
 
-After deploy and once `OPERATOR_API_TOKEN` is available, use:
+For internal proof validation, use:
 
 ```bash
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=jammu-kashmir-and-ladakh
@@ -104,9 +105,6 @@ npm run operator:staging -- --high-court jammu-kashmir-and-ladakh fetch "Initial
 
 ## Recommendation
 
-Keep this court internal-only until:
+Promote the common High Court of Jammu & Kashmir and Ladakh as one public High Court beta page after the recorded proof cycle and source review.
 
-- the common-court naming posture is reflected in the public High Court methodology copy
-- a deliberate public-beta decision is made
-
-Do not create separate Jammu and Kashmir and Ladakh High Court pages. The next decision is whether to promote this already-proven common court into the public High Court beta.
+Do not create separate Jammu and Kashmir and Ladakh High Court pages. Future changes should treat this as one common-court surface unless the official court structure itself changes.

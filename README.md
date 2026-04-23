@@ -44,7 +44,7 @@ What is shipped now:
 - a national homepage at `/` that stages Supreme Court, High Courts, and district/subordinate courts in one scroll
 - explicit Himachal lower-court overview at `/states/himachal`, plus lower-court district, data, methodology, and API routes
 - narrow public Supreme Court beta routes under `/supreme-court`
-- narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
@@ -208,6 +208,10 @@ Public routes:
 - `/high-courts/gauhati/data`
 - `/high-courts/gauhati/methodology`
 - `/high-courts/gauhati/api`
+- `/high-courts/jammu-kashmir-and-ladakh`
+- `/high-courts/jammu-kashmir-and-ladakh/data`
+- `/high-courts/jammu-kashmir-and-ladakh/methodology`
+- `/high-courts/jammu-kashmir-and-ladakh/api`
 - `/high-courts/kerala`
 - `/high-courts/kerala/data`
 - `/high-courts/kerala/methodology`
@@ -248,7 +252,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - Supreme Court now has a narrow public beta route family under `/supreme-court`
-- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
 - all other supported states now use explicit `/states/:stateSlug/...` routes
 - the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
@@ -274,6 +278,8 @@ Public API:
 - `GET /v1/high-courts/gujarat/trends`
 - `GET /v1/high-courts/gauhati/stats`
 - `GET /v1/high-courts/gauhati/trends`
+- `GET /v1/high-courts/jammu-kashmir-and-ladakh/stats`
+- `GET /v1/high-courts/jammu-kashmir-and-ladakh/trends`
 - `GET /v1/high-courts/kerala/stats`
 - `GET /v1/high-courts/kerala/trends`
 - `GET /v1/high-courts/madras/stats`
@@ -365,6 +371,7 @@ Start here:
 - [Brand system](brand/BRAND.md)
 - [Design doc](docs/NYAAYWATCH_DESIGN.md)
 - [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
+- [India court coverage audit](docs/INDIA_COURT_COVERAGE_AUDIT.md)
 - [Himachal High Court pilot plan](docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md)
 - [Himachal High Court source review](docs/HIMACHAL_HIGH_COURT_SOURCE_REVIEW.md)
 - [Jammu & Kashmir and Ladakh High Court source review](docs/JAMMU_KASHMIR_LADAKH_HIGH_COURT_SOURCE_REVIEW.md)

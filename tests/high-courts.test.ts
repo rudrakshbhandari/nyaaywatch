@@ -225,7 +225,7 @@ describe("high court profiles", () => {
           geographyType: "union_territory",
         },
       ],
-      publicBeta: false,
+      publicBeta: true,
       sourceReviewStatus: "reviewed",
       sourceUrls: {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
@@ -371,6 +371,7 @@ describe("high court profiles", () => {
       "delhi",
       "gujarat",
       "gauhati",
+      "jammu-kashmir-and-ladakh",
       "kerala",
       "madras",
       "madhya-pradesh",
