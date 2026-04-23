@@ -293,6 +293,15 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Jammu & Kashmir and Ladakh High Court internal proof completed on 2026-04-23:
+  - the common High Court operator namespace remained auth-protected under `/operator/high-courts/jammu-kashmir-and-ladakh/...`
+  - live High Court fetch run `run_e036f9ac-f0d2-4e73-b7c3-8017a054d677` completed successfully
+  - live publication `publication_2957c01d-b451-4ae8-98a7-ecfe241d4297` created `snapshot_164f1f63-2d04-4685-b8ef-33261bdb064d`
+  - replay run `run_3caa55b9-8e1a-4b50-8a45-58afbcf974b9` created publication `publication_93ca29e7-651b-430e-b564-7386cb50465c`
+  - rollback publication `publication_e183dc01-887e-4b02-8c41-fd9e58ab471e` restored the initial publication chain and left `snapshot_164f1f63-2d04-4685-b8ef-33261bdb064d` active
+  - `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=jammu-kashmir-and-ladakh` returned `runCount=2`, `publicationCount=3`, `replayedRunCount=1`, `rollbackCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
+  - `GET /high-courts/jammu-kashmir-and-ladakh` and `GET /v1/high-courts/jammu-kashmir-and-ladakh/stats` still returned `404`, confirming the court remains internal-only
+  - active internal snapshot stats are `pendingTotalCases=43849`, `institutedLastMonthTotalCases=1010`, and `disposedLastMonthTotalCases=781`
 - Supreme Court public beta exposure completed on 2026-04-19 after PR `#110` merged and GitHub deploy run `24624392748` rolled the live service to task definition `:98`:
   - the already-proven active Supreme Court publication `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` became publicly reachable under `/supreme-court`
   - live route verification returned `200` for `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`

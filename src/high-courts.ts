@@ -204,6 +204,7 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
       buildUnionTerritoryCourtGeography("JK", "Jammu and Kashmir"),
       buildUnionTerritoryCourtGeography("LA", "Ladakh"),
     ],
+    sourceReviewStatus: "reviewed",
     sourceUrls: {
       ...HIGH_COURT_SOURCE_BASE,
       officialSite: "https://jkhighcourt.nic.in/",

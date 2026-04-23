@@ -2,7 +2,7 @@
 
 Source review for the common High Court of Jammu & Kashmir and Ladakh inside NyaayWatch.
 
-This document records the official public-source boundary for this High Court as verified on `2026-04-22`.
+This document records the official public-source boundary for this High Court as verified on `2026-04-22`, with live ingest proof completed on `2026-04-23`.
 
 ## Bottom Line
 
@@ -123,3 +123,5 @@ Proceed with the common High Court profile using:
 - HC NJDG selector value `1~12` as the aggregate source target
 - `Jammu and Kashmir` and `Ladakh` as explicit covered union territories
 - High Court Services and the official High Court site as supporting public link-outs
+
+After the live `fetch -> publish -> replay -> rollback` proof cycle on `2026-04-23`, this source boundary is treated as reviewed for internal raw-fetch scheduling. That does not by itself expose a public route; public beta still depends on a separate `publicBeta` decision.
