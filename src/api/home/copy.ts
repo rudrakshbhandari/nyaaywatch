@@ -1,4 +1,5 @@
 import type { HomeViewModel } from "./view-model.js";
+import type { PublicLowerCourtCopy } from "../public-state.js";
 
 /**
  * Plain-English glossary. Every technical term gets a short, reader-first explanation.
@@ -84,7 +85,11 @@ export type GlossaryKey = keyof typeof GLOSSARY;
  *   - Numbers are rounded and framed in terms a non-expert reader recognizes.
  *   - Where technical terms appear, they get an info icon.
  */
-export function buildCopy(model: HomeViewModel, publicScopeDescription: string) {
+export function buildCopy(
+  model: HomeViewModel,
+  publicScopeDescription: string,
+  lowerCourtCopy: PublicLowerCourtCopy,
+) {
   // Districts where the median pending case has been waiting substantially
   // longer than a year. These drive the "some have waited two years" line
   // that makes the statewide median feel dishonest.
@@ -119,7 +124,12 @@ export function buildCopy(model: HomeViewModel, publicScopeDescription: string) 
       },
       wait: {
         label: "typical wait",
-        caption: buildWaitCaption(longWaitDistricts.length, longWaitMonths, longWaitSampleName),
+        caption: buildWaitCaption(
+          longWaitDistricts.length,
+          longWaitMonths,
+          longWaitSampleName,
+          lowerCourtCopy.aggregateAdjective,
+        ),
       },
       clearance: {
         label: "cleared per 100 filed",
@@ -136,11 +146,11 @@ export function buildCopy(model: HomeViewModel, publicScopeDescription: string) 
 
     sectionWatchlist: "Three districts to inspect first",
     sectionWatchlistLede:
-      "A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the state. These are signals for closer inspection, not judgments.",
+      `A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the ${lowerCourtCopy.geographyLabelLower}. These are signals for closer inspection, not judgments.`,
 
-    sectionTrend: "How the statewide pile has moved",
+    sectionTrend: `How the ${lowerCourtCopy.aggregateAdjective} pile has moved`,
     sectionTrendLede:
-      "Each bar is a previously published statewide snapshot. It shows how the backlog has moved across publication dates, not a continuously refreshed surface.",
+      `Each bar is a previously published ${lowerCourtCopy.aggregateAdjective} snapshot. It shows how the backlog has moved across publication dates, not a continuously refreshed surface.`,
 
     sectionWhat: "Why this site exists",
     sectionWhatBody:
@@ -169,14 +179,15 @@ function buildWaitCaption(
   longWaitCount: number,
   longWaitMonths: number,
   sampleName: string,
+  aggregateAdjective: string,
 ): string {
   if (longWaitCount === 0) {
     return "Middle of the pile. Half the cases have been waiting longer than this.";
   }
   if (longWaitCount === 1) {
-    return `Middle of the statewide pile. In ${sampleName}, the middle is closer to ${longWaitMonths} months.`;
+    return `Middle of the ${aggregateAdjective} pile. In ${sampleName}, the middle is closer to ${longWaitMonths} months.`;
   }
-  return `Middle of the statewide pile. In ${longWaitCount} districts, the middle is closer to ${longWaitMonths} months.`;
+  return `Middle of the ${aggregateAdjective} pile. In ${longWaitCount} districts, the middle is closer to ${longWaitMonths} months.`;
 }
 
 function buildClearanceCaption(rate: number): string {

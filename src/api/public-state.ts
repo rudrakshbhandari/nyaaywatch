@@ -1,4 +1,8 @@
-import type { NjdgStateProfile } from "../geographies.js";
+import {
+  getLowerCourtAggregateAdjective,
+  getLowerCourtGeographyTypeLabel,
+  type NjdgStateProfile,
+} from "../geographies.js";
 
 export interface PublicStateRoutes {
   home: string;
@@ -20,6 +24,13 @@ export interface PublicStateLink {
   active: boolean;
 }
 
+export interface PublicLowerCourtCopy {
+  geographyLabel: string;
+  geographyLabelLower: string;
+  aggregateAdjective: string;
+  aggregateAdjectiveTitle: string;
+}
+
 export interface PublicPageContext {
   profile: NjdgStateProfile;
   routes: PublicStateRoutes;
@@ -31,6 +42,7 @@ export interface PublicPageContext {
   stateLinks: PublicStateLink[];
   brandHref: string;
   brandTag: string;
+  lowerCourtCopy: PublicLowerCourtCopy;
   publicScopeDescription: string;
 }
 
@@ -42,6 +54,7 @@ export function buildPublicPageContext(
 ): PublicPageContext {
   const routes = buildPublicStateRoutes(currentProfile);
   const visibleProfiles = sortPublicStateProfiles(availableProfiles.length > 0 ? availableProfiles : [currentProfile]);
+  const lowerCourtCopy = buildPublicLowerCourtCopy(currentProfile);
 
   return {
     profile: currentProfile,
@@ -59,6 +72,7 @@ export function buildPublicPageContext(
     })),
     brandHref: routes.home,
     brandTag: `Court transparency, ${currentProfile.stateName}`,
+    lowerCourtCopy,
     publicScopeDescription: buildPublicScopeDescription(currentProfile, visibleProfiles),
   };
 }
@@ -106,20 +120,31 @@ function buildPublicScopeDescription(
   currentProfile: NjdgStateProfile,
   visibleProfiles: NjdgStateProfile[],
 ): string {
-  const otherStateCount = Math.max(visibleProfiles.length - 1, 0);
-  const otherStatePages = `${otherStateCount} other approved state page${otherStateCount === 1 ? "" : "s"}`;
+  const geographyLabel = getLowerCourtGeographyTypeLabel(currentProfile);
+  const otherGeographyCount = Math.max(visibleProfiles.length - 1, 0);
+  const otherGeographyPages = `${otherGeographyCount} other approved lower-court page${otherGeographyCount === 1 ? "" : "s"}`;
 
   if (isDefaultPublicState(currentProfile)) {
-    if (otherStateCount === 0) {
-      return "This page covers Himachal Pradesh. The national homepage lives at /, and the lower-court shortcuts stay available on the unscoped district, data, methodology, and API routes.";
+    if (otherGeographyCount === 0) {
+      return "This state page covers Himachal Pradesh. The national homepage lives at /, and the lower-court shortcuts stay available on the unscoped district, data, methodology, and API routes.";
     }
 
-    return `This page covers Himachal Pradesh. The national homepage lives at /, and the switcher links ${otherStatePages}.`;
+    return `This state page covers Himachal Pradesh. The national homepage lives at /, and the switcher links ${otherGeographyPages}.`;
   }
 
-  if (otherStateCount === 0) {
-    return `This page covers ${currentProfile.stateName}. The national homepage lives at /.`;
+  if (otherGeographyCount === 0) {
+    return `This ${geographyLabel} page covers ${currentProfile.stateName}. The national homepage lives at /.`;
   }
 
-  return `This page covers ${currentProfile.stateName}. The national homepage lives at /, and the switcher links ${otherStatePages}.`;
+  return `This ${geographyLabel} page covers ${currentProfile.stateName}. The national homepage lives at /, and the switcher links ${otherGeographyPages}.`;
+}
+
+function buildPublicLowerCourtCopy(profile: NjdgStateProfile): PublicLowerCourtCopy {
+  const aggregateAdjective = getLowerCourtAggregateAdjective(profile);
+  return {
+    geographyLabel: getLowerCourtGeographyTypeLabel(profile),
+    geographyLabelLower: getLowerCourtGeographyTypeLabel(profile).toLowerCase(),
+    aggregateAdjective,
+    aggregateAdjectiveTitle: aggregateAdjective.charAt(0).toUpperCase() + aggregateAdjective.slice(1),
+  };
 }

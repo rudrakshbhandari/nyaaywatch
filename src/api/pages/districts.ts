@@ -194,7 +194,7 @@ function renderControls(options: DistrictsPageOptions, context: PublicPageContex
       <div class="controls__links">
         <a href="${context.routes.districts}">Reset filters</a>
         <a href="${context.routes.districts}${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Watchlist only</a>
-        <a href="${context.routes.districtsCsv}">Download statewide CSV</a>
+        <a href="${context.routes.districtsCsv}">Download ${escapeHtml(context.lowerCourtCopy.aggregateAdjective)} CSV</a>
       </div>
     </section>
   `;

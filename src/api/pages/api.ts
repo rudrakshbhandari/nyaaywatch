@@ -8,6 +8,7 @@ import { renderSectionHead } from "../design/ui.js";
  * downloads are linked from /data rather than duplicated here.
  */
 export function renderApiPage(context: PublicPageContext): string {
+  const aggregateAdjective = context.lowerCourtCopy.aggregateAdjective;
   const body = `
     ${renderSectionHead({
       eyebrow: "DEVELOPER ACCESS",
@@ -24,7 +25,7 @@ export function renderApiPage(context: PublicPageContext): string {
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
-          <p>Statewide backlog, disposal pace, wait estimate, and watchlist count for the active publication.</p>
+          <p>${context.lowerCourtCopy.aggregateAdjectiveTitle} backlog, disposal pace, wait estimate, and watchlist count for the active publication.</p>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
@@ -34,7 +35,7 @@ export function renderApiPage(context: PublicPageContext): string {
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
-          <p>Published snapshot history for the statewide trend surface.</p>
+          <p>Published snapshot history for the ${aggregateAdjective} trend surface.</p>
         </article>
       </div>
     </section>
@@ -48,7 +49,7 @@ export function renderApiPage(context: PublicPageContext): string {
         </article>
         <article class="card">
           <h3>Published only</h3>
-          <p>The API never exposes fresher unpublished state than the public pages themselves. Operator captures in review stay private.</p>
+          <p>The API never exposes fresher unpublished data than the public pages themselves. Operator captures in review stay private.</p>
         </article>
       </div>
     </section>

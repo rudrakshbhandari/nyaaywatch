@@ -390,6 +390,64 @@ export function buildPunjabTestSnapshot(): PublishedSnapshot {
   };
 }
 
+export function buildLadakhTestSnapshot(): PublishedSnapshot {
+  return {
+    snapshot: {
+      stateCode: "LA",
+      stateName: "Ladakh",
+      sourceName: "NJDG Ladakh district dashboard",
+      sourceSnapshotAt: "2026-04-22T00:00:00.000Z",
+      publishedAt: "2026-04-23T21:40:00.000Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 1,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Ladakh",
+      publishedFromRunId: "run_c27551d1-fa94-4bd9-bc3f-bff4ce75d061",
+    },
+    stats: {
+      pendingCases: 1659,
+      disposalRate: 104.3,
+      medianCaseAgeDays: 365,
+      flaggedDistricts: 1,
+    },
+    districts: [
+      {
+        districtId: "leh",
+        districtName: "Leh",
+        rank: 1,
+        backlogCases: 1034,
+        disposalRate: 96.1,
+        medianAgeDays: 365,
+        filingVsDisposalGap: 3.9,
+        flagReason:
+          "This district carries most of Ladakh's pending lower-court caseload in the latest published snapshot.",
+        summary:
+          "Leh has 1,034 cases waiting. A typical pending case falls around 365 days old, and the district cleared 96.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+      },
+      {
+        districtId: "kargil",
+        districtName: "Kargil",
+        rank: 2,
+        backlogCases: 625,
+        disposalRate: 118.2,
+        medianAgeDays: 183,
+        filingVsDisposalGap: -18.2,
+        flagReason:
+          "Kargil is smaller than Leh in this published snapshot, but remains visible for geography-level parity.",
+        summary:
+          "Kargil has 625 cases waiting. A typical pending case falls around 183 days old, and the district cleared 118.2% as many cases as it received last month.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: "2026-04-22T00:00:00.000Z",
+        pendingCases: 1659,
+        disposalRate: 104.3,
+      },
+    ],
+  };
+}
+
 export function buildHaryanaTestSnapshot(): PublishedSnapshot {
   return {
     snapshot: {

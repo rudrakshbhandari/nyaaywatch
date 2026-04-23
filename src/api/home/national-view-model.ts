@@ -161,8 +161,8 @@ export function buildNationalHomeViewModel(input: {
       topStateName: topState?.profile.stateName ?? input.lowerCourtProfile.stateName,
       topStateHref: buildPublicStateRoutes(topState?.profile ?? input.lowerCourtProfile).home,
       topStateSummary: topState
-        ? `${topState.profile.stateName} ranks highest on the current lower-court pressure index across published states. ${topState.stats.pendingCases.toLocaleString("en-IN")} pending cases, median age ${topState.stats.medianCaseAgeDays.toLocaleString("en-IN")} days, disposal ${topState.stats.disposalRate.toFixed(1)}% in its latest published snapshot. Relative ranking only, not a conclusive claim.`
-        : "Open any published state page to inspect the latest lower-court snapshot and district drilldown.",
+        ? `${topState.profile.stateName} ranks highest on the current lower-court pressure index across published state and Union Territory snapshots. ${topState.stats.pendingCases.toLocaleString("en-IN")} pending cases, median age ${topState.stats.medianCaseAgeDays.toLocaleString("en-IN")} days, disposal ${topState.stats.disposalRate.toFixed(1)}% in its latest published snapshot. Relative ranking only, not a conclusive claim.`
+        : "Open any published lower-court page to inspect the latest snapshot and district drilldown.",
     },
   };
 }

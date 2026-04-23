@@ -14,7 +14,7 @@ import { computeWaitingRoomRates, renderWaitingRoom } from "../landing/waiting-r
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
-  const copy = buildCopy(model, context.publicScopeDescription);
+  const copy = buildCopy(model, context.publicScopeDescription, context.lowerCourtCopy);
   const n = copy.bigNumbers;
 
   const trendBars = renderTrendChart(model);
@@ -178,7 +178,7 @@ function renderTrendChart(model: HomeViewModel): string {
       </li>`;
     })
     .join("");
-  return `<ol class="trend-list" aria-label="Statewide backlog over time">${rows}</ol>`;
+  return `<ol class="trend-list" aria-label="Backlog over time">${rows}</ol>`;
 }
 
 /**
@@ -223,7 +223,7 @@ const HOME_PAGE_CSS = `
     position: relative;
   }
   .numbers::before {
-    content: "STATEWIDE";
+    content: "LOWER COURTS";
     position: absolute; top: -10px; left: 0;
     background: var(--paper);
     padding: 0 14px 0 0;

@@ -200,9 +200,9 @@ export function renderNationalHome(input: {
                 deltaDirectionHint: "up-is-bad",
               })}
               ${renderStatTile({
-                label: "Public states live",
+                label: "Public lower-court geographies",
                 value: model.lowerCourts.publicStateCount.toString(),
-                note: "Each state page stays tied to its own published snapshot and supporting notes.",
+                note: "Each state or Union Territory page stays tied to its own published snapshot and supporting notes.",
                 tone: "accent",
               })}
             `
@@ -224,35 +224,35 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "Lower courts show the broadest pressure.",
         lede:
-          "This lower-court view spans the currently published state snapshots. Start with the pressure map for relative state pressure, then open any state page for the underlying snapshot and district drilldown.",
+          "This lower-court view spans the currently published state and Union Territory snapshots. Start with the pressure map for relative lower-court pressure, then open any geography page for the underlying snapshot and district drilldown.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
-          label: "Pending across public states",
+          label: "Pending across public geographies",
           value: model.lowerCourts.pendingDisplay,
-          note: "Combined lower-court backlog across the currently published state snapshots.",
+          note: "Combined lower-court backlog across the currently published state and Union Territory snapshots.",
         })}
         ${renderStatTile({
-          label: "Public states live",
+          label: "Public lower-court geographies",
           value: model.lowerCourts.publicStateCount.toString(),
-          note: "Each state page stays tied to its own published snapshot and supporting notes.",
+          note: "Each state or Union Territory page stays tied to its own published snapshot and supporting notes.",
         })}
         ${renderStatTile({
           label: "Flagged districts",
           value: model.lowerCourts.flaggedDistricts.toString(),
-          note: "Combined count of districts flagged for closer inspection across the public state cohort.",
+          note: "Combined count of districts flagged for closer inspection across the public lower-court cohort.",
           tone: "flag",
         })}
         ${renderStatTile({
-          label: "Highest-pressure state",
+          label: "Highest-pressure geography",
           value: model.lowerCourts.topStateName,
           note: model.lowerCourts.topStateSummary,
           tone: "accent",
         })}
       </div>
       <div class="national-section__actions">
-        <a class="btn btn--primary" href="#map">Browse state pages</a>
-        <a class="btn btn--ghost" href="${model.lowerCourts.topStateHref}">Open top state</a>
+        <a class="btn btn--primary" href="#map">Browse lower-court pages</a>
+        <a class="btn btn--ghost" href="${model.lowerCourts.topStateHref}">Open top geography</a>
       </div>
     </section>
 
