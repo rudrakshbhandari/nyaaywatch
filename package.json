@@ -8,7 +8,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && mkdir -p dist/src/db/migrations && cp src/db/migrations/*.sql dist/src/db/migrations/ && mkdir -p dist/fixtures && cp -R fixtures/. dist/fixtures/",
+    "build": "tsc -p tsconfig.json && mkdir -p dist/src/db/migrations && cp src/db/migrations/*.sql dist/src/db/migrations/ && mkdir -p dist/fixtures && cp -R fixtures/. dist/fixtures/ && mkdir -p dist/assets/fonts && cp assets/fonts/* dist/assets/fonts/",
     "check:types": "tsc --noEmit -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "dev": "tsx watch src/index.ts",
