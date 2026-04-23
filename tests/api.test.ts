@@ -74,7 +74,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("How long is India waiting for justice?");
     expect(homepage.text).toContain("Track the Supreme Court");
     expect(homepage.text).toContain("Most delay sits in the lower courts.");
-    expect(homepage.text).toContain("Where has NyaayWatch published?");
+    expect(homepage.text).toContain("Where is delay piling up across India?");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
