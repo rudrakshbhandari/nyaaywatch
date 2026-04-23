@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildHaryanaTestSnapshot,
+  buildLadakhTestSnapshot,
   buildPunjabTestSnapshot,
   createTestApp,
   createTestContext,
@@ -78,9 +79,9 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
-    expect(homepage.text).toContain("Browse state pages");
-    expect(homepage.text).toContain("Pending across public states");
-    expect(homepage.text).toContain("Highest-pressure state");
+    expect(homepage.text).toContain("Browse lower-court pages");
+    expect(homepage.text).toContain("Pending across public geographies");
+    expect(homepage.text).toContain("Highest-pressure geography");
     expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
     expect(homepage.text).not.toContain("featured published snapshot");
     expect(homepage.text).not.toContain("Kullu, Himachal Pradesh");
@@ -795,10 +796,58 @@ describe("HTTP routes", () => {
 
     const punjabMethodology = await request(app).get("/states/punjab/methodology");
     expect(punjabMethodology.status).toBe(200);
-    expect(punjabMethodology.text).toContain("This page covers Punjab.");
+    expect(punjabMethodology.text).toContain("This state page covers Punjab.");
 
     const punjabApiPage = await request(app).get("/states/punjab/api");
     expect(punjabApiPage.status).toBe(200);
     expect(punjabApiPage.text).toContain("/v1/states/punjab/districts");
+  });
+
+  it("serves Ladakh through the same public route family with Union Territory copy", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    await insertPublishedSnapshot(context.pool, {
+      runId: "run_la_public",
+      snapshotId: "snapshot_la_public",
+      publicationId: "publication_la_public",
+      stateCode: "LA",
+      payload: buildLadakhTestSnapshot(),
+    });
+
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+
+    const ladakhHome = await request(app).get("/states/ladakh");
+    expect(ladakhHome.status).toBe(200);
+    expect(ladakhHome.text).toContain("How long is the wait for justice in Ladakh?");
+    expect(ladakhHome.text).toContain("This Union Territory page covers Ladakh.");
+    expect(ladakhHome.text).toContain("territory-wide pile");
+    expect(ladakhHome.text).not.toContain("rest of the state");
+
+    const ladakhDistricts = await request(app).get("/states/ladakh/districts");
+    expect(ladakhDistricts.status).toBe(200);
+    expect(ladakhDistricts.text).toContain("Download territory-wide CSV");
+
+    const ladakhDistrictPage = await request(app).get("/states/ladakh/districts/leh");
+    expect(ladakhDistrictPage.status).toBe(200);
+    expect(ladakhDistrictPage.text).toContain("Territory-wide CSV");
+
+    const ladakhData = await request(app).get("/states/ladakh/data");
+    expect(ladakhData.status).toBe(200);
+    expect(ladakhData.text).toContain("Territory-wide district table");
+    expect(ladakhData.text).toContain("territory-wide trend series");
+
+    const ladakhMethodology = await request(app).get("/states/ladakh/methodology");
+    expect(ladakhMethodology.status).toBe(200);
+    expect(ladakhMethodology.text).toContain("All expected districts for this union territory");
+
+    const ladakhApiPage = await request(app).get("/states/ladakh/api");
+    expect(ladakhApiPage.status).toBe(200);
+    expect(ladakhApiPage.text).toContain("Territory-wide backlog");
+
+    const ladakhStats = await request(app).get("/v1/states/ladakh/stats");
+    expect(ladakhStats.status).toBe(200);
+    expect(ladakhStats.body.snapshot.stateCode).toBe("LA");
+    expect(ladakhStats.body.stats.pendingCases).toBe(1659);
   });
 });

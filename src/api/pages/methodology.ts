@@ -77,7 +77,7 @@ export function renderMethodologyPage(
         <article class="card" id="quality-complete">
           ${renderAnchorLink("quality-complete", "Complete quality state")}
           <h3>Complete</h3>
-          <p>All expected districts for this state were captured and normalized for the source snapshot.</p>
+          <p>All expected districts for this ${escapeHtml(context.lowerCourtCopy.geographyLabelLower)} were captured and normalized for the source snapshot.</p>
         </article>
         <article class="card" id="quality-stale">
           ${renderAnchorLink("quality-stale", "Stale quality state")}

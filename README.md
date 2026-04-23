@@ -45,11 +45,11 @@ What is shipped now:
 - explicit Himachal lower-court overview at `/states/himachal`, plus lower-court district, data, methodology, and API routes
 - narrow public Supreme Court beta routes under `/supreme-court`
 - narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
-- explicit state-scoped public routing for every currently supported state profile beyond Himachal Pradesh
+- explicit lower-court public routing for every currently supported state and Union Territory profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but the currently supported public state rollout set is now complete on the live site. Himachal Pradesh remains the default lower-court proof surface through `/states/himachal` and the unscoped district-family routes, while explicit `/states/:stateSlug/...` public routes are now live for Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram. The lower-court registry and daily internal-fetch schedule now also include the remaining NJDG Union Territory selectors as internal-only profiles, but those are not public until a UT-aware copy and methodology review is complete.
+Post-MVP work continues in this repo, but the currently supported public lower-court rollout set is now complete on the live site. Himachal Pradesh remains the default lower-court proof surface through `/states/himachal` and the unscoped district-family routes, while explicit `/states/:stateSlug/...` public routes are now live for all 36 lower-court NJDG selector geographies: 28 states plus Andaman and Nicobar Islands, Chandigarh, Delhi, Jammu and Kashmir, Ladakh, Lakshadweep, Puducherry, and Dadra and Nagar Haveli and Daman and Diu. The route namespace remains `/states/:stateSlug` for compatibility, but public copy distinguishes states from Union Territories.
 
 ## Product Guardrails
 
@@ -164,7 +164,7 @@ The live deploy path now supports three daily internal raw-fetch schedules plus 
 - reviewed High Courts at `8:20 AM Asia/Kolkata`
 - public-alpha ops monitor at every `30` minutes, checking `https://nyaaywatch.in` through the same deployed runtime and operator history
 
-Reconcile them against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the deploy helper keeps all four schedules pointed at the latest ECS task definition without changing the public snapshot. The lower-court schedule targets profiles returned by `listInternalFetchStateProfiles()`, including the proven internal-only UT profiles, while the High Court schedule automatically picks up only courts whose `sourceReviewStatus` is `reviewed`. The public-alpha monitor emits a dedicated alert log line when parity drift, stale public snapshots, or internal fetch lag is detected. Public publishes remain operator-reviewed and manual on their existing cadence.
+Reconcile them against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the deploy helper keeps all four schedules pointed at the latest ECS task definition without changing the public snapshot. The lower-court schedule targets all profiles returned by `listInternalFetchStateProfiles()`, including the proven UT profiles, while the High Court schedule automatically picks up only courts whose `sourceReviewStatus` is `reviewed`. The public-alpha monitor emits a dedicated alert log line when parity drift, stale public snapshots, or internal fetch lag is detected. Public publishes remain operator-reviewed and manual on their existing cadence.
 
 ## Public Surface
 
@@ -253,8 +253,8 @@ Current route posture:
 - unscoped routes remain the default Himachal Pradesh public surface
 - Supreme Court now has a narrow public beta route family under `/supreme-court`
 - the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
-- all other supported states now use explicit `/states/:stateSlug/...` routes
-- the currently live additional state-scoped public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram
+- all other supported state and Union Territory lower-court geographies now use explicit `/states/:stateSlug/...` routes
+- the currently live additional lower-court public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, Mizoram, Andaman and Nicobar Islands, Chandigarh, Delhi, Jammu and Kashmir, Ladakh, Lakshadweep, Puducherry, and Dadra and Nagar Haveli and Daman and Diu
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`
 
 Public API:

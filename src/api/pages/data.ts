@@ -12,6 +12,8 @@ import { formatDate } from "../home/view-model.js";
  * the rows behind the homepage.
  */
 export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageContext): string {
+  const aggregateAdjective = context.lowerCourtCopy.aggregateAdjective;
+  const aggregateAdjectiveTitle = context.lowerCourtCopy.aggregateAdjectiveTitle;
   const body = `
     ${renderSectionHead({
       eyebrow: "CSV AND API",
@@ -30,7 +32,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
       ${renderStatTile({
         label: "CSV/API parity",
         value: "Aligned",
-        note: "The statewide CSV mirrors the same fields exposed by the JSON endpoints.",
+        note: `The ${aggregateAdjective} CSV mirrors the same fields exposed by the JSON endpoints.`,
       })}
       ${renderStatTile({
         label: "Source snapshot",
@@ -57,7 +59,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
             <span class="download__kind">CSV</span>
             <code class="download__path">${escapeHtml(context.routes.districtsCsv)}</code>
           </div>
-          <h3>Statewide district table</h3>
+          <h3>${aggregateAdjectiveTitle} district table</h3>
           <p>One row per district with rank, pending cases, cases cleared per 100 filed, typical wait, file-clear gap, and flag reason. Includes the source snapshot date, methodology version, freshness, and source attribution as columns so the download is self-describing.</p>
           <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.districtsCsv}">Download CSV</a></p>
         </article>
@@ -67,7 +69,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
             <code class="download__path">${escapeHtml(context.routes.statsApi)}</code>
           </div>
           <h3>Public JSON endpoints</h3>
-          <p>Three endpoints cover statewide stats, district rows, and the statewide trend series. Same fields as the CSV, fetched as machine-readable JSON for dashboards, notebooks, or downstream tooling.</p>
+          <p>Three endpoints cover ${aggregateAdjective} stats, district rows, and the ${aggregateAdjective} trend series. Same fields as the CSV, fetched as machine-readable JSON for dashboards, notebooks, or downstream tooling.</p>
           <p class="download__cta"><a class="btn btn--ghost btn--small" href="${context.routes.api}">See API reference</a></p>
         </article>
       </div>

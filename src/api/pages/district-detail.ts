@@ -136,7 +136,7 @@ export function renderDistrictPage(
           </div>
           <div class="district-col__cta">
             <a class="btn btn--primary btn--small" href="${context.routes.districtCsv(district.districtId)}">Download district history CSV</a>
-            <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">Statewide CSV</a>
+            <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">${escapeHtml(context.lowerCourtCopy.aggregateAdjectiveTitle)} CSV</a>
             <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. Typical wait: ~${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
           </div>
         </article>

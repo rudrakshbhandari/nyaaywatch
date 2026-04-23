@@ -4,8 +4,8 @@ import { escapeHtml } from "./view-model.js";
 import { INDIA_STATE_PATHS, INDIA_VIEWBOX } from "./india-geography.js";
 
 /**
- * Per-state input for the choropleth. Consumers assemble this by pairing each
- * live state profile with its latest published snapshot; states without a
+ * Per-geography input for the choropleth. Consumers assemble this by pairing each
+ * live lower-court profile with its latest published snapshot; geographies without a
  * published snapshot are simply omitted and draw with the "no data" pattern.
  */
 export interface IndiaMapStateEntry {
@@ -81,13 +81,23 @@ const RAMP = [
 const STATE_STROKE = "#9b9179";
 const NODATA_STROKE = "#b8ae97";
 
+const INDIA_MAP_PROFILE_CODE_ALIASES: Record<string, SupportedStateCode> = {
+  AN_UT: "AN",
+  LD_UT: "LD",
+  DL_UT: "DL",
+  PY_UT: "PY",
+  CH_UT: "CHD",
+  DN_UT: "DNHDD",
+  DD_UT: "DNHDD",
+};
+
 /**
  * Rank-based bin assignment. With fixed breakpoints the real score distribution
  * was compressed into the bottom two bins and the map looked almost uniformly
  * cream. Assigning colors by rank — lowest-pressure state gets bin 0, highest
  * gets the top bin, everything else linearly interpolated — guarantees the
  * full ramp is used every render and works cleanly even with only a handful
- * of published states. The map reads as a relative heatmap across the
+ * of published lower-court geographies. The map reads as a relative heatmap across the
  * currently-published cohort.
  */
 function assignBinsByRank<T extends { score: number }>(
@@ -141,7 +151,7 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
   const binByScored = assignBinsByRank(scored);
 
   const pathSvg = Object.keys(INDIA_STATE_PATHS)
-    .map((code) => renderStatePath(code, byCode.get(code as SupportedStateCode), binByScored))
+    .map((code) => renderStatePath(code, byCode.get(resolveIndiaMapProfileCode(code)), binByScored))
     .join("\n");
 
   const topThree = scored.slice(0, 3);
@@ -175,12 +185,12 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
       <header class="india-choropleth__head">
         <p class="india-choropleth__eyebrow">JUDICIAL PRESSURE INDEX</p>
         <h2 class="india-choropleth__hed">Where is delay piling up across India?</h2>
-        <p class="india-choropleth__lede">Each state shaded by its rank on a composite index: pending backlog, median case age, clearance shortfall, and share of flagged districts. States are split into five pressure quintiles — darker red means higher pressure relative to the rest of the country. Click any state to open its published snapshot.</p>
+        <p class="india-choropleth__lede">Each published state or Union Territory is shaded by its rank on a composite index: pending backlog, median case age, clearance shortfall, and share of flagged districts. Published lower-court geographies are split into five pressure quintiles — darker red means higher pressure relative to the rest of the country. Click any shaded geography to open its published snapshot.</p>
       </header>
       <div class="india-choropleth__layout">
         <figure class="india-choropleth__frame" aria-labelledby="india-choropleth-title">
           <svg viewBox="0 0 ${INDIA_VIEWBOX.width} ${INDIA_VIEWBOX.height}" xmlns="http://www.w3.org/2000/svg" aria-labelledby="india-choropleth-title" class="india-choropleth__svg" preserveAspectRatio="xMidYMid meet">
-            <title id="india-choropleth-title">India judicial pressure map — ${entries.length} states shaded by pressure index.</title>
+            <title id="india-choropleth-title">India judicial pressure map — ${entries.length} lower-court geographies shaded by pressure index.</title>
             <defs>
               <pattern id="india-map-nodata" patternUnits="userSpaceOnUse" width="7" height="7">
                 <rect width="7" height="7" fill="#efe9da" />
@@ -196,10 +206,10 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
           </figcaption>
         </figure>
         <aside class="india-choropleth__callouts">
-          <p class="india-choropleth__callouts-head">Highest pressure states</p>
+          <p class="india-choropleth__callouts-head">Highest pressure geographies</p>
           <ol class="india-choropleth__callouts-list">${topList}</ol>
           <details class="india-choropleth__list-toggle">
-            <summary>All published states</summary>
+            <summary>All published lower-court geographies</summary>
             <ul class="india-choropleth__list">${stateList}</ul>
           </details>
         </aside>
@@ -207,6 +217,10 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
     </section>
 ${INDIA_MAP_CSS}
   `;
+}
+
+function resolveIndiaMapProfileCode(code: string): SupportedStateCode {
+  return INDIA_MAP_PROFILE_CODE_ALIASES[code] ?? (code as SupportedStateCode);
 }
 
 function renderStatePath(
