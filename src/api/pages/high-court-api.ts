@@ -6,10 +6,11 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURT API",
-      headline: "The public High Court API matches the latest published High Court snapshot.",
+      headline: `${context.profile.courtName} — API reference`,
       lede:
-        `If the public ${context.profile.courtName} page shows a number, the published JSON can expose it for the court across ${context.coverageLabel}. If it is still in operator review, it stays private.`,
+        `The API matches the latest published snapshot for ${context.profile.courtName} (${context.coverageLabel}). If the public page shows a number, the JSON can expose it; if it is still in operator review, it stays private.`,
       isHero: true,
+      variant: "compact",
     })}
 
     <section class="endpoints">

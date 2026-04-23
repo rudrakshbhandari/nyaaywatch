@@ -23,9 +23,9 @@ export function renderHighCourtsIndexPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURTS",
-      headline: "Where is pressure building across India's High Courts?",
+      headline: `India's High Courts, ranked by pressure`,
       lede:
-        "This index links the published High Court snapshots now live on NyaayWatch. Cards are ordered by the clearest visible pressure signal first: latest pile growth, then clearance pace, then pending load.",
+        `${entries.length} published High Court snapshots, ordered by the clearest pressure signal first — latest pile growth, then clearance pace, then pending load. Select a court to read its detail page.`,
       isHero: true,
     })}
 
@@ -75,7 +75,9 @@ export function renderHighCourtsIndexPage(
     brandHref: context.brandHref,
     brandTag: "High Court observability",
     navLinks: context.navLinks,
-    stateLinks: context.highCourtLinks,
+    // Intentionally no stateLinks on the index itself: the card grid below
+    // IS the court navigation, so a parallel chip row would just duplicate
+    // it and eat the fold.
     footer: {
       sourceDateLabel: null,
       methodologyVersion: null,

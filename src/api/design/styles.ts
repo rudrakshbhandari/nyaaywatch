@@ -101,6 +101,52 @@ export const BASE_CSS = `
     background: #f6e2df;
   }
 
+  /* Overflow variant: when there are more scopes than fit on a single line
+     (e.g. /high-courts/:slug with 14+ High Courts), render a collapsed
+     <details> summary instead of a chip wall. The active scope stays
+     visible in the summary; the full list expands on click. Keeps the
+     editorial fold tight without losing the switcher. */
+  details.state-switcher {
+    display: block;
+    padding-top: 14px;
+  }
+  details.state-switcher > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 14px 8px;
+    border: 1px solid var(--rule);
+    background: var(--paper-bright);
+    color: var(--ink-soft);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    transition: border-color 120ms ease, color 120ms ease;
+  }
+  details.state-switcher > summary::-webkit-details-marker { display: none; }
+  details.state-switcher > summary::marker { content: ""; }
+  details.state-switcher > summary:hover { border-color: var(--ink); color: var(--ink); }
+  details.state-switcher > summary::after {
+    content: "\u25BE";
+    font-size: 10px;
+    opacity: 0.6;
+    transition: transform 120ms ease;
+  }
+  details.state-switcher[open] > summary::after { transform: rotate(180deg); }
+  details.state-switcher .state-switcher__label { color: var(--ink-muted); }
+  details.state-switcher .state-switcher__current { color: var(--accent-dark); }
+  details.state-switcher > .state-switcher__list {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
   /* --- ticker --- */
   .ticker {
     max-width: 1280px; margin: 0 auto; padding: 14px 32px 0;
@@ -134,6 +180,17 @@ export const BASE_CSS = `
     max-width: 62ch;
     font-weight: 500;
   }
+  /* Reference-doc hero: API pages, data downloads, press kit. The editorial
+     56px headline is wrong for pages where the body is code, tables, or
+     dense reference copy — readers need to get to the content, not stare at
+     a masthead. */
+  .page-hero--compact { padding: 28px 0 28px; }
+  .page-hero--compact .page-hero__hed {
+    font-size: clamp(26px, 2.6vw, 36px);
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+  }
+  .page-hero--compact .page-hero__lede { font-size: 16px; }
 
   .section-head { margin: 0 0 32px; max-width: 720px; }
   .section-head h2 {
