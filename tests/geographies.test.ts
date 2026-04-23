@@ -5,6 +5,7 @@ import {
   getStateProfile,
   getStateProfileByCode,
   getStateProfileByCodeOrSlug,
+  listInternalFetchStateProfiles,
   listPublicStateProfiles,
   listStateProfiles,
 } from "../src/geographies.js";
@@ -219,6 +220,78 @@ describe("state profiles", () => {
       publicAlpha: true,
     });
 
+    expect(getStateProfile("AN")).toMatchObject({
+      stateCode: "AN",
+      stateName: "Andaman and Nicobar Islands",
+      stateSlug: "andaman-and-nicobar-islands",
+      njdgStateValue: "35~28",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
+    expect(getStateProfile("CHD")).toMatchObject({
+      stateCode: "CHD",
+      stateName: "Chandigarh",
+      stateSlug: "chandigarh",
+      njdgStateValue: "4~27",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
+    expect(getStateProfile("DL")).toMatchObject({
+      stateCode: "DL",
+      stateName: "Delhi",
+      stateSlug: "delhi",
+      njdgStateValue: "7~26",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
+    expect(getStateProfile("JK")).toMatchObject({
+      stateCode: "JK",
+      stateName: "Jammu and Kashmir",
+      stateSlug: "jammu-and-kashmir",
+      njdgStateValue: "1~12",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
+    expect(getStateProfile("LA")).toMatchObject({
+      stateCode: "LA",
+      stateName: "Ladakh",
+      stateSlug: "ladakh",
+      njdgStateValue: "37~33",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
+    expect(getStateProfile("LD")).toMatchObject({
+      stateCode: "LD",
+      stateName: "Lakshadweep",
+      stateSlug: "lakshadweep",
+      njdgStateValue: "31~37",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
+    expect(getStateProfile("PY")).toMatchObject({
+      stateCode: "PY",
+      stateName: "Puducherry",
+      stateSlug: "puducherry",
+      njdgStateValue: "34~35",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
+    expect(getStateProfile("DNHDD")).toMatchObject({
+      stateCode: "DNHDD",
+      stateName: "Dadra and Nagar Haveli and Daman and Diu",
+      stateSlug: "dadra-and-nagar-haveli-and-daman-and-diu",
+      njdgStateValue: "38~38",
+      publicAlpha: false,
+      internalFetchEnabled: false,
+    });
+
     expect(listStateProfiles().map((profile) => profile.stateCode)).toEqual([
       "HP",
       "PB",
@@ -248,8 +321,46 @@ describe("state profiles", () => {
       "GA",
       "SK",
       "MZ",
+      "AN",
+      "CHD",
+      "DL",
+      "JK",
+      "LA",
+      "LD",
+      "PY",
+      "DNHDD",
     ]);
     expect(listPublicStateProfiles().map((profile) => profile.stateCode)).toEqual([
+      "HP",
+      "PB",
+      "HR",
+      "TN",
+      "AS",
+      "TS",
+      "AP",
+      "AR",
+      "MN",
+      "KL",
+      "ML",
+      "KA",
+      "TR",
+      "NL",
+      "UK",
+      "RJ",
+      "UP",
+      "MP",
+      "MH",
+      "BR",
+      "GJ",
+      "OD",
+      "WB",
+      "JH",
+      "CG",
+      "GA",
+      "SK",
+      "MZ",
+    ]);
+    expect(listInternalFetchStateProfiles().map((profile) => profile.stateCode)).toEqual([
       "HP",
       "PB",
       "HR",
@@ -305,6 +416,14 @@ describe("state profiles", () => {
     expect(getStateProfileByCode("ga")?.stateName).toBe("Goa");
     expect(getStateProfileByCode("sk")?.stateName).toBe("Sikkim");
     expect(getStateProfileByCode("mz")?.stateName).toBe("Mizoram");
+    expect(getStateProfileByCode("an")?.stateName).toBe("Andaman and Nicobar Islands");
+    expect(getStateProfileByCode("chd")?.stateName).toBe("Chandigarh");
+    expect(getStateProfileByCode("dl")?.stateName).toBe("Delhi");
+    expect(getStateProfileByCode("jk")?.stateName).toBe("Jammu and Kashmir");
+    expect(getStateProfileByCode("la")?.stateName).toBe("Ladakh");
+    expect(getStateProfileByCode("ld")?.stateName).toBe("Lakshadweep");
+    expect(getStateProfileByCode("py")?.stateName).toBe("Puducherry");
+    expect(getStateProfileByCode("dnhdd")?.stateName).toBe("Dadra and Nagar Haveli and Daman and Diu");
     expect(getStateProfileByCodeOrSlug("haryana")?.stateCode).toBe("HR");
     expect(getStateProfileByCodeOrSlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getStateProfileByCodeOrSlug("assam")?.stateCode).toBe("AS");
@@ -331,6 +450,14 @@ describe("state profiles", () => {
     expect(getStateProfileByCodeOrSlug("goa")?.stateCode).toBe("GA");
     expect(getStateProfileByCodeOrSlug("sikkim")?.stateCode).toBe("SK");
     expect(getStateProfileByCodeOrSlug("mizoram")?.stateCode).toBe("MZ");
+    expect(getStateProfileByCodeOrSlug("andaman-and-nicobar-islands")?.stateCode).toBe("AN");
+    expect(getStateProfileByCodeOrSlug("chandigarh")?.stateCode).toBe("CHD");
+    expect(getStateProfileByCodeOrSlug("delhi")?.stateCode).toBe("DL");
+    expect(getStateProfileByCodeOrSlug("jammu-and-kashmir")?.stateCode).toBe("JK");
+    expect(getStateProfileByCodeOrSlug("ladakh")?.stateCode).toBe("LA");
+    expect(getStateProfileByCodeOrSlug("lakshadweep")?.stateCode).toBe("LD");
+    expect(getStateProfileByCodeOrSlug("puducherry")?.stateCode).toBe("PY");
+    expect(getStateProfileByCodeOrSlug("dadra-and-nagar-haveli-and-daman-and-diu")?.stateCode).toBe("DNHDD");
     expect(getPublicStateProfileBySlug("haryana")?.stateCode).toBe("HR");
     expect(getPublicStateProfileBySlug("tamil-nadu")?.stateCode).toBe("TN");
     expect(getPublicStateProfileBySlug("assam")?.stateCode).toBe("AS");
@@ -357,5 +484,13 @@ describe("state profiles", () => {
     expect(getPublicStateProfileBySlug("goa")?.stateCode).toBe("GA");
     expect(getPublicStateProfileBySlug("sikkim")?.stateCode).toBe("SK");
     expect(getPublicStateProfileBySlug("mizoram")?.stateCode).toBe("MZ");
+    expect(getPublicStateProfileBySlug("andaman-and-nicobar-islands")).toBeNull();
+    expect(getPublicStateProfileBySlug("chandigarh")).toBeNull();
+    expect(getPublicStateProfileBySlug("delhi")).toBeNull();
+    expect(getPublicStateProfileBySlug("jammu-and-kashmir")).toBeNull();
+    expect(getPublicStateProfileBySlug("ladakh")).toBeNull();
+    expect(getPublicStateProfileBySlug("lakshadweep")).toBeNull();
+    expect(getPublicStateProfileBySlug("puducherry")).toBeNull();
+    expect(getPublicStateProfileBySlug("dadra-and-nagar-haveli-and-daman-and-diu")).toBeNull();
   });
 });

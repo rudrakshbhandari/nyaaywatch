@@ -1,4 +1,4 @@
-import { listStateProfiles, type NjdgStateProfile } from "../geographies.js";
+import { listInternalFetchStateProfiles, type NjdgStateProfile } from "../geographies.js";
 import { runOperatorInvocation } from "./operator-ops.js";
 
 const DEFAULT_SCHEDULED_FETCH_NOTE_PREFIX = "Scheduled daily lower-court internal raw fetch";
@@ -32,7 +32,7 @@ export async function runScheduledFetches(
   rawEnv: NodeJS.ProcessEnv = process.env,
 ): Promise<ScheduledFetchSummary> {
   const normalizedNotePrefix = normalizeScheduledFetchNotePrefix(notePrefix);
-  const profiles = listStateProfiles();
+  const profiles = listInternalFetchStateProfiles();
   const results: ScheduledFetchStateResult[] = [];
 
   for (const profile of profiles) {

@@ -4,6 +4,7 @@ export interface NjdgStateProfile {
   stateSlug: string;
   njdgStateValue: string;
   publicAlpha: boolean;
+  internalFetchEnabled?: boolean;
 }
 
 export type GeographyType = "state" | "union_territory";
@@ -15,7 +16,44 @@ export interface CourtGeography {
   lowerCourtStateCode?: SupportedStateCode;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ", "OD", "WB", "JH", "CG", "GA", "SK", "MZ"] as const;
+export const SUPPORTED_STATE_CODES = [
+  "HP",
+  "PB",
+  "HR",
+  "TN",
+  "AS",
+  "TS",
+  "AP",
+  "AR",
+  "MN",
+  "KL",
+  "ML",
+  "KA",
+  "TR",
+  "NL",
+  "UK",
+  "RJ",
+  "UP",
+  "MP",
+  "MH",
+  "BR",
+  "GJ",
+  "OD",
+  "WB",
+  "JH",
+  "CG",
+  "GA",
+  "SK",
+  "MZ",
+  "AN",
+  "CHD",
+  "DL",
+  "JK",
+  "LA",
+  "LD",
+  "PY",
+  "DNHDD",
+] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
@@ -216,6 +254,70 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     njdgStateValue: "15~19",
     publicAlpha: true,
   },
+  AN: {
+    stateCode: "AN",
+    stateName: "Andaman and Nicobar Islands",
+    stateSlug: "andaman-and-nicobar-islands",
+    njdgStateValue: "35~28",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
+  CHD: {
+    stateCode: "CHD",
+    stateName: "Chandigarh",
+    stateSlug: "chandigarh",
+    njdgStateValue: "4~27",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
+  DL: {
+    stateCode: "DL",
+    stateName: "Delhi",
+    stateSlug: "delhi",
+    njdgStateValue: "7~26",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
+  JK: {
+    stateCode: "JK",
+    stateName: "Jammu and Kashmir",
+    stateSlug: "jammu-and-kashmir",
+    njdgStateValue: "1~12",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
+  LA: {
+    stateCode: "LA",
+    stateName: "Ladakh",
+    stateSlug: "ladakh",
+    njdgStateValue: "37~33",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
+  LD: {
+    stateCode: "LD",
+    stateName: "Lakshadweep",
+    stateSlug: "lakshadweep",
+    njdgStateValue: "31~37",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
+  PY: {
+    stateCode: "PY",
+    stateName: "Puducherry",
+    stateSlug: "puducherry",
+    njdgStateValue: "34~35",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
+  DNHDD: {
+    stateCode: "DNHDD",
+    stateName: "Dadra and Nagar Haveli and Daman and Diu",
+    stateSlug: "dadra-and-nagar-haveli-and-daman-and-diu",
+    njdgStateValue: "38~38",
+    publicAlpha: false,
+    internalFetchEnabled: false,
+  },
 };
 
 export function getStateProfile(stateCode: SupportedStateCode): NjdgStateProfile {
@@ -233,6 +335,10 @@ export function listStateProfiles(): NjdgStateProfile[] {
 
 export function listPublicStateProfiles(): NjdgStateProfile[] {
   return listStateProfiles().filter((profile) => profile.publicAlpha);
+}
+
+export function listInternalFetchStateProfiles(): NjdgStateProfile[] {
+  return listStateProfiles().filter((profile) => profile.internalFetchEnabled !== false);
 }
 
 export function getPublicStateProfileBySlug(stateSlug: string): NjdgStateProfile | null {

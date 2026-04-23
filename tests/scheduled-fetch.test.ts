@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const listStateProfiles = vi.fn();
+const listInternalFetchStateProfiles = vi.fn();
 const runOperatorInvocation = vi.fn();
 
 vi.mock("../src/geographies.js", () => ({
-  listStateProfiles,
+  listInternalFetchStateProfiles,
 }));
 
 vi.mock("../src/dev/operator-ops.js", () => ({
@@ -16,8 +16,8 @@ describe("scheduled fetch", () => {
     vi.clearAllMocks();
   });
 
-  it("runs the fetch flow for every implemented state in order", async () => {
-    listStateProfiles.mockReturnValueOnce([
+  it("runs the fetch flow for every internal-fetch-enabled state in order", async () => {
+    listInternalFetchStateProfiles.mockReturnValueOnce([
       { stateCode: "HP", stateName: "Himachal Pradesh" },
       { stateCode: "PB", stateName: "Punjab" },
       { stateCode: "UP", stateName: "Uttar Pradesh" },
@@ -86,7 +86,7 @@ describe("scheduled fetch", () => {
   });
 
   it("records failures but keeps attempting later states", async () => {
-    listStateProfiles.mockReturnValueOnce([
+    listInternalFetchStateProfiles.mockReturnValueOnce([
       { stateCode: "HP", stateName: "Himachal Pradesh" },
       { stateCode: "PB", stateName: "Punjab" },
       { stateCode: "UP", stateName: "Uttar Pradesh" },
