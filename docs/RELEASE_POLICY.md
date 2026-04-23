@@ -15,7 +15,7 @@ This document answers four practical questions:
 
 Use a calm, predictable cadence for alpha:
 
-- Lower-court internal raw fetches: **every day at 8:00 AM Asia/Kolkata across all implemented states**
+- Lower-court internal raw fetches: **every day at 8:00 AM Asia/Kolkata across all internally proven lower-court state and Union Territory profiles**
 - Supreme Court internal raw fetches: **every day at 8:10 AM Asia/Kolkata**
 - High Court internal raw fetches: **every day at 8:20 AM Asia/Kolkata across reviewed High Court profiles only**
 - Public snapshot publishes: **twice per week**
@@ -33,7 +33,7 @@ Do not publish just because a newer run exists. Publish only after the release c
 
 Treat the daily fetches as internal evidence collection only:
 
-- they may create completed candidate runs across all implemented states, the Supreme Court tier, and reviewed High Court profiles
+- they may create completed candidate runs across all internally proven lower-court geographies, the Supreme Court tier, and reviewed High Court profiles
 - they must not change the public snapshot without an explicit operator publish
 - a failed daily fetch is an operational signal, not a reason to auto-publish or auto-rollback
 

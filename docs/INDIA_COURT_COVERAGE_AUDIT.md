@@ -24,10 +24,11 @@ NyaayWatch is now comprehensive at the **lower-court selector registry** level, 
 
 - Lower-court NJDG exposes 36 state/Union Territory selector geographies.
 - `src/geographies.ts` implements all 36 lower-court state/Union Territory profiles.
-- 28 lower-court profiles are public alpha and daily internal-fetch enabled.
-- 8 Union Territory or UT-style profiles are internal-only and daily-fetch disabled until explicit proof cycles run.
+- All 36 lower-court profiles are daily internal-fetch enabled after proof.
+- 28 lower-court profiles are public alpha.
+- 8 Union Territory or UT-style profiles are internal-only until a UT-aware public copy and methodology review is complete.
 
-Do not describe the product as fully all-India lower-court public comprehensive until the 8 internal-only lower-court geographies below are proven and published.
+Do not describe the product as fully all-India lower-court public comprehensive until the 8 internal-only lower-court geographies below are published.
 
 ## Supreme Court
 
@@ -82,34 +83,46 @@ Naming note: the live HC NJDG selector still says `High Court of Jammu and Kashm
 
 ## District And Subordinate Courts
 
-Status: all 36 NJDG selectors are registered; 28 are public alpha.
+Status: all 36 NJDG selectors are registered and daily internal-fetch enabled; 28 are public alpha.
 
 The live lower-court NJDG selector list exposes 36 state/Union Territory geographies. The repo now implements all 36 lower-court profiles.
 
-Internal-only lower-court geographies pending proof and public exposure:
+Internal-only lower-court geographies pending public exposure:
 
 | Lower-court NJDG selector | Selector label | Repo code | Public alpha | Daily internal fetch |
 | --- | --- | --- | --- | --- |
-| `35~28` | Andaman and Nicobar | `AN` | no | no |
-| `4~27` | Chandigarh | `CHD` | no | no |
-| `7~26` | Delhi | `DL` | no | no |
-| `1~12` | Jammu and Kashmir | `JK` | no | no |
-| `37~33` | Ladakh | `LA` | no | no |
-| `31~37` | Lakshadweep | `LD` | no | no |
-| `34~35` | Puducherry | `PY` | no | no |
-| `38~38` | The Dadra And Nagar Haveli And Daman And Diu | `DNHDD` | no | no |
+| `35~28` | Andaman and Nicobar | `AN` | no | yes |
+| `4~27` | Chandigarh | `CHD` | no | yes |
+| `7~26` | Delhi | `DL` | no | yes |
+| `1~12` | Jammu and Kashmir | `JK` | no | yes |
+| `37~33` | Ladakh | `LA` | no | yes |
+| `31~37` | Lakshadweep | `LD` | no | yes |
+| `34~35` | Puducherry | `PY` | no | yes |
+| `38~38` | The Dadra And Nagar Haveli And Daman And Diu | `DNHDD` | no | yes |
 
-These profiles are deliberately excluded from `listInternalFetchStateProfiles()`. The lower-court daily scheduler should not pick them up until each one has an explicit proof plan.
+These profiles are now included in `listInternalFetchStateProfiles()` after completing live staging `fetch -> inspect -> publish -> replay -> rollback` proof cycles. They remain excluded from `listPublicStateProfiles()` until public lower-court copy and methodology language is made state/Union Territory aware.
+
+Proof-cycle evidence from April 23, 2026:
+
+| Repo code | Fetch run | Replay run | Rollback publication | Source snapshot | Districts | Pending cases |
+| --- | --- | --- | --- | --- | ---: | ---: |
+| `AN` | `run_1f1fe012-5c39-4a77-ace1-54350d33b3a6` | `run_104a95f2-e941-4af8-9e4d-c44592ad9991` | `publication_cc492d80-2b56-4a3d-9569-2a227fbf8461` | `2026-04-23` | 4 | 8,722 |
+| `CHD` | `run_52d1c76c-357f-4a5a-a5bd-c073d12cc1bd` | `run_f6b6ece4-21e9-4249-ab85-f5fe44e98423` | `publication_3ca076d9-075a-4602-bf7b-3a18ea69afa5` | `2026-04-23` | 1 | 100,496 |
+| `DL` | `run_4e308835-45e4-4eab-badc-096f694a4c84` | `run_c2594972-c85e-4b50-9486-f3147b18c900` | `publication_0f306dbf-8b5f-4639-a585-5b4181ffaf63` | `2026-04-23` | 11 | 1,693,817 |
+| `JK` | `run_4d31a656-81b7-48c8-831b-7b16645c6c9b` | `run_2d09aefa-9dc5-434f-834a-fdc0c0989de2` | `publication_9679df8c-a167-406e-a89d-cf0c90794809` | `2026-04-23` | 20 | 356,819 |
+| `LA` | `run_c27551d1-fa94-4bd9-bc3f-bff4ce75d061` | `run_be8924ec-a267-402f-9a33-5b79e374052f` | `publication_13782eee-5eac-4154-9f0d-bf65abbe6504` | `2026-04-22` | 2 | 1,659 |
+| `LD` | `run_0dcc916c-c986-4402-b2b0-6491b2963f1a` | `run_c01f6937-9574-40bd-9dcf-bcec0a74c392` | `publication_8525bd7e-b9a2-4698-b5f6-8d1051426cb8` | `2026-04-23` | 1 | 577 |
+| `PY` | `run_f629f17c-c053-4d1e-824a-ef7361863b2e` | `run_25e012d0-5e04-4909-8bbd-c8d9fa501521` | `publication_d12dcb30-c5e6-4386-91fa-fe0cffa39f17` | `2026-04-22` | 4 | 36,684 |
+| `DNHDD` | `run_64134e8b-b667-4890-a950-a5d99417a211` | `run_c8366c43-9e3c-48ce-8093-bfe8e2cf2fa8` | `publication_d056cee6-916c-409e-ba37-23296950902d` | `2026-04-23` | 3 | 8,427 |
 
 ## Required Next Implementation Slice
 
 To make NyaayWatch public-comprehensive across all courts of India:
 
-1. Run fetch, publish, replay, and rollback proof cycles for the 8 internal-only lower-court UT profiles.
-2. Enable `internalFetchEnabled` only after the first proof cycle succeeds for each profile.
-3. Add public route and API exposure by switching `publicAlpha=true` only after methodology review.
-4. Update this audit after the UT proof batch verifies live route behavior.
+1. Complete a UT-aware lower-court public copy and methodology pass so public routes do not describe Union Territories as states.
+2. Add public route and API exposure by switching `publicAlpha=true` only after that review.
+3. Verify stable public routes and API parity for each newly public lower-court geography.
 
 Until then, the precise public claim is:
 
-NyaayWatch covers the Supreme Court, all High Court NJDG selectors in the internal registry, and all lower-court NJDG state/Union Territory selectors in the internal registry. Public lower-court pages currently cover the 28 proven lower-court state profiles, not the 8 internal-only UT profiles.
+NyaayWatch covers the Supreme Court, all High Court NJDG selectors in the internal registry, and all lower-court NJDG state/Union Territory selectors in the internal registry and daily internal fetch schedule. Public lower-court pages currently cover the 28 proven lower-court state profiles, not the 8 internal-only UT profiles.

@@ -260,7 +260,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "andaman-and-nicobar-islands",
     njdgStateValue: "35~28",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
   CHD: {
     stateCode: "CHD",
@@ -268,7 +268,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "chandigarh",
     njdgStateValue: "4~27",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
   DL: {
     stateCode: "DL",
@@ -276,7 +276,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "delhi",
     njdgStateValue: "7~26",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
   JK: {
     stateCode: "JK",
@@ -284,7 +284,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "jammu-and-kashmir",
     njdgStateValue: "1~12",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
   LA: {
     stateCode: "LA",
@@ -292,7 +292,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "ladakh",
     njdgStateValue: "37~33",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
   LD: {
     stateCode: "LD",
@@ -300,7 +300,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "lakshadweep",
     njdgStateValue: "31~37",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
   PY: {
     stateCode: "PY",
@@ -308,7 +308,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "puducherry",
     njdgStateValue: "34~35",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
   DNHDD: {
     stateCode: "DNHDD",
@@ -316,7 +316,7 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     stateSlug: "dadra-and-nagar-haveli-and-daman-and-diu",
     njdgStateValue: "38~38",
     publicAlpha: false,
-    internalFetchEnabled: false,
+    internalFetchEnabled: true,
   },
 };
 
