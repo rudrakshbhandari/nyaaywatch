@@ -11,6 +11,9 @@ service_name="$1"
 image_uri="$2"
 access_role_arn="$3"
 region="${AWS_REGION:-ap-south-1}"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+source "$script_dir/service-lookup.sh"
 
 # Poll cadence and ceilings. App Runner state changes typically land in
 # 2-5 minutes; anything past 15 minutes is effectively stuck and we surface
@@ -51,10 +54,7 @@ log() {
 }
 
 find_service_arn() {
-  aws apprunner list-services \
-    --region "$region" \
-    --query "ServiceSummaryList[?ServiceName=='$service_name'].ServiceArn | [0]" \
-    --output text
+  apprunner_find_service_arn_by_name "$region" "$service_name"
 }
 
 describe_status() {
