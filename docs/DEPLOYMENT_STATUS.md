@@ -35,7 +35,7 @@ Use this document as the live environment map. For routine release go/no-go deci
   - reviewed High Courts: `nyaaywatch-staging-high-courts-internal-fetch` at `8:20 AM Asia/Kolkata`
   - public alpha ops monitor: `nyaaywatch-staging-public-alpha-ops-monitor` every `30` minutes
 - Internal raw fetch schedule scope policy:
-  - lower-court states: all implemented states
+  - lower-court states: profiles returned by `listInternalFetchStateProfiles()`; registry-only UT profiles can remain daily-fetch disabled until proof cycles run
   - Supreme Court: the single configured Supreme Court profile
   - High Courts: only profiles whose `sourceReviewStatus` is `reviewed`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`

@@ -49,7 +49,7 @@ What is shipped now:
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
 
-Post-MVP work continues in this repo, but the currently supported state rollout set is now complete on the live site. Himachal Pradesh remains the default lower-court proof surface through `/states/himachal` and the unscoped district-family routes, while explicit `/states/:stateSlug/...` public routes are now live for Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram.
+Post-MVP work continues in this repo, but the currently supported public state rollout set is now complete on the live site. Himachal Pradesh remains the default lower-court proof surface through `/states/himachal` and the unscoped district-family routes, while explicit `/states/:stateSlug/...` public routes are now live for Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, and Mizoram. The lower-court registry now also includes the remaining NJDG Union Territory selectors as internal-only profiles, but those are not public until proof cycles clear.
 
 ## Product Guardrails
 
@@ -164,7 +164,7 @@ The live deploy path now supports three daily internal raw-fetch schedules plus 
 - reviewed High Courts at `8:20 AM Asia/Kolkata`
 - public-alpha ops monitor at every `30` minutes, checking `https://nyaaywatch.in` through the same deployed runtime and operator history
 
-Reconcile them against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the deploy helper keeps all four schedules pointed at the latest ECS task definition without changing the public snapshot. The lower-court schedule automatically picks up newly implemented states through `listStateProfiles()`, while the High Court schedule automatically picks up only courts whose `sourceReviewStatus` is `reviewed`. The public-alpha monitor emits a dedicated alert log line when parity drift, stale public snapshots, or internal fetch lag is detected. Public publishes remain operator-reviewed and manual on their existing cadence.
+Reconcile them against the current ECS task definition with `npm run operator:reconcile-fetch-schedule`; the deploy helper keeps all four schedules pointed at the latest ECS task definition without changing the public snapshot. The lower-court schedule targets profiles returned by `listInternalFetchStateProfiles()`, so newly registered UT profiles can stay out of daily fetches until proof work is intentional, while the High Court schedule automatically picks up only courts whose `sourceReviewStatus` is `reviewed`. The public-alpha monitor emits a dedicated alert log line when parity drift, stale public snapshots, or internal fetch lag is detected. Public publishes remain operator-reviewed and manual on their existing cadence.
 
 ## Public Surface
 
