@@ -225,7 +225,7 @@ export const BASE_CSS = `
   .colophon {
     max-width: 1280px; margin: 0 auto; padding: 48px 32px;
     border-top: 2px solid var(--ink);
-    display: grid; grid-template-columns: 1.4fr 1.2fr 1fr; gap: 32px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
     font-size: 13px; color: var(--ink-soft);
   }
   .colophon p { margin: 0 0 6px; }
@@ -253,7 +253,10 @@ export const BASE_CSS = `
   .info-popover {
     position: absolute; z-index: 20; top: calc(100% + 10px); left: 50%;
     transform: translateX(-50%);
-    min-width: 260px; max-width: 320px;
+    /* Cap at the narrower of: preferred 320px, or viewport minus a 16px
+       gutter on each side. Stops the tooltip from overflowing the viewport
+       when an info icon lives near the right edge on tablet/desktop. */
+    min-width: 260px; max-width: min(320px, calc(100vw - 32px));
     padding: 16px 18px;
     background: var(--paper-bright); color: var(--ink);
     border: 1px solid var(--ink); border-radius: 2px;
@@ -293,7 +296,8 @@ export const BASE_CSS = `
   }
   .data-table th a:hover { color: #fff; }
   .data-table tbody tr:last-child td { border-bottom: none; }
-  .data-table tbody tr:hover { background: var(--paper); }
+  .data-table tbody tr:hover,
+  .data-table tbody tr:has(a:focus-visible) { background: var(--paper); }
   .data-table .num {
     font-variant-numeric: lining-nums tabular-nums;
     font-weight: 600;
@@ -478,6 +482,19 @@ export const BASE_CSS = `
   .btn:focus-visible { outline-offset: 4px; }
   .masthead__brand:focus-visible, .masthead__nav a:focus-visible, .state-switcher a:focus-visible { outline-offset: 6px; }
   .info summary:focus-visible { outline: none; }
+
+  /* Form-control defaults — inputs that don't override get a consistent
+     placeholder color and a visible focus ring. Individual components can
+     still style themselves further. */
+  input::placeholder, textarea::placeholder {
+    color: var(--ink-muted);
+    opacity: 0.7;
+  }
+  input, textarea, select { font-family: inherit; color: var(--ink); }
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 
   /* --- evidence deep-linking: every claim on the site can anchor to an
          explanation elsewhere. When a URL hash lands on an element with a

@@ -77,13 +77,14 @@ export function renderPressPage(): string {
     <section class="press-section">
       ${renderSectionHead({ headline: "Journalist quickstart.", lede: "Pull the numbers directly from the API. No authentication, no rate limits for reasonable use." })}
       <div class="card">
+        <p class="press-api__intro">Examples below use <code>himachal</code> and <code>kangra</code> — swap in the state or district slug you want. See <a href="/api">/api</a> for the full route list and supported scopes.</p>
         <div class="press-api-row">
-          <p class="press-api__label">State summary (Himachal Pradesh)</p>
+          <p class="press-api__label">State summary (example: Himachal Pradesh)</p>
           <pre class="press-embed__code">${escapeHtml(curlExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(curlExample)}">Copy</button>
         </div>
         <div class="press-api-row">
-          <p class="press-api__label">All districts</p>
+          <p class="press-api__label">All districts (example scope)</p>
           <pre class="press-embed__code">${escapeHtml(districtExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(districtExample)}">Copy</button>
         </div>
@@ -256,6 +257,15 @@ const PRESS_PAGE_CSS = `
 
   .press-api-row { margin-bottom: 20px; }
   .press-api__label { margin: 0 0 6px; font-size: 14px; color: var(--ink-soft); font-weight: 500; }
+  .press-api__intro { margin: 0 0 18px; font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+  .press-api__intro code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px;
+    background: var(--rule-soft);
+    padding: 1px 6px;
+    border-radius: 2px;
+    color: var(--ink);
+  }
 
   .press-caption-card .press-caption {
     margin: 0 0 10px; font-size: 16px; line-height: 1.7; color: var(--ink);
