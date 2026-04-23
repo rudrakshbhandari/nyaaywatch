@@ -1,0 +1,135 @@
+import { runOperatorInvocation, type OperatorInvocation } from "../dev/operator-ops.js";
+import { createAlarmNotifier, type AlarmNotifier } from "./alarm-notifier.js";
+import { evaluateAutoPublish, type AutoPublishDecision } from "./auto-publish-gate.js";
+
+export type AutoPublishAction = "published" | "skipped_review" | "publish_failed" | "gate_inputs_missing";
+
+export interface AutoPublishOutcome {
+  action: AutoPublishAction;
+  decision?: AutoPublishDecision;
+  publishRunId?: string;
+  error?: string;
+}
+
+export interface AutoPublishRequest {
+  scopeLabel: string;
+  selector: Pick<OperatorInvocation, "stateCode" | "highCourtCode" | "supremeCourt">;
+  fetchResult: unknown;
+  pendingField: "pendingTotalCases" | "pendingCases";
+  note?: string;
+}
+
+export interface AutoPublishRunnerDeps {
+  runOperator?: typeof runOperatorInvocation;
+  notifier?: AlarmNotifier;
+  rawEnv?: NodeJS.ProcessEnv;
+}
+
+export async function runAutoPublish(
+  request: AutoPublishRequest,
+  deps: AutoPublishRunnerDeps = {},
+): Promise<AutoPublishOutcome> {
+  const rawEnv = deps.rawEnv ?? process.env;
+  const runOperator = deps.runOperator ?? runOperatorInvocation;
+  const notifier = deps.notifier ?? createAlarmNotifier(rawEnv);
+
+  const inputs = extractGateInputs(request.fetchResult, request.pendingField);
+  if (!inputs.runId || !inputs.qualityState) {
+    return { action: "gate_inputs_missing" };
+  }
+
+  const decision = evaluateAutoPublish({
+    qualityState: inputs.qualityState,
+    currentPending: inputs.currentPending,
+    previousPending: inputs.previousPending,
+  });
+
+  if (!decision.publish) {
+    const subject = `NyaayWatch review required: ${request.scopeLabel}`;
+    const message = formatReviewMessage(request, inputs.runId, decision);
+    await notifier.publish(subject, message);
+    return { action: "skipped_review", decision };
+  }
+
+  try {
+    await runOperator(
+      {
+        ...request.selector,
+        command: "publish",
+        targetId: inputs.runId,
+        note: request.note,
+      },
+      rawEnv,
+    );
+    return { action: "published", decision, publishRunId: inputs.runId };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await notifier.publish(
+      `NyaayWatch auto-publish failed: ${request.scopeLabel}`,
+      `Run: ${inputs.runId}\nReason: ${message}`,
+    );
+    return { action: "publish_failed", decision, publishRunId: inputs.runId, error: message };
+  }
+}
+
+interface ExtractedGateInputs {
+  runId?: string;
+  qualityState?: string;
+  currentPending?: number;
+  previousPending?: number;
+}
+
+function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | "pendingCases"): ExtractedGateInputs {
+  if (!result || typeof result !== "object") {
+    return {};
+  }
+  const obj = result as Record<string, unknown>;
+
+  const run = obj.run as Record<string, unknown> | undefined;
+  const runId = typeof run?.id === "string" ? run.id : undefined;
+
+  const candidate = obj.candidate as Record<string, unknown> | null | undefined;
+  if (!candidate) {
+    return { runId };
+  }
+
+  const snapshot = candidate.snapshot as Record<string, unknown> | undefined;
+  const qualityState = typeof snapshot?.qualityState === "string" ? snapshot.qualityState : undefined;
+
+  const stats = candidate.stats as Record<string, unknown> | undefined;
+  const currentPendingRaw = stats?.[pendingField];
+  const currentPending = typeof currentPendingRaw === "number" ? currentPendingRaw : undefined;
+
+  const trends = Array.isArray(candidate.trends) ? (candidate.trends as Array<Record<string, unknown>>) : [];
+  const previousPending = trends.length >= 2 ? trends[trends.length - 2]?.[pendingField] : undefined;
+
+  return {
+    runId,
+    qualityState,
+    currentPending,
+    previousPending: typeof previousPending === "number" ? previousPending : undefined,
+  };
+}
+
+function formatReviewMessage(request: AutoPublishRequest, runId: string, decision: AutoPublishDecision): string {
+  const lines = [
+    `Scope: ${request.scopeLabel}`,
+    `Run: ${runId}`,
+    `Reason: ${decision.reason ?? "unknown"}`,
+    `Quality state: ${decision.qualityState}`,
+  ];
+  if (decision.currentPending !== undefined) {
+    lines.push(`Current pending: ${decision.currentPending}`);
+  }
+  if (decision.previousPending !== undefined) {
+    lines.push(`Previous published pending: ${decision.previousPending}`);
+  }
+  if (decision.deltaFraction !== undefined) {
+    lines.push(`Delta fraction: ${(decision.deltaFraction * 100).toFixed(1)}% (threshold ${(decision.deltaThreshold * 100).toFixed(0)}%)`);
+  }
+  lines.push(
+    "",
+    "Inspect this run via the operator CLI and publish or discard manually once reviewed.",
+  );
+  return lines.join("\n");
+}
