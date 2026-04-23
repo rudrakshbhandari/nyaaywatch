@@ -58,22 +58,45 @@ function computePressure(entry: IndiaMapStateEntry, scales: PressureScales): num
   );
 }
 
-// Sequential ramp from paper-bright through warm amber to accent-dark. Five
-// bins keeps the map legible without a continuous-scale legend.
+// Sequential ramp from light amber through warm amber to accent-dark. Even the
+// lowest bin carries a touch of warmth so low-pressure states are visually
+// distinct from the "no data" diagonal-stripe pattern. Five bins keeps the map
+// legible without a continuous-scale legend.
 const RAMP = [
-  { stop: "#fbf7ea", label: "<20" },
-  { stop: "#f0d7a8", label: "20–40" },
-  { stop: "#de9c5c", label: "40–60" },
-  { stop: "#b94a1e", label: "60–80" },
-  { stop: "#8a1408", label: "≥80" },
+  { stop: "#f5ead0", label: "lowest" },
+  { stop: "#ead2a0", label: "low" },
+  { stop: "#de9c5c", label: "mid" },
+  { stop: "#b94a1e", label: "high" },
+  { stop: "#8a1408", label: "highest" },
 ] as const;
 
-function binIndex(score: number): number {
-  if (score < 0.2) return 0;
-  if (score < 0.4) return 1;
-  if (score < 0.6) return 2;
-  if (score < 0.8) return 3;
-  return 4;
+// Neutral taupe state-border stroke. Visible against both the paper-toned low
+// bins and the dark accent high bins, so neighboring states always read as
+// distinct shapes even when both fall in the same pressure bucket.
+const STATE_STROKE = "#9b9179";
+const NODATA_STROKE = "#b8ae97";
+
+/**
+ * Rank-based bin assignment. With fixed breakpoints the real score distribution
+ * was compressed into the bottom two bins and the map looked almost uniformly
+ * cream. Assigning colors by rank — lowest-pressure state gets bin 0, highest
+ * gets the top bin, everything else linearly interpolated — guarantees the
+ * full ramp is used every render and works cleanly even with only a handful
+ * of published states. The map reads as a relative heatmap across the
+ * currently-published cohort.
+ */
+function assignBinsByRank<T extends { score: number }>(
+  scored: T[],
+): Map<T, number> {
+  const sorted = [...scored].sort((a, b) => a.score - b.score);
+  const n = sorted.length;
+  const map = new Map<T, number>();
+  const topBin = RAMP.length - 1;
+  for (let i = 0; i < n; i++) {
+    const bin = n <= 1 ? topBin : Math.round((i / (n - 1)) * topBin);
+    map.set(sorted[i], bin);
+  }
+  return map;
 }
 
 function formatInt(value: number): string {
@@ -98,9 +121,10 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
   const scales = deriveScales(entries);
   const scored = entries.map((entry) => ({ entry, score: computePressure(entry, scales) }));
   const byCode = new Map(scored.map((s) => [s.entry.profile.stateCode, s]));
+  const binByScored = assignBinsByRank(scored);
 
   const pathSvg = Object.keys(INDIA_STATE_PATHS)
-    .map((code) => renderStatePath(code, byCode.get(code as SupportedStateCode)))
+    .map((code) => renderStatePath(code, byCode.get(code as SupportedStateCode), binByScored))
     .join("\n");
 
   const topThree = [...scored].sort((a, b) => b.score - a.score).slice(0, 3);
@@ -125,8 +149,8 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
     .join("");
 
   const legend = RAMP.map(
-    (r, i) =>
-      `<span class="india-choropleth__swatch" role="img" style="background:${r.stop}" aria-label="Pressure bin ${r.label}${i === 0 ? " (lowest)" : i === RAMP.length - 1 ? " (highest)" : ""}"></span>`,
+    (r) =>
+      `<span class="india-choropleth__swatch" role="img" style="background:${r.stop}" aria-label="Pressure quintile: ${r.label}"></span>`,
   ).join("");
 
   return `
@@ -134,7 +158,7 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
       <header class="india-choropleth__head">
         <p class="india-choropleth__eyebrow">JUDICIAL PRESSURE INDEX</p>
         <h2 class="india-choropleth__hed">Where is delay piling up across India?</h2>
-        <p class="india-choropleth__lede">Each state shaded by a composite index: pending backlog, median case age, clearance shortfall, and share of flagged districts. Darker red means more pressure on the court system. Click any state to open its published snapshot.</p>
+        <p class="india-choropleth__lede">Each state shaded by its rank on a composite index: pending backlog, median case age, clearance shortfall, and share of flagged districts. States are split into five pressure quintiles — darker red means higher pressure relative to the rest of the country. Click any state to open its published snapshot.</p>
       </header>
       <div class="india-choropleth__layout">
         <figure class="india-choropleth__frame" aria-labelledby="india-choropleth-title">
@@ -171,22 +195,24 @@ ${INDIA_MAP_CSS}
 function renderStatePath(
   code: string,
   scoredEntry: { entry: IndiaMapStateEntry; score: number } | undefined,
+  binByScored: Map<{ entry: IndiaMapStateEntry; score: number }, number>,
 ): string {
   const d = INDIA_STATE_PATHS[code];
   if (!d) return "";
 
   if (!scoredEntry) {
-    return `<path d="${d}" fill="url(#india-map-nodata)" stroke="#e7e1d4" stroke-width="0.9" class="india-choropleth__state india-choropleth__state--nodata">
+    return `<path d="${d}" fill="url(#india-map-nodata)" stroke="${NODATA_STROKE}" stroke-width="0.7" class="india-choropleth__state india-choropleth__state--nodata">
       <title>No published snapshot yet.</title>
     </path>`;
   }
 
   const { entry, score } = scoredEntry;
-  const fill = RAMP[binIndex(score)].stop;
+  const bin = binByScored.get(scoredEntry) ?? 0;
+  const fill = RAMP[bin].stop;
   const href = `/states/${entry.profile.stateSlug}`;
   const tooltip = `${entry.profile.stateName} — pressure ${scoreLabel(score)}. ${formatInt(entry.stats.pendingCases)} pending · ${formatInt(entry.stats.medianCaseAgeDays)}-day median age · ${entry.stats.disposalRate.toFixed(1)}% disposal.`;
   return `<a href="${escapeHtml(href)}" class="india-choropleth__state-link" aria-label="${escapeHtml(tooltip)}">
-    <path d="${d}" fill="${fill}" stroke="#fbf7ea" stroke-width="0.9" class="india-choropleth__state india-choropleth__state--live" data-pressure="${score.toFixed(2)}" />
+    <path d="${d}" fill="${fill}" stroke="${STATE_STROKE}" stroke-width="0.7" class="india-choropleth__state india-choropleth__state--live" data-pressure="${score.toFixed(2)}" />
     <title>${escapeHtml(tooltip)}</title>
   </a>`;
 }
