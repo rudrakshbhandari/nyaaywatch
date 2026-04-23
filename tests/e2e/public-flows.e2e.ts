@@ -6,16 +6,19 @@ test("citizen flow loads the homepage, district workspace, and district permalin
   await expect(page.getByRole("heading", { name: "How long is India waiting for justice?" })).toBeVisible();
   await expect(page.locator(".national-hero__accountability")).toContainText(/Captured|Source snapshot/);
   await expect(page.getByRole("link", { name: /Track the Supreme Court/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Browse lower courts/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Browse state pages/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Open top state/i })).toBeVisible();
 
-  await page.getByRole("link", { name: /Inspect districts/i }).click();
-  await expect(page).toHaveURL(/\/districts$/);
+  await page.getByRole("link", { name: /Open top state/i }).click();
+  await expect(page).toHaveURL(/\/states\/[a-z-]+$/);
+  await page.getByRole("navigation").getByRole("link", { name: "Districts" }).click();
+  await expect(page).toHaveURL(/(\/states\/[a-z-]+\/districts|\/districts)$/);
   await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
   await expect(page.getByLabel("View")).toBeVisible();
 
-  await page.getByRole("link", { name: "Kangra" }).first().click();
-  await expect(page).toHaveURL(/\/districts\/kangra$/);
-  await expect(page.getByRole("heading", { name: "Kangra" })).toBeVisible();
+  await page.getByRole("link", { name: /Faridabad|Ludhiana|Kangra/ }).first().click();
+  await expect(page).toHaveURL(/(\/states\/[a-z-]+\/districts\/[a-z-]+|\/districts\/[a-z-]+)$/);
+  await expect(page.getByRole("heading", { name: /Faridabad|Ludhiana|Kangra/ })).toBeVisible();
   await expect(page.getByText("Published district history")).toBeVisible();
   await expect(page.getByRole("link", { name: "Download district history CSV" })).toBeVisible();
 });
