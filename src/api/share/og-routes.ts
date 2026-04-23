@@ -18,6 +18,7 @@ import type { SupportedStateCode } from "../../geographies.js";
 import type { SupportedHighCourtCode } from "../../high-courts.js";
 import { getPublicStateProfileBySlug } from "../../geographies.js";
 import { getPublicHighCourtProfileBySlug } from "../../high-courts.js";
+import { logError } from "../../lib/logger.js";
 import type { PublishedSnapshotService } from "../../services/published-snapshot-service.js";
 import type { PublishedHighCourtSnapshotService } from "../../services/published-high-court-snapshot-service.js";
 import type { PublishedSupremeCourtSnapshotService } from "../../services/published-supreme-court-snapshot-service.js";
@@ -39,6 +40,13 @@ type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotServ
 type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
 
 const DEFAULT_STATE_CODE: SupportedStateCode = "HP";
+
+function logOgRouteError(route: string, err: unknown) {
+  logError("og_image_render_failed", {
+    route,
+    error: err instanceof Error ? err.message : String(err),
+  });
+}
 
 export function registerOgRoutes(
   publicServices: PublicServiceMap,
@@ -76,6 +84,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/state/:stateSlug.png", err);
       res.status(500).end();
     }
   });
@@ -106,6 +115,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/home.png", err);
       res.status(500).end();
     }
   });
@@ -140,6 +150,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/district/:districtId.png", err);
       res.status(500).end();
     }
   });
@@ -174,6 +185,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/district/:districtId-square.png", err);
       res.status(500).end();
     }
   });
@@ -207,6 +219,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/state/:stateSlug-square.png", err);
       res.status(500).end();
     }
   });
@@ -235,6 +248,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/national.png", err);
       res.status(500).end();
     }
   });
@@ -271,6 +285,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/high-court/:courtSlug.png", err);
       res.status(500).end();
     }
   });
@@ -303,6 +318,7 @@ export function registerOgRoutes(
       res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
       res.send(png);
     } catch (err) {
+      logOgRouteError("/og/supreme-court.png", err);
       res.status(500).end();
     }
   });
