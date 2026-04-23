@@ -160,6 +160,73 @@ describe("HTTP routes", () => {
     expect(response.text).toContain("Disallow: /operator/");
   });
 
+  it("renders OG images without outbound font fetches", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+    const originalFetch = globalThis.fetch;
+    const fetchSpy = vi.fn(async () => {
+      throw new Error("network disabled");
+    });
+    vi.stubGlobal("fetch", fetchSpy);
+
+    try {
+      const districtOg = await request(app).get("/og/district/kangra.png");
+      expect(districtOg.status).toBe(200);
+      expect(districtOg.headers["content-type"]).toMatch(/image\/png/);
+
+      const nationalOg = await request(app).get("/og/national.png");
+      expect(nationalOg.status).toBe(200);
+      expect(nationalOg.headers["content-type"]).toMatch(/image\/png/);
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.stubGlobal("fetch", originalFetch);
+    }
+  });
+
+  it("logs OG render failures with the route name", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    vi.resetModules();
+    vi.doMock("../src/api/share/og-card.js", async () => {
+      const actual = await vi.importActual<typeof import("../src/api/share/og-card.js")>("../src/api/share/og-card.js");
+      return {
+        ...actual,
+        renderDistrictOgCard: vi.fn(async () => {
+          throw new Error("synthetic og failure");
+        }),
+      };
+    });
+
+    const brokenContext = await createTestContext();
+    pools.push(brokenContext.pool);
+    await seedTestSnapshot(brokenContext.service);
+    const { createApp } = await import("../src/api/app.js");
+    const brokenApp = createApp(
+      brokenContext.config,
+      brokenContext.service,
+      brokenContext.publicServices,
+      brokenContext.highCourtServices,
+      brokenContext.supremeCourtService,
+    );
+
+    const response = await request(brokenApp).get("/og/district/kangra.png");
+    expect(response.status).toBe(500);
+
+    const messages = errorSpy.mock.calls.map((call) => String(call[0]));
+    expect(messages.some((message) => message.includes("\"event\":\"og_image_render_failed\""))).toBe(true);
+    expect(messages.some((message) => message.includes("/og/district/:districtId.png"))).toBe(true);
+
+    errorSpy.mockRestore();
+    vi.doUnmock("../src/api/share/og-card.js");
+    vi.resetModules();
+  });
+
   it("emits structured request logs for non-health routes and skips the ALB health check noise", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
