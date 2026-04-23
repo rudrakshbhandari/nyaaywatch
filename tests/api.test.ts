@@ -558,7 +558,7 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("Patna High Court");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
-    expect(index.text).toContain("ordered by the clearest pressure signal first");
+    expect(index.text).toContain("ordered by last-month pile change first, then clearance pace, then pending load");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
