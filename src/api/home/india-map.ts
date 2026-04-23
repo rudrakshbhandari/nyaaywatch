@@ -126,7 +126,7 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
 
   const legend = RAMP.map(
     (r, i) =>
-      `<span class="india-choropleth__swatch" style="background:${r.stop}" aria-label="Pressure bin ${r.label}${i === 0 ? " (lowest)" : i === RAMP.length - 1 ? " (highest)" : ""}"></span>`,
+      `<span class="india-choropleth__swatch" role="img" style="background:${r.stop}" aria-label="Pressure bin ${r.label}${i === 0 ? " (lowest)" : i === RAMP.length - 1 ? " (highest)" : ""}"></span>`,
   ).join("");
 
   return `
@@ -138,7 +138,7 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
       </header>
       <div class="india-choropleth__layout">
         <figure class="india-choropleth__frame" aria-labelledby="india-choropleth-title">
-          <svg viewBox="0 0 ${INDIA_VIEWBOX.width} ${INDIA_VIEWBOX.height}" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="india-choropleth-title" class="india-choropleth__svg" preserveAspectRatio="xMidYMid meet">
+          <svg viewBox="0 0 ${INDIA_VIEWBOX.width} ${INDIA_VIEWBOX.height}" xmlns="http://www.w3.org/2000/svg" aria-labelledby="india-choropleth-title" class="india-choropleth__svg" preserveAspectRatio="xMidYMid meet">
             <title id="india-choropleth-title">India judicial pressure map — ${entries.length} states shaded by pressure index.</title>
             <defs>
               <pattern id="india-map-nodata" patternUnits="userSpaceOnUse" width="7" height="7">
