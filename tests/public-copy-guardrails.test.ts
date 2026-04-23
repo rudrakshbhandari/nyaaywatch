@@ -90,7 +90,8 @@ describe("public copy guardrails", () => {
       );
       if (route.path === "/") {
         expect(response.text).not.toContain("See Himachal lower courts");
-        expect(response.text).toContain("Browse lower courts");
+        expect(response.text).toContain("Browse state pages");
+        expect(response.text).not.toContain("featured Himachal Pradesh snapshot");
       }
 
       for (const pattern of disallowedPublicPhrases) {

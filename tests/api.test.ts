@@ -73,14 +73,17 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("data:image/svg+xml,");
     expect(homepage.text).toContain("How long is India waiting for justice?");
     expect(homepage.text).toContain("Track the Supreme Court");
-    expect(homepage.text).toContain("Most delay sits in the lower courts.");
+    expect(homepage.text).toContain("Lower courts show the broadest pressure.");
     expect(homepage.text).toContain("Where is delay piling up across India?");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
-    expect(homepage.text).toContain("Browse lower courts");
-    expect(homepage.text).toContain("Featured lower-court backlog");
+    expect(homepage.text).toContain("Browse state pages");
+    expect(homepage.text).toContain("Pending across public states");
+    expect(homepage.text).toContain("Highest-pressure state");
     expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
+    expect(homepage.text).not.toContain("featured published snapshot");
+    expect(homepage.text).not.toContain("Kullu, Himachal Pradesh");
 
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
