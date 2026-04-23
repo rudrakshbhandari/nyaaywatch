@@ -208,6 +208,32 @@ describe("high court profiles", () => {
       },
     });
 
+    expect(getHighCourtProfile("JKLHC")).toEqual({
+      courtCode: "JKLHC",
+      courtSlug: "jammu-kashmir-and-ladakh",
+      courtName: "High Court of Jammu & Kashmir and Ladakh",
+      hcNjdgStateValue: "1~12",
+      coveredGeographies: [
+        {
+          geographyCode: "JK",
+          geographyName: "Jammu and Kashmir",
+          geographyType: "union_territory",
+        },
+        {
+          geographyCode: "LA",
+          geographyName: "Ladakh",
+          geographyType: "union_territory",
+        },
+      ],
+      publicBeta: false,
+      sourceReviewStatus: "queued",
+      sourceUrls: {
+        hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
+        hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
+        officialSite: "https://jkhighcourt.nic.in/",
+      },
+    });
+
     expect(getHighCourtProfile("PHHC")).toEqual({
       courtCode: "PHHC",
       courtSlug: "punjab-and-haryana",
@@ -321,6 +347,7 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("himachal")?.courtCode).toBe("HPHC");
     expect(getHighCourtProfileBySlug("HIMACHAL")?.courtCode).toBe("HPHC");
     expect(getHighCourtProfileBySlug("delhi")?.courtCode).toBe("DLHC");
+    expect(getHighCourtProfileBySlug("jammu-kashmir-and-ladakh")?.courtCode).toBe("JKLHC");
     expect(getHighCourtProfileBySlug("kerala")?.courtCode).toBe("KLHC");
     expect(getHighCourtProfileBySlug("madras")?.courtCode).toBe("MDHC");
     expect(getHighCourtProfileBySlug("uttar-pradesh")?.courtCode).toBe("UPHC");
@@ -334,7 +361,7 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("punjab-and-haryana")?.courtCode).toBe("PHHC");
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
-    expect(listHighCourtProfiles()).toHaveLength(24);
+    expect(listHighCourtProfiles()).toHaveLength(25);
     expect(listPublicHighCourtProfiles().map((profile) => profile.courtSlug)).toEqual([
       "himachal",
       "andhra-pradesh",
@@ -353,6 +380,7 @@ describe("high court profiles", () => {
     ]);
     expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(14);
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("DLHC"))).toBeNull();
+    expect(getPrimaryHighCourtStateCode(getHighCourtProfile("JKLHC"))).toBeNull();
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("BOHC"))).toBe("MH");
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("CLHC"))).toBe("WB");
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("GHHC"))).toBe("AS");
@@ -392,6 +420,7 @@ describe("high court routes", () => {
   it("formats court-first coverage labels and sentences", () => {
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("HPHC"))).toBe("Himachal Pradesh");
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("DLHC"))).toBe("Delhi");
+    expect(formatHighCourtCoverageLabel(getHighCourtProfile("JKLHC"))).toBe("Jammu and Kashmir and Ladakh");
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("BOHC"))).toBe(
       "Maharashtra, Goa, and Dadra and Nagar Haveli and Daman and Diu",
     );
@@ -404,6 +433,9 @@ describe("high court routes", () => {
     expect(formatHighCourtCoverageLabel(getHighCourtProfile("PHHC"))).toBe("Punjab, Haryana, and Chandigarh");
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("GJHC"))).toBe("This page tracks High Court of Gujarat across Gujarat.");
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("DLHC"))).toBe("This page tracks High Court of Delhi across Delhi.");
+    expect(buildHighCourtCoverageSentence(getHighCourtProfile("JKLHC"))).toBe(
+      "This page tracks High Court of Jammu & Kashmir and Ladakh across Jammu and Kashmir and Ladakh.",
+    );
     expect(buildHighCourtCoverageSentence(getHighCourtProfile("BOHC"))).toBe(
       "This page tracks Bombay High Court across Maharashtra, Goa, and Dadra and Nagar Haveli and Daman and Diu.",
     );

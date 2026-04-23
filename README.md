@@ -135,6 +135,7 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court telanga
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court gujarat fetch "Internal Gujarat High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court madhya-pradesh fetch "Internal Madhya Pradesh High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court uttar-pradesh fetch "Internal Allahabad High Court fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court jammu-kashmir-and-ladakh fetch "Initial Jammu & Kashmir and Ladakh High Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal Supreme Court fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court publications
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal
@@ -366,10 +367,12 @@ Start here:
 - [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
 - [Himachal High Court pilot plan](docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md)
 - [Himachal High Court source review](docs/HIMACHAL_HIGH_COURT_SOURCE_REVIEW.md)
+- [Jammu & Kashmir and Ladakh High Court source review](docs/JAMMU_KASHMIR_LADAKH_HIGH_COURT_SOURCE_REVIEW.md)
 - [Uttar Pradesh High Court source review](docs/UTTAR_PRADESH_HIGH_COURT_SOURCE_REVIEW.md)
 - [Rajasthan High Court source review](docs/RAJASTHAN_HIGH_COURT_SOURCE_REVIEW.md)
 - [Himachal High Court methodology draft](docs/HIMACHAL_HIGH_COURT_METHODOLOGY.md)
 - [Himachal High Court internal readiness review](docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md)
+- [Jammu & Kashmir and Ladakh High Court internal readiness review](docs/JAMMU_KASHMIR_LADAKH_HIGH_COURT_INTERNAL_READINESS_REVIEW.md)
 - [Supreme Court internal readiness review](docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md)
 - [Supreme Court methodology draft](docs/SUPREME_COURT_METHODOLOGY.md)
 - [Supreme Court pilot plan](docs/SUPREME_COURT_PILOT_PLAN.md)

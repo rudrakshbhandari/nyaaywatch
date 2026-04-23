@@ -210,6 +210,7 @@ Track those in `TODOS.md`, not here.
 
 ## Update Log
 
+- 2026-04-22: Added an internal-only common High Court profile for Jammu & Kashmir and Ladakh using the current official court name, one HC NJDG selector (`1~12`), and explicit covered union territories. The repo docs now record the required source-review and internal-readiness posture before any live proof cycle or public-beta decision.
 - 2026-04-20: Completed the first post-MVP public-alpha alerting slice by adding a scheduled ECS public-alpha monitor, alarmable `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log output, and a CloudWatch-to-SNS alarm path so `ops:verify-public-alpha` now produces dependable wake-up behavior outside manual release checks.
 - 2026-04-19: Replaced the old Himachal-first homepage with a Supreme Court-first national front door at `/`, moved the Himachal lower-court overview to `/states/himachal`, and updated route/test/docs coverage so the public product now stages Supreme Court, High Courts, and district/subordinate courts without implying fake cross-tier comparability.
 - 2026-04-22: Removed the remaining Himachal-biased lower-court summary copy from `/` by rebuilding that section around the currently published multi-state cohort, so the national homepage now points readers into state pages and relative pressure rather than a disguised default-state snapshot.
