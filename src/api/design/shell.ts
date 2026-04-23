@@ -120,10 +120,10 @@ function renderNav(
     { id: "methodology", href: "/methodology", label: "Method" },
     { id: "api", href: "/api", label: "API" },
   ];
-  return `<nav class="masthead__nav">${links
+  return `<nav class="masthead__nav" aria-label="Primary">${links
     .map(
       (link) =>
-        `<a href="${link.href}"${active === link.id ? ` class="is-active"` : ""}>${escapeHtml(link.label)}</a>`,
+        `<a href="${link.href}"${active === link.id ? ` class="is-active" aria-current="page"` : ""}>${escapeHtml(link.label)}</a>`,
     )
     .join("")}</nav>`;
 }
@@ -144,7 +144,7 @@ function renderStateSwitcher(stateLinks: Array<{ label: string; href: string; ac
   const links = stateLinks
     .map(
       (link) =>
-        `<a href="${link.href}"${link.active ? ` class="is-active"` : ""}>${escapeHtml(link.label)}</a>`,
+        `<a href="${link.href}"${link.active ? ` class="is-active" aria-current="page"` : ""}>${escapeHtml(link.label)}</a>`,
     )
     .join("");
 

@@ -319,9 +319,14 @@ const DISTRICTS_PAGE_CSS = `
     gap: 8px 12px;
     margin-bottom: 28px;
     padding: 12px 16px;
-    border: 1px dashed var(--rule);
-    background: transparent;
+    border: 1px solid var(--rule);
+    background: var(--paper-bright);
     max-width: 100%;
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+  .your-district-chip:hover,
+  .your-district-chip:focus-within {
+    border-color: var(--ink);
   }
   .your-district-chip__label {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -338,16 +343,18 @@ const DISTRICTS_PAGE_CSS = `
     border-bottom: 1px solid var(--rule);
     padding: 2px 0;
     width: 0;
+    transition: border-color 120ms ease;
   }
+  .your-district-chip__input:focus { border-bottom-color: var(--accent); }
   .your-district-chip__input::placeholder { color: var(--ink-muted); font-weight: 500; }
   .your-district-chip__suggestions {
     display: none;
     position: absolute;
-    top: 100%; left: 0; right: 0;
-    background: var(--paper);
+    top: calc(100% + 2px); left: 0; right: 0;
+    background: var(--paper-bright);
     border: 1px solid var(--ink);
     z-index: 10;
-    border-top: none;
+    box-shadow: 4px 4px 0 rgba(12, 10, 8, 0.08);
   }
   .your-district-chip__option {
     display: block;
