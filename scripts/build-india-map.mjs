@@ -1,27 +1,32 @@
 // One-shot build: projects India state boundaries into SVG path strings
-// committed at src/api/home/india-geography.ts. Source GeoJSON is NOT
-// checked in (it's 22MB). To regenerate:
+// committed at src/api/home/india-geography.ts.
 //
-//   curl -sL -o /tmp/india-tel.geojson \
-//     https://raw.githubusercontent.com/geohacker/india/master/state/india_telengana.geojson
-//   INPUT=/tmp/india-tel.geojson node scripts/build-india-map.mjs
+// Source: adarshbiradar/maps-geojson (india.json), which uses India's OFFICIAL
+// territorial boundary — Jammu & Kashmir includes Pakistan-occupied Kashmir
+// (Muzaffarabad, Mirpur) and Ladakh includes Gilgit-Baltistan and Aksai Chin.
+// This is the only correct boundary for an Indian product.
 //
-// The source is the geohacker/india public-domain dataset. State names in
-// the file (Uttaranchal, Orissa) reflect pre-rename labels and are remapped
-// below. J&K, Ladakh, and Arunachal Pradesh appear as Indian territory.
+// To regenerate:
+//
+//   curl -sL -o /tmp/india-official.json \
+//     https://raw.githubusercontent.com/adarshbiradar/maps-geojson/master/india.json
+//   INPUT=/tmp/india-official.json node scripts/build-india-map.mjs
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const INPUT = process.env.INPUT ?? '/tmp/india-map/india-tel.geojson';
+const INPUT = process.env.INPUT ?? '/tmp/india-official.json';
 const OUTPUT = resolve(
   dirname(fileURLToPath(import.meta.url)),
   '..',
   'src/api/home/india-geography.ts',
 );
 
-// Map GeoJSON NAME_1 → our SupportedStateCode. Unmapped features dropped.
+// Map source `st_nm` → our SupportedStateCode (plus UT placeholders we draw
+// for shape completeness). J&K and Ladakh are separate features post-2019,
+// and both contain India-claimed territory currently administered by Pakistan
+// (PoK, Gilgit-Baltistan) or China (Aksai Chin).
 const NAME_TO_CODE = {
   'Andhra Pradesh': 'AP',
   'Arunachal Pradesh': 'AR',
@@ -32,17 +37,18 @@ const NAME_TO_CODE = {
   'Gujarat': 'GJ',
   'Haryana': 'HR',
   'Himachal Pradesh': 'HP',
-  'Jammu and Kashmir': 'JK', // placeholder: we render but the code isn't in our SUPPORTED list
+  'Jammu and Kashmir': 'JK',
   'Jharkhand': 'JH',
   'Karnataka': 'KA',
   'Kerala': 'KL',
+  'Ladakh': 'LA',
   'Madhya Pradesh': 'MP',
   'Maharashtra': 'MH',
   'Manipur': 'MN',
   'Meghalaya': 'ML',
   'Mizoram': 'MZ',
   'Nagaland': 'NL',
-  'Orissa': 'OD',
+  'Odisha': 'OD',
   'Punjab': 'PB',
   'Rajasthan': 'RJ',
   'Sikkim': 'SK',
@@ -50,26 +56,22 @@ const NAME_TO_CODE = {
   'Telangana': 'TS',
   'Tripura': 'TR',
   'Uttar Pradesh': 'UP',
-  'Uttaranchal': 'UK',
+  'Uttarakhand': 'UK',
   'West Bengal': 'WB',
-  // UTs we still want to draw for shape completeness (not interactive):
+  // UTs drawn for shape completeness (not interactive):
   'Delhi': 'DL_UT',
   'Chandigarh': 'CH_UT',
   'Puducherry': 'PY_UT',
   'Dadra and Nagar Haveli': 'DN_UT',
   'Daman and Diu': 'DD_UT',
-  'Andaman and Nicobar': 'AN_UT',
+  'Andaman and Nicobar Islands': 'AN_UT',
   'Lakshadweep': 'LD_UT',
 };
 
 const geo = JSON.parse(readFileSync(INPUT, 'utf8'));
 
-// India bbox: lon ~68–97, lat ~8–37. Use a simple equirectangular projection
-// scaled/translated so everything fits in a 1000×1100 viewBox (leaving margin).
-// x = (lon - 68) * LON_SCALE;  y = (37 - lat) * LAT_SCALE;
-// With latitude-compensation for aspect since India spans ~30° of lat and lon,
-// but plate carrée works acceptably for cartogram purposes. We'll use a crude
-// cosine-of-mid-lat correction to reduce east-west stretch.
+// India (full claim) bbox: lon ~68–97.4, lat ~6.7–37.1. Cosine-compensated
+// equirectangular projection scaled to fit a 1000×1100 viewBox.
 const MID_LAT = 22.5;
 const COS_MID = Math.cos(MID_LAT * Math.PI / 180);
 
@@ -80,7 +82,7 @@ const MARGIN = 20;
 // Compute bounding box from all included features
 let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
 for (const f of geo.features) {
-  if (!NAME_TO_CODE[f.properties.NAME_1]) continue;
+  if (!NAME_TO_CODE[f.properties.st_nm]) continue;
   const visit = (coords) => {
     if (typeof coords[0] === 'number') {
       const [lon, lat] = coords;
@@ -97,13 +99,11 @@ for (const f of geo.features) {
 
 console.log('bbox:', { minLon, maxLon, minLat, maxLat });
 
-// Aspect-correct scale: treat 1° lon as COS_MID * 1° lat in visual width
 const dLon = (maxLon - minLon) * COS_MID;
 const dLat = maxLat - minLat;
 const scaleX = (VIEW_W - 2 * MARGIN) / dLon;
 const scaleY = (VIEW_H - 2 * MARGIN) / dLat;
 const SCALE = Math.min(scaleX, scaleY);
-// Center within viewBox
 const usedW = dLon * SCALE;
 const usedH = dLat * SCALE;
 const offsetX = (VIEW_W - usedW) / 2;
@@ -139,7 +139,6 @@ function simplify(points, tol) {
   return [points[0], points[points.length - 1]];
 }
 
-// Filter out tiny rings (below MIN_AREA projected px²) to drop speck islands
 function ringArea(points) {
   let a = 0;
   for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
@@ -165,7 +164,7 @@ function ringToPath(ring) {
 
 const results = {};
 for (const f of geo.features) {
-  const code = NAME_TO_CODE[f.properties.NAME_1];
+  const code = NAME_TO_CODE[f.properties.st_nm];
   if (!code) continue;
   const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
   const paths = [];
@@ -183,10 +182,12 @@ const totalChars = Object.values(results).reduce((s, v) => s + v.length, 0);
 console.log('total path chars:', totalChars);
 
 const out = `// AUTO-GENERATED by scripts/build-india-map.mjs — do not edit by hand.
-// Source: https://github.com/geohacker/india (india_telengana.geojson, public domain attribution).
+// Source: https://github.com/adarshbiradar/maps-geojson (india.json).
+// Uses India's OFFICIAL territorial boundary: Jammu & Kashmir includes PoK
+// (Muzaffarabad, Mirpur), Ladakh includes Gilgit-Baltistan and Aksai Chin,
+// Arunachal Pradesh is Indian territory.
 // Simplified + projected to a ${VIEW_W}×${VIEW_H} viewBox using a cosine-compensated
-// equirectangular projection. J&K/Ladakh and Arunachal Pradesh shown as part
-// of India; union territories drawn for shape completeness.
+// equirectangular projection.
 
 export const INDIA_VIEWBOX = { width: ${VIEW_W}, height: ${VIEW_H} } as const;
 
