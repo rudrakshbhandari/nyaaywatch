@@ -69,6 +69,24 @@ export function renderSupremeCourtMethodologyPage(
       </div>
     </section>
 
+    <section class="method" id="trend-lines">
+      ${renderSectionHead({ headline: "How trend lines are built" })}
+      <div class="card-grid card-grid--2">
+        <article class="card" id="trend-pending">
+          ${renderAnchorLink("trend-pending", "Pending total trend")}
+          <h3>Pending total</h3>
+          <p>Pending total is a point-in-time stock — each published snapshot is one meaningful reading. The sparkline plots one dot per recent snapshot, in chronological order.</p>
+        </article>
+        <article class="card" id="trend-monthly-finalized">
+          ${renderAnchorLink("trend-monthly-finalized", "Monthly finalized trend")}
+          <h3>Cleared / 100 filed, disposed, and backlog change</h3>
+          <p>The NJDG "instituted in last month" and "disposal in last month" fields are accumulators that reset at each calendar-month boundary (IST). The headline number on these tiles is the current month-to-date reading.</p>
+          <p>For the trend line we keep only <em>finalized</em> months: when we observe the accumulator drop between two consecutive captures, the earlier capture holds the last-known pre-reset totals for its month, and those become that month's finalized values. Months still in progress, or months where we lack captures on both sides of the boundary, are deliberately omitted from the sparkline.</p>
+          <p>This keeps each dot on the trend line directly comparable to the next. It also means the trend line will stay empty until at least two calendar-month boundaries have been observed in the capture history.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published snapshot lineage",

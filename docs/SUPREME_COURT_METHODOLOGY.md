@@ -218,6 +218,28 @@ Until enough history exists:
 - show the latest snapshot cleanly
 - describe trend history as limited or still accumulating
 
+### Pending Total Trend
+
+Pending total is a point-in-time stock. One published snapshot is one meaningful reading, so the pending-total sparkline plots one dot per recent snapshot in chronological order, with no additional derivation.
+
+### Monthly Finalized Trend For Flow Metrics
+
+The NJDG "instituted in last month" and "disposal in last month" fields are accumulators that reset at each IST calendar-month boundary. A single capture of these fields tells the reader how much has been filed or disposed so far in the active month, not a completed-month total.
+
+For clearance rate, disposed, and backlog change, the sparkline draws from `monthlyFinalized` — a derived array of one entry per calendar month whose reset we observed. Derivation:
+
+- walk the capture history in chronological order by `referenceDateAt`
+- whenever a capture's instituted-last-month value is lower than the previous capture's, treat that as a reset at the month boundary between them
+- the earlier capture holds the last-known pre-reset totals for its IST calendar month; record those as that month's `institutedTotalCases` and `disposedTotalCases`
+- months in progress, and months where we lack a capture on one side of the boundary, are deliberately absent
+
+Display rules:
+
+- tiles for clearance, disposed, and backlog change show the current month-to-date accumulator as the headline number, with the capture date surfaced in the note so the reader knows the number is partial
+- sparklines on those tiles render only when `monthlyFinalized` has at least two entries; otherwise the tile shows the headline number alone
+
+This keeps each dot on the trend line directly comparable to the next and avoids implying month-over-month change that the data cannot yet support.
+
 ## Public Caveats That Should Appear Near The Tier
 
 The first public beta should state, in substance:
