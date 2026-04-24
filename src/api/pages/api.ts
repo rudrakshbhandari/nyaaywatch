@@ -26,16 +26,69 @@ export function renderApiPage(context: PublicPageContext): string {
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
           <p>${context.lowerCourtCopy.aggregateAdjectiveTitle} backlog, disposal pace, wait estimate, and watchlist count for the active publication.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "snapshot": {
+    "stateCode": "HP",
+    "stateName": "Himachal Pradesh",
+    "sourceSnapshotAt": "2025-03-15T00:00:00.000Z",
+    "publishedAt": "2025-03-20T11:42:00.000Z",
+    "methodologyVersion": "v1.3.0",
+    "qualityState": "complete",
+    "freshnessDays": 5,
+    "sourceAttribution": "NJDG \u2014 March 2025"
+  },
+  "stats": {
+    "pendingCases": 94158,
+    "disposalRate": 74.3,
+    "medianCaseAgeDays": 847,
+    "flaggedDistricts": 9
+  },
+  "trends": [
+    { "snapshotDate": "2025-01-15T00:00:00.000Z", "pendingCases": 91240, "disposalRate": 71.8 },
+    // \u2026 one point per published snapshot
+  ]
+}</pre>
+          </details>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.districtsApi}</code>
           <p>District-level rows with rankings, queue size, disposal pace, wait estimate, and flag explanations.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "districts": [
+    {
+      "districtId": "kangra",
+      "districtName": "Kangra",
+      "rank": 1,
+      "backlogCases": 12453,
+      "disposalRate": 68.2,
+      "medianAgeDays": 912,
+      "filingVsDisposalGap": 8.4,
+      "flagReason": "High file-clear gap with growing pile.",
+      "summary": "Kangra shows a widening backlog \u2026"
+    },
+    // \u2026 one object per district in the snapshot
+  ]
+}</pre>
+          </details>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
           <p>Published snapshot history for the ${aggregateAdjective} trend surface.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "trends": [
+    { "snapshotDate": "2025-01-15T00:00:00.000Z", "pendingCases": 91240, "disposalRate": 71.8 },
+    { "snapshotDate": "2025-03-15T00:00:00.000Z", "pendingCases": 94158, "disposalRate": 74.3 }
+  ]
+}</pre>
+          </details>
         </article>
       </div>
     </section>
