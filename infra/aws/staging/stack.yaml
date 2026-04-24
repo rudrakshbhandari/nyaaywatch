@@ -427,6 +427,11 @@ Resources:
                 Resource:
                   - !GetAtt ArtifactsBucket.Arn
                   - !Sub "${ArtifactsBucket.Arn}/*"
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource:
+                  - !Ref AlarmTopic
 
   TaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -477,6 +482,8 @@ Resources:
               Value: !GetAtt RumAppMonitor.Id
             - Name: AWS_RUM_IDENTITY_POOL_ID
               Value: !Ref RumIdentityPool
+            - Name: ALARM_TOPIC_ARN
+              Value: !Ref AlarmTopic
           Secrets:
             - Name: DATABASE_URL
               ValueFrom: !If [HasExistingDatabaseUrlSecretArn, !Ref ExistingDatabaseUrlSecretArn, !Ref DatabaseUrlSecret]
