@@ -27,9 +27,11 @@ export function renderNationalHome(input: {
   });
   const supremeRoutes = buildPublicSupremeCourtRoutes();
 
+  const HIGH_COURT_TEASER_LIMIT = 6;
   const highCourtCards =
     model.highCourts.entries.length > 0
       ? model.highCourts.entries
+          .slice(0, HIGH_COURT_TEASER_LIMIT)
           .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, monthlyGapDisplay, monthlyGapNote }) => {
             const routes = buildPublicHighCourtRoutes(profile);
             return `<article class="card tier-card">
@@ -167,7 +169,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Cleared / 100 filed",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
-                note: "How quickly the apex court is clearing incoming work in the latest monthly window.",
+                note: "How quickly the Supreme Court is clearing incoming work in the latest monthly window.",
                 tone: "accent",
                 series: scClearanceSeries,
                 seriesLabel: "Clearance rate over recent months",
@@ -202,7 +204,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Public lower-court geographies",
                 value: model.lowerCourts.publicStateCount.toString(),
-                note: "Each state or Union Territory page stays tied to its own published snapshot and supporting notes.",
+                note: "Each State or Union Territory page stays tied to its own published snapshot and supporting notes.",
                 tone: "accent",
               })}
             `
@@ -224,18 +226,18 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "Lower courts show the broadest pressure.",
         lede:
-          "This lower-court view spans the currently published state and Union Territory snapshots. Start with the pressure map for relative lower-court pressure, then open any geography page for the underlying snapshot and district drilldown.",
+          "This lower-court view spans the currently published State and Union Territory snapshots. Start with the pressure map for relative lower-court pressure, then open any geography page for the underlying snapshot and district drilldown.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
           label: "Pending across public geographies",
           value: model.lowerCourts.pendingDisplay,
-          note: "Combined lower-court backlog across the currently published state and Union Territory snapshots.",
+          note: "Combined lower-court backlog across the currently published State and Union Territory snapshots.",
         })}
         ${renderStatTile({
           label: "Public lower-court geographies",
           value: model.lowerCourts.publicStateCount.toString(),
-          note: "Each state or Union Territory page stays tied to its own published snapshot and supporting notes.",
+          note: "Each State or Union Territory page stays tied to its own published snapshot and supporting notes.",
         })}
         ${renderStatTile({
           label: "Flagged districts",
@@ -267,7 +269,7 @@ export function renderNationalHome(input: {
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>Supreme Court</h3>
-          <p>The apex-court layer carries its own methodology, API, and data surface.</p>
+          <p>The Supreme Court layer carries its own methodology, API, and data surface.</p>
           <p><a href="${supremeRoutes.methodology}">Methodology</a></p>
           <p><a href="${supremeRoutes.data}">Data</a></p>
           <p><a href="${supremeRoutes.api}">API</a></p>
