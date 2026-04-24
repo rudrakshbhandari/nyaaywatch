@@ -1,4 +1,5 @@
 import { listInternalFetchStateProfiles, type NjdgStateProfile } from "../geographies.js";
+import { runAutoPublish, type AutoPublishAction } from "../ops/auto-publish-runner.js";
 import { runOperatorInvocation } from "./operator-ops.js";
 
 const DEFAULT_SCHEDULED_FETCH_NOTE_PREFIX = "Scheduled daily lower-court internal raw fetch";
@@ -9,6 +10,8 @@ export interface ScheduledFetchStateResult {
   ok: boolean;
   runId?: string;
   error?: string;
+  autoPublish?: AutoPublishAction;
+  autoPublishReason?: string;
 }
 
 export interface ScheduledFetchSummary {
@@ -50,14 +53,30 @@ export async function runScheduledFetches(
       );
 
       const runId = extractRunId(result);
+      console.log(`Completed scheduled internal fetch for ${profile.stateCode}${runId ? ` (${runId})` : ""}`);
+
+      const autoPublishOutcome = await runAutoPublish(
+        {
+          scopeLabel: `State (${profile.stateCode})`,
+          selector: { stateCode: profile.stateCode },
+          fetchResult: result,
+          pendingField: "pendingCases",
+          note: `${normalizedNotePrefix} auto-publish`,
+        },
+        { rawEnv },
+      );
+      console.log(
+        `Auto-publish outcome for ${profile.stateCode}: ${autoPublishOutcome.action}${autoPublishOutcome.decision?.reason ? ` (${autoPublishOutcome.decision.reason})` : ""}`,
+      );
+
       results.push({
         stateCode: profile.stateCode,
         stateName: profile.stateName,
         ok: true,
         runId,
+        autoPublish: autoPublishOutcome.action,
+        autoPublishReason: autoPublishOutcome.decision?.reason,
       });
-
-      console.log(`Completed scheduled internal fetch for ${profile.stateCode}${runId ? ` (${runId})` : ""}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       results.push({
