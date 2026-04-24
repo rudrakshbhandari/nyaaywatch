@@ -26,7 +26,7 @@ export function renderSupremeCourtMethodologyPage(
         <article class="card">
           <h3>What this page covers</h3>
           <p>Supreme Court aggregate observability only: pending load, registered and unregistered treatment, last-month institution and disposal, current-year movement, and published trend points.</p>
-          <p>It is an apex-court module inside NyaayWatch, not a national all-courts summary alias and not a case-search surface.</p>
+          <p>It is a Supreme Court module inside NyaayWatch, not a national all-courts summary alias and not a case-search surface.</p>
         </article>
         <article class="card">
           <h3>What it does not do</h3>
