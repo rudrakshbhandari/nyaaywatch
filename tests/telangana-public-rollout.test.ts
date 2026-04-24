@@ -100,7 +100,7 @@ describeTelanganaPublic("Telangana public rollout preflight", () => {
       },
       { path: "/states/telangana/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/telangana/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/telangana/api", requiredText: "latest published snapshot" },
+      { path: "/states/telangana/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

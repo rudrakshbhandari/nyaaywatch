@@ -433,7 +433,7 @@ export function createApp(
       const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
       const payload = await currentService.getDistrictDetail(districtId);
       if (!payload) {
-        response.status(404).send(renderEmptyState("District Not Found", "This district was not found in the latest published snapshot."));
+        response.status(404).send(renderEmptyState("District Not Found", "This district isn't in the latest data."));
         return;
       }
 
@@ -673,7 +673,7 @@ export function createApp(
 
       const payload = await resolved.service.getDistrictDetail(readRouteParam(request.params.districtId));
       if (!payload) {
-        response.status(404).send(renderEmptyState("District Not Found", "This district was not found in the latest published snapshot."));
+        response.status(404).send(renderEmptyState("District Not Found", "This district isn't in the latest data."));
         return;
       }
 

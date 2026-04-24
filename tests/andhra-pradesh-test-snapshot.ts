@@ -43,7 +43,7 @@ export function buildAndhraPradeshTestSnapshot(): PublishedSnapshot {
         medianAgeDays: 365,
         filingVsDisposalGap: -18.9,
         flagReason:
-          "People appear to be waiting longer here than in much of Andhra Pradesh, based on the latest published snapshot.",
+          "People appear to be waiting longer here than in much of Andhra Pradesh.",
         summary:
           "Guntur has 81,207 cases waiting. A typical pending case falls around 365 days old, and the district cleared 118.9% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },

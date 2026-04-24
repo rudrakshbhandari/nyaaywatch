@@ -95,7 +95,7 @@ export function renderDistrictPage(
             <h3>What this district is telling us</h3>
           </header>
           <p>${escapeHtml(district.flagReason)}</p>
-          <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</strong> percentage points in the latest published snapshot.</p>
+          <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</strong> percentage points in the latest data.</p>
         </article>
 
         <article class="card" id="district-history">

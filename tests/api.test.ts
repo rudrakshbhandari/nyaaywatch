@@ -563,7 +563,7 @@ describe("HTTP routes", () => {
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
     expect(overview.text).toContain('href="/" class="masthead__brand"');
-    expect(overview.text).toContain("What is the latest published snapshot showing in High Court of Himachal Pradesh?");
+    expect(overview.text).toContain("What does the latest data show for High Court of Himachal Pradesh?");
     expect(overview.text).toContain("High Court of Himachal Pradesh");
     expect(overview.text).toContain("Coverage");
     expect(overview.text).toContain("Current coverage:</strong> Himachal Pradesh");

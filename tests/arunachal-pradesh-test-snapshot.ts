@@ -43,7 +43,7 @@ export function buildArunachalPradeshTestSnapshot(): PublishedSnapshot {
         medianAgeDays: 365,
         filingVsDisposalGap: -26.7,
         flagReason:
-          "People appear to be waiting longer here than in much of Arunachal Pradesh, based on the latest published snapshot.",
+          "People appear to be waiting longer here than in much of Arunachal Pradesh.",
         summary:
           "Papum Pare has 2,436 cases waiting. A typical pending case falls around 365 days old, and the district cleared 126.7% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },

@@ -100,7 +100,7 @@ describe("Arunachal Pradesh public rollout preflight", () => {
         requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
       },
       { path: "/states/arunachal-pradesh/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/arunachal-pradesh/api", requiredText: "latest published snapshot" },
+      { path: "/states/arunachal-pradesh/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

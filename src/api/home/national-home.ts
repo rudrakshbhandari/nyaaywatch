@@ -174,7 +174,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
-                note: "Backlog at the top of the court system in the latest published snapshot.",
+                note: "Cases still pending at the Supreme Court.",
                 series: scPendingSeries,
                 seriesLabel: "Pending total across recent snapshots",
                 deltaDirectionHint: "up-is-bad",
@@ -182,7 +182,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Cleared / 100 filed this month",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
-                note: `Running clearance ratio for the current month, ${scThroughLabel}. 100 means the Court is keeping pace; below 100 means filings are outrunning disposals. Trend line compares finalized months only.`,
+                note: `How quickly the Supreme Court is clearing cases this month, ${scThroughLabel}. 100 means it is keeping pace with filings. Trend line compares finalized months.`,
                 tone: "accent",
                 series: scClearanceSeries,
                 seriesLabel: "Clearance rate across finalized months",
@@ -191,7 +191,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Disposed this month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
-                note: `Matters cleared so far this month, ${scThroughLabel}. Trend line compares finalized months only.`,
+                note: `Cases the Supreme Court has cleared this month, ${scThroughLabel}. Trend line compares finalized months.`,
                 series: scDisposedSeries,
                 seriesLabel: "Disposed across finalized months",
                 deltaDirectionHint: "up-is-good",
@@ -199,7 +199,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Backlog change this month",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
-                note: `${scGapDirectionNote} ${scThroughLabel}. Trend line compares finalized months only.`,
+                note: `${scGapDirectionNote} ${scThroughLabel}. Trend line compares finalized months.`,
                 series: scGapSeries,
                 seriesLabel: "Backlog change across finalized months",
                 deltaDirectionHint: "up-is-bad",
@@ -337,16 +337,16 @@ function describeMtdGapDirection(
   snapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null,
 ): string {
   if (!snapshot) {
-    return "Filed minus cleared so far this month,";
+    return "Filed minus cleared,";
   }
   const gap = snapshot.stats.institutedLastMonthTotalCases - snapshot.stats.disposedLastMonthTotalCases;
   if (gap > 0) {
-    return "More matters have been filed than cleared so far this month,";
+    return "More matters have been filed than cleared,";
   }
   if (gap < 0) {
-    return "More matters have been cleared than filed so far this month,";
+    return "More matters have been cleared than filed,";
   }
-  return "Filings and disposals have moved in lockstep so far this month,";
+  return "Filings and disposals have moved in lockstep,";
 }
 
 // Inline scroll-spy: IntersectionObserver keeps the TOC rail's active entry in

@@ -28,9 +28,9 @@ export function renderHighCourtOverviewPage(
     <div class="hero-rail">
       ${renderSectionHead({
         eyebrow: "HIGH COURT",
-        headline: `What is the latest published snapshot showing in ${profile.courtName}?`,
+        headline: `What does the latest data show for ${profile.courtName}?`,
         lede:
-          `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly backlog change, and age-bucket burden from the latest published High Court snapshot. It stays court-first and explicit about what the source does and does not support.`,
+          `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly backlog change, and age-bucket burden from the latest High Court data. It stays court-first and explicit about what the source does and does not support.`,
         isHero: true,
       })}
 
@@ -43,7 +43,7 @@ export function renderHighCourtOverviewPage(
         ${renderStatTile({
           label: "Cleared / 100 filed",
           value: clearanceRateDisplay,
-          note: "How quickly this High Court cleared incoming work in the latest monthly window.",
+          note: "How quickly this High Court cleared cases last month.",
           trendSignal: describeClearanceTrend(
             snapshot.stats.disposedLastMonthTotalCases,
             snapshot.stats.institutedLastMonthTotalCases,
@@ -199,20 +199,20 @@ function describePileChange(institutedCases: number, disposedCases: number) {
   if (difference === 0) {
     return {
       display: "0",
-      note: "Filed and cleared moved in lockstep in the latest monthly window.",
+      note: "Filings and clearances matched last month.",
     };
   }
 
   if (difference > 0) {
     return {
       display: `+${difference.toLocaleString("en-IN")}`,
-      note: "More matters were filed than cleared in the latest monthly window.",
+      note: "More cases were filed than cleared last month.",
     };
   }
 
   return {
     display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
-    note: "More matters were cleared than filed in the latest monthly window.",
+    note: "More cases were cleared than filed last month.",
   };
 }
 
