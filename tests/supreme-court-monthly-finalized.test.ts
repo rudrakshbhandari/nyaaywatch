@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import type { SupremeCourtPublishedSnapshot } from "../src/domain/supreme-court-snapshot-schema.js";
+import {
+  SupremeCourtPublishedSnapshotSchema,
+  type SupremeCourtPublishedSnapshot,
+} from "../src/domain/supreme-court-snapshot-schema.js";
 import type { ExtractedSupremeCourtSnapshot } from "../src/extract/supreme-court-njdg-html.js";
 import { buildMonthlyFinalized } from "../src/normalize/supreme-court-snapshot-candidate.js";
 
@@ -248,5 +251,18 @@ describe("buildMonthlyFinalized", () => {
     const result = buildMonthlyFinalized([duplicate, duplicate], extracted);
     expect(result).toHaveLength(1);
     expect(result[0]?.yearMonth).toBe("2026-04");
+  });
+});
+
+describe("SupremeCourtPublishedSnapshotSchema", () => {
+  it("parses snapshots published before monthlyFinalized existed and defaults the field to []", () => {
+    const legacy = makePublishedSnapshot({
+      referenceDateAt: "2026-04-19T00:00:00.000Z",
+      institutedLastMonthTotalCases: 6638,
+      disposedLastMonthTotalCases: 4735,
+    });
+    const { monthlyFinalized: _drop, ...withoutField } = legacy;
+    const parsed = SupremeCourtPublishedSnapshotSchema.parse(withoutField);
+    expect(parsed.monthlyFinalized).toEqual([]);
   });
 });
