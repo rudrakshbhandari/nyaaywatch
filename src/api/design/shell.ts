@@ -1,4 +1,5 @@
 import { escapeHtml } from "../../lib/html.js";
+import { renderCfAnalyticsSnippet } from "./cf-analytics.js";
 import { renderRumSnippet } from "./rum.js";
 import { BASE_CSS, FONTS_LINK } from "./styles.js";
 import { infoIcon } from "./ui.js";
@@ -84,6 +85,7 @@ export function renderPageShell(options: PageShellOptions): string {
   ${FONTS_LINK}
   <style>${BASE_CSS}${options.pageCss ?? ""}</style>
   ${renderRumSnippet()}
+  ${renderCfAnalyticsSnippet()}
 </head>
 <body>
   <header class="masthead">
