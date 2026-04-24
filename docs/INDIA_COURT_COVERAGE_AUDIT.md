@@ -114,14 +114,16 @@ Proof-cycle evidence from April 23, 2026:
 | `PY` | `run_f629f17c-c053-4d1e-824a-ef7361863b2e` | `run_25e012d0-5e04-4909-8bbd-c8d9fa501521` | `publication_d12dcb30-c5e6-4386-91fa-fe0cffa39f17` | `2026-04-22` | 4 | 36,684 |
 | `DNHDD` | `run_64134e8b-b667-4890-a950-a5d99417a211` | `run_c8366c43-9e3c-48ce-8093-bfe8e2cf2fa8` | `publication_d056cee6-916c-409e-ba37-23296950902d` | `2026-04-23` | 3 | 8,427 |
 
-## Required Next Implementation Slice
+## Post-Deploy Verification
 
-After this change, the remaining implementation slice is operational verification, not schema coverage:
+PR `#185` deployed the UT-aware lower-court public routes on April 23, 2026. GitHub Actions run `24863933038` completed successfully on `main`, rolled the live ECS service to task definition `nyaaywatch-staging:178`, and reconciled all live scheduler targets to task definition `:178`.
 
-1. Deploy the UT-aware lower-court public routes.
-2. Verify stable public routes and API parity for each newly public lower-court geography on `https://nyaaywatch.in`.
-3. Record release evidence after the live deploy settles.
+Post-deploy verification passed:
 
-The precise public claim after deploy is:
+- all eight newly public lower-court Union Territory route families returned `200` on `https://nyaaywatch.in`
+- the route sweep covered each `/states/:slug`, `/states/:slug/districts`, `/states/:slug/data`, `/states/:slug/methodology`, `/states/:slug/api`, `/v1/states/:slug/stats`, `/v1/states/:slug/districts`, and `/v1/states/:slug/trends` family
+- `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` reported `totalStates=36`, `staleStates=[]`, `dailyFetchLagStates=[]`, and `failingStates=[]`
+
+The precise public claim after this deploy is:
 
 NyaayWatch covers the Supreme Court, all High Court NJDG selectors in the internal registry, and all 36 lower-court NJDG state/Union Territory selector geographies in the public lower-court route set and daily internal fetch schedule.
