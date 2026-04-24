@@ -95,23 +95,32 @@ export function renderNationalHome(input: {
         <span>Methodology and source links stay available on every tier page</span>
       </p>`;
 
-  // Hero sparkline series drawn from the snapshot's own trends. The Supreme
-  // Court snapshot carries a full monthly trend (pending + instituted +
-  // disposed per reference month); the lower-court snapshot only carries
-  // pending + disposal rate, so the fallback hero has two sparklines.
+  // Pending total is a point-in-time stock — one snapshot = one meaningful
+  // reading — so its sparkline draws directly from the capture history
+  // (`trends`). Clearance, disposed, and gap all derive from NJDG accumulator
+  // fields that reset each calendar month; those sparklines draw from
+  // `monthlyFinalized`, one entry per month whose reset we observed. Months in
+  // progress are deliberately absent — they are not yet comparable.
   const scTrends = input.supremeCourtSnapshot?.trends ?? [];
+  const scFinalized = input.supremeCourtSnapshot?.monthlyFinalized ?? [];
   const lcTrends = input.lowerCourtSnapshot.trends;
   const scPendingSeries = scTrends.map((point) => point.pendingTotalCases);
-  const scClearanceSeries = scTrends.map((point) =>
-    point.institutedLastMonthTotalCases > 0
-      ? (point.disposedLastMonthTotalCases / point.institutedLastMonthTotalCases) * 100
+  const scClearanceSeries = scFinalized.map((entry) =>
+    entry.institutedTotalCases > 0
+      ? (entry.disposedTotalCases / entry.institutedTotalCases) * 100
       : 0,
   );
-  const scDisposedSeries = scTrends.map((point) => point.disposedLastMonthTotalCases);
-  const scGapSeries = scTrends.map(
-    (point) => point.institutedLastMonthTotalCases - point.disposedLastMonthTotalCases,
-  );
+  const scDisposedSeries = scFinalized.map((entry) => entry.disposedTotalCases);
+  const scGapSeries = scFinalized.map((entry) => entry.institutedTotalCases - entry.disposedTotalCases);
   const lcPendingSeries = lcTrends.map((point) => point.pendingCases);
+
+  // In-progress-month qualifier for the three flow tiles. The headline number
+  // on those tiles is the current month-to-date accumulator, so the reader
+  // needs to know which date that "so far" ends on. Falls back to the generic
+  // "so far this month" when we somehow lack a reference date.
+  const scReferenceIso = input.supremeCourtSnapshot?.snapshot.referenceDateAt ?? null;
+  const scThroughLabel = scReferenceIso ? `through ${formatDate(scReferenceIso)}` : "so far this month";
+  const scGapDirectionNote = describeMtdGapDirection(input.supremeCourtSnapshot);
 
   const tocItems = [
     { id: "hero", index: "01", label: "At a glance" },
@@ -167,32 +176,32 @@ export function renderNationalHome(input: {
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
                 note: "Backlog at the top of the court system in the latest published snapshot.",
                 series: scPendingSeries,
-                seriesLabel: "Pending total over recent months",
+                seriesLabel: "Pending total across recent snapshots",
                 deltaDirectionHint: "up-is-bad",
               })}
               ${renderStatTile({
-                label: "Cleared / 100 filed",
+                label: "Cleared / 100 filed this month",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
-                note: "How quickly the Supreme Court is clearing incoming work in the latest monthly window.",
+                note: `Running clearance ratio for the current month, ${scThroughLabel}. 100 means the Court is keeping pace; below 100 means filings are outrunning disposals. Trend line compares finalized months only.`,
                 tone: "accent",
                 series: scClearanceSeries,
-                seriesLabel: "Clearance rate over recent months",
+                seriesLabel: "Clearance rate across finalized months",
                 deltaDirectionHint: "up-is-good",
               })}
               ${renderStatTile({
-                label: "Disposed last month",
+                label: "Disposed this month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
-                note: "How many matters the Court cleared in the latest published month.",
+                note: `Matters cleared so far this month, ${scThroughLabel}. Trend line compares finalized months only.`,
                 series: scDisposedSeries,
-                seriesLabel: "Disposed per month over recent months",
+                seriesLabel: "Disposed across finalized months",
                 deltaDirectionHint: "up-is-good",
               })}
               ${renderStatTile({
-                label: "Last-month backlog change",
+                label: "Backlog change this month",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
-                note: model.supremeCourt.monthlyGapNote ?? "Monthly incoming and outgoing work are both visible.",
+                note: `${scGapDirectionNote} ${scThroughLabel}. Trend line compares finalized months only.`,
                 series: scGapSeries,
-                seriesLabel: "Monthly backlog change over recent months",
+                seriesLabel: "Backlog change across finalized months",
                 deltaDirectionHint: "up-is-bad",
               })}
             `
@@ -322,6 +331,22 @@ export function renderNationalHome(input: {
       imageAlt: "NyaayWatch — India's court system at a glance",
     },
   });
+}
+
+function describeMtdGapDirection(
+  snapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null,
+): string {
+  if (!snapshot) {
+    return "Filed minus cleared so far this month,";
+  }
+  const gap = snapshot.stats.institutedLastMonthTotalCases - snapshot.stats.disposedLastMonthTotalCases;
+  if (gap > 0) {
+    return "More matters have been filed than cleared so far this month,";
+  }
+  if (gap < 0) {
+    return "More matters have been cleared than filed so far this month,";
+  }
+  return "Filings and disposals have moved in lockstep so far this month,";
 }
 
 // Inline scroll-spy: IntersectionObserver keeps the TOC rail's active entry in
