@@ -228,7 +228,7 @@ export function renderDistrictPage(
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
-    ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · ${escapeHtml(district.districtName.toUpperCase())} · ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}`,
+    ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · SNAPSHOT ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.methodologyVersion)}`,
     pageCss: DISTRICT_PAGE_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
@@ -246,18 +246,23 @@ export function renderDistrictPage(
 
 function renderWaitingClock(months: number, districtName: string): string {
   const capped = Math.min(months, 48);
+  // Fit squares into a tight grid: single-row when ≤12 months so a district
+  // with a 3-month wait doesn't show 3 dots lost in a 12-column sea of space.
+  const gridCols = Math.min(capped, 12);
+  const isSingleRow = capped <= 12;
   const squares = Array.from({ length: capped }, (_, i) =>
     `<span class="wc__sq" aria-hidden="true" style="animation-delay:${(i * 30)}ms"></span>`
   ).join("");
-  return `
-    <section class="waiting-clock" id="waiting-clock" aria-label="Waiting Clock for ${escapeHtml(districtName)}">
-      <div class="waiting-clock__inner">
+  const axisLabels = isSingleRow ? "" : `
         <div class="wc__label-col" aria-hidden="true">
           <span class="wc__axis-label">0</span>
           <span class="wc__axis-label wc__axis-label--mid">${Math.round(capped / 2)}</span>
           <span class="wc__axis-label wc__axis-label--end">${capped}</span>
-        </div>
-        <div class="wc__grid">${squares}</div>
+        </div>`;
+  return `
+    <section class="waiting-clock" id="waiting-clock" aria-label="Waiting Clock for ${escapeHtml(districtName)}">
+      <div class="waiting-clock__inner">${axisLabels}
+        <div class="wc__grid" style="grid-template-columns: repeat(${gridCols}, 8px);">${squares}</div>
         <div class="wc__caption">
           <span class="wc__caption__value">~${months}</span>
           <span class="wc__caption__unit">months</span>
