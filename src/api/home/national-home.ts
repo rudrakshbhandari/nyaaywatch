@@ -165,7 +165,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
-                note: "Backlog at the top of the court system in the latest published snapshot.",
+                note: "Cases still pending at the Supreme Court.",
                 series: scPendingSeries,
                 seriesLabel: "Pending total over recent months",
                 deltaDirectionHint: "up-is-bad",
@@ -173,7 +173,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Cleared / 100 filed",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
-                note: "How quickly the Supreme Court is clearing incoming work in the latest monthly window.",
+                note: "How quickly the Supreme Court cleared cases last month.",
                 tone: "accent",
                 series: scClearanceSeries,
                 seriesLabel: "Clearance rate over recent months",
@@ -182,7 +182,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Disposed last month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
-                note: "How many matters the Court cleared in the latest published month.",
+                note: "Cases the Supreme Court cleared last month.",
                 series: scDisposedSeries,
                 seriesLabel: "Disposed per month over recent months",
                 deltaDirectionHint: "up-is-good",
@@ -190,7 +190,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Last-month backlog change",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
-                note: model.supremeCourt.monthlyGapNote ?? "Monthly incoming and outgoing work are both visible.",
+                note: model.supremeCourt.monthlyGapNote ?? "Filings and clearances from last month.",
                 series: scGapSeries,
                 seriesLabel: "Monthly backlog change over recent months",
                 deltaDirectionHint: "up-is-bad",
