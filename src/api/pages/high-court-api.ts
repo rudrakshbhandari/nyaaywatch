@@ -20,11 +20,73 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
           <p>High Court metadata plus <code>coveredGeographies[]</code> and aggregate pending, institution, and disposal fields for the active publication.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "snapshot": {
+    "courtTier": "high_court",
+    "courtCode": "HPH",
+    "courtSlug": "himachal",
+    "courtName": "High Court of Himachal Pradesh",
+    "coveredGeographies": [
+      { "geographyCode": "HP", "geographyName": "Himachal Pradesh", "geographyType": "state" }
+    ],
+    "referenceDateAt": "2025-03-15T00:00:00.000Z",
+    "referenceDateKind": "source_snapshot_at",
+    "publishedAt": "2025-03-21T09:10:00.000Z",
+    "methodologyVersion": "v1.3.0",
+    "qualityState": "complete"
+  },
+  "stats": {
+    "pendingCivilCases": 48930,
+    "pendingCriminalCases": 27240,
+    "pendingTotalCases": 76170,
+    "institutedLastMonthCivilCases": 920,
+    "institutedLastMonthCriminalCases": 900,
+    "institutedLastMonthTotalCases": 1820,
+    "disposedLastMonthCivilCases": 830,
+    "disposedLastMonthCriminalCases": 820,
+    "disposedLastMonthTotalCases": 1650
+  },
+  "ageBuckets": {
+    "lessThanOneYear": 12400,
+    "oneToThreeYears": 18600,
+    "threeToFiveYears": 14200,
+    "fiveToTenYears": 19800,
+    "aboveTenYears": 11170
+  },
+  "trends": [
+    { "referenceDateAt": "2025-01-15T00:00:00.000Z", "referenceDateKind": "source_snapshot_at", "pendingTotalCases": 74310, "institutedLastMonthTotalCases": 1760, "disposedLastMonthTotalCases": 1690 },
+    // \u2026 one point per published snapshot
+  ]
+}</pre>
+          </details>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
           <p>Published High Court trend points only. They stay court-wide rather than geography-split, and no unpublished operator runs leak through this surface.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "trends": [
+    {
+      "referenceDateAt": "2025-01-15T00:00:00.000Z",
+      "referenceDateKind": "source_snapshot_at",
+      "pendingTotalCases": 74310,
+      "institutedLastMonthTotalCases": 1760,
+      "disposedLastMonthTotalCases": 1690
+    },
+    {
+      "referenceDateAt": "2025-03-15T00:00:00.000Z",
+      "referenceDateKind": "source_snapshot_at",
+      "pendingTotalCases": 76170,
+      "institutedLastMonthTotalCases": 1820,
+      "disposedLastMonthTotalCases": 1650
+    }
+  ]
+}</pre>
+          </details>
         </article>
       </div>
     </section>
