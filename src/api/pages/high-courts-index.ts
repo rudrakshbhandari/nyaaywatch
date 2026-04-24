@@ -120,15 +120,14 @@ const HIGH_COURTS_INDEX_CSS = `
     letter-spacing: 0;
   }
   .hc-card .stat-grid {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.75fr) minmax(0, 1.1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin: 20px 0 52px;
   }
   .hc-card .stat-tile {
     min-width: 0;
   }
   .hc-card .stat-tile__value {
-    font-size: 52px;
-    overflow-wrap: anywhere;
+    font-size: clamp(42px, 4.5cqw, 52px);
   }
   .hc-card > p:last-child {
     margin-top: auto;

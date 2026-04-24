@@ -209,6 +209,7 @@ const HIGH_COURT_OVERVIEW_CSS = `
   .hc-section { margin-bottom: 72px; }
   .hc-section--compact { margin-bottom: 28px; }
   .stat-grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .stat-grid--5 .stat-tile__value { font-size: clamp(40px, 4cqw, 52px); }
   @media (max-width: 1100px) {
     .stat-grid--5 { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 32px; }
     .stat-grid--5 > .stat-tile:nth-child(3) { border-left: none; padding-left: 0; }
