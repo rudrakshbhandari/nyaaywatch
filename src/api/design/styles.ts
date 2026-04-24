@@ -337,6 +337,9 @@ export const BASE_CSS = `
     letter-spacing: -0.035em;
     font-variant-numeric: lining-nums tabular-nums;
     color: var(--ink);
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .stat-tile__unit { font-size: 0.5em; font-weight: 700; color: var(--ink-muted); margin-left: 4px; }
   .stat-tile__note { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.45; font-weight: 500; }
@@ -416,7 +419,7 @@ export const BASE_CSS = `
     align-items: baseline;
   }
   .endpoint p { grid-column: 1 / -1; margin: 0; }
-  .endpoint__verb {
+  code.endpoint__verb {
     display: inline-flex; align-items: center; justify-content: center;
     padding: 4px 8px;
     background: var(--ink); color: var(--paper);
@@ -425,7 +428,7 @@ export const BASE_CSS = `
     letter-spacing: 0.12em;
     border-radius: 2px;
   }
-  .endpoint__path {
+  code.endpoint__path {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
     font-size: 16px; font-weight: 600;
     color: var(--ink);
