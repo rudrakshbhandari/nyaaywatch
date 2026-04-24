@@ -14,7 +14,7 @@ export function renderApiPage(context: PublicPageContext): string {
       eyebrow: "DEVELOPER ACCESS",
       headline: "API reference",
       lede:
-        "The API matches the latest published snapshot. If a number is public on the site, you can fetch it here; if it has not been published yet, the API does not expose it.",
+        "The API matches what's currently on the public site. If a number is public on the site, you can fetch it here; if it hasn't been published yet, the API doesn't expose it.",
       isHero: true,
       variant: "compact",
     })}

@@ -177,7 +177,7 @@ export function buildNationalHomeViewModel(input: {
       topStateName: topState?.profile.stateName ?? input.lowerCourtProfile.stateName,
       topStateHref: buildPublicStateRoutes(topState?.profile ?? input.lowerCourtProfile).home,
       topStateSummary: topState
-        ? `${topState.profile.stateName} ranks highest on the current lower-court pressure index across published State and Union Territory snapshots. ${topState.stats.pendingCases.toLocaleString("en-IN")} pending cases, median age ${topState.stats.medianCaseAgeDays.toLocaleString("en-IN")} days, disposal ${topState.stats.disposalRate.toFixed(1)}% in its latest published snapshot. Relative ranking only, not a conclusive claim.`
+        ? `${topState.profile.stateName} ranks highest on the current lower-court pressure index across States and Union Territories with published data. ${topState.stats.pendingCases.toLocaleString("en-IN")} pending cases, median age ${topState.stats.medianCaseAgeDays.toLocaleString("en-IN")} days, disposal ${topState.stats.disposalRate.toFixed(1)}% in the latest data. Relative ranking only, not a conclusive claim.`
         : "Open any published lower-court page to inspect the latest snapshot and district drilldown.",
     },
   };
@@ -196,20 +196,20 @@ function describePileChange(institutedCases: number, disposedCases: number) {
   if (difference === 0) {
     return {
       display: "0",
-      note: "Filed and cleared moved in lockstep in the latest monthly window.",
+      note: "Filings and clearances matched last month.",
     };
   }
 
   if (difference > 0) {
     return {
       display: `+${difference.toLocaleString("en-IN")}`,
-      note: "More matters were filed than cleared in the latest monthly window.",
+      note: "More cases were filed than cleared last month.",
     };
   }
 
   return {
     display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
-    note: "More matters were cleared than filed in the latest monthly window.",
+    note: "More cases were cleared than filed last month.",
   };
 }
 

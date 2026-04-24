@@ -96,7 +96,7 @@ describe("Assam public rollout preflight", () => {
       },
       { path: "/states/assam/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/assam/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/assam/api", requiredText: "latest published snapshot" },
+      { path: "/states/assam/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

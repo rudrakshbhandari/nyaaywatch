@@ -96,7 +96,7 @@ describe("Haryana public rollout preflight", () => {
       },
       { path: "/states/haryana/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/haryana/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/haryana/api", requiredText: "latest published snapshot" },
+      { path: "/states/haryana/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

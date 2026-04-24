@@ -82,7 +82,7 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
         disposalRate: input.disposalRate + 4.2,
         medianAgeDays: 730,
         filingVsDisposalGap: -4.2,
-        flagReason: "People appear to be waiting longer here than in much of the state, based on the latest published snapshot.",
+        flagReason: "People appear to be waiting longer here than in much of the state.",
         summary: `${districtNameTwo} has ${Math.round(input.pendingCases * 0.12).toLocaleString("en-IN")} cases waiting. A typical pending case falls around 730 days old, and the district cleared ${(input.disposalRate + 4.2).toFixed(1)}% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.`,
       },
       {

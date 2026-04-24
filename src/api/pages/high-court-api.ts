@@ -8,7 +8,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
       eyebrow: "HIGH COURT API",
       headline: `${context.profile.courtName} — API reference`,
       lede:
-        `The API matches the latest published snapshot for ${context.profile.courtName} (${context.coverageLabel}). If the public page shows a number, the JSON can expose it; if it is still in operator review, it stays private.`,
+        `The API matches what's on the public page for ${context.profile.courtName} (${context.coverageLabel}). If the page shows a number, the JSON can expose it; if it's still in operator review, it stays private.`,
       isHero: true,
       variant: "compact",
     })}

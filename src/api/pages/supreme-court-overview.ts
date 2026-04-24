@@ -40,7 +40,7 @@ export function renderSupremeCourtOverviewPage(
         ${renderStatTile({
           label: "Cleared / 100 filed",
           value: clearanceRateDisplay,
-          note: "How quickly the Supreme Court cleared incoming work in the latest monthly window.",
+          note: "How quickly the Supreme Court cleared cases last month.",
           trendSignal: describeClearanceTrend(
             snapshot.stats.disposedLastMonthTotalCases,
             snapshot.stats.institutedLastMonthTotalCases,
@@ -171,20 +171,20 @@ function describePileChange(institutedCases: number, disposedCases: number) {
   if (difference === 0) {
     return {
       display: "0",
-      note: "Filed and cleared moved in lockstep in the latest monthly window.",
+      note: "Filings and clearances matched last month.",
     };
   }
 
   if (difference > 0) {
     return {
       display: `+${difference.toLocaleString("en-IN")}`,
-      note: "More matters were instituted than disposed in the latest monthly window.",
+      note: "More cases were filed than cleared last month.",
     };
   }
 
   return {
     display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
-    note: "More matters were disposed than instituted in the latest monthly window.",
+    note: "More cases were cleared than filed last month.",
   };
 }
 
