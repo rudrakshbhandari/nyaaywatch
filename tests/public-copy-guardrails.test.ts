@@ -77,7 +77,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/api",
-        requiredText: "latest published snapshot",
+        requiredText: "currently on the public site",
       },
     ] as const;
 
@@ -140,7 +140,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/api",
-        requiredText: "latest published snapshot",
+        requiredText: "currently on the public site",
       },
     ] as const;
 

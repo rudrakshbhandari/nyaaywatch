@@ -93,7 +93,7 @@ export function renderPressPage(): string {
     </section>
 
     <section class="press-section">
-      ${renderSectionHead({ headline: "Suggested captions.", lede: "These are starting points. Always verify numbers against the latest published snapshot before publishing." })}
+      ${renderSectionHead({ headline: "Suggested captions.", lede: "These are starting points. Always verify numbers against the latest data before publishing." })}
       <div class="card press-caption-card">
         <p class="press-caption__lang">English</p>
         <p class="press-caption">According to NyaayWatch (nyaaywatch.in), which tracks pending caseloads using public NJDG data, [DISTRICT] district courts had [NUMBER] cases waiting as of [DATE]. The median case in this district has been pending for approximately [MONTHS] months.</p>

@@ -96,7 +96,7 @@ describe("Tamil Nadu public rollout preflight", () => {
       },
       { path: "/states/tamil-nadu/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/tamil-nadu/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/tamil-nadu/api", requiredText: "latest published snapshot" },
+      { path: "/states/tamil-nadu/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

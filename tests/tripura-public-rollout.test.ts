@@ -96,7 +96,7 @@ describe("Tripura public rollout preflight", () => {
       },
       { path: "/states/tripura/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/tripura/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/tripura/api", requiredText: "latest published snapshot" },
+      { path: "/states/tripura/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

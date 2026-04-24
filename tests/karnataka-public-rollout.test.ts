@@ -96,7 +96,7 @@ describe("Karnataka public rollout preflight", () => {
       },
       { path: "/states/karnataka/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/karnataka/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/karnataka/api", requiredText: "latest published snapshot" },
+      { path: "/states/karnataka/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

@@ -43,7 +43,7 @@ export function buildTelanganaTestSnapshot(): PublishedSnapshot {
         medianAgeDays: 730,
         filingVsDisposalGap: -31.4,
         flagReason:
-          "People appear to be waiting longer here than in much of Telangana, based on the latest published snapshot.",
+          "People appear to be waiting longer here than in much of Telangana.",
         summary:
           "Hyderabad has 1,85,904 cases waiting. A typical pending case falls around 730 days old, and the district cleared 131.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },

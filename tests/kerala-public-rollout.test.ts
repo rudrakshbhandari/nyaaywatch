@@ -96,7 +96,7 @@ describe("Kerala public rollout preflight", () => {
       },
       { path: "/states/kerala/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/kerala/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/kerala/api", requiredText: "latest published snapshot" },
+      { path: "/states/kerala/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {
