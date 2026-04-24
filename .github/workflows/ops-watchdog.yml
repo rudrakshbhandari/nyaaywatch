@@ -244,13 +244,20 @@ jobs:
             core.setOutput("action", action);
             core.setOutput("issue-number", issueNumber);
 
-      - name: Publish first-incident SNS alert
-        if: always() && steps.sync_issue.outputs.action == 'created' && env.ALARM_TOPIC_ARN != ''
+      - name: Publish SNS alert while watchdog issue is open or on recovery
+        if: always() && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'closed')
+        env:
+          ACTION: ${{ steps.sync_issue.outputs.action }}
         run: |
+          if [[ "$ACTION" == "closed" ]]; then
+            subject="NyaayWatch ops watchdog recovered"
+          else
+            subject="NyaayWatch ops watchdog failure"
+          fi
           aws sns publish \
             --region "$AWS_REGION" \
             --topic-arn "$ALARM_TOPIC_ARN" \
-            --subject "NyaayWatch ops watchdog failure" \
+            --subject "$subject" \
             --message file://watchdog-alert.txt
 
       - name: Fail when any watchdog check failed
