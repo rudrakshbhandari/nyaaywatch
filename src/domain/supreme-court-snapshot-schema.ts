@@ -54,10 +54,25 @@ export const SupremeCourtTrendPointSchema = z.object({
   disposedLastMonthTotalCases: z.number().int().nonnegative(),
 });
 
+// One entry per calendar month whose instituted/disposed accumulator we observed
+// drop between captures — a reset at the month boundary. The final pre-reset
+// value is treated as that month's total. `yearMonth` is the IST-calendar month
+// the totals cover; `derivedFromReferenceDateAt` is the capture whose values we
+// kept.
+export const SupremeCourtMonthlyFinalizedSchema = z.object({
+  yearMonth: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+  institutedTotalCases: z.number().int().nonnegative(),
+  disposedTotalCases: z.number().int().nonnegative(),
+  derivedFromReferenceDateAt: z.string().datetime(),
+});
+
 export const SupremeCourtPublishedSnapshotSchema = z.object({
   snapshot: SupremeCourtSnapshotMetadataSchema,
   stats: SupremeCourtStatsSchema,
   trends: z.array(SupremeCourtTrendPointSchema).min(1),
+  monthlyFinalized: z.array(SupremeCourtMonthlyFinalizedSchema),
 });
 
 export type SupremeCourtPublishedSnapshot = z.infer<typeof SupremeCourtPublishedSnapshotSchema>;
+export type SupremeCourtTrendPoint = z.infer<typeof SupremeCourtTrendPointSchema>;
+export type SupremeCourtMonthlyFinalized = z.infer<typeof SupremeCourtMonthlyFinalizedSchema>;
