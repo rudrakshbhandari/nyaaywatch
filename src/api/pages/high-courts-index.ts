@@ -94,14 +94,6 @@ export function renderHighCourtsIndexPage(
 }
 
 const HIGH_COURTS_INDEX_CSS = `
-  main,
-  .masthead,
-  .colophon {
-    max-width: 1760px;
-  }
-  .page-hero {
-    max-width: 980px;
-  }
   .hc-index-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
@@ -111,23 +103,26 @@ const HIGH_COURTS_INDEX_CSS = `
     display: flex;
     flex-direction: column;
     min-width: 0;
-    min-height: 460px;
   }
   .hc-card h2 {
-    margin: 28px 0 22px;
-    font-size: 32px;
-    line-height: 1.06;
-    letter-spacing: 0;
+    margin: 18px 0 14px;
+    font-size: 24px;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
   }
   .hc-card .stat-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin: 20px 0 52px;
+    margin: 16px 0 28px;
+    padding: 22px 0 24px;
   }
   .hc-card .stat-tile {
     min-width: 0;
+    padding: 0 16px;
   }
+  .hc-card .stat-tile:first-child { padding-left: 0; }
+  .hc-card .stat-tile:last-child { padding-right: 0; }
   .hc-card .stat-tile__value {
-    font-size: clamp(42px, 4.5cqw, 52px);
+    font-size: clamp(26px, 2.6vw, 36px);
   }
   .hc-card > p:last-child {
     margin-top: auto;
@@ -157,29 +152,18 @@ const HIGH_COURTS_INDEX_CSS = `
     padding-left: 25px;
   }
   .hc-card--top .hc-card__rank { color: var(--accent-dark); }
-  @media (max-width: 1280px) {
+  @media (max-width: 900px) {
     .hc-index-grid {
       grid-template-columns: 1fr;
     }
-    .hc-card {
-      min-height: 0;
-    }
   }
   @media (max-width: 720px) {
-    main,
-    .masthead,
-    .colophon {
-      max-width: none;
-    }
-    .hc-card h2 {
-      font-size: 26px;
-    }
     .hc-card .stat-grid {
       grid-template-columns: 1fr;
-      margin-bottom: 36px;
+      margin-bottom: 32px;
     }
     .hc-card .stat-tile__value {
-      font-size: 42px;
+      font-size: clamp(28px, 8vw, 40px);
     }
   }
 `;

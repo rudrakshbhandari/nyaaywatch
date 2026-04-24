@@ -55,32 +55,6 @@ test.describe("public layout overflow", () => {
     });
   }
 
-  test("uses the wide High Courts directory frame on large desktop", async ({ page }) => {
-    await page.setViewportSize({ width: 2048, height: 1200 });
-    await page.goto("/high-courts");
-
-    await expect(page.getByRole("heading", { name: "India's High Courts, ranked by pressure" })).toBeVisible();
-    await expect(page.getByRole("region", { name: "Published High Court snapshots" })).toBeVisible();
-
-    const layout = await page.evaluate(() => {
-      const main = document.querySelector("main")?.getBoundingClientRect();
-      const firstCard = document.querySelector(".hc-card")?.getBoundingClientRect();
-
-      return {
-        mainLeft: main?.left ?? 0,
-        mainWidth: main?.width ?? 0,
-        firstCardWidth: firstCard?.width ?? 0,
-        scrollWidth: document.documentElement.scrollWidth,
-        viewportWidth: window.innerWidth,
-      };
-    });
-
-    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.viewportWidth);
-    expect(layout.mainLeft).toBeLessThanOrEqual(170);
-    expect(layout.mainWidth).toBeGreaterThanOrEqual(1700);
-    expect(layout.firstCardWidth).toBeGreaterThanOrEqual(820);
-  });
-
   test("keeps High Court metric numbers and API method badges readable", async ({ page }) => {
     await page.setViewportSize({ width: 2048, height: 1200 });
     await page.goto("/high-courts");
