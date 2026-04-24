@@ -21,37 +21,39 @@ export function renderSupremeCourtOverviewPage(
   );
 
   const body = `
-    ${renderSectionHead({
-      eyebrow: "SUPREME COURT",
-      headline: "Where is pressure building at the apex court?",
-      lede:
-        "This page shows one published aggregate Supreme Court snapshot, but focuses the first view on backlog pressure, clearance pace, and monthly pile change so the current direction is obvious at a glance.",
-      isHero: true,
-    })}
+    <div class="hero-rail">
+      ${renderSectionHead({
+        eyebrow: "SUPREME COURT",
+        headline: "Where is pressure building at the apex court?",
+        lede:
+          "This page shows one published aggregate Supreme Court snapshot, but focuses the first view on backlog pressure, clearance pace, and monthly pile change so the current direction is obvious at a glance.",
+        isHero: true,
+      })}
 
-    <section class="stat-grid">
-      ${renderStatTile({
-        label: "Pending total",
-        value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
-        note: "Registered and unregistered pending matters combined in the active publication.",
-      })}
-      ${renderStatTile({
-        label: "Cleared / 100 filed",
-        value: clearanceRateDisplay,
-        note: "How quickly the apex court cleared incoming work in the latest monthly window.",
-      })}
-      ${renderStatTile({
-        label: "Last-month pile change",
-        value: pileChange.display,
-        note: pileChange.note,
-      })}
-      ${renderStatTile({
-        label: "Pending unregistered",
-        value: snapshot.stats.pendingUnregisteredCases.toLocaleString("en-IN"),
-        note: "Unregistered matters remain visible instead of being folded away.",
-        tone: "accent",
-      })}
-    </section>
+      <section class="stat-grid">
+        ${renderStatTile({
+          label: "Pending total",
+          value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
+          note: "Registered and unregistered pending matters combined in the active publication.",
+        })}
+        ${renderStatTile({
+          label: "Cleared / 100 filed",
+          value: clearanceRateDisplay,
+          note: "How quickly the apex court cleared incoming work in the latest monthly window.",
+        })}
+        ${renderStatTile({
+          label: "Last-month pile change",
+          value: pileChange.display,
+          note: pileChange.note,
+        })}
+        ${renderStatTile({
+          label: "Pending unregistered",
+          value: snapshot.stats.pendingUnregisteredCases.toLocaleString("en-IN"),
+          note: "Unregistered matters remain visible instead of being folded away.",
+          tone: "accent",
+        })}
+      </section>
+    </div>
 
     <section class="sc-section">
       ${renderSectionHead({
@@ -94,7 +96,6 @@ export function renderSupremeCourtOverviewPage(
           <h3>Current year</h3>
           <p><strong>Instituted:</strong> ${snapshot.stats.institutedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
           <p><strong>Disposed:</strong> ${snapshot.stats.disposedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
-          <p>This page exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
           <p>This page exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
         </article>
       </div>
