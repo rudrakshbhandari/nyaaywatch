@@ -243,11 +243,24 @@ function renderTable(districts: DistrictSnapshot[], context: PublicPageContext):
 }
 
 function renderNoResults(options: DistrictsPageOptions, context: PublicPageContext): string {
+  const hasSearch = options.search.trim().length > 0;
+  const isWatchlistOnly = options.view === "flagged";
+
+  let hint: string;
+  if (hasSearch && isWatchlistOnly) {
+    hint = `No watchlisted district matches <strong>&ldquo;${escapeHtml(options.search)}&rdquo;</strong>. Try broadening the search or switching to all districts.`;
+  } else if (hasSearch) {
+    hint = `No district matches <strong>&ldquo;${escapeHtml(options.search)}&rdquo;</strong>. Check the spelling or try a partial name.`;
+  } else {
+    hint = "No districts appear in the current view. Switch to all districts to see the full list.";
+  }
+
   return `
     <article class="card no-results">
-      <h3>No districts match this view</h3>
-      <p>Try clearing the search term or switching back from ${escapeHtml(VIEW_LABELS[options.view].toLowerCase())}.</p>
-      <p><a class="btn btn--ghost btn--small" href="${context.routes.districts}">Reset filters</a> ${renderBadge({ label: "Watchlist only", tone: "flag" })}</p>
+      <p class="card__eyebrow">NO RESULTS</p>
+      <h3>Nothing to show here.</h3>
+      <p>${hint}</p>
+      <p><a class="btn btn--ghost btn--small" href="${context.routes.districts}">Reset filters</a></p>
     </article>
   `;
 }
@@ -421,7 +434,15 @@ const DISTRICTS_PAGE_CSS = `
   .district-row__summary { margin: 4px 0 0; font-size: 12px; color: var(--ink-muted); line-height: 1.4; font-weight: 500; }
   .district-row__reason { color: var(--ink-soft); font-size: 13px; max-width: 34ch; }
 
-  .no-results { margin-bottom: 72px; }
+  .no-results { margin-bottom: 72px; max-width: 600px; }
+  .no-results .card__eyebrow {
+    margin: 0 0 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  .no-results h3 { margin: 0 0 14px; font-size: 24px; }
 
   @media (max-width: 960px) {
     .controls__form { grid-template-columns: 1fr 1fr; }
