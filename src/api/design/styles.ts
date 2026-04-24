@@ -438,6 +438,41 @@ export const BASE_CSS = `
   }
   .endpoints { margin-bottom: 72px; }
 
+  /* --- inline JSON sample (collapsible <details> inside endpoint cards) --- */
+  .code-sample-reveal {
+    margin-top: 14px;
+    grid-column: 1 / -1;
+  }
+  .code-sample-reveal > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    padding: 4px 0;
+    transition: color 120ms ease;
+  }
+  .code-sample-reveal > summary::-webkit-details-marker { display: none; }
+  .code-sample-reveal > summary::marker { content: ""; }
+  .code-sample-reveal > summary::after { content: "\u25BE"; font-size: 10px; opacity: 0.6; }
+  .code-sample-reveal[open] > summary::after { transform: rotate(180deg); display: inline-block; }
+  .code-sample-reveal > summary:hover { color: var(--ink); }
+  .code-sample {
+    margin: 10px 0 0;
+    padding: 16px 18px;
+    background: #1e1c19;
+    color: #d4cec4;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; line-height: 1.65;
+    overflow-x: auto;
+    border-radius: 2px;
+    white-space: pre;
+    tab-size: 2;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* --- meta-row (tight list of label:value pairs) --- */
   .meta-row {
     display: flex; flex-wrap: wrap; gap: 22px 34px;
