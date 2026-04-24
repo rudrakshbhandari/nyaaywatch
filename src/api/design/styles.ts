@@ -435,6 +435,41 @@ export const BASE_CSS = `
   }
   .endpoints { margin-bottom: 72px; }
 
+  /* --- inline JSON sample (collapsible <details> inside endpoint cards) --- */
+  .code-sample-reveal {
+    margin-top: 14px;
+    grid-column: 1 / -1;
+  }
+  .code-sample-reveal > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    padding: 4px 0;
+    transition: color 120ms ease;
+  }
+  .code-sample-reveal > summary::-webkit-details-marker { display: none; }
+  .code-sample-reveal > summary::marker { content: ""; }
+  .code-sample-reveal > summary::after { content: "\u25BE"; font-size: 10px; opacity: 0.6; }
+  .code-sample-reveal[open] > summary::after { transform: rotate(180deg); display: inline-block; }
+  .code-sample-reveal > summary:hover { color: var(--ink); }
+  .code-sample {
+    margin: 10px 0 0;
+    padding: 16px 18px;
+    background: #1e1c19;
+    color: #d4cec4;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; line-height: 1.65;
+    overflow-x: auto;
+    border-radius: 2px;
+    white-space: pre;
+    tab-size: 2;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* --- meta-row (tight list of label:value pairs) --- */
   .meta-row {
     display: flex; flex-wrap: wrap; gap: 22px 34px;
@@ -545,6 +580,42 @@ export const BASE_CSS = `
   .stat-tile__link:hover::after, .stat-tile__link:focus-visible::after,
   .numbers__label a:hover::after, .numbers__label a:focus-visible::after {
     opacity: 1;
+  }
+
+  /* --- hero-rail: side-by-side hero text + stat grid at ≥1440px ---
+     Used on High Court and Supreme Court overview pages where the 4 stat
+     tiles naturally companion the editorial hero. Below 1440px the wrapper
+     is a transparent single-column grid so normal stacking applies. */
+  .hero-rail { display: grid; }
+  @media (min-width: 1440px) {
+    .hero-rail {
+      grid-template-columns: 1fr 360px;
+      align-items: start;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 64px;
+    }
+    .hero-rail > .page-hero {
+      max-width: none;
+      padding: 40px 56px 40px 0;
+      margin-bottom: 0;
+    }
+    .hero-rail > .stat-grid {
+      border-top: none; border-bottom: none;
+      border-left: 2px solid var(--ink);
+      margin: 0;
+      padding: 40px 0 40px 36px;
+      grid-template-columns: 1fr 1fr;
+      row-gap: 28px;
+    }
+    .hero-rail > .stat-grid .stat-tile {
+      border-left: none; padding-left: 0; padding-right: 14px;
+    }
+    .hero-rail > .stat-grid .stat-tile:nth-child(even) {
+      border-left: 1px solid var(--rule); padding-left: 14px; padding-right: 0;
+    }
+    .hero-rail > .stat-grid .stat-tile__value {
+      font-size: clamp(28px, 2.6vw, 40px);
+    }
   }
 
   /* --- responsive --- */
