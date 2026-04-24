@@ -1,5 +1,7 @@
 # TODOS
 
+> For repo maintainers. Not user-facing.
+
 `docs/MVP_EXECUTION_PLAN.md` is the ordered path to the Himachal alpha MVP.
 
 Use this file for:

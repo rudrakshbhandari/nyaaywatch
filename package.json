@@ -1,9 +1,17 @@
 {
   "name": "nyaaywatch",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "Apache-2.0",
   "type": "module",
-  "description": "AWS-backed published snapshot storage slice for NyaayWatch",
+  "description": "Reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's courts — drawn from public NJDG data.",
+  "homepage": "https://nyaaywatch.in",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rudrakshbhandari/nyaaywatch.git"
+  },
+  "author": "NyaayWatch Contributors",
+  "keywords": ["india", "judiciary", "court-data", "transparency", "njdg", "open-data"],
   "engines": {
     "node": ">=22"
   },

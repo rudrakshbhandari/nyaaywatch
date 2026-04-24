@@ -2,6 +2,8 @@
 
 > **How long is India waiting for justice?**
 
+**[nyaaywatch.in](https://nyaaywatch.in)** — live now
+
 NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, High Courts, and district courts — drawn from public NJDG data with full methodology disclosure. Every number links to a dated source. Nothing is shown without a click-reachable citation.
 
 **Journalist quickstart** — pull the numbers without leaving your terminal:
