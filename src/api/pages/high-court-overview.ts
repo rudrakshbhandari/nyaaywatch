@@ -30,7 +30,7 @@ export function renderHighCourtOverviewPage(
         eyebrow: "HIGH COURT",
         headline: `What is the latest published snapshot showing in ${profile.courtName}?`,
         lede:
-          `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly pile change, and age-bucket burden from the latest published High Court snapshot. It stays court-first and explicit about what the source does and does not support.`,
+          `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly backlog change, and age-bucket burden from the latest published High Court snapshot. It stays court-first and explicit about what the source does and does not support.`,
         isHero: true,
       })}
 
@@ -50,7 +50,7 @@ export function renderHighCourtOverviewPage(
           ),
         })}
         ${renderStatTile({
-          label: "Last-month pile change",
+          label: "Last-month backlog change",
           value: pileChange.display,
           note: pileChange.note,
           trendSignal: describePileTrend(

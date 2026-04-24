@@ -227,7 +227,7 @@ export async function renderStateOgCard(data: StateOgCardData, cacheKey: string)
             numberCell(pendingNum, pendingUnit, "PENDING CASES"),
             numberCell(`~${data.typicalWaitMonths}`, "mo", "TYPICAL WAIT"),
             numberCell(data.clearanceRate.toFixed(0), "/ 100", "CLEARED PER 100"),
-            numberCell(String(data.flaggedCount), "", "DISTRICTS FLAGGED"),
+            numberCell(data.flaggedCount.toLocaleString("en-IN"), "", "DISTRICTS FLAGGED"),
           ],
         },
       },
@@ -361,7 +361,7 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
           },
           children: [
             numberCell(pendingNum, pendingUnit, "PENDING CASES"),
-            numberCell(String(data.statesCount), "", "STATES COVERED"),
+            numberCell(data.statesCount.toLocaleString("en-IN"), "", "STATES COVERED"),
           ],
         },
       },
@@ -605,7 +605,7 @@ export async function renderSquareStateCard(data: StateOgCardData, cacheKey: str
           children: [
             squareNumberCell(pendingNum, pendingUnit, "PENDING"),
             squareNumberCell(`~${data.typicalWaitMonths}`, "mo", "TYPICAL WAIT"),
-            squareNumberCell(data.flaggedCount.toString(), "", "FLAGGED"),
+            squareNumberCell(data.flaggedCount.toLocaleString("en-IN"), "", "FLAGGED"),
           ],
         },
       },

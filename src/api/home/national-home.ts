@@ -53,7 +53,7 @@ export function renderNationalHome(input: {
                   <dd>${escapeHtml(clearanceRateDisplay)}${renderSignal(clearanceTrend)}</dd>
                 </div>
                 <div>
-                  <dt>Last-month pile change</dt>
+                  <dt>Last-month backlog change</dt>
                   <dd>${escapeHtml(monthlyGapDisplay)}${renderSignal(pileTrend)}</dd>
                 </div>
               </dl>
@@ -147,7 +147,7 @@ export function renderNationalHome(input: {
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly pile change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
+            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly backlog change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
             : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers are live or predictive."
         }</p>
         <div class="national-hero__cta">
@@ -188,11 +188,11 @@ export function renderNationalHome(input: {
                 deltaDirectionHint: "up-is-good",
               })}
               ${renderStatTile({
-                label: "Last-month pile change",
+                label: "Last-month backlog change",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
                 note: model.supremeCourt.monthlyGapNote ?? "Monthly incoming and outgoing work are both visible.",
                 series: scGapSeries,
-                seriesLabel: "Monthly pile change over recent months",
+                seriesLabel: "Monthly backlog change over recent months",
                 deltaDirectionHint: "up-is-bad",
               })}
             `
@@ -207,7 +207,7 @@ export function renderNationalHome(input: {
               })}
               ${renderStatTile({
                 label: "Public lower-court geographies",
-                value: model.lowerCourts.publicStateCount.toString(),
+                value: model.lowerCourts.publicStateCount.toLocaleString("en-IN"),
                 note: "Each State or Union Territory page stays tied to its own published snapshot and supporting notes.",
                 tone: "accent",
               })}
@@ -220,7 +220,7 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "High Courts across India.",
         lede:
-          "Each court keeps its own source semantics and explicit coverage label. Cards are ordered by last-month pile change first, then clearance pace, then pending load so readers can see where backlog pressure is worsening fastest.",
+          "Each court keeps its own source semantics and explicit coverage label. Cards are ordered by last-month backlog change first, then clearance pace, then pending load so readers can see where backlog pressure is worsening fastest.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
       <p class="national-section__linkline"><a href="/high-courts">See all High Courts</a></p>
@@ -240,12 +240,12 @@ export function renderNationalHome(input: {
         })}
         ${renderStatTile({
           label: "Public lower-court geographies",
-          value: model.lowerCourts.publicStateCount.toString(),
+          value: model.lowerCourts.publicStateCount.toLocaleString("en-IN"),
           note: "Each State or Union Territory page stays tied to its own published snapshot and supporting notes.",
         })}
         ${renderStatTile({
           label: "Flagged districts",
-          value: model.lowerCourts.flaggedDistricts.toString(),
+          value: model.lowerCourts.flaggedDistricts.toLocaleString("en-IN"),
           note: "Combined count of districts flagged for closer inspection across the public lower-court cohort.",
           tone: "flag",
         })}

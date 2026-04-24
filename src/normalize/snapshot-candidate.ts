@@ -155,7 +155,7 @@ function buildSummary(
   }
 
   const sentence = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. A typical pending case falls around ${district.medianAgeDays} days old, and the district cleared ${district.disposalRate.toFixed(1)}% as many cases as it received last month.`;
-  return isFlagged ? `${sentence} It stays on the watchlist in this snapshot.` : sentence;
+  return isFlagged ? `${sentence} It stays on the list of districts to watch in this snapshot.` : sentence;
 }
 
 function inferMedianAgeDays(ageBuckets: {

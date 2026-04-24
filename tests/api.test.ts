@@ -93,7 +93,7 @@ describe("HTTP routes", () => {
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
     expect(districtsPage.text).toContain("Scan the districts under the most pressure.");
-    expect(districtsPage.text).toContain("Watchlist only");
+    expect(districtsPage.text).toContain("Only districts to watch");
     expect(districtsPage.text).toContain("Kangra");
     expect(districtsPage.text.indexOf("Haryana")).toBeLessThan(districtsPage.text.indexOf("Himachal Pradesh"));
     expect(districtsPage.text.indexOf("Himachal Pradesh")).toBeLessThan(districtsPage.text.indexOf("Punjab"));
@@ -558,7 +558,7 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("Patna High Court");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
-    expect(index.text).toContain("ordered by last-month pile change first, then clearance pace, then pending load");
+    expect(index.text).toContain("ordered by last-month backlog change first, then clearance pace, then pending load");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
@@ -569,7 +569,7 @@ describe("HTTP routes", () => {
     expect(overview.text).toContain("Current coverage:</strong> Himachal Pradesh");
     expect(overview.text).toContain("HC NJDG did not expose a trustworthy source snapshot timestamp");
     expect(overview.text).toContain("Cleared / 100 filed");
-    expect(overview.text).toContain("Last-month pile change");
+    expect(overview.text).toContain("Last-month backlog change");
 
     const data = await request(app).get("/high-courts/himachal/data");
     expect(data.status).toBe(200);
@@ -765,7 +765,7 @@ describe("HTTP routes", () => {
     expect(overview.text).toContain("Where is pressure building at the Supreme Court?");
     expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
     expect(overview.text).toContain("Cleared / 100 filed");
-    expect(overview.text).toContain("Last-month pile change");
+    expect(overview.text).toContain("Last-month backlog change");
 
     const data = await request(app).get("/supreme-court/data");
     expect(data.status).toBe(200);
@@ -867,7 +867,7 @@ describe("HTTP routes", () => {
     expect(ladakhHome.status).toBe(200);
     expect(ladakhHome.text).toContain("How long is the wait for justice in Ladakh?");
     expect(ladakhHome.text).toContain("This Union Territory page covers Ladakh.");
-    expect(ladakhHome.text).toContain("territory-wide pile");
+    expect(ladakhHome.text).toContain("territory-wide backlog");
     expect(ladakhHome.text).not.toContain("rest of the state");
 
     const ladakhDistricts = await request(app).get("/states/ladakh/districts");

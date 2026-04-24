@@ -71,7 +71,7 @@ export function renderDistrictPage(
         value: `~${typicalWaitMonths}`,
         unit: "mo",
         infoKey: "typicalWait",
-        note: "Middle of the local pile, estimated from published age buckets.",
+        note: "Middle of the local backlog, estimated from published age buckets.",
         methodologyHref: `${context.routes.methodology}#metric-typical-wait`,
         anchorId: "stat-typical-wait",
       })}
@@ -113,7 +113,7 @@ export function renderDistrictPage(
         <article class="card" id="district-citation">
           <header class="card__head">
             <p class="card__eyebrow">CITE AND EXPORT</p>
-            <h3>Durable citation surface</h3>
+            <h3>A link you can cite</h3>
           </header>
           <dl class="citation-list">
             <div><dt>Permalink</dt><dd><code>${escapeHtml(context.routes.district(district.districtId))}</code></dd></div>
@@ -266,7 +266,7 @@ function renderWaitingClock(months: number, districtName: string): string {
         <div class="wc__caption">
           <span class="wc__caption__value">~${months}</span>
           <span class="wc__caption__unit">months</span>
-          <span class="wc__caption__label">Each square = one month the middle of the pile has been waiting</span>
+          <span class="wc__caption__label">Each square = one month the middle of the backlog has been waiting</span>
         </div>
       </div>
     </section>

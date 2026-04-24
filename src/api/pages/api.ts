@@ -25,7 +25,7 @@ export function renderApiPage(context: PublicPageContext): string {
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
-          <p>${context.lowerCourtCopy.aggregateAdjectiveTitle} backlog, disposal pace, wait estimate, and watchlist count for the active publication.</p>
+          <p>${context.lowerCourtCopy.aggregateAdjectiveTitle} backlog, disposal pace, wait estimate, and count of districts to watch for the active publication.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -68,7 +68,7 @@ export function renderApiPage(context: PublicPageContext): string {
       "disposalRate": 68.2,
       "medianAgeDays": 912,
       "filingVsDisposalGap": 8.4,
-      "flagReason": "High file-clear gap with growing pile.",
+      "flagReason": "High file-clear gap with growing backlog.",
       "summary": "Kangra shows a widening backlog \u2026"
     },
     // \u2026 one object per district in the snapshot

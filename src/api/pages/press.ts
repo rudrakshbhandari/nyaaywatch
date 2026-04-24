@@ -95,7 +95,10 @@ export function renderPressPage(): string {
     <section class="press-section">
       ${renderSectionHead({ headline: "Suggested captions.", lede: "These are starting points. Always verify numbers against the latest published snapshot before publishing." })}
       <div class="card press-caption-card">
+        <p class="press-caption__lang">English</p>
         <p class="press-caption">According to NyaayWatch (nyaaywatch.in), which tracks pending caseloads using public NJDG data, [DISTRICT] district courts had [NUMBER] cases waiting as of [DATE]. The median case in this district has been pending for approximately [MONTHS] months.</p>
+        <p class="press-caption__lang">हिन्दी</p>
+        <p class="press-caption">NyaayWatch (nyaaywatch.in) के अनुसार, जो सार्वजनिक NJDG डेटा से लंबित मामलों को ट्रैक करता है, [DATE] तक [DISTRICT] ज़िले की अदालतों में [NUMBER] मामले लंबित थे। इस ज़िले में आधे मामले लगभग [MONTHS] महीने से सुनवाई का इंतज़ार कर रहे हैं।</p>
         <p class="press-caption press-caption--note">Replace bracketed values with numbers from the district evidence page. Link "NyaayWatch (nyaaywatch.in)" to the specific district page for traceability.</p>
       </div>
     </section>
@@ -109,7 +112,7 @@ export function renderPressPage(): string {
             <li>An independent, non-partisan court-data transparency project</li>
             <li>A publisher of reviewed, versioned snapshots from public NJDG records</li>
             <li>A tool for tracking backlog pressure, clearance pace, and delay trends</li>
-            <li>A citation surface: every number links to a dated source and methodology</li>
+            <li>Built for citation: every number links to a dated source and methodology</li>
           </ul>
         </article>
         <article class="card">
@@ -273,6 +276,8 @@ const PRESS_PAGE_CSS = `
     border-left: 3px solid var(--rule); padding-left: 16px;
   }
   .press-caption--note { color: var(--ink-muted); font-size: 13px; font-style: normal; }
+  .press-caption__lang { margin: 14px 0 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+  .press-caption__lang:first-child { margin-top: 0; }
 
   .press-list { margin: 10px 0 0; padding: 0 0 0 18px; }
   .press-list li { margin-bottom: 8px; font-size: 15px; color: var(--ink-soft); line-height: 1.55; }

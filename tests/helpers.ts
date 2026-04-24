@@ -351,7 +351,7 @@ export function buildPunjabTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among the state's biggest.",
         summary:
-          "Ludhiana has 2,40,926 cases waiting. A typical pending case falls around 183 days old, and the district cleared 46.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Ludhiana has 2,40,926 cases waiting. A typical pending case falls around 183 days old, and the district cleared 46.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "amritsar",
@@ -364,7 +364,7 @@ export function buildPunjabTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Punjab, based on the latest published snapshot.",
         summary:
-          "Amritsar has 81,337 cases waiting. A typical pending case falls around 730 days old, and the district cleared 134.5% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Amritsar has 81,337 cases waiting. A typical pending case falls around 730 days old, and the district cleared 134.5% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "jalandhar",
@@ -377,7 +377,7 @@ export function buildPunjabTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among the state's biggest.",
         summary:
-          "Jalandhar has 79,899 cases waiting. A typical pending case falls around 183 days old, and the district cleared 79.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Jalandhar has 79,899 cases waiting. A typical pending case falls around 183 days old, and the district cleared 79.1% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -422,7 +422,7 @@ export function buildLadakhTestSnapshot(): PublishedSnapshot {
         flagReason:
           "This district carries most of Ladakh's pending lower-court caseload in the latest published snapshot.",
         summary:
-          "Leh has 1,034 cases waiting. A typical pending case falls around 365 days old, and the district cleared 96.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Leh has 1,034 cases waiting. A typical pending case falls around 365 days old, and the district cleared 96.1% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "kargil",
@@ -480,7 +480,7 @@ export function buildHaryanaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Haryana's biggest.",
         summary:
-          "Faridabad has 2,19,876 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Faridabad has 2,19,876 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "ambala",
@@ -493,7 +493,7 @@ export function buildHaryanaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Haryana, based on the latest published snapshot.",
         summary:
-          "Ambala has 1,10,452 cases waiting. A typical pending case falls around 730 days old, and the district cleared 104.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Ambala has 1,10,452 cases waiting. A typical pending case falls around 730 days old, and the district cleared 104.7% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "karnal",
@@ -506,7 +506,7 @@ export function buildHaryanaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "Karnal has 93,840 cases waiting. A typical pending case falls around 365 days old, and the district cleared 79.2% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Karnal has 93,840 cases waiting. A typical pending case falls around 365 days old, and the district cleared 79.2% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -551,7 +551,7 @@ export function buildAssamTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Assam's biggest.",
         summary:
-          "Tinsukia has 48,211 cases waiting. A typical pending case falls around 183 days old, and the district cleared 82.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Tinsukia has 48,211 cases waiting. A typical pending case falls around 183 days old, and the district cleared 82.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "sivasagar",
@@ -564,7 +564,7 @@ export function buildAssamTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Assam, based on the latest published snapshot.",
         summary:
-          "Sivasagar has 26,604 cases waiting. A typical pending case falls around 730 days old, and the district cleared 107.9% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Sivasagar has 26,604 cases waiting. A typical pending case falls around 730 days old, and the district cleared 107.9% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "lakhimpur",
@@ -577,7 +577,7 @@ export function buildAssamTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "Lakhimpur has 21,897 cases waiting. A typical pending case falls around 365 days old, and the district cleared 76.3% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Lakhimpur has 21,897 cases waiting. A typical pending case falls around 365 days old, and the district cleared 76.3% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -622,7 +622,7 @@ export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Tamil Nadu's biggest.",
         summary:
-          "Chennai has 2,84,613 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.9% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Chennai has 2,84,613 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.9% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "coimbatore",
@@ -635,7 +635,7 @@ export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Tamil Nadu, based on the latest published snapshot.",
         summary:
-          "Coimbatore has 1,32,904 cases waiting. A typical pending case falls around 730 days old, and the district cleared 107.8% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Coimbatore has 1,32,904 cases waiting. A typical pending case falls around 730 days old, and the district cleared 107.8% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "madurai",
@@ -648,7 +648,7 @@ export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "Madurai has 1,18,772 cases waiting. A typical pending case falls around 365 days old, and the district cleared 79.5% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Madurai has 1,18,772 cases waiting. A typical pending case falls around 365 days old, and the district cleared 79.5% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -693,7 +693,7 @@ export function buildKeralaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Kerala's biggest.",
         summary:
-          "Ernakulam has 2,68,114 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Ernakulam has 2,68,114 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.7% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "kozhikode",
@@ -706,7 +706,7 @@ export function buildKeralaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Kerala, based on the latest published snapshot.",
         summary:
-          "Kozhikode has 1,87,442 cases waiting. A typical pending case falls around 730 days old, and the district cleared 111.6% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Kozhikode has 1,87,442 cases waiting. A typical pending case falls around 730 days old, and the district cleared 111.6% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "kasaragod",
@@ -719,7 +719,7 @@ export function buildKeralaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "Kasaragod has 92,481 cases waiting. A typical pending case falls around 183 days old, and the district cleared 83.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Kasaragod has 92,481 cases waiting. A typical pending case falls around 183 days old, and the district cleared 83.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -764,7 +764,7 @@ export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Meghalaya's biggest.",
         summary:
-          "East Khasi Hills has 6,214 cases waiting. A typical pending case falls around 183 days old, and the district cleared 47.8% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "East Khasi Hills has 6,214 cases waiting. A typical pending case falls around 183 days old, and the district cleared 47.8% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "west-garo-hills",
@@ -777,7 +777,7 @@ export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Meghalaya, based on the latest published snapshot.",
         summary:
-          "West Garo Hills has 4,217 cases waiting. A typical pending case falls around 730 days old, and the district cleared 61.2% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "West Garo Hills has 4,217 cases waiting. A typical pending case falls around 730 days old, and the district cleared 61.2% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "west-jaintia-hills",
@@ -790,7 +790,7 @@ export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "West Jaintia Hills has 2,984 cases waiting. A typical pending case falls around 365 days old, and the district cleared 58.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "West Jaintia Hills has 2,984 cases waiting. A typical pending case falls around 365 days old, and the district cleared 58.7% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -835,7 +835,7 @@ export function buildKarnatakaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Karnataka's biggest.",
         summary:
-          "Belagavi has 1,84,320 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.8% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Belagavi has 1,84,320 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.8% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "bagalkot",
@@ -848,7 +848,7 @@ export function buildKarnatakaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Karnataka, based on the latest published snapshot.",
         summary:
-          "Bagalkot has 1,17,408 cases waiting. A typical pending case falls around 730 days old, and the district cleared 152.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Bagalkot has 1,17,408 cases waiting. A typical pending case falls around 730 days old, and the district cleared 152.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "vijayapura",
@@ -861,7 +861,7 @@ export function buildKarnatakaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "Vijayapura has 1,03,226 cases waiting. A typical pending case falls around 365 days old, and the district cleared 88.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Vijayapura has 1,03,226 cases waiting. A typical pending case falls around 365 days old, and the district cleared 88.1% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -906,7 +906,7 @@ export function buildTripuraTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Tripura's biggest.",
         summary:
-          "West Tripura has 18,214 cases waiting. A typical pending case falls around 183 days old, and the district cleared 91.6% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "West Tripura has 18,214 cases waiting. A typical pending case falls around 183 days old, and the district cleared 91.6% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "north-tripura",
@@ -919,7 +919,7 @@ export function buildTripuraTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Tripura, based on the latest published snapshot.",
         summary:
-          "North Tripura has 9,732 cases waiting. A typical pending case falls around 730 days old, and the district cleared 168.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "North Tripura has 9,732 cases waiting. A typical pending case falls around 730 days old, and the district cleared 168.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "south-tripura",
@@ -932,7 +932,7 @@ export function buildTripuraTestSnapshot(): PublishedSnapshot {
         flagReason:
           "This district still carries a visible backlog in the statewide snapshot even after clearing slightly more cases than it received last month.",
         summary:
-          "South Tripura has 8,651 cases waiting. A typical pending case falls around 365 days old, and the district cleared 102.7% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "South Tripura has 8,651 cases waiting. A typical pending case falls around 365 days old, and the district cleared 102.7% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [
@@ -977,7 +977,7 @@ export function buildNagalandTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Nagaland's biggest.",
         summary:
-          "Dimapur has 1,432 cases waiting. A typical pending case falls around 183 days old, and the district cleared 94.2% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Dimapur has 1,432 cases waiting. A typical pending case falls around 183 days old, and the district cleared 94.2% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "kohima",
@@ -990,7 +990,7 @@ export function buildNagalandTestSnapshot(): PublishedSnapshot {
         flagReason:
           "People appear to be waiting longer here than in much of Nagaland, based on the latest published snapshot.",
         summary:
-          "Kohima has 1,108 cases waiting. A typical pending case falls around 365 days old, and the district cleared 117.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Kohima has 1,108 cases waiting. A typical pending case falls around 365 days old, and the district cleared 117.1% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "mokokchung",
@@ -1003,7 +1003,7 @@ export function buildNagalandTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "Mokokchung has 524 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.9% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Mokokchung has 524 cases waiting. A typical pending case falls around 183 days old, and the district cleared 88.9% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [

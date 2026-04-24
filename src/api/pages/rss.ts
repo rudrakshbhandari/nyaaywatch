@@ -68,7 +68,7 @@ function buildItemDescription(
       `<br>Cases waiting: ${stats.pendingCases.toLocaleString("en-IN")}`,
       `<br>Cleared per 100 filed: ${stats.disposalRate.toFixed(1)}`,
       `<br>Typical wait: ~${Math.round(stats.medianCaseAgeDays / 30)} months`,
-      `<br>Flagged districts: ${stats.flaggedDistricts}`,
+      `<br>Flagged districts: ${stats.flaggedDistricts.toLocaleString("en-IN")}`,
     );
   }
 

@@ -27,7 +27,7 @@ export function renderSupremeCourtOverviewPage(
         eyebrow: "SUPREME COURT",
         headline: "Where is pressure building at the Supreme Court?",
         lede:
-          "This page shows one published aggregate Supreme Court snapshot, but focuses the first view on backlog pressure, clearance pace, and monthly pile change so the current direction is obvious at a glance.",
+          "This page shows one published aggregate Supreme Court snapshot, but focuses the first view on backlog pressure, clearance pace, and monthly backlog change so the current direction is obvious at a glance.",
         isHero: true,
       })}
 
@@ -47,7 +47,7 @@ export function renderSupremeCourtOverviewPage(
           ),
         })}
         ${renderStatTile({
-          label: "Last-month pile change",
+          label: "Last-month backlog change",
           value: pileChange.display,
           note: pileChange.note,
           trendSignal: describePileTrend(

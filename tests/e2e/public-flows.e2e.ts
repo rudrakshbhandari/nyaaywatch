@@ -26,7 +26,7 @@ test("citizen flow loads the homepage, district workspace, and district permalin
 test("reporter flow reaches methodology and public download surfaces from district context", async ({ page }) => {
   await page.goto("/districts/kangra");
 
-  await expect(page.getByText("Durable citation surface")).toBeVisible();
+  await expect(page.getByText("A link you can cite")).toBeVisible();
   await page.getByRole("navigation").getByRole("link", { name: "Data" }).click();
 
   await expect(page).toHaveURL(/\/data$/);
