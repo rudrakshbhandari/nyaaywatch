@@ -1,0 +1,60 @@
+{
+  "snapshot": {
+    "courtTier": "high_court",
+    "courtCode": "HPHC",
+    "courtSlug": "himachal",
+    "courtName": "High Court of Himachal Pradesh",
+    "coveredGeographies": [
+      {
+        "geographyCode": "HP",
+        "geographyName": "Himachal Pradesh",
+        "geographyType": "state",
+        "lowerCourtStateCode": "HP"
+      }
+    ],
+    "sourceName": "HC NJDG High Court of Himachal Pradesh dashboard",
+    "sourceSnapshotAt": null,
+    "referenceDateAt": "2026-04-23T21:20:02.808Z",
+    "referenceDateKind": "captured_at",
+    "publishedAt": "2026-04-23T21:20:04.417Z",
+    "methodologyVersion": "2026.04-high-court-draft",
+    "qualityState": "complete",
+    "freshnessDays": 0,
+    "sourceAttribution": "High Courts of India National Judicial Data Grid for High Court of Himachal Pradesh",
+    "publishedFromRunId": "run_3dbb1753-c605-4651-a9c6-619e622f1d71"
+  },
+  "stats": {
+    "pendingCivilCases": 92034,
+    "pendingCriminalCases": 13728,
+    "pendingTotalCases": 105762,
+    "institutedLastMonthCivilCases": 6021,
+    "institutedLastMonthCriminalCases": 1025,
+    "institutedLastMonthTotalCases": 7046,
+    "disposedLastMonthCivilCases": 5556,
+    "disposedLastMonthCriminalCases": 976,
+    "disposedLastMonthTotalCases": 6532
+  },
+  "ageBuckets": {
+    "lessThanOneYear": 38000,
+    "oneToThreeYears": 32000,
+    "threeToFiveYears": 18000,
+    "fiveToTenYears": 12000,
+    "aboveTenYears": 5762
+  },
+  "trends": [
+    {
+      "referenceDateAt": "2026-04-19T03:39:31.512Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 105599,
+      "institutedLastMonthTotalCases": 7046,
+      "disposedLastMonthTotalCases": 6528
+    },
+    {
+      "referenceDateAt": "2026-04-23T21:20:02.808Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 105762,
+      "institutedLastMonthTotalCases": 7046,
+      "disposedLastMonthTotalCases": 6532
+    }
+  ]
+}
