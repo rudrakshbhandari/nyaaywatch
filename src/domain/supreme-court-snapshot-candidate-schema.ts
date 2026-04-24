@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import {
+  SupremeCourtMonthlyFinalizedSchema,
   SupremeCourtSnapshotMetadataSchema,
   SupremeCourtStatsSchema,
   SupremeCourtTrendPointSchema,
@@ -17,6 +18,7 @@ export const SupremeCourtSnapshotCandidateSchema = z.object({
   snapshot: SupremeCourtSnapshotCandidateMetadataSchema,
   stats: SupremeCourtStatsSchema,
   trends: z.array(SupremeCourtTrendPointSchema).min(1),
+  monthlyFinalized: z.array(SupremeCourtMonthlyFinalizedSchema),
 });
 
 export type SupremeCourtSnapshotCandidate = z.infer<typeof SupremeCourtSnapshotCandidateSchema>;
