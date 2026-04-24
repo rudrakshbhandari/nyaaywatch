@@ -24,13 +24,39 @@ export function renderHighCourtOverviewPage(
   const olderThanTenYearsShare = ageTotal > 0 ? `${((snapshot.ageBuckets.aboveTenYears / ageTotal) * 100).toFixed(1)}%` : "0.0%";
 
   const body = `
-    ${renderSectionHead({
-      eyebrow: "HIGH COURT",
-      headline: `What is the latest published snapshot showing in ${profile.courtName}?`,
-      lede:
-        `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly pile change, and age-bucket burden from the latest published High Court snapshot. It stays court-first and explicit about what the source does and does not support.`,
-      isHero: true,
-    })}
+    <div class="hero-rail">
+      ${renderSectionHead({
+        eyebrow: "HIGH COURT",
+        headline: `What is the latest published snapshot showing in ${profile.courtName}?`,
+        lede:
+          `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly pile change, and age-bucket burden from the latest published High Court snapshot. It stays court-first and explicit about what the source does and does not support.`,
+        isHero: true,
+      })}
+
+      <section class="stat-grid">
+        ${renderStatTile({
+          label: "Pending cases",
+          value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
+          note: "Open civil and criminal matters combined in the active publication.",
+        })}
+        ${renderStatTile({
+          label: "Cleared / 100 filed",
+          value: clearanceRateDisplay,
+          note: "How quickly this High Court cleared incoming work in the latest monthly window.",
+        })}
+        ${renderStatTile({
+          label: "Last-month pile change",
+          value: pileChange.display,
+          note: pileChange.note,
+        })}
+        ${renderStatTile({
+          label: "Older than 10 years",
+          value: snapshot.ageBuckets.aboveTenYears.toLocaleString("en-IN"),
+          note: `${olderThanTenYearsShare} of visible pendency is already older than 10 years.`,
+          tone: "accent",
+        })}
+      </section>
+    </div>
 
     <section class="hc-section hc-section--compact">
       <div class="card-grid card-grid--2">
@@ -45,30 +71,6 @@ export function renderHighCourtOverviewPage(
           <p>The court itself stays explicit here, even when its jurisdiction spans more than one geography.</p>
         </article>
       </div>
-    </section>
-
-    <section class="stat-grid">
-      ${renderStatTile({
-        label: "Pending cases",
-        value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
-        note: "Open civil and criminal matters combined in the active publication.",
-      })}
-      ${renderStatTile({
-        label: "Cleared / 100 filed",
-        value: clearanceRateDisplay,
-        note: "How quickly this High Court cleared incoming work in the latest monthly window.",
-      })}
-      ${renderStatTile({
-        label: "Last-month pile change",
-        value: pileChange.display,
-        note: pileChange.note,
-      })}
-      ${renderStatTile({
-        label: "Older than 10 years",
-        value: snapshot.ageBuckets.aboveTenYears.toLocaleString("en-IN"),
-        note: `${olderThanTenYearsShare} of visible pendency is already older than 10 years.`,
-        tone: "accent",
-      })}
     </section>
 
     <section class="hc-section">
