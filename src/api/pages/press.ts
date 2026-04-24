@@ -77,13 +77,14 @@ export function renderPressPage(): string {
     <section class="press-section">
       ${renderSectionHead({ headline: "Journalist quickstart.", lede: "Pull the numbers directly from the API. No authentication, no rate limits for reasonable use." })}
       <div class="card">
+        <p class="press-api__intro">Examples below use <code>himachal</code> and <code>kangra</code> — swap in the state or district slug you want. See <a href="/api">/api</a> for the full route list and supported scopes.</p>
         <div class="press-api-row">
-          <p class="press-api__label">State summary (Himachal Pradesh)</p>
+          <p class="press-api__label">State summary (example: Himachal Pradesh)</p>
           <pre class="press-embed__code">${escapeHtml(curlExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(curlExample)}">Copy</button>
         </div>
         <div class="press-api-row">
-          <p class="press-api__label">All districts</p>
+          <p class="press-api__label">All districts (example scope)</p>
           <pre class="press-embed__code">${escapeHtml(districtExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(districtExample)}">Copy</button>
         </div>
@@ -92,9 +93,12 @@ export function renderPressPage(): string {
     </section>
 
     <section class="press-section">
-      ${renderSectionHead({ headline: "Suggested captions.", lede: "These are starting points. Always verify numbers against the latest published snapshot before publishing." })}
+      ${renderSectionHead({ headline: "Suggested captions.", lede: "These are starting points. Always verify numbers against the latest data before publishing." })}
       <div class="card press-caption-card">
+        <p class="press-caption__lang">English</p>
         <p class="press-caption">According to NyaayWatch (nyaaywatch.in), which tracks pending caseloads using public NJDG data, [DISTRICT] district courts had [NUMBER] cases waiting as of [DATE]. The median case in this district has been pending for approximately [MONTHS] months.</p>
+        <p class="press-caption__lang">हिन्दी</p>
+        <p class="press-caption">NyaayWatch (nyaaywatch.in) के अनुसार, जो सार्वजनिक NJDG डेटा से लंबित मामलों को ट्रैक करता है, [DATE] तक [DISTRICT] ज़िले की अदालतों में [NUMBER] मामले लंबित थे। इस ज़िले में आधे मामले लगभग [MONTHS] महीने से सुनवाई का इंतज़ार कर रहे हैं।</p>
         <p class="press-caption press-caption--note">Replace bracketed values with numbers from the district evidence page. Link "NyaayWatch (nyaaywatch.in)" to the specific district page for traceability.</p>
       </div>
     </section>
@@ -108,7 +112,7 @@ export function renderPressPage(): string {
             <li>An independent, non-partisan court-data transparency project</li>
             <li>A publisher of reviewed, versioned snapshots from public NJDG records</li>
             <li>A tool for tracking backlog pressure, clearance pace, and delay trends</li>
-            <li>A citation surface: every number links to a dated source and methodology</li>
+            <li>Built for citation: every number links to a dated source and methodology</li>
           </ul>
         </article>
         <article class="card">
@@ -127,10 +131,22 @@ export function renderPressPage(): string {
     document.querySelectorAll(".press-copy-btn").forEach(function(btn) {
       btn.addEventListener("click", function() {
         var text = btn.getAttribute("data-copy") || "";
+        var orig = btn.textContent;
+        var reset = function() { setTimeout(function() { btn.textContent = orig; btn.classList.remove("is-copied"); btn.classList.remove("is-error"); }, 2000); };
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          btn.textContent = "Copy unavailable";
+          btn.classList.add("is-error");
+          reset();
+          return;
+        }
         navigator.clipboard.writeText(text).then(function() {
-          var orig = btn.textContent;
-          btn.textContent = "Copied!";
-          setTimeout(function() { btn.textContent = orig; }, 2000);
+          btn.textContent = "Copied";
+          btn.classList.add("is-copied");
+          reset();
+        }, function() {
+          btn.textContent = "Copy failed";
+          btn.classList.add("is-error");
+          reset();
         });
       });
     });
@@ -235,9 +251,24 @@ const PRESS_PAGE_CSS = `
     border: 1px solid var(--rule); border-radius: 2px;
     line-height: 1.6;
   }
+  .press-copy-btn.is-copied {
+    background: var(--ink); color: var(--paper); border-color: var(--ink);
+  }
+  .press-copy-btn.is-error {
+    color: var(--accent-dark); border-color: var(--accent-dark);
+  }
 
   .press-api-row { margin-bottom: 20px; }
   .press-api__label { margin: 0 0 6px; font-size: 14px; color: var(--ink-soft); font-weight: 500; }
+  .press-api__intro { margin: 0 0 18px; font-size: 14px; color: var(--ink-soft); line-height: 1.55; }
+  .press-api__intro code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px;
+    background: var(--rule-soft);
+    padding: 1px 6px;
+    border-radius: 2px;
+    color: var(--ink);
+  }
 
   .press-caption-card .press-caption {
     margin: 0 0 10px; font-size: 16px; line-height: 1.7; color: var(--ink);
@@ -245,6 +276,8 @@ const PRESS_PAGE_CSS = `
     border-left: 3px solid var(--rule); padding-left: 16px;
   }
   .press-caption--note { color: var(--ink-muted); font-size: 13px; font-style: normal; }
+  .press-caption__lang { margin: 14px 0 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+  .press-caption__lang:first-child { margin-top: 0; }
 
   .press-list { margin: 10px 0 0; padding: 0 0 0 18px; }
   .press-list li { margin-bottom: 8px; font-size: 15px; color: var(--ink-soft); line-height: 1.55; }

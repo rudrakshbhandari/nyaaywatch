@@ -122,7 +122,7 @@ function buildFlagReason(
   },
 ): string {
   if (hasNoRecentDistrictActivity(district)) {
-    return "The latest published snapshot does not show active pending-case age or recent filing-versus-disposal movement for this district.";
+    return "The latest data doesn't show pending-case age or recent filings-vs-clearances for this district.";
   }
 
   if (district.filingVsDisposalGap > 0 && context.isFlagged) {
@@ -130,14 +130,14 @@ function buildFlagReason(
   }
 
   if (district.medianAgeDays > context.stateMedianAgeDays && context.isFlagged) {
-    return `People appear to be waiting longer here than in much of ${context.stateName}, based on the latest published snapshot.`;
+    return `People appear to be waiting longer here than in much of ${context.stateName}.`;
   }
 
   if (district.disposalRate < context.stateDisposalRate) {
-    return `This district is clearing cases more slowly than the ${context.stateName} average in the latest published snapshot.`;
+    return `This district is clearing cases more slowly than the ${context.stateName} average.`;
   }
 
-  return "This district is not among the clearest pressure signals in the current published snapshot.";
+  return "This district isn't among the clearest pressure signals right now.";
 }
 
 function buildSummary(
@@ -151,11 +151,11 @@ function buildSummary(
   isFlagged: boolean,
 ): string {
   if (hasNoRecentDistrictActivity(district)) {
-    return `${district.districtName} has no pending cases in the latest published snapshot, and the source did not report a pending-age distribution or recent filing-versus-disposal movement for this district.`;
+    return `${district.districtName} has no pending cases in the latest data, and the source didn't report a pending-age distribution or recent filings-vs-clearances for this district.`;
   }
 
   const sentence = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. A typical pending case falls around ${district.medianAgeDays} days old, and the district cleared ${district.disposalRate.toFixed(1)}% as many cases as it received last month.`;
-  return isFlagged ? `${sentence} It stays on the watchlist in this snapshot.` : sentence;
+  return isFlagged ? `${sentence} It stays on the list of districts to watch in this snapshot.` : sentence;
 }
 
 function inferMedianAgeDays(ageBuckets: {

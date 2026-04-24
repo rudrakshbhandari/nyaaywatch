@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const listStateProfiles = vi.fn();
+const listInternalFetchStateProfiles = vi.fn();
 const runOperatorInvocation = vi.fn();
 
 vi.mock("../src/geographies.js", () => ({
-  listStateProfiles,
+  listInternalFetchStateProfiles,
 }));
 
 vi.mock("../src/dev/operator-ops.js", () => ({
@@ -16,8 +16,8 @@ describe("scheduled fetch", () => {
     vi.clearAllMocks();
   });
 
-  it("runs the fetch flow for every implemented state in order", async () => {
-    listStateProfiles.mockReturnValueOnce([
+  it("runs the fetch flow for every internal-fetch-enabled state in order", async () => {
+    listInternalFetchStateProfiles.mockReturnValueOnce([
       { stateCode: "HP", stateName: "Himachal Pradesh" },
       { stateCode: "PB", stateName: "Punjab" },
       { stateCode: "UP", stateName: "Uttar Pradesh" },
@@ -68,25 +68,31 @@ describe("scheduled fetch", () => {
           stateName: "Himachal Pradesh",
           ok: true,
           runId: "run_hp_123",
+          autoPublish: "gate_inputs_missing",
+          autoPublishReason: undefined,
         },
         {
           stateCode: "PB",
           stateName: "Punjab",
           ok: true,
           runId: "run_pb_456",
+          autoPublish: "gate_inputs_missing",
+          autoPublishReason: undefined,
         },
         {
           stateCode: "UP",
           stateName: "Uttar Pradesh",
           ok: true,
           runId: "run_up_789",
+          autoPublish: "gate_inputs_missing",
+          autoPublishReason: undefined,
         },
       ],
     });
   });
 
   it("records failures but keeps attempting later states", async () => {
-    listStateProfiles.mockReturnValueOnce([
+    listInternalFetchStateProfiles.mockReturnValueOnce([
       { stateCode: "HP", stateName: "Himachal Pradesh" },
       { stateCode: "PB", stateName: "Punjab" },
       { stateCode: "UP", stateName: "Uttar Pradesh" },
@@ -108,6 +114,8 @@ describe("scheduled fetch", () => {
         stateName: "Himachal Pradesh",
         ok: true,
         runId: "run_hp_123",
+        autoPublish: "gate_inputs_missing",
+        autoPublishReason: undefined,
       },
       {
         stateCode: "PB",
@@ -120,6 +128,8 @@ describe("scheduled fetch", () => {
         stateName: "Uttar Pradesh",
         ok: true,
         runId: "run_up_789",
+        autoPublish: "gate_inputs_missing",
+        autoPublishReason: undefined,
       },
     ]);
 

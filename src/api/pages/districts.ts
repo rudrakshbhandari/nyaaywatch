@@ -24,7 +24,7 @@ const SORT_LABELS: Record<DistrictSort, string> = {
 
 const VIEW_LABELS: Record<DistrictView, string> = {
   all: "All districts",
-  flagged: "Watchlist only",
+  flagged: "Only districts to watch",
 };
 
 /**
@@ -84,8 +84,8 @@ export function renderDistrictsPage(
           : "No district data.",
       })}
       ${renderStatTile({
-        label: "On watchlist",
-        value: snapshot.stats.flaggedDistricts.toString(),
+        label: "Districts to watch",
+        value: snapshot.stats.flaggedDistricts.toLocaleString("en-IN"),
         infoKey: "watchlist",
         note: "These are the clearest districts to inspect first — not a judgment on any court or official.",
         tone: "flag",
@@ -193,8 +193,8 @@ function renderControls(options: DistrictsPageOptions, context: PublicPageContex
       </form>
       <div class="controls__links">
         <a href="${context.routes.districts}">Reset filters</a>
-        <a href="${context.routes.districts}${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Watchlist only</a>
-        <a href="${context.routes.districtsCsv}">Download statewide CSV</a>
+        <a href="${context.routes.districts}${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Only districts to watch</a>
+        <a href="${context.routes.districtsCsv}">Download ${escapeHtml(context.lowerCourtCopy.aggregateAdjective)} CSV</a>
       </div>
     </section>
   `;
@@ -243,11 +243,24 @@ function renderTable(districts: DistrictSnapshot[], context: PublicPageContext):
 }
 
 function renderNoResults(options: DistrictsPageOptions, context: PublicPageContext): string {
+  const hasSearch = options.search.trim().length > 0;
+  const isWatchlistOnly = options.view === "flagged";
+
+  let hint: string;
+  if (hasSearch && isWatchlistOnly) {
+    hint = `No listed district matches <strong>&ldquo;${escapeHtml(options.search)}&rdquo;</strong>. Try broadening the search or switching to all districts.`;
+  } else if (hasSearch) {
+    hint = `No district matches <strong>&ldquo;${escapeHtml(options.search)}&rdquo;</strong>. Check the spelling or try a partial name.`;
+  } else {
+    hint = "No districts appear in the current view. Switch to all districts to see the full list.";
+  }
+
   return `
     <article class="card no-results">
-      <h3>No districts match this view</h3>
-      <p>Try clearing the search term or switching back from ${escapeHtml(VIEW_LABELS[options.view].toLowerCase())}.</p>
-      <p><a class="btn btn--ghost btn--small" href="${context.routes.districts}">Reset filters</a> ${renderBadge({ label: "Watchlist only", tone: "flag" })}</p>
+      <p class="card__eyebrow">NO RESULTS</p>
+      <h3>Nothing to show here.</h3>
+      <p>${hint}</p>
+      <p><a class="btn btn--ghost btn--small" href="${context.routes.districts}">Reset filters</a></p>
     </article>
   `;
 }
@@ -319,9 +332,14 @@ const DISTRICTS_PAGE_CSS = `
     gap: 8px 12px;
     margin-bottom: 28px;
     padding: 12px 16px;
-    border: 1px dashed var(--rule);
-    background: transparent;
+    border: 1px solid var(--rule);
+    background: var(--paper-bright);
     max-width: 100%;
+    transition: border-color 120ms ease, background 120ms ease;
+  }
+  .your-district-chip:hover,
+  .your-district-chip:focus-within {
+    border-color: var(--ink);
   }
   .your-district-chip__label {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
@@ -338,16 +356,18 @@ const DISTRICTS_PAGE_CSS = `
     border-bottom: 1px solid var(--rule);
     padding: 2px 0;
     width: 0;
+    transition: border-color 120ms ease;
   }
+  .your-district-chip__input:focus { border-bottom-color: var(--accent); }
   .your-district-chip__input::placeholder { color: var(--ink-muted); font-weight: 500; }
   .your-district-chip__suggestions {
     display: none;
     position: absolute;
-    top: 100%; left: 0; right: 0;
-    background: var(--paper);
+    top: calc(100% + 2px); left: 0; right: 0;
+    background: var(--paper-bright);
     border: 1px solid var(--ink);
     z-index: 10;
-    border-top: none;
+    box-shadow: 4px 4px 0 rgba(12, 10, 8, 0.08);
   }
   .your-district-chip__option {
     display: block;
@@ -414,7 +434,15 @@ const DISTRICTS_PAGE_CSS = `
   .district-row__summary { margin: 4px 0 0; font-size: 12px; color: var(--ink-muted); line-height: 1.4; font-weight: 500; }
   .district-row__reason { color: var(--ink-soft); font-size: 13px; max-width: 34ch; }
 
-  .no-results { margin-bottom: 72px; }
+  .no-results { margin-bottom: 72px; max-width: 600px; }
+  .no-results .card__eyebrow {
+    margin: 0 0 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  .no-results h3 { margin: 0 0 14px; font-size: 24px; }
 
   @media (max-width: 960px) {
     .controls__form { grid-template-columns: 1fr 1fr; }

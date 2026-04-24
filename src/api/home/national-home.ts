@@ -22,15 +22,22 @@ export function renderNationalHome(input: {
     highCourtEntries: input.highCourtEntries,
     lowerCourtSnapshot: input.lowerCourtSnapshot,
     lowerCourtProfile: input.lowerCourtContext.profile,
+    stateMapEntries: input.stateMapEntries,
     publicStateCount: input.availableStateProfiles.length,
   });
   const supremeRoutes = buildPublicSupremeCourtRoutes();
 
+  const HIGH_COURT_TEASER_LIMIT = 6;
   const highCourtCards =
     model.highCourts.entries.length > 0
       ? model.highCourts.entries
-          .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, monthlyGapDisplay, monthlyGapNote }) => {
+          .slice(0, HIGH_COURT_TEASER_LIMIT)
+          .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, clearanceTrend, monthlyGapDisplay, monthlyGapNote, pileTrend }) => {
             const routes = buildPublicHighCourtRoutes(profile);
+            const renderSignal = (signal: { tone: string; label: string }) =>
+              signal.tone !== "neutral"
+                ? `<span class="tier-card__signal tier-card__signal--${signal.tone}">${escapeHtml(signal.label)}</span>`
+                : "";
             return `<article class="card tier-card">
               <p class="tier-card__eyebrow">HIGH COURT</p>
               <h3>${escapeHtml(profile.courtName)}</h3>
@@ -43,11 +50,11 @@ export function renderNationalHome(input: {
                 </div>
                 <div>
                   <dt>Cleared / 100 filed</dt>
-                  <dd>${escapeHtml(clearanceRateDisplay)}</dd>
+                  <dd>${escapeHtml(clearanceRateDisplay)}${renderSignal(clearanceTrend)}</dd>
                 </div>
                 <div>
-                  <dt>Last-month pile change</dt>
-                  <dd>${escapeHtml(monthlyGapDisplay)}</dd>
+                  <dt>Last-month backlog change</dt>
+                  <dd>${escapeHtml(monthlyGapDisplay)}${renderSignal(pileTrend)}</dd>
                 </div>
               </dl>
               <p class="tier-card__note">${escapeHtml(monthlyGapNote)}</p>
@@ -140,7 +147,7 @@ export function renderNationalHome(input: {
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly pile change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
+            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly backlog change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
             : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers are live or predictive."
         }</p>
         <div class="national-hero__cta">
@@ -158,7 +165,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
-                note: "Backlog at the top of the court system in the latest published snapshot.",
+                note: "Cases still pending at the Supreme Court.",
                 series: scPendingSeries,
                 seriesLabel: "Pending total over recent months",
                 deltaDirectionHint: "up-is-bad",
@@ -166,7 +173,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Cleared / 100 filed",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
-                note: "How quickly the apex court is clearing incoming work in the latest monthly window.",
+                note: "How quickly the Supreme Court cleared cases last month.",
                 tone: "accent",
                 series: scClearanceSeries,
                 seriesLabel: "Clearance rate over recent months",
@@ -175,17 +182,17 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Disposed last month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
-                note: "How many matters the Court cleared in the latest published month.",
+                note: "Cases the Supreme Court cleared last month.",
                 series: scDisposedSeries,
                 seriesLabel: "Disposed per month over recent months",
                 deltaDirectionHint: "up-is-good",
               })}
               ${renderStatTile({
-                label: "Last-month pile change",
+                label: "Last-month backlog change",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
-                note: model.supremeCourt.monthlyGapNote ?? "Monthly incoming and outgoing work are both visible.",
+                note: model.supremeCourt.monthlyGapNote ?? "Filings and clearances from last month.",
                 series: scGapSeries,
-                seriesLabel: "Monthly pile change over recent months",
+                seriesLabel: "Monthly backlog change over recent months",
                 deltaDirectionHint: "up-is-bad",
               })}
             `
@@ -199,9 +206,9 @@ export function renderNationalHome(input: {
                 deltaDirectionHint: "up-is-bad",
               })}
               ${renderStatTile({
-                label: "Public states live",
-                value: model.lowerCourts.publicStateCount.toString(),
-                note: "Each state page stays tied to its own published snapshot and supporting notes.",
+                label: "Public lower-court geographies",
+                value: model.lowerCourts.publicStateCount.toLocaleString("en-IN"),
+                note: "Each State or Union Territory page stays tied to its own published snapshot and supporting notes.",
                 tone: "accent",
               })}
             `
@@ -213,7 +220,7 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "High Courts across India.",
         lede:
-          "Each court keeps its own source semantics and explicit coverage label, but the cards below surface backlog, clearance pace, and monthly pile change with the highest-pressure courts shown first.",
+          "Each court keeps its own source semantics and explicit coverage label. Cards are ordered by last-month backlog change first, then clearance pace, then pending load so readers can see where backlog pressure is worsening fastest.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
       <p class="national-section__linkline"><a href="/high-courts">See all High Courts</a></p>
@@ -221,38 +228,37 @@ export function renderNationalHome(input: {
 
     <section class="national-section" id="lower-courts" data-section="lower-courts">
       ${renderSectionHead({
-        headline: "Most delay sits in the lower courts.",
+        headline: "Lower courts show the broadest pressure.",
         lede:
-          "District and subordinate courts remain the clearest public window into scale, delay, and local pressure. The lower-court workspace opens directly into the featured published snapshot, with district pages built for close inspection.",
+          "This lower-court view spans the currently published State and Union Territory snapshots. Start with the pressure map for relative lower-court pressure, then open any geography page for the underlying snapshot and district drilldown.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
-          label: "Featured lower-court backlog",
+          label: "Pending across public geographies",
           value: model.lowerCourts.pendingDisplay,
-          note: "Lower-court backlog in the currently featured published snapshot.",
+          note: "Combined lower-court backlog across the currently published State and Union Territory snapshots.",
+        })}
+        ${renderStatTile({
+          label: "Public lower-court geographies",
+          value: model.lowerCourts.publicStateCount.toLocaleString("en-IN"),
+          note: "Each State or Union Territory page stays tied to its own published snapshot and supporting notes.",
         })}
         ${renderStatTile({
           label: "Flagged districts",
-          value: model.lowerCourts.flaggedDistricts.toString(),
-          note: "Signals for closer inspection, not final conclusions.",
+          value: model.lowerCourts.flaggedDistricts.toLocaleString("en-IN"),
+          note: "Combined count of districts flagged for closer inspection across the public lower-court cohort.",
           tone: "flag",
         })}
         ${renderStatTile({
-          label: "Typical wait",
-          value: model.lowerCourts.typicalWaitMonths.toString(),
-          unit: "mo",
-          note: "A lower-court wait estimate derived from published district age buckets.",
-        })}
-        ${renderStatTile({
-          label: "Inspect first",
-          value: model.lowerCourts.topDistrictName,
-          note: model.lowerCourts.topDistrictSummary,
+          label: "Highest-pressure geography",
+          value: model.lowerCourts.topStateName,
+          note: model.lowerCourts.topStateSummary,
           tone: "accent",
         })}
       </div>
       <div class="national-section__actions">
-        <a class="btn btn--primary" href="${input.lowerCourtContext.routes.home}">Browse lower courts</a>
-        <a class="btn btn--ghost" href="${input.lowerCourtContext.routes.districts}">Inspect districts</a>
+        <a class="btn btn--primary" href="#map">Browse lower-court pages</a>
+        <a class="btn btn--ghost" href="${model.lowerCourts.topStateHref}">Open top geography</a>
       </div>
     </section>
 
@@ -267,7 +273,7 @@ export function renderNationalHome(input: {
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>Supreme Court</h3>
-          <p>The apex-court layer carries its own methodology, API, and data surface.</p>
+          <p>The Supreme Court layer carries its own methodology, API, and data surface.</p>
           <p><a href="${supremeRoutes.methodology}">Methodology</a></p>
           <p><a href="${supremeRoutes.data}">Data</a></p>
           <p><a href="${supremeRoutes.api}">API</a></p>
@@ -302,11 +308,11 @@ export function renderNationalHome(input: {
       { id: "districts", href: input.lowerCourtContext.routes.districts, label: "Districts" },
     ],
     footer: {
-      sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(model.lowerCourts.snapshot.snapshot.sourceSnapshotAt),
+      sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(input.lowerCourtSnapshot.snapshot.sourceSnapshotAt),
       methodologyVersion:
-        model.supremeCourt.snapshot?.snapshot.methodologyVersion ?? model.lowerCourts.snapshot.snapshot.methodologyVersion,
+        model.supremeCourt.snapshot?.snapshot.methodologyVersion ?? input.lowerCourtSnapshot.snapshot.methodologyVersion,
       sourceAttribution:
-        model.supremeCourt.snapshot?.snapshot.sourceAttribution ?? model.lowerCourts.snapshot.snapshot.sourceAttribution,
+        model.supremeCourt.snapshot?.snapshot.sourceAttribution ?? input.lowerCourtSnapshot.snapshot.sourceAttribution,
     },
     pageCss: NATIONAL_HOME_CSS,
     og: {
@@ -540,7 +546,20 @@ const NATIONAL_HOME_CSS = `
     margin: 0;
     font-weight: 700;
     font-variant-numeric: lining-nums tabular-nums;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
   }
+  .tier-card__signal {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .tier-card__signal--worsening { color: var(--accent); }
+  .tier-card__signal--improving { color: var(--ink-muted); }
   .tier-card__note {
     margin: 0 0 18px;
     color: var(--ink-soft);
@@ -602,6 +621,12 @@ const NATIONAL_HOME_CSS = `
   @media (max-width: 720px) {
     .national-hero {
       padding: 28px 0 52px;
+    }
+    .national-hero > * {
+      min-width: 0;
+    }
+    .national-hero__accountability > span {
+      white-space: normal;
     }
     .national-hero__stats {
       grid-template-columns: 1fr;

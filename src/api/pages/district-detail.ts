@@ -71,7 +71,7 @@ export function renderDistrictPage(
         value: `~${typicalWaitMonths}`,
         unit: "mo",
         infoKey: "typicalWait",
-        note: "Middle of the local pile, estimated from published age buckets.",
+        note: "Middle of the local backlog, estimated from published age buckets.",
         methodologyHref: `${context.routes.methodology}#metric-typical-wait`,
         anchorId: "stat-typical-wait",
       })}
@@ -95,7 +95,7 @@ export function renderDistrictPage(
             <h3>What this district is telling us</h3>
           </header>
           <p>${escapeHtml(district.flagReason)}</p>
-          <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</strong> percentage points in the latest published snapshot.</p>
+          <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</strong> percentage points in the latest data.</p>
         </article>
 
         <article class="card" id="district-history">
@@ -113,7 +113,7 @@ export function renderDistrictPage(
         <article class="card" id="district-citation">
           <header class="card__head">
             <p class="card__eyebrow">CITE AND EXPORT</p>
-            <h3>Durable citation surface</h3>
+            <h3>A link you can cite</h3>
           </header>
           <dl class="citation-list">
             <div><dt>Permalink</dt><dd><code>${escapeHtml(context.routes.district(district.districtId))}</code></dd></div>
@@ -136,7 +136,7 @@ export function renderDistrictPage(
           </div>
           <div class="district-col__cta">
             <a class="btn btn--primary btn--small" href="${context.routes.districtCsv(district.districtId)}">Download district history CSV</a>
-            <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">Statewide CSV</a>
+            <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">${escapeHtml(context.lowerCourtCopy.aggregateAdjectiveTitle)} CSV</a>
             <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. Typical wait: ~${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
           </div>
         </article>
@@ -163,10 +163,27 @@ export function renderDistrictPage(
       };
       window.copyCite = function() {
         var btn = document.querySelector(".cite-block__copy");
+        var reset = function() {
+          setTimeout(function() {
+            btn.textContent = "Copy";
+            btn.classList.remove("is-copied");
+            btn.classList.remove("is-error");
+          }, 2000);
+        };
+        if (!navigator.clipboard || !navigator.clipboard.writeText) {
+          btn.textContent = "Copy unavailable";
+          btn.classList.add("is-error");
+          reset();
+          return;
+        }
         navigator.clipboard.writeText(document.getElementById("cite-text").textContent).then(function() {
-          btn.textContent = "Copied!";
+          btn.textContent = "Copied";
           btn.classList.add("is-copied");
-          setTimeout(function() { btn.textContent = "Copy"; btn.classList.remove("is-copied"); }, 2000);
+          reset();
+        }, function() {
+          btn.textContent = "Copy failed";
+          btn.classList.add("is-error");
+          reset();
         });
       };
     })();
@@ -211,7 +228,7 @@ export function renderDistrictPage(
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
-    ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · ${escapeHtml(district.districtName.toUpperCase())} · ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}`,
+    ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · SNAPSHOT ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.methodologyVersion)}`,
     pageCss: DISTRICT_PAGE_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
@@ -229,22 +246,27 @@ export function renderDistrictPage(
 
 function renderWaitingClock(months: number, districtName: string): string {
   const capped = Math.min(months, 48);
+  // Fit squares into a tight grid: single-row when ≤12 months so a district
+  // with a 3-month wait doesn't show 3 dots lost in a 12-column sea of space.
+  const gridCols = Math.min(capped, 12);
+  const isSingleRow = capped <= 12;
   const squares = Array.from({ length: capped }, (_, i) =>
     `<span class="wc__sq" aria-hidden="true" style="animation-delay:${(i * 30)}ms"></span>`
   ).join("");
-  return `
-    <section class="waiting-clock" id="waiting-clock" aria-label="Waiting Clock for ${escapeHtml(districtName)}">
-      <div class="waiting-clock__inner">
+  const axisLabels = isSingleRow ? "" : `
         <div class="wc__label-col" aria-hidden="true">
           <span class="wc__axis-label">0</span>
           <span class="wc__axis-label wc__axis-label--mid">${Math.round(capped / 2)}</span>
           <span class="wc__axis-label wc__axis-label--end">${capped}</span>
-        </div>
-        <div class="wc__grid">${squares}</div>
+        </div>`;
+  return `
+    <section class="waiting-clock" id="waiting-clock" aria-label="Waiting Clock for ${escapeHtml(districtName)}">
+      <div class="waiting-clock__inner">${axisLabels}
+        <div class="wc__grid" style="grid-template-columns: repeat(${gridCols}, 8px);">${squares}</div>
         <div class="wc__caption">
           <span class="wc__caption__value">~${months}</span>
           <span class="wc__caption__unit">months</span>
-          <span class="wc__caption__label">Each square = one month the middle of the pile has been waiting</span>
+          <span class="wc__caption__label">Each square = one month the middle of the backlog has been waiting</span>
         </div>
       </div>
     </section>
@@ -531,5 +553,6 @@ const DISTRICT_PAGE_CSS = `
     border: 1px solid var(--rule); border-radius: 2px;
     line-height: 1.6;
   }
-  .cite-block__copy.is-copied { color: var(--accent); }
+  .cite-block__copy.is-copied { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .cite-block__copy.is-error { color: var(--accent-dark); border-color: var(--accent-dark); }
 `;

@@ -6,10 +6,11 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURT API",
-      headline: "The public High Court API matches the latest published High Court snapshot.",
+      headline: `${context.profile.courtName} — API reference`,
       lede:
-        `If the public ${context.profile.courtName} page shows a number, the published JSON can expose it for the court across ${context.coverageLabel}. If it is still in operator review, it stays private.`,
+        `The API matches what's on the public page for ${context.profile.courtName} (${context.coverageLabel}). If the page shows a number, the JSON can expose it; if it's still in operator review, it stays private.`,
       isHero: true,
+      variant: "compact",
     })}
 
     <section class="endpoints">
@@ -19,11 +20,73 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
           <p>High Court metadata plus <code>coveredGeographies[]</code> and aggregate pending, institution, and disposal fields for the active publication.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "snapshot": {
+    "courtTier": "high_court",
+    "courtCode": "HPH",
+    "courtSlug": "himachal",
+    "courtName": "High Court of Himachal Pradesh",
+    "coveredGeographies": [
+      { "geographyCode": "HP", "geographyName": "Himachal Pradesh", "geographyType": "state" }
+    ],
+    "referenceDateAt": "2025-03-15T00:00:00.000Z",
+    "referenceDateKind": "source_snapshot_at",
+    "publishedAt": "2025-03-21T09:10:00.000Z",
+    "methodologyVersion": "v1.3.0",
+    "qualityState": "complete"
+  },
+  "stats": {
+    "pendingCivilCases": 48930,
+    "pendingCriminalCases": 27240,
+    "pendingTotalCases": 76170,
+    "institutedLastMonthCivilCases": 920,
+    "institutedLastMonthCriminalCases": 900,
+    "institutedLastMonthTotalCases": 1820,
+    "disposedLastMonthCivilCases": 830,
+    "disposedLastMonthCriminalCases": 820,
+    "disposedLastMonthTotalCases": 1650
+  },
+  "ageBuckets": {
+    "lessThanOneYear": 12400,
+    "oneToThreeYears": 18600,
+    "threeToFiveYears": 14200,
+    "fiveToTenYears": 19800,
+    "aboveTenYears": 11170
+  },
+  "trends": [
+    { "referenceDateAt": "2025-01-15T00:00:00.000Z", "referenceDateKind": "source_snapshot_at", "pendingTotalCases": 74310, "institutedLastMonthTotalCases": 1760, "disposedLastMonthTotalCases": 1690 },
+    // \u2026 one point per published snapshot
+  ]
+}</pre>
+          </details>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
           <p>Published High Court trend points only. They stay court-wide rather than geography-split, and no unpublished operator runs leak through this surface.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "trends": [
+    {
+      "referenceDateAt": "2025-01-15T00:00:00.000Z",
+      "referenceDateKind": "source_snapshot_at",
+      "pendingTotalCases": 74310,
+      "institutedLastMonthTotalCases": 1760,
+      "disposedLastMonthTotalCases": 1690
+    },
+    {
+      "referenceDateAt": "2025-03-15T00:00:00.000Z",
+      "referenceDateKind": "source_snapshot_at",
+      "pendingTotalCases": 76170,
+      "institutedLastMonthTotalCases": 1820,
+      "disposedLastMonthTotalCases": 1650
+    }
+  ]
+}</pre>
+          </details>
         </article>
       </div>
     </section>
@@ -51,7 +114,6 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.highCourtLinks,
-    pageCss: HIGH_COURT_API_CSS,
     footer: {
       sourceDateLabel: null,
       methodologyVersion: null,
@@ -59,33 +121,3 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
     },
   });
 }
-
-const HIGH_COURT_API_CSS = `
-  .card-grid--1 { grid-template-columns: 1fr; }
-  .endpoints { margin-bottom: 72px; }
-  .endpoint { display: grid; grid-template-columns: 64px 1fr; gap: 18px 24px; align-items: baseline; }
-  .endpoint p { grid-column: 2; margin: 0; }
-  .endpoint__verb {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 4px 8px;
-    background: var(--ink); color: var(--paper);
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.12em;
-    border-radius: 2px;
-    grid-row: 1;
-  }
-  .endpoint__path {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 16px; font-weight: 600;
-    color: var(--ink);
-    background: transparent;
-    padding: 0;
-    grid-row: 1;
-  }
-  @media (max-width: 720px) {
-    .endpoint { grid-template-columns: 1fr; gap: 8px; }
-    .endpoint p { grid-column: 1; }
-    .endpoint__verb { justify-self: start; }
-  }
-`;

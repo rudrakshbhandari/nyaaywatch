@@ -58,6 +58,12 @@ type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighC
 type SupremeCourtService = PublishedSupremeCourtSnapshotService | undefined;
 
 const DEFAULT_PUBLIC_STATE_CODE: SupportedStateCode = "HP";
+const LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE = "Lower-Court Geography Not Found";
+const LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY = "This lower-court geography is not available on the public site.";
+const LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON = "Lower-court geography not found.";
+const LOWER_COURT_GEOGRAPHY_NOT_FOUND_TEXT = "Lower-court geography not found.";
+const LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_TITLE = "Lower-Court Geography Not Available Yet";
+const LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY = "No published snapshot is available for this lower-court geography yet.";
 
 export function createApp(
   config: AppConfig,
@@ -214,7 +220,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).json({ error: "State not found." });
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
         return;
       }
 
@@ -232,7 +238,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).json({ error: "State not found." });
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
         return;
       }
 
@@ -250,7 +256,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).json({ error: "State not found." });
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
         return;
       }
 
@@ -427,7 +433,7 @@ export function createApp(
       const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
       const payload = await currentService.getDistrictDetail(districtId);
       if (!payload) {
-        response.status(404).send(renderEmptyState("District Not Found", "This district was not found in the latest published snapshot."));
+        response.status(404).send(renderEmptyState("District Not Found", "This district isn't in the latest data."));
         return;
       }
 
@@ -494,7 +500,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
         return;
       }
       const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
@@ -612,13 +618,13 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
         return;
       }
 
       const snapshot = await resolved.service.getPublishedSnapshot();
       if (!snapshot) {
-        response.status(503).send(renderEmptyState("State Not Available Yet", "No published snapshot is available for this state yet."));
+        response.status(503).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_TITLE, LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY));
         return;
       }
 
@@ -636,7 +642,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
         return;
       }
 
@@ -661,13 +667,13 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
         return;
       }
 
       const payload = await resolved.service.getDistrictDetail(readRouteParam(request.params.districtId));
       if (!payload) {
-        response.status(404).send(renderEmptyState("District Not Found", "This district was not found in the latest published snapshot."));
+        response.status(404).send(renderEmptyState("District Not Found", "This district isn't in the latest data."));
         return;
       }
 
@@ -688,7 +694,7 @@ export function createApp(
       applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
         return;
       }
 
@@ -713,7 +719,7 @@ export function createApp(
       applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).type("text/plain").send("State not found.");
+        response.status(404).type("text/plain").send(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TEXT);
         return;
       }
 
@@ -733,7 +739,7 @@ export function createApp(
       applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).type("text/plain").send("State not found.");
+        response.status(404).type("text/plain").send(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TEXT);
         return;
       }
 
@@ -752,7 +758,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
         return;
       }
 
@@ -773,7 +779,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send(renderEmptyState("State Not Found", "This state is not available on the public site."));
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
         return;
       }
 
@@ -1388,7 +1394,7 @@ export function createApp(
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
-        response.status(404).send("State not found");
+        response.status(404).send(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TEXT);
         return;
       }
 

@@ -24,6 +24,13 @@ export interface SectionHeadOptions {
   lede?: string;
   /** If true, renders as <h1>; otherwise <h2>. Default false. */
   isHero?: boolean;
+  /**
+   * Hero size variant. `"default"` = full editorial hero (clamp to 56px).
+   * `"compact"` = reference-doc scale (clamp to 34px). Use compact for API
+   * reference, data downloads, and other pages where a 56px wall of text
+   * would overpower the body content below. Ignored when isHero is false.
+   */
+  variant?: "default" | "compact";
 }
 
 /**
@@ -38,7 +45,8 @@ export function renderSectionHead(options: SectionHeadOptions): string {
     ? `<p class="${options.isHero ? "page-hero__lede" : "section-head__lede"}">${escapeHtml(options.lede)}</p>`
     : "";
   if (options.isHero) {
-    return `<section class="page-hero">
+    const variantClass = options.variant === "compact" ? " page-hero--compact" : "";
+    return `<section class="page-hero${variantClass}">
       ${eyebrow}
       <h1 class="page-hero__hed">${escapeHtml(options.headline)}</h1>
       ${lede}
@@ -86,6 +94,14 @@ export interface StatTileOptions {
    * (e.g. clearance rate).
    */
   deltaDirectionHint?: "up-is-good" | "up-is-bad";
+  /**
+   * Optional small uppercase mono tag rendered under the value to flag
+   * direction in plain language ("Falling behind", "Backlog growing").
+   * Worsening renders in --accent, improving in --ink-muted, neutral
+   * renders nothing. Skipped when a sparkline+delta chip is shown for the
+   * same tile (the chip already conveys direction).
+   */
+  trendSignal?: { tone: "worsening" | "improving" | "neutral"; label: string };
 }
 
 export function renderStatTile(options: StatTileOptions): string {
@@ -115,10 +131,17 @@ export function renderStatTile(options: StatTileOptions): string {
     ? `<div class="stat-tile__spark-row">${sparkSvg}${deltaChip}</div>`
     : "";
 
+  const trend = options.trendSignal;
+  const trendTag =
+    trend && trend.tone !== "neutral" && !seriesMoves
+      ? `<span class="stat-tile__signal stat-tile__signal--${trend.tone}">${escapeHtml(trend.label)}</span>`
+      : "";
+
   return `<article class="stat-tile${tone}${withSparkClass}"${anchor}>
     <div class="stat-tile__label">${labelText}${info}</div>
     <div class="stat-tile__value">${escapeHtml(options.value)}${unit}</div>
     ${sparkRow}
+    ${trendTag}
     ${note}
   </article>`;
 }

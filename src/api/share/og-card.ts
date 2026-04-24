@@ -12,6 +12,10 @@
  * snapshot data changes.
  */
 
+import { readFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import satori, { type Font as SatoriFontOptions } from "satori";
 import { Resvg } from "@resvg/resvg-js";
 
@@ -25,28 +29,21 @@ const ACCENT = "#bd2716";
 
 // ── Font loading ─────────────────────────────────────────────────────────────
 
+const FONT_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../../assets/fonts");
+
 let fontsCache: SatoriFontOptions[] | null = null;
 
-async function loadGoogleFontTtf(family: string, weight: number): Promise<ArrayBuffer> {
-  // The modern Chrome user-agent makes Google Fonts CSS v1 return a .ttf URL.
-  const css = await fetch(`https://fonts.googleapis.com/css?family=${family.replace(/ /g, "+")}:${weight}`, {
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    },
-  }).then((r) => r.text());
-
-  const ttfUrl = css.match(/url\(([^)]+\.ttf)\)/)?.[1];
-  if (!ttfUrl) throw new Error(`Could not extract TTF URL from Google Fonts CSS for ${family} ${weight}`);
-  return fetch(ttfUrl).then((r) => r.arrayBuffer());
+async function loadBundledFont(fontFile: string): Promise<ArrayBuffer> {
+  const font = await readFile(join(FONT_DIR, fontFile));
+  return font.buffer.slice(font.byteOffset, font.byteOffset + font.byteLength);
 }
 
 async function getFonts(): Promise<SatoriFontOptions[]> {
   if (fontsCache) return fontsCache;
   const [interTight800, interTight600, ibmPlexMono500] = await Promise.all([
-    loadGoogleFontTtf("Inter Tight", 800),
-    loadGoogleFontTtf("Inter Tight", 600),
-    loadGoogleFontTtf("IBM Plex Mono", 500),
+    loadBundledFont("InterTight-ExtraBold.ttf"),
+    loadBundledFont("InterTight-SemiBold.ttf"),
+    loadBundledFont("IBMPlexMono-Medium.ttf"),
   ]);
   fontsCache = [
     { name: "Inter Tight", data: interTight800, weight: 800 as const, style: "normal" as const },
@@ -230,7 +227,7 @@ export async function renderStateOgCard(data: StateOgCardData, cacheKey: string)
             numberCell(pendingNum, pendingUnit, "PENDING CASES"),
             numberCell(`~${data.typicalWaitMonths}`, "mo", "TYPICAL WAIT"),
             numberCell(data.clearanceRate.toFixed(0), "/ 100", "CLEARED PER 100"),
-            numberCell(String(data.flaggedCount), "", "DISTRICTS FLAGGED"),
+            numberCell(data.flaggedCount.toLocaleString("en-IN"), "", "DISTRICTS FLAGGED"),
           ],
         },
       },
@@ -364,7 +361,7 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
           },
           children: [
             numberCell(pendingNum, pendingUnit, "PENDING CASES"),
-            numberCell(String(data.statesCount), "", "STATES COVERED"),
+            numberCell(data.statesCount.toLocaleString("en-IN"), "", "STATES COVERED"),
           ],
         },
       },
@@ -608,7 +605,7 @@ export async function renderSquareStateCard(data: StateOgCardData, cacheKey: str
           children: [
             squareNumberCell(pendingNum, pendingUnit, "PENDING"),
             squareNumberCell(`~${data.typicalWaitMonths}`, "mo", "TYPICAL WAIT"),
-            squareNumberCell(data.flaggedCount.toString(), "", "FLAGGED"),
+            squareNumberCell(data.flaggedCount.toLocaleString("en-IN"), "", "FLAGGED"),
           ],
         },
       },

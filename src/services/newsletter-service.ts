@@ -128,7 +128,7 @@ export class NewsletterService {
       `  Cases waiting:    ${stats.pendingCases.toLocaleString("en-IN")}`,
       `  Cleared per 100:  ${stats.disposalRate.toFixed(1)}`,
       `  Typical wait:     ~${Math.round(stats.medianCaseAgeDays / 30)} months`,
-      `  Flagged districts: ${stats.flaggedDistricts}`,
+      `  Flagged districts: ${stats.flaggedDistricts.toLocaleString("en-IN")}`,
       "",
       topDistrict
         ? [

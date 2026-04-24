@@ -120,25 +120,47 @@ function renderNav(
     { id: "methodology", href: "/methodology", label: "Method" },
     { id: "api", href: "/api", label: "API" },
   ];
-  return `<nav class="masthead__nav">${links
+  return `<nav class="masthead__nav" aria-label="Primary">${links
     .map(
       (link) =>
-        `<a href="${link.href}"${active === link.id ? ` class="is-active"` : ""}>${escapeHtml(link.label)}</a>`,
+        `<a href="${link.href}"${active === link.id ? ` class="is-active" aria-current="page"` : ""}>${escapeHtml(link.label)}</a>`,
     )
     .join("")}</nav>`;
 }
+
+/**
+ * Above this count we render the switcher as a collapsed <details> dropdown
+ * instead of a wall of pill chips. Empirically 9+ scopes (e.g. 14 High Courts)
+ * becomes 3+ lines on desktop and eats the editorial fold. Eight or fewer
+ * fit on a single row and stay visible.
+ */
+const STATE_SWITCHER_OVERFLOW_THRESHOLD = 8;
 
 function renderStateSwitcher(stateLinks: Array<{ label: string; href: string; active: boolean }>) {
   if (stateLinks.length <= 1) {
     return "";
   }
 
-  return `<div class="state-switcher" aria-label="Supported states">${stateLinks
+  const links = stateLinks
     .map(
       (link) =>
-        `<a href="${link.href}"${link.active ? ` class="is-active"` : ""}>${escapeHtml(link.label)}</a>`,
+        `<a href="${link.href}"${link.active ? ` class="is-active" aria-current="page"` : ""}>${escapeHtml(link.label)}</a>`,
     )
-    .join("")}</div>`;
+    .join("");
+
+  if (stateLinks.length <= STATE_SWITCHER_OVERFLOW_THRESHOLD) {
+    return `<nav class="state-switcher" aria-label="Switch scope">${links}</nav>`;
+  }
+
+  const active = stateLinks.find((link) => link.active);
+  const summaryLabel = active
+    ? `<span class="state-switcher__label">Viewing</span> <span class="state-switcher__current">${escapeHtml(active.label)}</span>`
+    : `<span class="state-switcher__label">Switch scope</span>`;
+
+  return `<details class="state-switcher">
+    <summary aria-label="Switch scope">${summaryLabel}</summary>
+    <div class="state-switcher__list">${links}</div>
+  </details>`;
 }
 
 function renderColophon(
@@ -158,11 +180,14 @@ function renderColophon(
   const methodLine = footer.methodologyVersion
     ? `<p>Method ${escapeHtml(footer.methodologyVersion)} ${infoIcon("methodology")}</p>`
     : "";
-  const links = navLinks ?? [
-    { href: "/districts", label: "Districts" },
-    { href: "/data", label: "Data downloads" },
-    { href: "/methodology", label: "Methodology" },
-    { href: "/api", label: "API" },
+  const links = [
+    ...(navLinks ?? [
+      { href: "/districts", label: "Districts" },
+      { href: "/data", label: "Data downloads" },
+      { href: "/methodology", label: "Methodology" },
+      { href: "/api", label: "API" },
+    ]),
+    { href: "/press", label: "Press" },
   ];
 
   return `<footer class="colophon">

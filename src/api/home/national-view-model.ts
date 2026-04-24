@@ -3,6 +3,8 @@ import type { HighCourtProfile } from "../../high-courts.js";
 import type { HighCourtPublishedSnapshot } from "../../domain/high-court-snapshot-schema.js";
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import type { SupremeCourtPublishedSnapshot } from "../../domain/supreme-court-snapshot-schema.js";
+import { buildPublicStateRoutes } from "../public-state.js";
+import { rankIndiaMapEntriesByPressure, type IndiaMapStateEntry } from "./india-map.js";
 import { formatDate, formatLakh } from "./view-model.js";
 
 export interface NationalHighCourtEntry {
@@ -36,6 +38,12 @@ export function compareHighCourtPressure(
   return left.profile.courtName.localeCompare(right.profile.courtName, "en");
 }
 
+export type TrendTone = "worsening" | "improving" | "neutral";
+export interface TrendSignal {
+  tone: TrendTone;
+  label: string;
+}
+
 export interface NationalHomeViewModel {
   supremeCourt: {
     snapshot: SupremeCourtPublishedSnapshot | null;
@@ -55,20 +63,19 @@ export interface NationalHomeViewModel {
       referenceLabel: string;
       pendingDisplay: string;
       clearanceRateDisplay: string;
+      clearanceTrend: TrendSignal;
       monthlyGapDisplay: string;
       monthlyGapNote: string;
+      pileTrend: TrendSignal;
     }>;
   };
   lowerCourts: {
-    snapshot: PublishedSnapshot;
-    profile: NjdgStateProfile;
     pendingDisplay: string;
     flaggedDistricts: number;
-    totalDistricts: number;
-    typicalWaitMonths: number;
     publicStateCount: number;
-    topDistrictName: string;
-    topDistrictSummary: string;
+    topStateName: string;
+    topStateHref: string;
+    topStateSummary: string;
   };
 }
 
@@ -77,9 +84,23 @@ export function buildNationalHomeViewModel(input: {
   highCourtEntries: NationalHighCourtEntry[];
   lowerCourtSnapshot: PublishedSnapshot;
   lowerCourtProfile: NjdgStateProfile;
+  stateMapEntries: IndiaMapStateEntry[];
   publicStateCount: number;
 }): NationalHomeViewModel {
-  const topDistrict = [...input.lowerCourtSnapshot.districts].sort((left, right) => left.rank - right.rank)[0];
+  const lowerCourtEntries =
+    input.stateMapEntries.length > 0
+      ? input.stateMapEntries
+      : [
+          {
+            profile: input.lowerCourtProfile,
+            stats: input.lowerCourtSnapshot.stats,
+            districtCount: input.lowerCourtSnapshot.districts.length,
+          },
+        ];
+  const rankedLowerCourtStates = rankIndiaMapEntriesByPressure(lowerCourtEntries);
+  const topState = rankedLowerCourtStates[0]?.entry;
+  const aggregatedPendingCases = lowerCourtEntries.reduce((sum, entry) => sum + entry.stats.pendingCases, 0);
+  const aggregatedFlaggedDistricts = lowerCourtEntries.reduce((sum, entry) => sum + entry.stats.flaggedDistricts, 0);
 
   return {
     supremeCourt: {
@@ -131,6 +152,10 @@ export function buildNationalHomeViewModel(input: {
           snapshot.stats.disposedLastMonthTotalCases,
           snapshot.stats.institutedLastMonthTotalCases,
         ),
+        clearanceTrend: describeClearanceTrend(
+          snapshot.stats.disposedLastMonthTotalCases,
+          snapshot.stats.institutedLastMonthTotalCases,
+        ),
         monthlyGapDisplay: describePileChange(
           snapshot.stats.institutedLastMonthTotalCases,
           snapshot.stats.disposedLastMonthTotalCases,
@@ -139,25 +164,21 @@ export function buildNationalHomeViewModel(input: {
           snapshot.stats.institutedLastMonthTotalCases,
           snapshot.stats.disposedLastMonthTotalCases,
         ).note,
+        pileTrend: describePileTrend(
+          snapshot.stats.institutedLastMonthTotalCases,
+          snapshot.stats.disposedLastMonthTotalCases,
+        ),
       })),
     },
     lowerCourts: {
-      snapshot: input.lowerCourtSnapshot,
-      profile: input.lowerCourtProfile,
-      pendingDisplay: formatLakh(input.lowerCourtSnapshot.stats.pendingCases),
-      flaggedDistricts: input.lowerCourtSnapshot.stats.flaggedDistricts,
-      totalDistricts: input.lowerCourtSnapshot.districts.length,
-      typicalWaitMonths: Math.round(input.lowerCourtSnapshot.stats.medianCaseAgeDays / 30),
+      pendingDisplay: formatLakh(aggregatedPendingCases),
+      flaggedDistricts: aggregatedFlaggedDistricts,
       publicStateCount: input.publicStateCount,
-      // Qualify with state name so readers don't mistake this tile for a
-      // national ranking. The featured district is the highest-rank entry
-      // *inside the currently-featured state snapshot* — not "worst in India".
-      topDistrictName: topDistrict
-        ? `${topDistrict.districtName}, ${input.lowerCourtProfile.stateName}`
-        : input.lowerCourtProfile.stateName,
-      topDistrictSummary: topDistrict
-        ? `Highest-rank district inside the featured ${input.lowerCourtProfile.stateName} snapshot. ${topDistrict.summary}`
-        : "The latest published snapshot is available for district-level inspection.",
+      topStateName: topState?.profile.stateName ?? input.lowerCourtProfile.stateName,
+      topStateHref: buildPublicStateRoutes(topState?.profile ?? input.lowerCourtProfile).home,
+      topStateSummary: topState
+        ? `${topState.profile.stateName} ranks highest on the current lower-court pressure index across States and Union Territories with published data. ${topState.stats.pendingCases.toLocaleString("en-IN")} pending cases, median age ${topState.stats.medianCaseAgeDays.toLocaleString("en-IN")} days, disposal ${topState.stats.disposalRate.toFixed(1)}% in the latest data. Relative ranking only, not a conclusive claim.`
+        : "Open any published lower-court page to inspect the latest snapshot and district drilldown.",
     },
   };
 }
@@ -175,21 +196,43 @@ function describePileChange(institutedCases: number, disposedCases: number) {
   if (difference === 0) {
     return {
       display: "0",
-      note: "Filed and cleared moved in lockstep in the latest monthly window.",
+      note: "Filings and clearances matched last month.",
     };
   }
 
   if (difference > 0) {
     return {
       display: `+${difference.toLocaleString("en-IN")}`,
-      note: "More matters were filed than cleared in the latest monthly window.",
+      note: "More cases were filed than cleared last month.",
     };
   }
 
   return {
     display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
-    note: "More matters were cleared than filed in the latest monthly window.",
+    note: "More cases were cleared than filed last month.",
   };
+}
+
+export function describeClearanceTrend(disposedCases: number, institutedCases: number): TrendSignal {
+  if (institutedCases <= 0) {
+    return { tone: "neutral", label: "No filings this window" };
+  }
+  const rate = calculateClearanceRate(disposedCases, institutedCases);
+  if (rate < 100) {
+    return { tone: "worsening", label: "Falling behind" };
+  }
+  return { tone: "improving", label: "Keeping pace" };
+}
+
+export function describePileTrend(institutedCases: number, disposedCases: number): TrendSignal {
+  const difference = calculateMonthlyGap(institutedCases, disposedCases);
+  if (difference > 0) {
+    return { tone: "worsening", label: "Backlog growing" };
+  }
+  if (difference < 0) {
+    return { tone: "improving", label: "Backlog shrinking" };
+  }
+  return { tone: "neutral", label: "In lockstep" };
 }
 
 function describeSupremeCourtReference(snapshot: SupremeCourtPublishedSnapshot["snapshot"]) {

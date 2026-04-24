@@ -96,7 +96,7 @@ describe("Meghalaya public rollout preflight", () => {
       },
       { path: "/states/meghalaya/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
       { path: "/states/meghalaya/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/meghalaya/api", requiredText: "latest published snapshot" },
+      { path: "/states/meghalaya/api", requiredText: "currently on the public site" },
     ] as const;
 
     for (const route of routes) {

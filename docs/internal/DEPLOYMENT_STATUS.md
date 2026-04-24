@@ -35,7 +35,7 @@ Use this document as the live environment map. For routine release go/no-go deci
   - reviewed High Courts: `nyaaywatch-staging-high-courts-internal-fetch` at `8:20 AM Asia/Kolkata`
   - public alpha ops monitor: `nyaaywatch-staging-public-alpha-ops-monitor` every `30` minutes
 - Internal raw fetch schedule scope policy:
-  - lower-court states: all implemented states
+  - lower-court geographies: profiles returned by `listInternalFetchStateProfiles()`; all 36 lower-court state/Union Territory profiles are included after April 23, 2026 proof cycles
   - Supreme Court: the single configured Supreme Court profile
   - High Courts: only profiles whose `sourceReviewStatus` is `reviewed`
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
@@ -61,7 +61,8 @@ Operational notes:
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
 - For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
-- The documented internal raw-fetch policy is to run lower-court state fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
+- On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through `npm run operator:staging`; this repo change promotes them to public lower-court routes after the UT-aware copy and methodology pass.
+- The documented internal raw-fetch policy is to run lower-court geography fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
 - The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
@@ -75,11 +76,7 @@ Operational notes:
 - Current public coverage:
   - unscoped default routes for Himachal Pradesh
   - narrow Supreme Court beta routes at `/supreme-court` and `/v1/supreme-court/...`
-  - narrow Himachal High Court beta routes at `/high-courts/himachal` and `/v1/high-courts/himachal/...`
-  - narrow Gujarat High Court beta routes at `/high-courts/gujarat` and `/v1/high-courts/gujarat/...`
-  - narrow Madhya Pradesh High Court beta routes at `/high-courts/madhya-pradesh` and `/v1/high-courts/madhya-pradesh/...`
-  - narrow Allahabad High Court beta routes at `/high-courts/uttar-pradesh` and `/v1/high-courts/uttar-pradesh/...`
-  - narrow Rajasthan High Court beta routes at `/high-courts/rajasthan` and `/v1/high-courts/rajasthan/...`
+  - narrow public High Court beta routes under `/high-courts/...` and `/v1/high-courts/...` for Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court
   - explicit Punjab public routes at `/states/punjab` and `/v1/states/punjab/...`
   - explicit Haryana public routes at `/states/haryana` and `/v1/states/haryana/...`
   - explicit Tamil Nadu public routes at `/states/tamil-nadu` and `/v1/states/tamil-nadu/...`
@@ -107,6 +104,14 @@ Operational notes:
   - explicit Goa public routes at `/states/goa` and `/v1/states/goa/...`
   - explicit Sikkim public routes at `/states/sikkim` and `/v1/states/sikkim/...`
   - explicit Mizoram public routes at `/states/mizoram` and `/v1/states/mizoram/...`
+  - explicit Andaman and Nicobar Islands public routes at `/states/andaman-and-nicobar-islands` and `/v1/states/andaman-and-nicobar-islands/...`
+  - explicit Chandigarh public routes at `/states/chandigarh` and `/v1/states/chandigarh/...`
+  - explicit Delhi public routes at `/states/delhi` and `/v1/states/delhi/...`
+  - explicit Jammu and Kashmir public routes at `/states/jammu-and-kashmir` and `/v1/states/jammu-and-kashmir/...`
+  - explicit Ladakh public routes at `/states/ladakh` and `/v1/states/ladakh/...`
+  - explicit Lakshadweep public routes at `/states/lakshadweep` and `/v1/states/lakshadweep/...`
+  - explicit Puducherry public routes at `/states/puducherry` and `/v1/states/puducherry/...`
+  - explicit Dadra and Nagar Haveli and Daman and Diu public routes at `/states/dadra-and-nagar-haveli-and-daman-and-diu` and `/v1/states/dadra-and-nagar-haveli-and-daman-and-diu/...`
 - Current active Himachal Pradesh publication: `publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1`
 - Current active Himachal Pradesh published snapshot: `snapshot_8cda4026-d7da-43d1-a2c4-2e61fc717be7`
 - Current Himachal Pradesh source snapshot date: `2026-04-10`
@@ -293,6 +298,15 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Jammu & Kashmir and Ladakh High Court internal proof completed on 2026-04-23 before public-beta promotion:
+  - the common High Court operator namespace remained auth-protected under `/operator/high-courts/jammu-kashmir-and-ladakh/...`
+  - live High Court fetch run `run_e036f9ac-f0d2-4e73-b7c3-8017a054d677` completed successfully
+  - live publication `publication_2957c01d-b451-4ae8-98a7-ecfe241d4297` created `snapshot_164f1f63-2d04-4685-b8ef-33261bdb064d`
+  - replay run `run_3caa55b9-8e1a-4b50-8a45-58afbcf974b9` created publication `publication_93ca29e7-651b-430e-b564-7386cb50465c`
+  - rollback publication `publication_e183dc01-887e-4b02-8c41-fd9e58ab471e` restored the initial publication chain and left `snapshot_164f1f63-2d04-4685-b8ef-33261bdb064d` active
+  - `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=jammu-kashmir-and-ladakh` returned `runCount=2`, `publicationCount=3`, `replayedRunCount=1`, `rollbackCount=1`, `canonicalScopeAligned=true`, and `internalProofBarSatisfied=true`
+  - before the later public-beta promotion, `GET /high-courts/jammu-kashmir-and-ladakh` and `GET /v1/high-courts/jammu-kashmir-and-ladakh/stats` returned `404`, confirming the proof cycle did not accidentally expose the court
+  - active internal snapshot stats are `pendingTotalCases=43849`, `institutedLastMonthTotalCases=1010`, and `disposedLastMonthTotalCases=781`
 - Supreme Court public beta exposure completed on 2026-04-19 after PR `#110` merged and GitHub deploy run `24624392748` rolled the live service to task definition `:98`:
   - the already-proven active Supreme Court publication `publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a` became publicly reachable under `/supreme-court`
   - live route verification returned `200` for `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`
@@ -597,6 +611,15 @@ Latest confirmed operator validation:
   - the live ECS service is now stable on task definition `:126`
   - all three schedules now exist and target task definition `:126`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, and `nyaaywatch-staging-high-courts-internal-fetch`
   - `curl -fsSL https://nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`
+- Lower-court Union Territory public alpha exposure completed on 2026-04-23 after PR `#185` merged:
+  - GitHub deploy run `24863933038` completed successfully on `main`, with `secret-scan`, `verify`, and `deploy` green and `preview` skipped
+  - the live ECS service rolled to task definition `nyaaywatch-staging:178`
+  - the deploy reconcile step updated all four scheduler targets to task definition `:178`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, `nyaaywatch-staging-high-courts-internal-fetch`, and `nyaaywatch-staging-public-alpha-ops-monitor`
+  - all eight newly public lower-court Union Territory route families returned `200` on `https://nyaaywatch.in`: Andaman and Nicobar Islands, Chandigarh, Delhi, Jammu and Kashmir, Ladakh, Lakshadweep, Puducherry, and Dadra and Nagar Haveli and Daman and Diu
+  - direct route verification covered each `/states/:slug`, `/states/:slug/districts`, `/states/:slug/data`, `/states/:slug/methodology`, `/states/:slug/api`, `/v1/states/:slug/stats`, `/v1/states/:slug/districts`, and `/v1/states/:slug/trends` family
+  - `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` passed with `totalStates=36`, `staleStates=[]`, `dailyFetchLagStates=[]`, and `failingStates=[]`
+  - no Cloudflare purge was run because `release:purge-public-routes` currently supports deploy-only Supreme Court and High Court route families, not lower-court state or Union Territory route exposure; the stable live lower-court routes returned `200` without a manual purge
+  - this closes the post-deploy evidence gap for the April 23 lower-court Union Territory public-alpha promotion; `docs/RELEASE_HISTORY.md` now records the deploy-only exposure against the active UT publications
 
 ## Release Use
 

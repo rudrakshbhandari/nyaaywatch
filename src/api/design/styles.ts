@@ -101,6 +101,52 @@ export const BASE_CSS = `
     background: #f6e2df;
   }
 
+  /* Overflow variant: when there are more scopes than fit on a single line
+     (e.g. /high-courts/:slug with 14+ High Courts), render a collapsed
+     <details> summary instead of a chip wall. The active scope stays
+     visible in the summary; the full list expands on click. Keeps the
+     editorial fold tight without losing the switcher. */
+  details.state-switcher {
+    display: block;
+    padding-top: 14px;
+  }
+  details.state-switcher > summary {
+    list-style: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 14px 8px;
+    border: 1px solid var(--rule);
+    background: var(--paper-bright);
+    color: var(--ink-soft);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    transition: border-color 120ms ease, color 120ms ease;
+  }
+  details.state-switcher > summary::-webkit-details-marker { display: none; }
+  details.state-switcher > summary::marker { content: ""; }
+  details.state-switcher > summary:hover { border-color: var(--ink); color: var(--ink); }
+  details.state-switcher > summary::after {
+    content: "\u25BE";
+    font-size: 10px;
+    opacity: 0.6;
+    transition: transform 120ms ease;
+  }
+  details.state-switcher[open] > summary::after { transform: rotate(180deg); }
+  details.state-switcher .state-switcher__label { color: var(--ink-muted); }
+  details.state-switcher .state-switcher__current { color: var(--accent-dark); }
+  details.state-switcher > .state-switcher__list {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
   /* --- ticker --- */
   .ticker {
     max-width: 1280px; margin: 0 auto; padding: 14px 32px 0;
@@ -134,6 +180,17 @@ export const BASE_CSS = `
     max-width: 62ch;
     font-weight: 500;
   }
+  /* Reference-doc hero: API pages, data downloads, press kit. The editorial
+     56px headline is wrong for pages where the body is code, tables, or
+     dense reference copy — readers need to get to the content, not stare at
+     a masthead. */
+  .page-hero--compact { padding: 28px 0 28px; }
+  .page-hero--compact .page-hero__hed {
+    font-size: clamp(26px, 2.6vw, 36px);
+    line-height: 1.08;
+    letter-spacing: -0.028em;
+  }
+  .page-hero--compact .page-hero__lede { font-size: 16px; }
 
   .section-head { margin: 0 0 32px; max-width: 720px; }
   .section-head h2 {
@@ -168,7 +225,7 @@ export const BASE_CSS = `
   .colophon {
     max-width: 1280px; margin: 0 auto; padding: 48px 32px;
     border-top: 2px solid var(--ink);
-    display: grid; grid-template-columns: 1.4fr 1.2fr 1fr; gap: 32px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
     font-size: 13px; color: var(--ink-soft);
   }
   .colophon p { margin: 0 0 6px; }
@@ -196,7 +253,10 @@ export const BASE_CSS = `
   .info-popover {
     position: absolute; z-index: 20; top: calc(100% + 10px); left: 50%;
     transform: translateX(-50%);
-    min-width: 260px; max-width: 320px;
+    /* Cap at the narrower of: preferred 320px, or viewport minus a 16px
+       gutter on each side. Stops the tooltip from overflowing the viewport
+       when an info icon lives near the right edge on tablet/desktop. */
+    min-width: 260px; max-width: min(320px, calc(100vw - 32px));
     padding: 16px 18px;
     background: var(--paper-bright); color: var(--ink);
     border: 1px solid var(--ink); border-radius: 2px;
@@ -236,7 +296,8 @@ export const BASE_CSS = `
   }
   .data-table th a:hover { color: #fff; }
   .data-table tbody tr:last-child td { border-bottom: none; }
-  .data-table tbody tr:hover { background: var(--paper); }
+  .data-table tbody tr:hover,
+  .data-table tbody tr:has(a:focus-visible) { background: var(--paper); }
   .data-table .num {
     font-variant-numeric: lining-nums tabular-nums;
     font-weight: 600;
@@ -276,11 +337,25 @@ export const BASE_CSS = `
     letter-spacing: -0.035em;
     font-variant-numeric: lining-nums tabular-nums;
     color: var(--ink);
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
   }
   .stat-tile__unit { font-size: 0.5em; font-weight: 700; color: var(--ink-muted); margin-left: 4px; }
   .stat-tile__note { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.45; font-weight: 500; }
   .stat-tile--accent .stat-tile__label { color: var(--accent-dark); }
   .stat-tile--flag .stat-tile__label { color: var(--flag); }
+  .stat-tile__signal {
+    display: inline-block;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 4px 0 8px;
+  }
+  .stat-tile__signal--worsening { color: var(--accent); }
+  .stat-tile__signal--improving { color: var(--ink-muted); }
 
   /* --- optional sparkline + delta chip on stat tiles --- */
   /* Sparkline sits on its own row *below* the value, left-aligned. Earlier
@@ -339,8 +414,75 @@ export const BASE_CSS = `
   }
 
   .card-grid { display: grid; gap: 20px; }
+  .card-grid--1 { grid-template-columns: 1fr; }
   .card-grid--2 { grid-template-columns: repeat(2, 1fr); }
   .card-grid--3 { grid-template-columns: repeat(3, 1fr); }
+
+  /* --- endpoint card (shared by /api, /high-courts/:slug/api, /supreme-court/api) ---
+     GET + path sit tight on row 1, description flows below. Earlier layout
+     used a fixed 64px column for the verb, which stranded short paths with
+     a big gap to the badge. */
+  .endpoint {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 12px;
+    row-gap: 12px;
+    align-items: baseline;
+  }
+  .endpoint p { grid-column: 1 / -1; margin: 0; }
+  code.endpoint__verb {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 4px 8px;
+    background: var(--ink); color: var(--paper);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em;
+    border-radius: 2px;
+  }
+  code.endpoint__path {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 16px; font-weight: 600;
+    color: var(--ink);
+    background: transparent;
+    padding: 0;
+    word-break: break-all;
+  }
+  .endpoints { margin-bottom: 72px; }
+
+  /* --- inline JSON sample (collapsible <details> inside endpoint cards) --- */
+  .code-sample-reveal {
+    margin-top: 14px;
+    grid-column: 1 / -1;
+  }
+  .code-sample-reveal > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    padding: 4px 0;
+    transition: color 120ms ease;
+  }
+  .code-sample-reveal > summary::-webkit-details-marker { display: none; }
+  .code-sample-reveal > summary::marker { content: ""; }
+  .code-sample-reveal > summary::after { content: "\u25BE"; font-size: 10px; opacity: 0.6; }
+  .code-sample-reveal[open] > summary::after { transform: rotate(180deg); display: inline-block; }
+  .code-sample-reveal > summary:hover { color: var(--ink); }
+  .code-sample {
+    margin: 10px 0 0;
+    padding: 16px 18px;
+    background: #1e1c19;
+    color: #d4cec4;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px; line-height: 1.65;
+    overflow-x: auto;
+    border-radius: 2px;
+    white-space: pre;
+    tab-size: 2;
+    -webkit-overflow-scrolling: touch;
+  }
 
   /* --- meta-row (tight list of label:value pairs) --- */
   .meta-row {
@@ -389,6 +531,19 @@ export const BASE_CSS = `
   .btn:focus-visible { outline-offset: 4px; }
   .masthead__brand:focus-visible, .masthead__nav a:focus-visible, .state-switcher a:focus-visible { outline-offset: 6px; }
   .info summary:focus-visible { outline: none; }
+
+  /* Form-control defaults — inputs that don't override get a consistent
+     placeholder color and a visible focus ring. Individual components can
+     still style themselves further. */
+  input::placeholder, textarea::placeholder {
+    color: var(--ink-muted);
+    opacity: 0.7;
+  }
+  input, textarea, select { font-family: inherit; color: var(--ink); }
+  input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 
   /* --- evidence deep-linking: every claim on the site can anchor to an
          explanation elsewhere. When a URL hash lands on an element with a
@@ -439,6 +594,42 @@ export const BASE_CSS = `
   .stat-tile__link:hover::after, .stat-tile__link:focus-visible::after,
   .numbers__label a:hover::after, .numbers__label a:focus-visible::after {
     opacity: 1;
+  }
+
+  /* --- hero-rail: side-by-side hero text + stat grid at ≥1440px ---
+     Used on High Court and Supreme Court overview pages where the 4 stat
+     tiles naturally companion the editorial hero. Below 1440px the wrapper
+     is a transparent single-column grid so normal stacking applies. */
+  .hero-rail { display: grid; }
+  @media (min-width: 1440px) {
+    .hero-rail {
+      grid-template-columns: 1fr 360px;
+      align-items: start;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 64px;
+    }
+    .hero-rail > .page-hero {
+      max-width: none;
+      padding: 40px 56px 40px 0;
+      margin-bottom: 0;
+    }
+    .hero-rail > .stat-grid {
+      border-top: none; border-bottom: none;
+      border-left: 2px solid var(--ink);
+      margin: 0;
+      padding: 40px 0 40px 36px;
+      grid-template-columns: 1fr 1fr;
+      row-gap: 28px;
+    }
+    .hero-rail > .stat-grid .stat-tile {
+      border-left: none; padding-left: 0; padding-right: 14px;
+    }
+    .hero-rail > .stat-grid .stat-tile:nth-child(even) {
+      border-left: 1px solid var(--rule); padding-left: 14px; padding-right: 0;
+    }
+    .hero-rail > .stat-grid .stat-tile__value {
+      font-size: clamp(28px, 2.6vw, 40px);
+    }
   }
 
   /* --- responsive --- */

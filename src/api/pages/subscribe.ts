@@ -24,7 +24,7 @@ export function renderSubscribePage(context: PublicPageContext, opts?: { error?:
           autocomplete="email"
         />
         <button type="submit" class="btn btn--primary" style="margin-top:16px;">Subscribe →</button>
-        <p class="subscribe-form__note">Double opt-in. We use AWS SES and store your address in our Postgres database. <a href="${escapeHtml(context.routes.methodology)}">Methodology and privacy notes</a>.</p>
+        <p class="subscribe-form__note">We send a confirmation link first. Your email is stored securely and never shared. Unsubscribe anytime. <a href="${escapeHtml(context.routes.methodology)}">Methodology and privacy notes</a>.</p>
       </form>
     </section>
 ${SUBSCRIBE_CSS}

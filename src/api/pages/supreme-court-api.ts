@@ -6,10 +6,11 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
   const body = `
     ${renderSectionHead({
       eyebrow: "SUPREME COURT API",
-      headline: "The public Supreme Court API matches the latest published Supreme Court snapshot.",
+      headline: "Supreme Court API reference",
       lede:
-        "If the Supreme Court page shows a number, the published JSON can expose it. If it is still in operator review, it stays private.",
+        "The API matches the latest published Supreme Court snapshot. If the public page shows a number, the JSON can expose it; if it is still in operator review, it stays private.",
       isHero: true,
+      variant: "compact",
     })}
 
     <section class="endpoints">
@@ -19,11 +20,67 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
           <p>Supreme Court metadata plus aggregate registered, unregistered, civil, criminal, institution, and disposal fields for the active publication.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "snapshot": {
+    "courtTier": "supreme_court",
+    "courtCode": "SCI",
+    "courtSlug": "supreme-court",
+    "courtName": "Supreme Court of India",
+    "referenceDateAt": "2025-03-01T00:00:00.000Z",
+    "referenceDateKind": "captured_at",
+    "publishedAt": "2025-03-12T14:22:00.000Z",
+    "methodologyVersion": "v1.3.0",
+    "qualityState": "complete"
+  },
+  "stats": {
+    "pendingCivilRegisteredCases": 40120,
+    "pendingCivilUnregisteredCases": 3410,
+    "pendingCivilTotalCases": 43530,
+    "pendingCriminalRegisteredCases": 33121,
+    "pendingCriminalUnregisteredCases": 3480,
+    "pendingCriminalTotalCases": 36601,
+    "pendingRegisteredCases": 73241,
+    "pendingUnregisteredCases": 6890,
+    "pendingTotalCases": 80131,
+    "institutedLastMonthTotalCases": 3240,
+    "disposedLastMonthTotalCases": 3108,
+    "institutedCurrentYearTotalCases": 9720,
+    "disposedCurrentYearTotalCases": 9324
+  },
+  "trends": [
+    { "referenceDateAt": "2025-01-01T00:00:00.000Z", "referenceDateKind": "captured_at", "pendingTotalCases": 78440, "institutedLastMonthTotalCases": 3180, "disposedLastMonthTotalCases": 3090 },
+    // \u2026 one point per published snapshot
+  ]
+}</pre>
+          </details>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
           <p>Published trend points only. No unpublished operator runs leak through this surface.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "trends": [
+    {
+      "referenceDateAt": "2025-01-01T00:00:00.000Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 78440,
+      "institutedLastMonthTotalCases": 3180,
+      "disposedLastMonthTotalCases": 3090
+    },
+    {
+      "referenceDateAt": "2025-03-01T00:00:00.000Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 80131,
+      "institutedLastMonthTotalCases": 3240,
+      "disposedLastMonthTotalCases": 3108
+    }
+  ]
+}</pre>
+          </details>
         </article>
       </div>
     </section>
@@ -50,7 +107,6 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
     brandHref: context.brandHref,
     brandTag: context.brandTag,
     navLinks: context.navLinks,
-    pageCss: SUPREME_COURT_API_CSS,
     footer: {
       sourceDateLabel: null,
       methodologyVersion: null,
@@ -58,33 +114,3 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
     },
   });
 }
-
-const SUPREME_COURT_API_CSS = `
-  .card-grid--1 { grid-template-columns: 1fr; }
-  .endpoints { margin-bottom: 72px; }
-  .endpoint { display: grid; grid-template-columns: 64px 1fr; gap: 18px 24px; align-items: baseline; }
-  .endpoint p { grid-column: 2; margin: 0; }
-  .endpoint__verb {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: 4px 8px;
-    background: var(--ink); color: var(--paper);
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.12em;
-    border-radius: 2px;
-    grid-row: 1;
-  }
-  .endpoint__path {
-    font-family: "IBM Plex Mono", ui-monospace, monospace;
-    font-size: 16px; font-weight: 600;
-    color: var(--ink);
-    background: transparent;
-    padding: 0;
-    grid-row: 1;
-  }
-  @media (max-width: 720px) {
-    .endpoint { grid-template-columns: 1fr; gap: 8px; }
-    .endpoint p { grid-column: 1; }
-    .endpoint__verb { justify-self: start; }
-  }
-`;

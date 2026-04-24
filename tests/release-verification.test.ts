@@ -3,6 +3,7 @@ import { createServer, type Server } from "node:http";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  buildLadakhTestSnapshot,
   buildPunjabTestSnapshot,
   createTestApp,
   createTestContext,
@@ -82,6 +83,39 @@ describe("verifyPublicRelease", () => {
     expect(result.target.stateSlug).toBe("punjab");
     expect(result.snapshot.methodologyVersion).toBe("2026.04-alpha");
     expect(result.districtCount).toBe(3);
+    expect(result.trendCount).toBeGreaterThan(0);
+    expect(result.csvMetadataParity).toBe(true);
+    expect(result.publicDataCacheProtected).toBe(true);
+  });
+
+  it("verifies Union Territory public routes once Ladakh is published", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    await insertPublishedSnapshot(context.pool, {
+      publicationId: "publication_la_release_verify",
+      snapshotId: "snapshot_la_release_verify",
+      runId: "run_la_release_verify",
+      stateCode: "LA",
+      payload: buildLadakhTestSnapshot(),
+    });
+
+    const app = createTestApp(context.config, context.service, context.publicServices);
+    const server = createServer(app);
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    const result = await verifyPublicRelease(`http://127.0.0.1:${address.port}`, { stateSlug: "ladakh" });
+
+    expect(result.target.stateCode).toBe("LA");
+    expect(result.target.stateSlug).toBe("ladakh");
+    expect(result.snapshot.methodologyVersion).toBe("2026.04-alpha");
+    expect(result.districtCount).toBe(2);
     expect(result.trendCount).toBeGreaterThan(0);
     expect(result.csvMetadataParity).toBe(true);
     expect(result.publicDataCacheProtected).toBe(true);

@@ -77,7 +77,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/api",
-        requiredText: "latest published snapshot",
+        requiredText: "currently on the public site",
       },
     ] as const;
 
@@ -90,7 +90,8 @@ describe("public copy guardrails", () => {
       );
       if (route.path === "/") {
         expect(response.text).not.toContain("See Himachal lower courts");
-        expect(response.text).toContain("Browse lower courts");
+        expect(response.text).toContain("Browse lower-court pages");
+        expect(response.text).not.toContain("featured Himachal Pradesh snapshot");
       }
 
       for (const pattern of disallowedPublicPhrases) {
@@ -139,7 +140,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/api",
-        requiredText: "latest published snapshot",
+        requiredText: "currently on the public site",
       },
     ] as const;
 

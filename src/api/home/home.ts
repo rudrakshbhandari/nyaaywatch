@@ -14,7 +14,7 @@ import { computeWaitingRoomRates, renderWaitingRoom } from "../landing/waiting-r
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
-  const copy = buildCopy(model, context.publicScopeDescription);
+  const copy = buildCopy(model, context.publicScopeDescription, context.lowerCourtCopy);
   const n = copy.bigNumbers;
 
   const trendBars = renderTrendChart(model);
@@ -76,7 +76,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
         </article>
         <article class="numbers__cell numbers__cell--reveal" id="stat-flagged">
-          <div class="numbers__value">${model.flaggedCount}</div>
+          <div class="numbers__value">${model.flaggedCount.toLocaleString("en-IN")}</div>
           <div class="numbers__label"><a href="${context.routes.methodology}#metric-watchlist">${escapeHtml(n.flagged.label)}</a> ${infoIcon("watchlist")}</div>
           <p class="numbers__caption">${escapeHtml(n.flagged.caption)}</p>
         </article>
@@ -178,7 +178,7 @@ function renderTrendChart(model: HomeViewModel): string {
       </li>`;
     })
     .join("");
-  return `<ol class="trend-list" aria-label="Statewide backlog over time">${rows}</ol>`;
+  return `<ol class="trend-list" aria-label="Backlog over time">${rows}</ol>`;
 }
 
 /**
@@ -223,7 +223,7 @@ const HOME_PAGE_CSS = `
     position: relative;
   }
   .numbers::before {
-    content: "STATEWIDE";
+    content: "LOWER COURTS";
     position: absolute; top: -10px; left: 0;
     background: var(--paper);
     padding: 0 14px 0 0;

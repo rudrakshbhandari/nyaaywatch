@@ -1,14 +1,22 @@
 {
   "name": "nyaaywatch",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "Apache-2.0",
   "type": "module",
-  "description": "AWS-backed published snapshot storage slice for NyaayWatch",
+  "description": "Reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's courts — drawn from public NJDG data.",
+  "homepage": "https://nyaaywatch.in",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rudrakshbhandari/nyaaywatch.git"
+  },
+  "author": "NyaayWatch Contributors",
+  "keywords": ["india", "judiciary", "court-data", "transparency", "njdg", "open-data"],
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && mkdir -p dist/src/db/migrations && cp src/db/migrations/*.sql dist/src/db/migrations/ && mkdir -p dist/fixtures && cp -R fixtures/. dist/fixtures/",
+    "build": "tsc -p tsconfig.json && mkdir -p dist/src/db/migrations && cp src/db/migrations/*.sql dist/src/db/migrations/ && mkdir -p dist/fixtures && cp -R fixtures/. dist/fixtures/ && mkdir -p dist/assets/fonts && cp assets/fonts/* dist/assets/fonts/",
     "check:types": "tsc --noEmit -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "dev": "tsx watch src/index.ts",
@@ -44,6 +52,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.901.0",
     "@aws-sdk/client-ses": "^3.1033.0",
+    "@aws-sdk/client-sns": "^3.1036.0",
     "@resvg/resvg-js": "^2.6.2",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

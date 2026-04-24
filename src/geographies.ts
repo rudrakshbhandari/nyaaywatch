@@ -2,8 +2,10 @@ export interface NjdgStateProfile {
   stateCode: SupportedStateCode;
   stateName: string;
   stateSlug: string;
+  geographyType: GeographyType;
   njdgStateValue: string;
   publicAlpha: boolean;
+  internalFetchEnabled?: boolean;
 }
 
 export type GeographyType = "state" | "union_territory";
@@ -15,11 +17,73 @@ export interface CourtGeography {
   lowerCourtStateCode?: SupportedStateCode;
 }
 
-export const SUPPORTED_STATE_CODES = ["HP", "PB", "HR", "TN", "AS", "TS", "AP", "AR", "MN", "KL", "ML", "KA", "TR", "NL", "UK", "RJ", "UP", "MP", "MH", "BR", "GJ", "OD", "WB", "JH", "CG", "GA", "SK", "MZ"] as const;
+export const SUPPORTED_STATE_CODES = [
+  "HP",
+  "PB",
+  "HR",
+  "TN",
+  "AS",
+  "TS",
+  "AP",
+  "AR",
+  "MN",
+  "KL",
+  "ML",
+  "KA",
+  "TR",
+  "NL",
+  "UK",
+  "RJ",
+  "UP",
+  "MP",
+  "MH",
+  "BR",
+  "GJ",
+  "OD",
+  "WB",
+  "JH",
+  "CG",
+  "GA",
+  "SK",
+  "MZ",
+  "AN",
+  "CHD",
+  "DL",
+  "JK",
+  "LA",
+  "LD",
+  "PY",
+  "DNHDD",
+] as const;
 
 export type SupportedStateCode = (typeof SUPPORTED_STATE_CODES)[number];
 
-const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
+type NjdgStateProfileConfig = Omit<NjdgStateProfile, "geographyType">;
+
+const UNION_TERRITORY_STATE_CODES = ["AN", "CHD", "DL", "JK", "LA", "LD", "PY", "DNHDD"] as const satisfies readonly SupportedStateCode[];
+
+const UNION_TERRITORY_STATE_CODE_SET = new Set<SupportedStateCode>(UNION_TERRITORY_STATE_CODES);
+
+function getGeographyTypeForStateCode(stateCode: SupportedStateCode): GeographyType {
+  return UNION_TERRITORY_STATE_CODE_SET.has(stateCode) ? "union_territory" : "state";
+}
+
+function withGeographyType(profile: NjdgStateProfileConfig): NjdgStateProfile {
+  return {
+    ...profile,
+    geographyType: getGeographyTypeForStateCode(profile.stateCode),
+  };
+}
+
+export function getLowerCourtGeographyTypeLabel(profile: NjdgStateProfile): string {
+  return profile.geographyType === "union_territory" ? "Union Territory" : "state";
+}
+
+export function getLowerCourtAggregateAdjective(profile: NjdgStateProfile): string {
+  return profile.geographyType === "union_territory" ? "territory-wide" : "statewide";
+}
+
+const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfileConfig> = {
   HP: {
     stateCode: "HP",
     stateName: "Himachal Pradesh",
@@ -216,23 +280,91 @@ const STATE_PROFILES: Record<SupportedStateCode, NjdgStateProfile> = {
     njdgStateValue: "15~19",
     publicAlpha: true,
   },
+  AN: {
+    stateCode: "AN",
+    stateName: "Andaman and Nicobar Islands",
+    stateSlug: "andaman-and-nicobar-islands",
+    njdgStateValue: "35~28",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
+  CHD: {
+    stateCode: "CHD",
+    stateName: "Chandigarh",
+    stateSlug: "chandigarh",
+    njdgStateValue: "4~27",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
+  DL: {
+    stateCode: "DL",
+    stateName: "Delhi",
+    stateSlug: "delhi",
+    njdgStateValue: "7~26",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
+  JK: {
+    stateCode: "JK",
+    stateName: "Jammu and Kashmir",
+    stateSlug: "jammu-and-kashmir",
+    njdgStateValue: "1~12",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
+  LA: {
+    stateCode: "LA",
+    stateName: "Ladakh",
+    stateSlug: "ladakh",
+    njdgStateValue: "37~33",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
+  LD: {
+    stateCode: "LD",
+    stateName: "Lakshadweep",
+    stateSlug: "lakshadweep",
+    njdgStateValue: "31~37",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
+  PY: {
+    stateCode: "PY",
+    stateName: "Puducherry",
+    stateSlug: "puducherry",
+    njdgStateValue: "34~35",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
+  DNHDD: {
+    stateCode: "DNHDD",
+    stateName: "Dadra and Nagar Haveli and Daman and Diu",
+    stateSlug: "dadra-and-nagar-haveli-and-daman-and-diu",
+    njdgStateValue: "38~38",
+    publicAlpha: true,
+    internalFetchEnabled: true,
+  },
 };
 
 export function getStateProfile(stateCode: SupportedStateCode): NjdgStateProfile {
-  return STATE_PROFILES[stateCode];
+  return withGeographyType(STATE_PROFILES[stateCode]);
 }
 
 export function getStateProfileByCode(stateCode: string): NjdgStateProfile | null {
   const normalized = stateCode.trim().toUpperCase();
-  return normalized in STATE_PROFILES ? STATE_PROFILES[normalized as SupportedStateCode] : null;
+  return normalized in STATE_PROFILES ? getStateProfile(normalized as SupportedStateCode) : null;
 }
 
 export function listStateProfiles(): NjdgStateProfile[] {
-  return [...SUPPORTED_STATE_CODES].map((stateCode) => STATE_PROFILES[stateCode]);
+  return [...SUPPORTED_STATE_CODES].map((stateCode) => getStateProfile(stateCode));
 }
 
 export function listPublicStateProfiles(): NjdgStateProfile[] {
   return listStateProfiles().filter((profile) => profile.publicAlpha);
+}
+
+export function listInternalFetchStateProfiles(): NjdgStateProfile[] {
+  return listStateProfiles().filter((profile) => profile.internalFetchEnabled !== false);
 }
 
 export function getPublicStateProfileBySlug(stateSlug: string): NjdgStateProfile | null {
@@ -249,7 +381,7 @@ export function buildStateCourtGeography(stateCode: SupportedStateCode): CourtGe
   return {
     geographyCode: profile.stateCode,
     geographyName: profile.stateName,
-    geographyType: "state",
+    geographyType: profile.geographyType,
     lowerCourtStateCode: profile.stateCode,
   };
 }

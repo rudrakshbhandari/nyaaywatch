@@ -4,6 +4,10 @@ First broader High Court configuration wave after the Himachal pilot.
 
 Verified against the live official HC NJDG selector list on **April 18, 2026**.
 
+This document now remains a historical record of the first broader internal High Court wave.
+
+Current repo state has moved past that first wave. Most notably, the repo now also carries a reviewed public-beta profile for the common **High Court of Jammu & Kashmir and Ladakh** under one HC NJDG selector with explicit `coveredGeographies[] = Jammu and Kashmir, Ladakh`.
+
 ## What This Slice Does
 
 This repo now configures a first internal High Court wave for the courts that already fit the current High Court snapshot contract:
@@ -15,6 +19,8 @@ This repo now configures a first internal High Court wave for the courts that al
 This document records the broader configured set, plus which courts have now advanced from internal-only status to public beta in repo code.
 
 ## Configured Internal Wave
+
+Historical first-wave set:
 
 The internal High Court registry now includes:
 
@@ -45,10 +51,10 @@ The internal High Court registry now includes:
 
 Current posture:
 
-- `sourceReviewStatus=reviewed`: Himachal Pradesh, Andhra Pradesh, Bombay High Court, Calcutta High Court, Telangana, Delhi High Court, Gauhati High Court, Gujarat, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
-- `sourceReviewStatus=queued`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, and Bihar via Patna High Court
-- `publicBeta=true`: Himachal Pradesh, Andhra Pradesh, Bombay High Court, Calcutta High Court, Telangana, Delhi High Court, Gujarat, Gauhati High Court, High Court of Kerala, Madras High Court, Madhya Pradesh, Punjab and Haryana, Rajasthan, and Uttar Pradesh
-- `publicBeta=false`: Chhattisgarh, Jharkhand, Karnataka, Odisha, Manipur, Meghalaya, Sikkim, Tripura, Uttarakhand, and Bihar via Patna High Court
+- `sourceReviewStatus=reviewed`: all 25 configured High Court profiles
+- `sourceReviewStatus=queued`: none
+- `publicBeta=true`: all 25 configured High Court profiles
+- `publicBeta=false`: none
 
 ## Why These Courts
 
@@ -84,10 +90,10 @@ After this slice:
 
 After this slice, the repo still does **not** claim:
 
-- that every configured High Court has cleared source review
-- that cross-court methodology is public-ready
-- that multi-jurisdiction High Courts fit the current schema
-- that every configured High Court should launch publicly just because seven High Courts now have narrow beta routes
+- that High Court data is live or real-time
+- that High Court, Supreme Court, and lower-court metrics are directly interchangeable analytical units
+- that public route exposure changes the underlying operator-reviewed publish gate
+- that NyaayWatch is an official judiciary source
 
 ## Next Decision After Setup
 
@@ -115,4 +121,5 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - the next approved public-beta move for the remaining deferred court-first High Courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
 - Delhi, Kerala, and Madras are now live in the public High Court beta as the completed Wave 1 batch
 - the remaining three deferred courts have now also cleared deploy verification, cache purge, and rollout-evidence sync for the Wave 2 public batch
-- the deferred court-first High Court public-beta plan is now exhausted; future High Court scope decisions should start from operational quality and product intent, not this backlog
+- the final ten internally proven High Courts are now approved for public beta exposure as one final batch
+- the deferred court-first High Court public-beta backlog is now exhausted; future High Court scope decisions should start from operational quality and product intent, not this backlog

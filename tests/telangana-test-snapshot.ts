@@ -32,7 +32,7 @@ export function buildTelanganaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already among Telangana's biggest.",
         summary:
-          "Adilabad has 26,311 cases waiting. A typical pending case falls around 183 days old, and the district cleared 82.1% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Adilabad has 26,311 cases waiting. A typical pending case falls around 183 days old, and the district cleared 82.1% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "hyderabad",
@@ -43,9 +43,9 @@ export function buildTelanganaTestSnapshot(): PublishedSnapshot {
         medianAgeDays: 730,
         filingVsDisposalGap: -31.4,
         flagReason:
-          "People appear to be waiting longer here than in much of Telangana, based on the latest published snapshot.",
+          "People appear to be waiting longer here than in much of Telangana.",
         summary:
-          "Hyderabad has 1,85,904 cases waiting. A typical pending case falls around 730 days old, and the district cleared 131.4% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Hyderabad has 1,85,904 cases waiting. A typical pending case falls around 730 days old, and the district cleared 131.4% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
       {
         districtId: "warangal",
@@ -58,7 +58,7 @@ export function buildTelanganaTestSnapshot(): PublishedSnapshot {
         flagReason:
           "New cases are coming in faster than this district is clearing them, and the queue is already under visible pressure in the statewide snapshot.",
         summary:
-          "Warangal has 94,127 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.2% as many cases as it received last month. It stays on the watchlist in this snapshot.",
+          "Warangal has 94,127 cases waiting. A typical pending case falls around 365 days old, and the district cleared 91.2% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.",
       },
     ],
     trends: [

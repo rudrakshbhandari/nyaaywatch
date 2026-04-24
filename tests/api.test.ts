@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildHaryanaTestSnapshot,
+  buildLadakhTestSnapshot,
   buildPunjabTestSnapshot,
   createTestApp,
   createTestContext,
@@ -73,14 +74,17 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("data:image/svg+xml,");
     expect(homepage.text).toContain("How long is India waiting for justice?");
     expect(homepage.text).toContain("Track the Supreme Court");
-    expect(homepage.text).toContain("Most delay sits in the lower courts.");
+    expect(homepage.text).toContain("Lower courts show the broadest pressure.");
     expect(homepage.text).toContain("Where is delay piling up across India?");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
-    expect(homepage.text).toContain("Browse lower courts");
-    expect(homepage.text).toContain("Featured lower-court backlog");
+    expect(homepage.text).toContain("Browse lower-court pages");
+    expect(homepage.text).toContain("Pending across public geographies");
+    expect(homepage.text).toContain("Highest-pressure geography");
     expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
+    expect(homepage.text).not.toContain("featured published snapshot");
+    expect(homepage.text).not.toContain("Kullu, Himachal Pradesh");
 
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
@@ -89,7 +93,7 @@ describe("HTTP routes", () => {
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
     expect(districtsPage.text).toContain("Scan the districts under the most pressure.");
-    expect(districtsPage.text).toContain("Watchlist only");
+    expect(districtsPage.text).toContain("Only districts to watch");
     expect(districtsPage.text).toContain("Kangra");
     expect(districtsPage.text.indexOf("Haryana")).toBeLessThan(districtsPage.text.indexOf("Himachal Pradesh"));
     expect(districtsPage.text.indexOf("Himachal Pradesh")).toBeLessThan(districtsPage.text.indexOf("Punjab"));
@@ -154,6 +158,73 @@ describe("HTTP routes", () => {
     expect(response.text).toContain("User-agent: *");
     expect(response.text).toContain("Allow: /");
     expect(response.text).toContain("Disallow: /operator/");
+  });
+
+  it("renders OG images without outbound font fetches", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+    const originalFetch = globalThis.fetch;
+    const fetchSpy = vi.fn(async () => {
+      throw new Error("network disabled");
+    });
+    vi.stubGlobal("fetch", fetchSpy);
+
+    try {
+      const districtOg = await request(app).get("/og/district/kangra.png");
+      expect(districtOg.status).toBe(200);
+      expect(districtOg.headers["content-type"]).toMatch(/image\/png/);
+
+      const nationalOg = await request(app).get("/og/national.png");
+      expect(nationalOg.status).toBe(200);
+      expect(nationalOg.headers["content-type"]).toMatch(/image\/png/);
+
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.stubGlobal("fetch", originalFetch);
+    }
+  });
+
+  it("logs OG render failures with the route name", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    vi.resetModules();
+    vi.doMock("../src/api/share/og-card.js", async () => {
+      const actual = await vi.importActual<typeof import("../src/api/share/og-card.js")>("../src/api/share/og-card.js");
+      return {
+        ...actual,
+        renderDistrictOgCard: vi.fn(async () => {
+          throw new Error("synthetic og failure");
+        }),
+      };
+    });
+
+    const brokenContext = await createTestContext();
+    pools.push(brokenContext.pool);
+    await seedTestSnapshot(brokenContext.service);
+    const { createApp } = await import("../src/api/app.js");
+    const brokenApp = createApp(
+      brokenContext.config,
+      brokenContext.service,
+      brokenContext.publicServices,
+      brokenContext.highCourtServices,
+      brokenContext.supremeCourtService,
+    );
+
+    const response = await request(brokenApp).get("/og/district/kangra.png");
+    expect(response.status).toBe(500);
+
+    const messages = errorSpy.mock.calls.map((call) => String(call[0]));
+    expect(messages.some((message) => message.includes("\"event\":\"og_image_render_failed\""))).toBe(true);
+    expect(messages.some((message) => message.includes("/og/district/:districtId.png"))).toBe(true);
+
+    errorSpy.mockRestore();
+    vi.doUnmock("../src/api/share/og-card.js");
+    vi.resetModules();
   });
 
   it("emits structured request logs for non-health routes and skips the ALB health check noise", async () => {
@@ -435,45 +506,70 @@ describe("HTTP routes", () => {
     await seedTestHighCourtSnapshot(context.highCourtServices.BOHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.CLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.TSHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.CGHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.DLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GJHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GHHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.JHHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.JKLHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.KAHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.KLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MDHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MPHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.MNHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.MLHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.ODHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.PHHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.RJHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.SKHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.TRHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.UKHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.BRHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.UPHC!);
 
     const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
     const index = await request(app).get("/high-courts");
     expect(index.status).toBe(200);
-    expect(index.text).toContain("Where is pressure building across India");
+    expect(index.text).toContain("India&#39;s High Courts, ranked by pressure");
     expect(index.text).toContain("High Court of Himachal Pradesh");
     expect(index.text).toContain("High Court of Andhra Pradesh");
+    expect(index.text).toContain("Bombay High Court");
+    expect(index.text).toContain("Calcutta High Court");
     expect(index.text).toContain("High Court for State of Telangana");
+    expect(index.text).toContain("High Court of Chhattisgarh");
     expect(index.text).toContain("High Court of Delhi");
     expect(index.text).toContain("High Court of Gujarat");
+    expect(index.text).toContain("Gauhati High Court");
+    expect(index.text).toContain("High Court of Jammu & Kashmir and Ladakh");
+    expect(index.text).toContain("High Court of Jharkhand");
+    expect(index.text).toContain("High Court of Karnataka");
     expect(index.text).toContain("High Court of Kerala");
     expect(index.text).toContain("Madras High Court");
     expect(index.text).toContain("High Court of Madhya Pradesh");
+    expect(index.text).toContain("High Court of Manipur");
+    expect(index.text).toContain("High Court of Meghalaya");
+    expect(index.text).toContain("High Court of Orissa");
     expect(index.text).toContain("High Court of Punjab and Haryana");
     expect(index.text).toContain("High Court of Rajasthan");
+    expect(index.text).toContain("High Court of Sikkim");
+    expect(index.text).toContain("High Court of Tripura");
+    expect(index.text).toContain("High Court of Uttarakhand");
+    expect(index.text).toContain("Patna High Court");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
-    expect(index.text).toContain("Cards are ordered by the clearest visible pressure signal first");
+    expect(index.text).toContain("ordered by last-month backlog change first, then clearance pace, then pending load");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
     expect(overview.text).toContain('href="/" class="masthead__brand"');
-    expect(overview.text).toContain("What is the latest published snapshot showing in High Court of Himachal Pradesh?");
+    expect(overview.text).toContain("What does the latest data show for High Court of Himachal Pradesh?");
     expect(overview.text).toContain("High Court of Himachal Pradesh");
     expect(overview.text).toContain("Coverage");
     expect(overview.text).toContain("Current coverage:</strong> Himachal Pradesh");
     expect(overview.text).toContain("HC NJDG did not expose a trustworthy source snapshot timestamp");
     expect(overview.text).toContain("Cleared / 100 filed");
-    expect(overview.text).toContain("Last-month pile change");
+    expect(overview.text).toContain("Last-month backlog change");
 
     const data = await request(app).get("/high-courts/himachal/data");
     expect(data.status).toBe(200);
@@ -507,7 +603,7 @@ describe("HTTP routes", () => {
     expect(uttarPradeshOverview.status).toBe(200);
     expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
     expect(uttarPradeshOverview.text).toContain(
-      "This page tracks Allahabad High Court across Uttar Pradesh. 13 other public High Court pages are linked in the switcher.",
+      "This page tracks Allahabad High Court across Uttar Pradesh. 24 other public High Court pages are linked in the switcher.",
     );
 
     const punjabHaryanaOverview = await request(app).get("/high-courts/punjab-and-haryana");
@@ -534,6 +630,12 @@ describe("HTTP routes", () => {
     expect(gauhatiOverview.status).toBe(200);
     expect(gauhatiOverview.text).toContain("Gauhati High Court");
     expect(gauhatiOverview.text).toContain("Assam, Nagaland, Mizoram, and Arunachal Pradesh");
+
+    const jammuKashmirLadakhOverview = await request(app).get("/high-courts/jammu-kashmir-and-ladakh");
+    expect(jammuKashmirLadakhOverview.status).toBe(200);
+    expect(jammuKashmirLadakhOverview.text).toContain("High Court of Jammu &amp; Kashmir and Ladakh");
+    expect(jammuKashmirLadakhOverview.text).not.toContain("&amp;amp;");
+    expect(jammuKashmirLadakhOverview.text).toContain("Jammu and Kashmir and Ladakh");
 
     const keralaOverview = await request(app).get("/high-courts/kerala");
     expect(keralaOverview.status).toBe(200);
@@ -564,6 +666,10 @@ describe("HTTP routes", () => {
     const gauhatiStats = await request(app).get("/v1/high-courts/gauhati/stats");
     expect(gauhatiStats.status).toBe(200);
     expect(gauhatiStats.body.snapshot.courtCode).toBe("GHHC");
+
+    const jammuKashmirLadakhStats = await request(app).get("/v1/high-courts/jammu-kashmir-and-ladakh/stats");
+    expect(jammuKashmirLadakhStats.status).toBe(200);
+    expect(jammuKashmirLadakhStats.body.snapshot.courtCode).toBe("JKLHC");
 
     const keralaTrends = await request(app).get("/v1/high-courts/kerala/trends");
     expect(keralaTrends.status).toBe(200);
@@ -616,6 +722,29 @@ describe("HTTP routes", () => {
     const rajasthanTrends = await request(app).get("/v1/high-courts/rajasthan/trends");
     expect(rajasthanTrends.status).toBe(200);
     expect(rajasthanTrends.body.snapshot.courtCode).toBe("RJHC");
+
+    const finalPublicHighCourtRoutes = [
+      { slug: "chhattisgarh", courtCode: "CGHC", courtName: "High Court of Chhattisgarh" },
+      { slug: "jharkhand", courtCode: "JHHC", courtName: "High Court of Jharkhand" },
+      { slug: "karnataka", courtCode: "KAHC", courtName: "High Court of Karnataka" },
+      { slug: "manipur", courtCode: "MNHC", courtName: "High Court of Manipur" },
+      { slug: "meghalaya", courtCode: "MLHC", courtName: "High Court of Meghalaya" },
+      { slug: "odisha", courtCode: "ODHC", courtName: "High Court of Orissa" },
+      { slug: "sikkim", courtCode: "SKHC", courtName: "High Court of Sikkim" },
+      { slug: "tripura", courtCode: "TRHC", courtName: "High Court of Tripura" },
+      { slug: "uttarakhand", courtCode: "UKHC", courtName: "High Court of Uttarakhand" },
+      { slug: "bihar", courtCode: "BRHC", courtName: "Patna High Court" },
+    ];
+
+    for (const route of finalPublicHighCourtRoutes) {
+      const overview = await request(app).get(`/high-courts/${route.slug}`);
+      expect(overview.status).toBe(200);
+      expect(overview.text).toContain(route.courtName);
+
+      const stats = await request(app).get(`/v1/high-courts/${route.slug}/stats`);
+      expect(stats.status).toBe(200);
+      expect(stats.body.snapshot.courtCode).toBe(route.courtCode);
+    }
   });
 
   it("serves Supreme Court through the public beta namespace once a published Supreme Court snapshot exists", async () => {
@@ -633,10 +762,10 @@ describe("HTTP routes", () => {
 
     const overview = await request(app).get("/supreme-court");
     expect(overview.status).toBe(200);
-    expect(overview.text).toContain("Where is pressure building at the apex court?");
+    expect(overview.text).toContain("Where is pressure building at the Supreme Court?");
     expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
     expect(overview.text).toContain("Cleared / 100 filed");
-    expect(overview.text).toContain("Last-month pile change");
+    expect(overview.text).toContain("Last-month backlog change");
 
     const data = await request(app).get("/supreme-court/data");
     expect(data.status).toBe(200);
@@ -713,10 +842,58 @@ describe("HTTP routes", () => {
 
     const punjabMethodology = await request(app).get("/states/punjab/methodology");
     expect(punjabMethodology.status).toBe(200);
-    expect(punjabMethodology.text).toContain("This page covers Punjab.");
+    expect(punjabMethodology.text).toContain("This state page covers Punjab.");
 
     const punjabApiPage = await request(app).get("/states/punjab/api");
     expect(punjabApiPage.status).toBe(200);
     expect(punjabApiPage.text).toContain("/v1/states/punjab/districts");
+  });
+
+  it("serves Ladakh through the same public route family with Union Territory copy", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    await insertPublishedSnapshot(context.pool, {
+      runId: "run_la_public",
+      snapshotId: "snapshot_la_public",
+      publicationId: "publication_la_public",
+      stateCode: "LA",
+      payload: buildLadakhTestSnapshot(),
+    });
+
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+
+    const ladakhHome = await request(app).get("/states/ladakh");
+    expect(ladakhHome.status).toBe(200);
+    expect(ladakhHome.text).toContain("How long is the wait for justice in Ladakh?");
+    expect(ladakhHome.text).toContain("This Union Territory page covers Ladakh.");
+    expect(ladakhHome.text).toContain("territory-wide backlog");
+    expect(ladakhHome.text).not.toContain("rest of the state");
+
+    const ladakhDistricts = await request(app).get("/states/ladakh/districts");
+    expect(ladakhDistricts.status).toBe(200);
+    expect(ladakhDistricts.text).toContain("Download territory-wide CSV");
+
+    const ladakhDistrictPage = await request(app).get("/states/ladakh/districts/leh");
+    expect(ladakhDistrictPage.status).toBe(200);
+    expect(ladakhDistrictPage.text).toContain("Territory-wide CSV");
+
+    const ladakhData = await request(app).get("/states/ladakh/data");
+    expect(ladakhData.status).toBe(200);
+    expect(ladakhData.text).toContain("Territory-wide district table");
+    expect(ladakhData.text).toContain("territory-wide trend series");
+
+    const ladakhMethodology = await request(app).get("/states/ladakh/methodology");
+    expect(ladakhMethodology.status).toBe(200);
+    expect(ladakhMethodology.text).toContain("All expected districts for this union territory");
+
+    const ladakhApiPage = await request(app).get("/states/ladakh/api");
+    expect(ladakhApiPage.status).toBe(200);
+    expect(ladakhApiPage.text).toContain("Territory-wide backlog");
+
+    const ladakhStats = await request(app).get("/v1/states/ladakh/stats");
+    expect(ladakhStats.status).toBe(200);
+    expect(ladakhStats.body.snapshot.stateCode).toBe("LA");
+    expect(ladakhStats.body.stats.pendingCases).toBe(1659);
   });
 });

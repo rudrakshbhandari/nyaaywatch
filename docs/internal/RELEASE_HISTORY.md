@@ -6,6 +6,33 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:lower-court-ut-public-alpha-2026-04-23:start -->
+## lower-court-ut-public-alpha-2026-04-23
+
+- Reviewed at: `2026-04-24T00:13:31.648Z`
+- Reviewer: `Codex lower-court UT public alpha`
+- Public URLs:
+  - `https://nyaaywatch.in/states/andaman-and-nicobar-islands`
+  - `https://nyaaywatch.in/states/chandigarh`
+  - `https://nyaaywatch.in/states/delhi`
+  - `https://nyaaywatch.in/states/jammu-and-kashmir`
+  - `https://nyaaywatch.in/states/ladakh`
+  - `https://nyaaywatch.in/states/lakshadweep`
+  - `https://nyaaywatch.in/states/puducherry`
+  - `https://nyaaywatch.in/states/dadra-and-nagar-haveli-and-daman-and-diu`
+- Action: `deploy-only public route exposure`
+- Scope: `lower-court Union Territory public alpha batch`
+- Active publications exposed: `AN=publication_cc492d80-2b56-4a3d-9569-2a227fbf8461`, `CHD=publication_3ca076d9-075a-4602-bf7b-3a18ea69afa5`, `DL=publication_0f306dbf-8b5f-4639-a585-5b4181ffaf63`, `JK=publication_9679df8c-a167-406e-a89d-cf0c90794809`, `LA=publication_13782eee-5eac-4154-9f0d-bf65abbe6504`, `LD=publication_8525bd7e-b9a2-4698-b5f6-8d1051426cb8`, `PY=publication_d12dcb30-c5e6-4386-91fa-fe0cffa39f17`, `DNHDD=publication_d056cee6-916c-409e-ba37-23296950902d`
+- Source snapshot dates: `AN=2026-04-23`, `CHD=2026-04-23`, `DL=2026-04-23`, `JK=2026-04-23`, `LA=2026-04-22`, `LD=2026-04-23`, `PY=2026-04-22`, `DNHDD=2026-04-23`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Deploy evidence: GitHub Actions run `24863933038`, commit `f91b21066277cd61768ecd70d7930c819d4ead62`, task definition `nyaaywatch-staging:178`
+- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`, `docs/INDIA_COURT_COVERAGE_AUDIT.md`
+- JSON evidence: `ops:verify-public-alpha` live summary retained in deployment notes
+- Note: PR `#185` promoted the eight proven lower-court Union Territory profiles into the public route set without creating new publications. After the deploy settled, all eight HTML and JSON route families returned `200`, and `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` reported `totalStates=36` with no stale, failing, or daily-fetch-lag geographies.
+
+<!-- release:lower-court-ut-public-alpha-2026-04-23:end -->
+
 <!-- release:publication_dc662dd9-3d81-4e94-9bf3-b32f812dca12:start -->
 ## publication_dc662dd9-3d81-4e94-9bf3-b32f812dca12
 

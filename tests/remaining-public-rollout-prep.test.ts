@@ -72,7 +72,7 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
         medianAgeDays: 365,
         filingVsDisposalGap: 6.4,
         flagReason: "New cases are still arriving faster than this district is clearing them, and the queue is already among the state's largest.",
-        summary: `${input.districtName} has ${Math.round(input.pendingCases * 0.18).toLocaleString("en-IN")} cases waiting. A typical pending case falls around 365 days old, and the district cleared ${(input.disposalRate - 6.4).toFixed(1)}% as many cases as it received last month. It stays on the watchlist in this snapshot.`,
+        summary: `${input.districtName} has ${Math.round(input.pendingCases * 0.18).toLocaleString("en-IN")} cases waiting. A typical pending case falls around 365 days old, and the district cleared ${(input.disposalRate - 6.4).toFixed(1)}% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.`,
       },
       {
         districtId: districtSlugTwo,
@@ -82,8 +82,8 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
         disposalRate: input.disposalRate + 4.2,
         medianAgeDays: 730,
         filingVsDisposalGap: -4.2,
-        flagReason: "People appear to be waiting longer here than in much of the state, based on the latest published snapshot.",
-        summary: `${districtNameTwo} has ${Math.round(input.pendingCases * 0.12).toLocaleString("en-IN")} cases waiting. A typical pending case falls around 730 days old, and the district cleared ${(input.disposalRate + 4.2).toFixed(1)}% as many cases as it received last month. It stays on the watchlist in this snapshot.`,
+        flagReason: "People appear to be waiting longer here than in much of the state.",
+        summary: `${districtNameTwo} has ${Math.round(input.pendingCases * 0.12).toLocaleString("en-IN")} cases waiting. A typical pending case falls around 730 days old, and the district cleared ${(input.disposalRate + 4.2).toFixed(1)}% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.`,
       },
       {
         districtId: districtSlugThree,
@@ -94,7 +94,7 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
         medianAgeDays: 183,
         filingVsDisposalGap: 1.3,
         flagReason: "This district still carries visible backlog pressure in the statewide snapshot even though disposal remains close to filings.",
-        summary: `${districtNameThree} has ${Math.round(input.pendingCases * 0.09).toLocaleString("en-IN")} cases waiting. A typical pending case falls around 183 days old, and the district cleared ${(input.disposalRate - 1.3).toFixed(1)}% as many cases as it received last month. It stays on the watchlist in this snapshot.`,
+        summary: `${districtNameThree} has ${Math.round(input.pendingCases * 0.09).toLocaleString("en-IN")} cases waiting. A typical pending case falls around 183 days old, and the district cleared ${(input.disposalRate - 1.3).toFixed(1)}% as many cases as it received last month. It stays on the list of districts to watch in this snapshot.`,
       },
     ],
     trends: [

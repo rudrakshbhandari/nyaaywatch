@@ -49,7 +49,7 @@ describe("snapshot candidate normalization", () => {
     expect(candidate.districts[0]?.medianAgeDays).toBe(0);
     expect(candidate.districts[0]?.disposalRate).toBe(0);
     expect(candidate.districts[0]?.filingVsDisposalGap).toBe(0);
-    expect(candidate.districts[0]?.flagReason).toContain("does not show active pending-case age");
+    expect(candidate.districts[0]?.flagReason).toContain("doesn't show pending-case age");
     expect(candidate.districts[0]?.summary).toContain("has no pending cases");
     expect(candidate.districts[0]?.summary).not.toContain("183 days old");
   });

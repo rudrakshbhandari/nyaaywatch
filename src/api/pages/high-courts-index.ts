@@ -7,7 +7,7 @@ import {
   formatHighCourtCoverageLabel,
   type PublicHighCourtPageContext,
 } from "../public-high-court.js";
-import { compareHighCourtPressure } from "../home/national-view-model.js";
+import { compareHighCourtPressure, describeClearanceTrend, describePileTrend } from "../home/national-view-model.js";
 import { formatDate } from "../home/view-model.js";
 
 export interface PublicHighCourtIndexEntry {
@@ -23,17 +23,21 @@ export function renderHighCourtsIndexPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURTS",
-      headline: "Where is pressure building across India's High Courts?",
+      headline: `India's High Courts, ranked by pressure`,
       lede:
-        "This index links the published High Court snapshots now live on NyaayWatch. Cards are ordered by the clearest visible pressure signal first: latest pile growth, then clearance pace, then pending load.",
+        `${entries.length} published High Court snapshots, ordered by last-month backlog change first, then clearance pace, then pending load. Select a court to read its detail page.`,
       isHero: true,
     })}
 
-    <section class="card-grid card-grid--2">
+    <section class="card-grid hc-index-grid" aria-label="Published High Court snapshots">
       ${sortedEntries
         .map(
-          ({ profile, snapshot }) => `
-            <article class="card hc-card">
+          ({ profile, snapshot }, index) => {
+            const rank = index + 1;
+            const isTop = rank <= 2;
+            return `
+            <article class="card hc-card${isTop ? " hc-card--top" : ""}">
+              <div class="hc-card__rank">#${rank}${isTop ? ' <span class="hc-card__rank-note">highest pressure</span>' : ""}</div>
               <h2>${profile.courtName}</h2>
               <p>Latest reference: ${
                 snapshot.snapshot.referenceDateKind === "captured_at"
@@ -52,10 +56,19 @@ export function renderHighCourtsIndexPage(
                     snapshot.stats.disposedLastMonthTotalCases,
                     snapshot.stats.institutedLastMonthTotalCases,
                   ),
+                  trendSignal: describeClearanceTrend(
+                    snapshot.stats.disposedLastMonthTotalCases,
+                    snapshot.stats.institutedLastMonthTotalCases,
+                  ),
                 })}
                 ${renderStatTile({
-                  label: "Last-month pile change",
+                  label: "Last-month backlog change",
                   value: formatPileChangeDisplay(
+                    snapshot.stats.institutedLastMonthTotalCases,
+                    snapshot.stats.disposedLastMonthTotalCases,
+                  ),
+                  tone: isTop ? "accent" : undefined,
+                  trendSignal: describePileTrend(
                     snapshot.stats.institutedLastMonthTotalCases,
                     snapshot.stats.disposedLastMonthTotalCases,
                   ),
@@ -63,7 +76,8 @@ export function renderHighCourtsIndexPage(
               </div>
               <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Inspect High Court</a></p>
             </article>
-          `,
+          `;
+          },
         )
         .join("")}
     </section>
@@ -75,7 +89,9 @@ export function renderHighCourtsIndexPage(
     brandHref: context.brandHref,
     brandTag: "High Court observability",
     navLinks: context.navLinks,
-    stateLinks: context.highCourtLinks,
+    // Intentionally no stateLinks on the index itself: the card grid below
+    // IS the court navigation, so a parallel chip row would just duplicate
+    // it and eat the fold.
     footer: {
       sourceDateLabel: null,
       methodologyVersion: null,
@@ -86,9 +102,77 @@ export function renderHighCourtsIndexPage(
 }
 
 const HIGH_COURTS_INDEX_CSS = `
+  .hc-index-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
+  }
+  .hc-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .hc-card h2 {
+    margin: 18px 0 14px;
+    font-size: 24px;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+  }
+  .hc-card .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 16px 0 28px;
+    padding: 22px 0 24px;
+  }
+  .hc-card .stat-tile {
+    min-width: 0;
+    padding: 0 16px;
+  }
+  .hc-card .stat-tile:first-child { padding-left: 0; }
+  .hc-card .stat-tile:last-child { padding-right: 0; }
+  .hc-card .stat-tile__value {
+    font-size: clamp(26px, 2.6vw, 36px);
+  }
+  .hc-card > p:last-child {
+    margin-top: auto;
+  }
   .hc-card__coverage {
     margin: 0 0 18px;
     color: var(--ink-soft);
+  }
+  .hc-card__rank {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .hc-card__rank-note {
+    color: var(--accent-dark);
+    letter-spacing: 0.14em;
+  }
+  .hc-card--top {
+    border-left: 4px solid var(--accent);
+    padding-left: 25px;
+  }
+  .hc-card--top .hc-card__rank { color: var(--accent-dark); }
+  @media (max-width: 900px) {
+    .hc-index-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .hc-card .stat-grid {
+      grid-template-columns: 1fr;
+      margin-bottom: 32px;
+    }
+    .hc-card .stat-tile__value {
+      font-size: clamp(28px, 8vw, 40px);
+    }
   }
 `;
 
