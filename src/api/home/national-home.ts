@@ -220,7 +220,7 @@ export function renderNationalHome(input: {
       ${renderSectionHead({
         headline: "High Courts across India.",
         lede:
-          "Each court keeps its own source semantics and explicit coverage label, but the cards below surface backlog, clearance pace, and monthly pile change with the highest-pressure courts shown first.",
+          "Each court keeps its own source semantics and explicit coverage label. Cards are ordered by last-month pile change first, then clearance pace, then pending load so readers can see where backlog pressure is worsening fastest.",
       })}
       <div class="card-grid card-grid--2">${highCourtCards}</div>
       <p class="national-section__linkline"><a href="/high-courts">See all High Courts</a></p>
