@@ -585,6 +585,42 @@ export const BASE_CSS = `
     opacity: 1;
   }
 
+  /* --- hero-rail: side-by-side hero text + stat grid at ≥1440px ---
+     Used on High Court and Supreme Court overview pages where the 4 stat
+     tiles naturally companion the editorial hero. Below 1440px the wrapper
+     is a transparent single-column grid so normal stacking applies. */
+  .hero-rail { display: grid; }
+  @media (min-width: 1440px) {
+    .hero-rail {
+      grid-template-columns: 1fr 360px;
+      align-items: start;
+      border-bottom: 2px solid var(--ink);
+      margin-bottom: 64px;
+    }
+    .hero-rail > .page-hero {
+      max-width: none;
+      padding: 40px 56px 40px 0;
+      margin-bottom: 0;
+    }
+    .hero-rail > .stat-grid {
+      border-top: none; border-bottom: none;
+      border-left: 2px solid var(--ink);
+      margin: 0;
+      padding: 40px 0 40px 36px;
+      grid-template-columns: 1fr 1fr;
+      row-gap: 28px;
+    }
+    .hero-rail > .stat-grid .stat-tile {
+      border-left: none; padding-left: 0; padding-right: 14px;
+    }
+    .hero-rail > .stat-grid .stat-tile:nth-child(even) {
+      border-left: 1px solid var(--rule); padding-left: 14px; padding-right: 0;
+    }
+    .hero-rail > .stat-grid .stat-tile__value {
+      font-size: clamp(28px, 2.6vw, 40px);
+    }
+  }
+
   /* --- responsive --- */
   @media (max-width: 1100px) {
     .stat-grid { grid-template-columns: repeat(2, 1fr); row-gap: 32px; }
