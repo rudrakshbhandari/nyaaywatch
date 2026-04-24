@@ -506,15 +506,25 @@ describe("HTTP routes", () => {
     await seedTestHighCourtSnapshot(context.highCourtServices.BOHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.CLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.TSHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.CGHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.DLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GJHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.GHHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.JHHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.JKLHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.KAHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.KLHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MDHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.MPHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.MNHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.MLHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.ODHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.PHHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.RJHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.SKHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.TRHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.UKHC!);
+    await seedTestHighCourtSnapshot(context.highCourtServices.BRHC!);
     await seedTestHighCourtSnapshot(context.highCourtServices.UPHC!);
 
     const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
@@ -524,15 +534,28 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("India&#39;s High Courts, ranked by pressure");
     expect(index.text).toContain("High Court of Himachal Pradesh");
     expect(index.text).toContain("High Court of Andhra Pradesh");
+    expect(index.text).toContain("Bombay High Court");
+    expect(index.text).toContain("Calcutta High Court");
     expect(index.text).toContain("High Court for State of Telangana");
+    expect(index.text).toContain("High Court of Chhattisgarh");
     expect(index.text).toContain("High Court of Delhi");
     expect(index.text).toContain("High Court of Gujarat");
+    expect(index.text).toContain("Gauhati High Court");
     expect(index.text).toContain("High Court of Jammu & Kashmir and Ladakh");
+    expect(index.text).toContain("High Court of Jharkhand");
+    expect(index.text).toContain("High Court of Karnataka");
     expect(index.text).toContain("High Court of Kerala");
     expect(index.text).toContain("Madras High Court");
     expect(index.text).toContain("High Court of Madhya Pradesh");
+    expect(index.text).toContain("High Court of Manipur");
+    expect(index.text).toContain("High Court of Meghalaya");
+    expect(index.text).toContain("High Court of Orissa");
     expect(index.text).toContain("High Court of Punjab and Haryana");
     expect(index.text).toContain("High Court of Rajasthan");
+    expect(index.text).toContain("High Court of Sikkim");
+    expect(index.text).toContain("High Court of Tripura");
+    expect(index.text).toContain("High Court of Uttarakhand");
+    expect(index.text).toContain("Patna High Court");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
     expect(index.text).toContain("ordered by the clearest pressure signal first");
@@ -580,7 +603,7 @@ describe("HTTP routes", () => {
     expect(uttarPradeshOverview.status).toBe(200);
     expect(uttarPradeshOverview.text).toContain("Allahabad High Court");
     expect(uttarPradeshOverview.text).toContain(
-      "This page tracks Allahabad High Court across Uttar Pradesh. 14 other public High Court pages are linked in the switcher.",
+      "This page tracks Allahabad High Court across Uttar Pradesh. 24 other public High Court pages are linked in the switcher.",
     );
 
     const punjabHaryanaOverview = await request(app).get("/high-courts/punjab-and-haryana");
@@ -699,6 +722,29 @@ describe("HTTP routes", () => {
     const rajasthanTrends = await request(app).get("/v1/high-courts/rajasthan/trends");
     expect(rajasthanTrends.status).toBe(200);
     expect(rajasthanTrends.body.snapshot.courtCode).toBe("RJHC");
+
+    const finalPublicHighCourtRoutes = [
+      { slug: "chhattisgarh", courtCode: "CGHC", courtName: "High Court of Chhattisgarh" },
+      { slug: "jharkhand", courtCode: "JHHC", courtName: "High Court of Jharkhand" },
+      { slug: "karnataka", courtCode: "KAHC", courtName: "High Court of Karnataka" },
+      { slug: "manipur", courtCode: "MNHC", courtName: "High Court of Manipur" },
+      { slug: "meghalaya", courtCode: "MLHC", courtName: "High Court of Meghalaya" },
+      { slug: "odisha", courtCode: "ODHC", courtName: "High Court of Orissa" },
+      { slug: "sikkim", courtCode: "SKHC", courtName: "High Court of Sikkim" },
+      { slug: "tripura", courtCode: "TRHC", courtName: "High Court of Tripura" },
+      { slug: "uttarakhand", courtCode: "UKHC", courtName: "High Court of Uttarakhand" },
+      { slug: "bihar", courtCode: "BRHC", courtName: "Patna High Court" },
+    ];
+
+    for (const route of finalPublicHighCourtRoutes) {
+      const overview = await request(app).get(`/high-courts/${route.slug}`);
+      expect(overview.status).toBe(200);
+      expect(overview.text).toContain(route.courtName);
+
+      const stats = await request(app).get(`/v1/high-courts/${route.slug}/stats`);
+      expect(stats.status).toBe(200);
+      expect(stats.body.snapshot.courtCode).toBe(route.courtCode);
+    }
   });
 
   it("serves Supreme Court through the public beta namespace once a published Supreme Court snapshot exists", async () => {

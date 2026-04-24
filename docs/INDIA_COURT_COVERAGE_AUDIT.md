@@ -42,13 +42,13 @@ Repo posture:
 
 ## High Courts
 
-Status: all 25 HC NJDG selectors are configured.
+Status: all 25 HC NJDG selectors are configured and public beta.
 
 Public beta posture after this change:
 
-- 15 High Courts are public beta.
-- 10 High Courts remain configured but not public beta.
-- The reviewed-High-Court internal fetch schedule includes only profiles with `sourceReviewStatus=reviewed`; public exposure remains controlled by `publicBeta`.
+- 25 High Courts are public beta.
+- 0 configured High Courts remain internal-only.
+- The reviewed-High-Court internal fetch schedule includes all 25 profiles because every configured High Court now has `sourceReviewStatus=reviewed`; public exposure remains controlled by `publicBeta`.
 
 | HC NJDG selector | Official NJDG label | Repo code | Public beta |
 | --- | --- | --- | --- |
@@ -58,25 +58,25 @@ Public beta posture after this change:
 | `18~6` | Gauhati High Court | `GHHC` | yes |
 | `36~29` | High Court for State of Telangana | `TSHC` | yes |
 | `28~2` | High Court of Andhra Pradesh | `APHC` | yes |
-| `22~18` | High Court of Chhattisgarh | `CGHC` | no |
+| `22~18` | High Court of Chhattisgarh | `CGHC` | yes |
 | `7~26` | High Court of Delhi | `DLHC` | yes |
 | `24~17` | High Court of Gujarat | `GJHC` | yes |
 | `2~5` | High Court of Himachal Pradesh | `HPHC` | yes |
 | `1~12` | High Court of Jammu and Kashmir | `JKLHC` | yes |
-| `20~7` | High Court of Jharkhand | `JHHC` | no |
-| `29~3` | High Court of Karnataka | `KAHC` | no |
+| `20~7` | High Court of Jharkhand | `JHHC` | yes |
+| `29~3` | High Court of Karnataka | `KAHC` | yes |
 | `32~4` | High Court of Kerala | `KLHC` | yes |
 | `23~23` | High Court of Madhya Pradesh | `MPHC` | yes |
-| `14~25` | High Court of Manipur | `MNHC` | no |
-| `17~21` | High Court of Meghalaya | `MLHC` | no |
-| `21~11` | High Court of Orissa | `ODHC` | no |
+| `14~25` | High Court of Manipur | `MNHC` | yes |
+| `17~21` | High Court of Meghalaya | `MLHC` | yes |
+| `21~11` | High Court of Orissa | `ODHC` | yes |
 | `3~22` | High Court of Punjab and Haryana | `PHHC` | yes |
 | `8~9` | High Court of Rajasthan | `RJHC` | yes |
-| `11~24` | High Court of Sikkim | `SKHC` | no |
-| `16~20` | High Court of Tripura | `TRHC` | no |
-| `5~15` | High Court of Uttarakhand | `UKHC` | no |
+| `11~24` | High Court of Sikkim | `SKHC` | yes |
+| `16~20` | High Court of Tripura | `TRHC` | yes |
+| `5~15` | High Court of Uttarakhand | `UKHC` | yes |
 | `33~10` | Madras High Court | `MDHC` | yes |
-| `10~8` | Patna High Court | `BRHC` | no |
+| `10~8` | Patna High Court | `BRHC` | yes |
 
 Naming note: the live HC NJDG selector still says `High Court of Jammu and Kashmir`. NyaayWatch public copy uses the current institutional name `High Court of Jammu & Kashmir and Ladakh`, because that is the common court for the Union Territories of Jammu and Kashmir and Ladakh. The ingest target remains the upstream selector value `1~12`.
 
@@ -124,6 +124,10 @@ Post-deploy verification passed:
 - the route sweep covered each `/states/:slug`, `/states/:slug/districts`, `/states/:slug/data`, `/states/:slug/methodology`, `/states/:slug/api`, `/v1/states/:slug/stats`, `/v1/states/:slug/districts`, and `/v1/states/:slug/trends` family
 - `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` reported `totalStates=36`, `staleStates=[]`, `dailyFetchLagStates=[]`, and `failingStates=[]`
 
-The precise public claim after this deploy is:
+The precise public claim after the lower-court Union Territory deploy was:
 
 NyaayWatch covers the Supreme Court, all High Court NJDG selectors in the internal registry, and all 36 lower-court NJDG state/Union Territory selector geographies in the public lower-court route set and daily internal fetch schedule.
+
+The precise public claim after the final High Court public-beta promotion is:
+
+NyaayWatch covers the Supreme Court, all 25 HC NJDG selector-backed High Court profiles in the public High Court beta, and all 36 lower-court NJDG state/Union Territory selector geographies in the public lower-court route set and daily internal fetch schedule.

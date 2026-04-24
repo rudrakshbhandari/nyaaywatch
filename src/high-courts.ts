@@ -143,6 +143,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Chhattisgarh",
     hcNjdgStateValue: "22~18",
     coveredGeographies: [buildStateCourtGeography("CG")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.highcourt.cg.gov.in/",
+    },
   }),
   DLHC: buildHighCourtProfile({
     courtCode: "DLHC",
@@ -194,6 +200,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Jharkhand",
     hcNjdgStateValue: "20~7",
     coveredGeographies: [buildStateCourtGeography("JH")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://jharkhandhighcourt.nic.in/",
+    },
   }),
   JKLHC: buildHighCourtProfile({
     courtCode: "JKLHC",
@@ -217,6 +229,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Karnataka",
     hcNjdgStateValue: "29~3",
     coveredGeographies: [buildStateCourtGeography("KA")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://judiciary.karnataka.gov.in/",
+    },
   }),
   KLHC: buildHighCourtProfile({
     courtCode: "KLHC",
@@ -269,6 +287,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Manipur",
     hcNjdgStateValue: "14~25",
     coveredGeographies: [buildStateCourtGeography("MN")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://hcmimphal.nic.in/",
+    },
   }),
   MLHC: buildHighCourtProfile({
     courtCode: "MLHC",
@@ -276,6 +300,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Meghalaya",
     hcNjdgStateValue: "17~21",
     coveredGeographies: [buildStateCourtGeography("ML")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.meghalayahighcourt.nic.in/",
+    },
   }),
   ODHC: buildHighCourtProfile({
     courtCode: "ODHC",
@@ -283,6 +313,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Orissa",
     hcNjdgStateValue: "21~11",
     coveredGeographies: [buildStateCourtGeography("OD")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.orissahighcourt.nic.in/",
+    },
   }),
   PHHC: buildHighCourtProfile({
     courtCode: "PHHC",
@@ -320,6 +356,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Sikkim",
     hcNjdgStateValue: "11~24",
     coveredGeographies: [buildStateCourtGeography("SK")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.hcs.gov.in/hcs/",
+    },
   }),
   TRHC: buildHighCourtProfile({
     courtCode: "TRHC",
@@ -327,6 +369,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Tripura",
     hcNjdgStateValue: "16~20",
     coveredGeographies: [buildStateCourtGeography("TR")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.thc.nic.in/",
+    },
   }),
   UKHC: buildHighCourtProfile({
     courtCode: "UKHC",
@@ -334,6 +382,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "High Court of Uttarakhand",
     hcNjdgStateValue: "5~15",
     coveredGeographies: [buildStateCourtGeography("UK")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://highcourtofuttarakhand.gov.in/",
+    },
   }),
   BRHC: buildHighCourtProfile({
     courtCode: "BRHC",
@@ -341,6 +395,12 @@ const HIGH_COURT_PROFILES: Record<SupportedHighCourtCode, HighCourtProfile> = {
     courtName: "Patna High Court",
     hcNjdgStateValue: "10~8",
     coveredGeographies: [buildStateCourtGeography("BR")],
+    publicBeta: true,
+    sourceReviewStatus: "reviewed",
+    sourceUrls: {
+      ...HIGH_COURT_SOURCE_BASE,
+      officialSite: "https://www.patnahighcourt.gov.in/",
+    },
   }),
   UPHC: buildHighCourtProfile({
     courtCode: "UPHC",
