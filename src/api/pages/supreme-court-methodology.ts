@@ -47,13 +47,13 @@ export function renderSupremeCourtMethodologyPage(
         <article class="card" id="metric-framing">
           ${renderAnchorLink("metric-framing", "NyaayWatch framing")}
           <h3>NyaayWatch framing</h3>
-          <p>NyaayWatch adds publication timestamps, freshness, methodology versioning, and the explicit reference-date contract so the snapshot is citeable and auditable.</p>
+          <p>NyaayWatch adds publication timestamps, freshness, methodology versioning, and an explicit rule for which date to show so the snapshot is citeable and auditable.</p>
         </article>
       </div>
     </section>
 
     <section class="method" id="reference-date-contract">
-      ${renderSectionHead({ headline: "Reference-date contract" })}
+      ${renderSectionHead({ headline: "Which date we show" })}
       <div class="card-grid card-grid--2">
         <article class="card" id="reference-date-source">
           ${renderAnchorLink("reference-date-source", "Source-exposed reference date")}

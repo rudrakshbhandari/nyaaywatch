@@ -96,7 +96,7 @@ export interface StatTileOptions {
   deltaDirectionHint?: "up-is-good" | "up-is-bad";
   /**
    * Optional small uppercase mono tag rendered under the value to flag
-   * direction in plain language ("Falling behind", "Pile growing").
+   * direction in plain language ("Falling behind", "Backlog growing").
    * Worsening renders in --accent, improving in --ink-muted, neutral
    * renders nothing. Skipped when a sparkline+delta chip is shown for the
    * same tile (the chip already conveys direction).

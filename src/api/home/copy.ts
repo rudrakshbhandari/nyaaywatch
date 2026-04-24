@@ -30,25 +30,25 @@ export const GLOSSARY: Record<
     term: "cases cleared per 100 filed",
     short: "How many cases courts finish for every 100 new ones they get.",
     long:
-      "If this number is 100, courts are keeping pace with new filings. Below 100 means the pile is growing. Above 100 means courts are catching up. We calculate it from the monthly filing and disposal totals published in the source dashboard.",
+      "If this number is 100, courts are keeping pace with new filings. Below 100 means the backlog is growing. Above 100 means courts are catching up. We calculate it from the monthly filing and disposal totals published in the source dashboard.",
   },
   typicalWait: {
     term: "typical wait",
     short: "About how long a pending case has been waiting in court.",
     long:
-      "This is an estimate of the middle of the pile \u2014 roughly how old a typical pending case is. It is not the age of any one case. Courts publish cases grouped into age buckets (0\u20131 year, 1\u20133 years, and so on), and we estimate from those buckets.",
+      "This is an estimate of the middle of the backlog \u2014 roughly how old a typical pending case is. It is not the age of any one case. Courts publish cases grouped into age buckets (0\u20131 year, 1\u20133 years, and so on), and we estimate from those buckets.",
   },
   watchlist: {
-    term: "districts on the watchlist",
+    term: "districts to watch",
     short: "Districts where several pressure signals line up at once.",
     long:
-      "A district lands on the watchlist when it combines a large pile of pending cases with slower clearance or longer waits than the state average. It is a signal for closer inspection, not a judgment about any specific court or official.",
+      "A district lands on this list when it combines a large backlog of pending cases with slower clearance or longer waits than the state average. It is a signal for closer inspection, not a judgment about any specific court or official.",
   },
   fileClearGap: {
     term: "file-clear gap",
     short: "How much more work is coming in than going out.",
     long:
-      "A positive gap means cases are being filed faster than courts are clearing them \u2014 the pile grows. A negative gap means the reverse. We calculate it from the most recent month of filings and disposals.",
+      "A positive gap means cases are being filed faster than courts are clearing them \u2014 the backlog grows. A negative gap means the reverse. We calculate it from the most recent month of filings and disposals.",
   },
   freshness: {
     term: "freshness",
@@ -137,7 +137,7 @@ export function buildCopy(
       },
       flagged: {
         label: "districts flagged",
-        caption: "Where the pile is heaviest, or the wait is longest, or the pace is slowest.",
+        caption: "Where the backlog is heaviest, or the wait is longest, or the pace is slowest.",
       },
     },
 
@@ -148,7 +148,7 @@ export function buildCopy(
     sectionWatchlistLede:
       `A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the ${lowerCourtCopy.geographyLabelLower}. These are signals for closer inspection, not judgments.`,
 
-    sectionTrend: `How the ${lowerCourtCopy.aggregateAdjective} pile has moved`,
+    sectionTrend: `How the ${lowerCourtCopy.aggregateAdjective} backlog has moved`,
     sectionTrendLede:
       `Each bar is a previously published ${lowerCourtCopy.aggregateAdjective} snapshot. It shows how the backlog has moved across publication dates, not a continuously refreshed surface.`,
 
@@ -165,7 +165,7 @@ function buildHeroLede(
   longWaitCount: number,
   longWaitMonths: number,
 ): string {
-  const base = `${model.pendingLakh} cases are waiting in ${model.snapshot.snapshot.stateName}'s district courts. The middle of the pile has already been waiting about ${model.typicalWaitMonths} months.`;
+  const base = `${model.pendingLakh} cases are waiting in ${model.snapshot.snapshot.stateName}'s district courts. The middle of the backlog has already been waiting about ${model.typicalWaitMonths} months.`;
   if (longWaitCount > 0 && longWaitMonths > model.typicalWaitMonths) {
     return (
       `${base} In ${longWaitCount} district${longWaitCount === 1 ? "" : "s"}, the middle is closer to ${longWaitMonths} months. ` +
@@ -182,12 +182,12 @@ function buildWaitCaption(
   aggregateAdjective: string,
 ): string {
   if (longWaitCount === 0) {
-    return "Middle of the pile. Half the cases have been waiting longer than this.";
+    return "Middle of the backlog. Half the cases have been waiting longer than this.";
   }
   if (longWaitCount === 1) {
-    return `Middle of the ${aggregateAdjective} pile. In ${sampleName}, the middle is closer to ${longWaitMonths} months.`;
+    return `Middle of the ${aggregateAdjective} backlog. In ${sampleName}, the middle is closer to ${longWaitMonths} months.`;
   }
-  return `Middle of the ${aggregateAdjective} pile. In ${longWaitCount} districts, the middle is closer to ${longWaitMonths} months.`;
+  return `Middle of the ${aggregateAdjective} backlog. In ${longWaitCount} districts, the middle is closer to ${longWaitMonths} months.`;
 }
 
 function buildClearanceCaption(rate: number): string {
@@ -197,5 +197,5 @@ function buildClearanceCaption(rate: number): string {
   if (rate >= 90) {
     return "Courts are nearly keeping pace with new filings. The backlog is still growing.";
   }
-  return "For every 100 new cases, only " + Math.round(rate) + " are being cleared. The pile keeps growing.";
+  return "For every 100 new cases, only " + Math.round(rate) + " are being cleared. The backlog keeps growing.";
 }

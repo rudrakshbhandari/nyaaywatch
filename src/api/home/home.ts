@@ -76,7 +76,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
         </article>
         <article class="numbers__cell numbers__cell--reveal" id="stat-flagged">
-          <div class="numbers__value">${model.flaggedCount}</div>
+          <div class="numbers__value">${model.flaggedCount.toLocaleString("en-IN")}</div>
           <div class="numbers__label"><a href="${context.routes.methodology}#metric-watchlist">${escapeHtml(n.flagged.label)}</a> ${infoIcon("watchlist")}</div>
           <p class="numbers__caption">${escapeHtml(n.flagged.caption)}</p>
         </article>

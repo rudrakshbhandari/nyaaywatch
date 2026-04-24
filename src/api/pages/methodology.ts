@@ -56,17 +56,17 @@ export function renderMethodologyPage(
         <article class="card" id="metric-clearance">
           ${renderAnchorLink("metric-clearance", "Cases cleared per 100 filed")}
           <h3>Cases cleared per 100 filed</h3>
-          <p>Calculated as cases disposed last month divided by cases filed last month, expressed per 100. Above 100 means the system cleared more than it took in that month; below 100 means the pile grew.</p>
+          <p>Calculated as cases disposed last month divided by cases filed last month, expressed per 100. Above 100 means the system cleared more than it took in that month; below 100 means the backlog grew.</p>
         </article>
         <article class="card" id="metric-typical-wait">
           ${renderAnchorLink("metric-typical-wait", "Typical wait")}
           <h3>Typical wait</h3>
-          <p>Estimated from NJDG age-bucket totals by finding the midpoint of pending cases and mapping that bucket to a representative day count. It is a district-level estimate of the middle of the pile, not the age of any single case.</p>
+          <p>Estimated from NJDG age-bucket totals by finding the midpoint of pending cases and mapping that bucket to a representative day count. It is a district-level estimate of the middle of the backlog, not the age of any single case.</p>
         </article>
         <article class="card" id="metric-watchlist">
-          ${renderAnchorLink("metric-watchlist", "Districts on the watchlist")}
-          <h3>Districts on the watchlist</h3>
-          <p>Districts are ranked by queue size, then annotated with waiting-time and file-clear-gap context so a reader can see why a district rose. The watchlist is a signal for closer inspection, not a judgment on any court or official.</p>
+          ${renderAnchorLink("metric-watchlist", "Districts to watch")}
+          <h3>Districts to watch</h3>
+          <p>Districts are ranked by queue size, then annotated with waiting-time and file-clear-gap context so a reader can see why a district rose. This list is a signal for closer inspection, not a judgment on any court or official.</p>
         </article>
       </div>
     </section>
@@ -129,7 +129,7 @@ function renderHistoryTable(history: SnapshotHistoryEntry[]): string {
           <td><code>${escapeHtml(entry.snapshot.methodologyVersion)}</code></td>
           <td>${escapeHtml(entry.snapshot.qualityState)}</td>
           <td class="num">${entry.stats.pendingCases.toLocaleString("en-IN")}</td>
-          <td class="num">${entry.stats.flaggedDistricts}</td>
+          <td class="num">${entry.stats.flaggedDistricts.toLocaleString("en-IN")}</td>
         </tr>
       `,
     )
@@ -145,7 +145,7 @@ function renderHistoryTable(history: SnapshotHistoryEntry[]): string {
             <th>Methodology</th>
             <th>Quality</th>
             <th>Cases waiting</th>
-            <th>On watchlist</th>
+            <th>On the list</th>
           </tr>
         </thead>
         <tbody>

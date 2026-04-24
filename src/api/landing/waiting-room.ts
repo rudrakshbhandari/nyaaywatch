@@ -57,7 +57,7 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
     <p class="wr__eyebrow">THE WAITING ROOM</p>
     <p class="wr__line wr__line--1" id="wr-l1">In ${escapeHtml(stateName)}, the courts are open.</p>
     <p class="wr__line wr__line--2" id="wr-l2">Every hour at current rates: <strong>${escapeHtml(filedDisplay)} new cases filed</strong>.</p>
-    <p class="wr__line wr__line--3" id="wr-l3"><strong>${escapeHtml(decidedDisplay)} decided</strong>. The pile ${netIsPositive ? "grows" : "shrinks"} by <strong>${escapeHtml(netDisplay)}</strong>.</p>
+    <p class="wr__line wr__line--3" id="wr-l3"><strong>${escapeHtml(decidedDisplay)} decided</strong>. The backlog ${netIsPositive ? "grows" : "shrinks"} by <strong>${escapeHtml(netDisplay)}</strong>.</p>
     <p class="wr__line wr__line--4" id="wr-l4">This is the backlog. It is not an abstraction.</p>
     <button class="wr__skip" id="wr-skip" aria-label="Skip intro">Skip →</button>
   </div>

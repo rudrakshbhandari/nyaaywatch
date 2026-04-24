@@ -24,7 +24,7 @@ const SORT_LABELS: Record<DistrictSort, string> = {
 
 const VIEW_LABELS: Record<DistrictView, string> = {
   all: "All districts",
-  flagged: "Watchlist only",
+  flagged: "Only districts to watch",
 };
 
 /**
@@ -84,8 +84,8 @@ export function renderDistrictsPage(
           : "No district data.",
       })}
       ${renderStatTile({
-        label: "On watchlist",
-        value: snapshot.stats.flaggedDistricts.toString(),
+        label: "Districts to watch",
+        value: snapshot.stats.flaggedDistricts.toLocaleString("en-IN"),
         infoKey: "watchlist",
         note: "These are the clearest districts to inspect first — not a judgment on any court or official.",
         tone: "flag",
@@ -193,7 +193,7 @@ function renderControls(options: DistrictsPageOptions, context: PublicPageContex
       </form>
       <div class="controls__links">
         <a href="${context.routes.districts}">Reset filters</a>
-        <a href="${context.routes.districts}${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Watchlist only</a>
+        <a href="${context.routes.districts}${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Only districts to watch</a>
         <a href="${context.routes.districtsCsv}">Download ${escapeHtml(context.lowerCourtCopy.aggregateAdjective)} CSV</a>
       </div>
     </section>
@@ -248,7 +248,7 @@ function renderNoResults(options: DistrictsPageOptions, context: PublicPageConte
 
   let hint: string;
   if (hasSearch && isWatchlistOnly) {
-    hint = `No watchlisted district matches <strong>&ldquo;${escapeHtml(options.search)}&rdquo;</strong>. Try broadening the search or switching to all districts.`;
+    hint = `No listed district matches <strong>&ldquo;${escapeHtml(options.search)}&rdquo;</strong>. Try broadening the search or switching to all districts.`;
   } else if (hasSearch) {
     hint = `No district matches <strong>&ldquo;${escapeHtml(options.search)}&rdquo;</strong>. Check the spelling or try a partial name.`;
   } else {

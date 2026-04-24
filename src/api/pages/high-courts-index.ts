@@ -25,7 +25,7 @@ export function renderHighCourtsIndexPage(
       eyebrow: "HIGH COURTS",
       headline: `India's High Courts, ranked by pressure`,
       lede:
-        `${entries.length} published High Court snapshots, ordered by last-month pile change first, then clearance pace, then pending load. Select a court to read its detail page.`,
+        `${entries.length} published High Court snapshots, ordered by last-month backlog change first, then clearance pace, then pending load. Select a court to read its detail page.`,
       isHero: true,
     })}
 
@@ -62,7 +62,7 @@ export function renderHighCourtsIndexPage(
                   ),
                 })}
                 ${renderStatTile({
-                  label: "Last-month pile change",
+                  label: "Last-month backlog change",
                   value: formatPileChangeDisplay(
                     snapshot.stats.institutedLastMonthTotalCases,
                     snapshot.stats.disposedLastMonthTotalCases,

@@ -180,11 +180,14 @@ function renderColophon(
   const methodLine = footer.methodologyVersion
     ? `<p>Method ${escapeHtml(footer.methodologyVersion)} ${infoIcon("methodology")}</p>`
     : "";
-  const links = navLinks ?? [
-    { href: "/districts", label: "Districts" },
-    { href: "/data", label: "Data downloads" },
-    { href: "/methodology", label: "Methodology" },
-    { href: "/api", label: "API" },
+  const links = [
+    ...(navLinks ?? [
+      { href: "/districts", label: "Districts" },
+      { href: "/data", label: "Data downloads" },
+      { href: "/methodology", label: "Methodology" },
+      { href: "/api", label: "API" },
+    ]),
+    { href: "/press", label: "Press" },
   ];
 
   return `<footer class="colophon">

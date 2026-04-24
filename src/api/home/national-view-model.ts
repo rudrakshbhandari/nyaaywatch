@@ -227,10 +227,10 @@ export function describeClearanceTrend(disposedCases: number, institutedCases: n
 export function describePileTrend(institutedCases: number, disposedCases: number): TrendSignal {
   const difference = calculateMonthlyGap(institutedCases, disposedCases);
   if (difference > 0) {
-    return { tone: "worsening", label: "Pile growing" };
+    return { tone: "worsening", label: "Backlog growing" };
   }
   if (difference < 0) {
-    return { tone: "improving", label: "Pile shrinking" };
+    return { tone: "improving", label: "Backlog shrinking" };
   }
   return { tone: "neutral", label: "In lockstep" };
 }

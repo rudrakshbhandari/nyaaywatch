@@ -34,7 +34,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     <section class="movers-section">
       ${renderSectionHead({
         headline: "Biggest backlog increases.",
-        lede: "Districts where the pile grew most since the previous published snapshot.",
+        lede: "Districts where the backlog grew most since the previous published snapshot.",
       })}
       ${renderMoversTable(biggestJumps, "backlog-increase", context)}
     </section>
@@ -53,7 +53,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     <section class="movers-section">
       ${renderSectionHead({
         headline: "Biggest rank declines.",
-        lede: "Districts whose Watch rank worsened most — the pressure signal moved them up the watchlist relative to their peers.",
+        lede: "Districts whose Watch rank worsened most — the pressure signal moved them up the list relative to their peers.",
       })}
       ${biggestRankRises.length > 0
         ? renderRankTable(biggestRankRises, context)
