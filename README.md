@@ -44,7 +44,7 @@ What is shipped now:
 - a national homepage at `/` that stages Supreme Court, High Courts, and district/subordinate courts in one scroll
 - explicit Himachal lower-court overview at `/states/himachal`, plus lower-court district, data, methodology, and API routes
 - narrow public Supreme Court beta routes under `/supreme-court`
-- narrow public High Court beta routes for Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- public High Court beta routes for all 25 configured HC NJDG selector-backed High Court profiles under `/high-courts/...`
 - explicit lower-court public routing for every currently supported state and Union Territory profile beyond Himachal Pradesh
 - operator replay and rollback controls
 - regression coverage for migration safety, publish gating, replay/rollback behavior, contract stability, and public trust surfaces
@@ -252,7 +252,7 @@ Current route posture:
 
 - unscoped routes remain the default Himachal Pradesh public surface
 - Supreme Court now has a narrow public beta route family under `/supreme-court`
-- the public High Court beta currently covers Himachal High Court, High Court of Andhra Pradesh, Bombay High Court, Calcutta High Court, High Court for State of Telangana, High Court of Delhi, High Court of Gujarat, Gauhati High Court, High Court of Jammu & Kashmir and Ladakh, High Court of Kerala, Madras High Court, High Court of Madhya Pradesh, High Court of Punjab and Haryana, Allahabad High Court, and Rajasthan High Court under `/high-courts/...`
+- the public High Court beta currently covers all 25 configured HC NJDG selector-backed High Court profiles under `/high-courts/...`
 - all other supported state and Union Territory lower-court geographies now use explicit `/states/:stateSlug/...` routes
 - the currently live additional lower-court public surfaces are Punjab, Haryana, Tamil Nadu, Assam, Telangana, Kerala, Meghalaya, Karnataka, Tripura, Nagaland, Andhra Pradesh, Arunachal Pradesh, Manipur, Uttarakhand, Rajasthan, Uttar Pradesh, Madhya Pradesh, Maharashtra, Bihar, Gujarat, Odisha, West Bengal, Jharkhand, Chhattisgarh, Goa, Sikkim, Mizoram, Andaman and Nicobar Islands, Chandigarh, Delhi, Jammu and Kashmir, Ladakh, Lakshadweep, Puducherry, and Dadra and Nagar Haveli and Daman and Diu
 - deployment docs remain the source of truth for publication ids, snapshot ids, and live rollout evidence on `https://nyaaywatch.in`

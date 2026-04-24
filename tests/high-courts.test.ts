@@ -97,6 +97,17 @@ describe("high court profiles", () => {
       },
     });
 
+    expect(getHighCourtProfile("CGHC")).toMatchObject({
+      courtCode: "CGHC",
+      courtSlug: "chhattisgarh",
+      courtName: "High Court of Chhattisgarh",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://www.highcourt.cg.gov.in/",
+      },
+    });
+
     expect(getHighCourtProfile("BOHC")).toEqual({
       courtCode: "BOHC",
       courtSlug: "bombay",
@@ -205,6 +216,17 @@ describe("high court profiles", () => {
         hcNjdg: "https://njdg.ecourts.gov.in/hcnjdg_v2/",
         hcServices: "https://hcservices.ecourts.gov.in/hcservices/main.php",
         officialSite: "https://ghconline.gov.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("JHHC")).toMatchObject({
+      courtCode: "JHHC",
+      courtSlug: "jharkhand",
+      courtName: "High Court of Jharkhand",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://jharkhandhighcourt.nic.in/",
       },
     });
 
@@ -341,6 +363,94 @@ describe("high court profiles", () => {
         officialSite: "https://hcmadras.tn.gov.in/",
       },
     });
+
+    expect(getHighCourtProfile("KAHC")).toMatchObject({
+      courtCode: "KAHC",
+      courtSlug: "karnataka",
+      courtName: "High Court of Karnataka",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://judiciary.karnataka.gov.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("MNHC")).toMatchObject({
+      courtCode: "MNHC",
+      courtSlug: "manipur",
+      courtName: "High Court of Manipur",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://hcmimphal.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("MLHC")).toMatchObject({
+      courtCode: "MLHC",
+      courtSlug: "meghalaya",
+      courtName: "High Court of Meghalaya",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://www.meghalayahighcourt.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("ODHC")).toMatchObject({
+      courtCode: "ODHC",
+      courtSlug: "odisha",
+      courtName: "High Court of Orissa",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://www.orissahighcourt.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("SKHC")).toMatchObject({
+      courtCode: "SKHC",
+      courtSlug: "sikkim",
+      courtName: "High Court of Sikkim",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://www.hcs.gov.in/hcs/",
+      },
+    });
+
+    expect(getHighCourtProfile("TRHC")).toMatchObject({
+      courtCode: "TRHC",
+      courtSlug: "tripura",
+      courtName: "High Court of Tripura",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://www.thc.nic.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("UKHC")).toMatchObject({
+      courtCode: "UKHC",
+      courtSlug: "uttarakhand",
+      courtName: "High Court of Uttarakhand",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://highcourtofuttarakhand.gov.in/",
+      },
+    });
+
+    expect(getHighCourtProfile("BRHC")).toMatchObject({
+      courtCode: "BRHC",
+      courtSlug: "bihar",
+      courtName: "Patna High Court",
+      publicBeta: true,
+      sourceReviewStatus: "reviewed",
+      sourceUrls: {
+        officialSite: "https://www.patnahighcourt.gov.in/",
+      },
+    });
   });
 
   it("resolves high court profiles by slug", () => {
@@ -359,6 +469,15 @@ describe("high court profiles", () => {
     expect(getHighCourtProfileBySlug("calcutta")?.courtCode).toBe("CLHC");
     expect(getHighCourtProfileBySlug("gauhati")?.courtCode).toBe("GHHC");
     expect(getHighCourtProfileBySlug("punjab-and-haryana")?.courtCode).toBe("PHHC");
+    expect(getHighCourtProfileBySlug("chhattisgarh")?.courtCode).toBe("CGHC");
+    expect(getHighCourtProfileBySlug("jharkhand")?.courtCode).toBe("JHHC");
+    expect(getHighCourtProfileBySlug("karnataka")?.courtCode).toBe("KAHC");
+    expect(getHighCourtProfileBySlug("manipur")?.courtCode).toBe("MNHC");
+    expect(getHighCourtProfileBySlug("meghalaya")?.courtCode).toBe("MLHC");
+    expect(getHighCourtProfileBySlug("odisha")?.courtCode).toBe("ODHC");
+    expect(getHighCourtProfileBySlug("sikkim")?.courtCode).toBe("SKHC");
+    expect(getHighCourtProfileBySlug("tripura")?.courtCode).toBe("TRHC");
+    expect(getHighCourtProfileBySlug("uttarakhand")?.courtCode).toBe("UKHC");
     expect(getHighCourtProfileBySlug("telangana")?.courtCode).toBe("TSHC");
     expect(getHighCourtProfileBySlug("unknown")).toBeNull();
     expect(listHighCourtProfiles()).toHaveLength(25);
@@ -368,18 +487,28 @@ describe("high court profiles", () => {
       "bombay",
       "calcutta",
       "telangana",
+      "chhattisgarh",
       "delhi",
       "gujarat",
       "gauhati",
+      "jharkhand",
       "jammu-kashmir-and-ladakh",
+      "karnataka",
       "kerala",
       "madras",
       "madhya-pradesh",
+      "manipur",
+      "meghalaya",
+      "odisha",
       "punjab-and-haryana",
       "rajasthan",
+      "sikkim",
+      "tripura",
+      "uttarakhand",
+      "bihar",
       "uttar-pradesh",
     ]);
-    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(15);
+    expect(listHighCourtProfiles().filter((profile) => profile.sourceReviewStatus === "reviewed")).toHaveLength(25);
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("DLHC"))).toBeNull();
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("JKLHC"))).toBeNull();
     expect(getPrimaryHighCourtStateCode(getHighCourtProfile("BOHC"))).toBe("MH");
