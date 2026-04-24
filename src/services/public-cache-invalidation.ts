@@ -8,8 +8,13 @@ import { buildPublicStateRoutes } from "../api/public-state.js";
 
 const CLOUDFLARE_API_BASE = "https://api.cloudflare.com/client/v4";
 
+export type PublicCacheInvalidationConfig = Pick<
+  AppConfig,
+  "CANONICAL_HOST" | "CLOUDFLARE_API_TOKEN" | "CLOUDFLARE_ZONE_ID" | "CLOUDFLARE_ZONE_NAME" | "PUBLIC_BASE_URL"
+>;
+
 export class PublicCacheInvalidationService {
-  constructor(private readonly config: AppConfig) {}
+  constructor(private readonly config: PublicCacheInvalidationConfig) {}
 
   isConfigured() {
     return Boolean(this.config.CLOUDFLARE_API_TOKEN && this.resolvePublicBaseUrl());

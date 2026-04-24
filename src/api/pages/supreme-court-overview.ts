@@ -24,7 +24,7 @@ export function renderSupremeCourtOverviewPage(
     <div class="hero-rail">
       ${renderSectionHead({
         eyebrow: "SUPREME COURT",
-        headline: "Where is pressure building at the apex court?",
+        headline: "Where is pressure building at the Supreme Court?",
         lede:
           "This page shows one published aggregate Supreme Court snapshot, but focuses the first view on backlog pressure, clearance pace, and monthly pile change so the current direction is obvious at a glance.",
         isHero: true,
@@ -39,7 +39,7 @@ export function renderSupremeCourtOverviewPage(
         ${renderStatTile({
           label: "Cleared / 100 filed",
           value: clearanceRateDisplay,
-          note: "How quickly the apex court cleared incoming work in the latest monthly window.",
+          note: "How quickly the Supreme Court cleared incoming work in the latest monthly window.",
         })}
         ${renderStatTile({
           label: "Last-month pile change",
@@ -110,7 +110,7 @@ export function renderSupremeCourtOverviewPage(
       <div class="card-grid card-grid--4">
         <article class="card">
           <h3>Supreme Court NJDG</h3>
-          <p>Official aggregate pendency, institution, and disposal surface for the apex court.</p>
+          <p>Official aggregate pendency, institution, and disposal surface for the Supreme Court.</p>
           <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.scNjdg}">Open Supreme Court NJDG</a></p>
         </article>
         <article class="card">

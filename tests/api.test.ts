@@ -762,7 +762,7 @@ describe("HTTP routes", () => {
 
     const overview = await request(app).get("/supreme-court");
     expect(overview.status).toBe(200);
-    expect(overview.text).toContain("Where is pressure building at the apex court?");
+    expect(overview.text).toContain("Where is pressure building at the Supreme Court?");
     expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
     expect(overview.text).toContain("Cleared / 100 filed");
     expect(overview.text).toContain("Last-month pile change");

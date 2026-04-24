@@ -152,10 +152,11 @@ npm run release:purge-public-routes -- --supreme-court
 npm run release:purge-public-routes -- --high-court=andhra-pradesh,telangana
 npm run release:purge-public-routes -- --high-court=gujarat,madhya-pradesh
 npm run release:purge-public-routes -- --high-court=uttar-pradesh,rajasthan
+npm run release:purge-public-routes -- --high-court=<court-slug> --allow-missing-cloudflare
 ```
 
 Use `npm run operator:remote` for live remote operator access from a local terminal. Use `npm run operator:staging` as the default heavy-state lane on the live AWS stack when long-running fetches should execute inside a one-off ECS task instead of through the Cloudflare-fronted public operator path.
-Use `npm run release:purge-public-routes` when a newly exposed Supreme Court or High Court public-beta route family needs an explicit Cloudflare purge after a deploy-only rollout.
+Use `npm run release:purge-public-routes` when a newly exposed Supreme Court or High Court public-beta route family needs an explicit Cloudflare purge after a deploy-only rollout. Release purges now fail loudly unless Cloudflare credentials and a public host are configured; use `--allow-missing-cloudflare` only for local route-construction checks where a skipped purge is intentional.
 
 The live deploy path now supports three daily internal raw-fetch schedules plus a recurring public-alpha monitor:
 
