@@ -611,6 +611,15 @@ Latest confirmed operator validation:
   - the live ECS service is now stable on task definition `:126`
   - all three schedules now exist and target task definition `:126`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, and `nyaaywatch-staging-high-courts-internal-fetch`
   - `curl -fsSL https://nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`
+- Lower-court Union Territory public alpha exposure completed on 2026-04-23 after PR `#185` merged:
+  - GitHub deploy run `24863933038` completed successfully on `main`, with `secret-scan`, `verify`, and `deploy` green and `preview` skipped
+  - the live ECS service rolled to task definition `nyaaywatch-staging:178`
+  - the deploy reconcile step updated all four scheduler targets to task definition `:178`: `nyaaywatch-staging-weekday-internal-fetch`, `nyaaywatch-staging-supreme-court-internal-fetch`, `nyaaywatch-staging-high-courts-internal-fetch`, and `nyaaywatch-staging-public-alpha-ops-monitor`
+  - all eight newly public lower-court Union Territory route families returned `200` on `https://nyaaywatch.in`: Andaman and Nicobar Islands, Chandigarh, Delhi, Jammu and Kashmir, Ladakh, Lakshadweep, Puducherry, and Dadra and Nagar Haveli and Daman and Diu
+  - direct route verification covered each `/states/:slug`, `/states/:slug/districts`, `/states/:slug/data`, `/states/:slug/methodology`, `/states/:slug/api`, `/v1/states/:slug/stats`, `/v1/states/:slug/districts`, and `/v1/states/:slug/trends` family
+  - `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` passed with `totalStates=36`, `staleStates=[]`, `dailyFetchLagStates=[]`, and `failingStates=[]`
+  - no Cloudflare purge was run because `release:purge-public-routes` currently supports deploy-only Supreme Court and High Court route families, not lower-court state or Union Territory route exposure; the stable live lower-court routes returned `200` without a manual purge
+  - this closes the post-deploy evidence gap for the April 23 lower-court Union Territory public-alpha promotion; `docs/RELEASE_HISTORY.md` now records the deploy-only exposure against the active UT publications
 
 ## Release Use
 
