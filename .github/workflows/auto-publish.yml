@@ -1,0 +1,234 @@
+name: Auto Publish Daily Snapshots
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  id-token: write
+
+concurrency:
+  group: auto-publish
+  cancel-in-progress: false
+
+jobs:
+  auto-publish:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+      PUBLIC_BASE_URL: https://nyaaywatch.in
+      STAGING_STACK_NAME: nyaaywatch-staging
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
+
+      - name: Load live operator token and alarm topic
+        run: |
+          operator_token_secret_arn="$(
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" \
+              --stack-name "$STAGING_STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='OperatorApiTokenSecretArn'].OutputValue | [0]" \
+              --output text
+          )"
+          alarm_topic_arn="$(
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" \
+              --stack-name "$STAGING_STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='AlarmTopicArn'].OutputValue | [0]" \
+              --output text
+          )"
+          operator_token="$(
+            aws secretsmanager get-secret-value \
+              --region "$AWS_REGION" \
+              --secret-id "$operator_token_secret_arn" \
+              --query SecretString \
+              --output text
+          )"
+          echo "::add-mask::$operator_token"
+          echo "OPERATOR_API_TOKEN=$operator_token" >> "$GITHUB_ENV"
+          echo "ALARM_TOPIC_ARN=$alarm_topic_arn" >> "$GITHUB_ENV"
+
+      - name: Publish latest daily snapshot for every public court
+        id: auto_publish
+        continue-on-error: true
+        run: |
+          set +e
+          npm run operator:auto-publish -- --base-url="$PUBLIC_BASE_URL" > auto-publish-summary.json
+          status=$?
+          [[ -f auto-publish-summary.json ]] && cat auto-publish-summary.json
+          exit "$status"
+
+      - name: Compose auto-publish alert
+        if: always()
+        env:
+          AUTO_PUBLISH_OUTCOME: ${{ steps.auto_publish.outcome }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const outcome = process.env.AUTO_PUBLISH_OUTCOME ?? "failure";
+          const summary = fs.existsSync("auto-publish-summary.json")
+            ? JSON.parse(fs.readFileSync("auto-publish-summary.json", "utf8"))
+            : null;
+
+          const failed = outcome !== "success";
+          const marker = "<!-- nyaaywatch-auto-publish -->";
+          const lines = [
+            marker,
+            `Updated: ${new Date().toISOString()}`,
+            `Workflow run: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+            "",
+            failed ? "The daily auto-publish job is failing." : "The daily auto-publish job is green.",
+            "",
+          ];
+
+          if (summary) {
+            lines.push("## Results");
+            lines.push(`- Attempted: ${summary.attemptedCount}`);
+            lines.push(`- Published: ${summary.publishedCount}`);
+            lines.push(`- Skipped: ${summary.skippedCount}`);
+            lines.push(`- Failed: ${summary.failedCount}`);
+            lines.push("");
+
+            const failures = (summary.results ?? []).filter((result) => result.status === "failed");
+            if (failures.length > 0) {
+              lines.push("## Failed scopes");
+              for (const entry of failures) {
+                lines.push(`- ${entry.scope} ${entry.courtSlug} (${entry.courtCode}): ${entry.error ?? "unknown error"}`);
+              }
+              lines.push("");
+            }
+
+            const skipped = (summary.results ?? []).filter((result) => result.status === "skipped");
+            if (skipped.length > 0) {
+              lines.push("## Skipped scopes");
+              for (const entry of skipped) {
+                lines.push(`- ${entry.scope} ${entry.courtSlug} (${entry.courtCode}): ${entry.reason ?? "no publishable run"}`);
+              }
+              lines.push("");
+            }
+          }
+
+          fs.writeFileSync("auto-publish-alert.md", `${lines.join("\n")}\n`);
+
+          const snsLines = [
+            failed ? "NyaayWatch auto-publish failed." : "NyaayWatch auto-publish recovered.",
+          ];
+          if (summary) {
+            snsLines.push(
+              `Published ${summary.publishedCount}, skipped ${summary.skippedCount}, failed ${summary.failedCount} of ${summary.attemptedCount} scopes.`,
+            );
+            const failedScopes = (summary.results ?? [])
+              .filter((result) => result.status === "failed")
+              .map((result) => `${result.scope}:${result.courtSlug}`);
+            if (failedScopes.length > 0) {
+              snsLines.push(`Failed scopes: ${failedScopes.join(", ")}`);
+            }
+          }
+
+          fs.writeFileSync("auto-publish-alert.txt", `${snsLines.join("\n")}\n`);
+          NODE
+
+      - name: Sync auto-publish issue
+        if: always()
+        id: sync_issue
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        env:
+          AUTO_PUBLISH_OUTCOME: ${{ steps.auto_publish.outcome }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("node:fs");
+            const marker = "<!-- nyaaywatch-auto-publish -->";
+            const title = "Auto-publish failure";
+            const failed = process.env.AUTO_PUBLISH_OUTCOME !== "success";
+            const body = fs.readFileSync("auto-publish-alert.md", "utf8");
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+
+            const existing = issues.find((issue) => issue.title === title || issue.body?.includes(marker));
+            let action = "noop";
+            let issueNumber = existing?.number ?? "";
+
+            if (failed) {
+              if (existing) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  title,
+                  body,
+                });
+                action = "updated";
+              } else {
+                const created = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                });
+                action = "created";
+                issueNumber = String(created.data.number);
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Auto-publish recovered at ${new Date().toISOString()}.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: "closed",
+              });
+              action = "closed";
+              issueNumber = String(existing.number);
+            }
+
+            core.setOutput("action", action);
+            core.setOutput("issue-number", issueNumber);
+
+      - name: Publish first-incident SNS alert
+        if: always() && steps.sync_issue.outputs.action == 'created' && env.ALARM_TOPIC_ARN != ''
+        run: |
+          aws sns publish \
+            --region "$AWS_REGION" \
+            --topic-arn "$ALARM_TOPIC_ARN" \
+            --subject "NyaayWatch auto-publish failure" \
+            --message file://auto-publish-alert.txt
+
+      - name: Fail when auto-publish did not complete cleanly
+        if: always()
+        env:
+          AUTO_PUBLISH_OUTCOME: ${{ steps.auto_publish.outcome }}
+        run: |
+          if [[ "$AUTO_PUBLISH_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
