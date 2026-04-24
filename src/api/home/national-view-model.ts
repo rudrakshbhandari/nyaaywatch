@@ -213,7 +213,7 @@ function describePileChange(institutedCases: number, disposedCases: number) {
   };
 }
 
-function describeClearanceTrend(disposedCases: number, institutedCases: number): TrendSignal {
+export function describeClearanceTrend(disposedCases: number, institutedCases: number): TrendSignal {
   if (institutedCases <= 0) {
     return { tone: "neutral", label: "No filings this window" };
   }
@@ -224,7 +224,7 @@ function describeClearanceTrend(disposedCases: number, institutedCases: number):
   return { tone: "improving", label: "Keeping pace" };
 }
 
-function describePileTrend(institutedCases: number, disposedCases: number): TrendSignal {
+export function describePileTrend(institutedCases: number, disposedCases: number): TrendSignal {
   const difference = calculateMonthlyGap(institutedCases, disposedCases);
   if (difference > 0) {
     return { tone: "worsening", label: "Pile growing" };

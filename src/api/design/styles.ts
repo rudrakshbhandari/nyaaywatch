@@ -345,6 +345,17 @@ export const BASE_CSS = `
   .stat-tile__note { margin: 0; font-size: 13px; color: var(--ink-soft); line-height: 1.45; font-weight: 500; }
   .stat-tile--accent .stat-tile__label { color: var(--accent-dark); }
   .stat-tile--flag .stat-tile__label { color: var(--flag); }
+  .stat-tile__signal {
+    display: inline-block;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 4px 0 8px;
+  }
+  .stat-tile__signal--worsening { color: var(--accent); }
+  .stat-tile__signal--improving { color: var(--ink-muted); }
 
   /* --- optional sparkline + delta chip on stat tiles --- */
   /* Sparkline sits on its own row *below* the value, left-aligned. Earlier

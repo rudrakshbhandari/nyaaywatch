@@ -3,6 +3,7 @@ import type { SupremeCourtProfile } from "../../supreme-court.js";
 import { renderPageShell } from "../design/shell.js";
 import { renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import type { PublicSupremeCourtPageContext } from "../public-supreme-court.js";
+import { describeClearanceTrend, describePileTrend } from "../home/national-view-model.js";
 import { formatDate } from "../home/view-model.js";
 
 export function renderSupremeCourtOverviewPage(
@@ -40,11 +41,19 @@ export function renderSupremeCourtOverviewPage(
           label: "Cleared / 100 filed",
           value: clearanceRateDisplay,
           note: "How quickly the Supreme Court cleared incoming work in the latest monthly window.",
+          trendSignal: describeClearanceTrend(
+            snapshot.stats.disposedLastMonthTotalCases,
+            snapshot.stats.institutedLastMonthTotalCases,
+          ),
         })}
         ${renderStatTile({
           label: "Last-month pile change",
           value: pileChange.display,
           note: pileChange.note,
+          trendSignal: describePileTrend(
+            snapshot.stats.institutedLastMonthTotalCases,
+            snapshot.stats.disposedLastMonthTotalCases,
+          ),
         })}
         ${renderStatTile({
           label: "Pending unregistered",

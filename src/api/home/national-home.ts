@@ -32,13 +32,10 @@ export function renderNationalHome(input: {
     model.highCourts.entries.length > 0
       ? model.highCourts.entries
           .slice(0, HIGH_COURT_TEASER_LIMIT)
-          .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, clearanceTrend, monthlyGapDisplay, monthlyGapNote, pileTrend }, index) => {
+          .map(({ profile, referenceLabel, pendingDisplay, clearanceRateDisplay, clearanceTrend, monthlyGapDisplay, monthlyGapNote, pileTrend }) => {
             const routes = buildPublicHighCourtRoutes(profile);
-            // Prototype: trend signals only on the first card so the unchanged
-            // cards below give a side-by-side comparison.
-            const showTrendSignal = index === 0;
             const renderSignal = (signal: { tone: string; label: string }) =>
-              showTrendSignal && signal.tone !== "neutral"
+              signal.tone !== "neutral"
                 ? `<span class="tier-card__signal tier-card__signal--${signal.tone}">${escapeHtml(signal.label)}</span>`
                 : "";
             return `<article class="card tier-card">
