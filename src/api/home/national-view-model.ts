@@ -38,6 +38,12 @@ export function compareHighCourtPressure(
   return left.profile.courtName.localeCompare(right.profile.courtName, "en");
 }
 
+export type TrendTone = "worsening" | "improving" | "neutral";
+export interface TrendSignal {
+  tone: TrendTone;
+  label: string;
+}
+
 export interface NationalHomeViewModel {
   supremeCourt: {
     snapshot: SupremeCourtPublishedSnapshot | null;
@@ -57,8 +63,10 @@ export interface NationalHomeViewModel {
       referenceLabel: string;
       pendingDisplay: string;
       clearanceRateDisplay: string;
+      clearanceTrend: TrendSignal;
       monthlyGapDisplay: string;
       monthlyGapNote: string;
+      pileTrend: TrendSignal;
     }>;
   };
   lowerCourts: {
@@ -144,6 +152,10 @@ export function buildNationalHomeViewModel(input: {
           snapshot.stats.disposedLastMonthTotalCases,
           snapshot.stats.institutedLastMonthTotalCases,
         ),
+        clearanceTrend: describeClearanceTrend(
+          snapshot.stats.disposedLastMonthTotalCases,
+          snapshot.stats.institutedLastMonthTotalCases,
+        ),
         monthlyGapDisplay: describePileChange(
           snapshot.stats.institutedLastMonthTotalCases,
           snapshot.stats.disposedLastMonthTotalCases,
@@ -152,6 +164,10 @@ export function buildNationalHomeViewModel(input: {
           snapshot.stats.institutedLastMonthTotalCases,
           snapshot.stats.disposedLastMonthTotalCases,
         ).note,
+        pileTrend: describePileTrend(
+          snapshot.stats.institutedLastMonthTotalCases,
+          snapshot.stats.disposedLastMonthTotalCases,
+        ),
       })),
     },
     lowerCourts: {
@@ -195,6 +211,28 @@ function describePileChange(institutedCases: number, disposedCases: number) {
     display: `−${Math.abs(difference).toLocaleString("en-IN")}`,
     note: "More matters were cleared than filed in the latest monthly window.",
   };
+}
+
+export function describeClearanceTrend(disposedCases: number, institutedCases: number): TrendSignal {
+  if (institutedCases <= 0) {
+    return { tone: "neutral", label: "No filings this window" };
+  }
+  const rate = calculateClearanceRate(disposedCases, institutedCases);
+  if (rate < 100) {
+    return { tone: "worsening", label: "Falling behind" };
+  }
+  return { tone: "improving", label: "Keeping pace" };
+}
+
+export function describePileTrend(institutedCases: number, disposedCases: number): TrendSignal {
+  const difference = calculateMonthlyGap(institutedCases, disposedCases);
+  if (difference > 0) {
+    return { tone: "worsening", label: "Pile growing" };
+  }
+  if (difference < 0) {
+    return { tone: "improving", label: "Pile shrinking" };
+  }
+  return { tone: "neutral", label: "In lockstep" };
 }
 
 function describeSupremeCourtReference(snapshot: SupremeCourtPublishedSnapshot["snapshot"]) {

@@ -7,7 +7,7 @@ import {
   formatHighCourtCoverageLabel,
   type PublicHighCourtPageContext,
 } from "../public-high-court.js";
-import { compareHighCourtPressure } from "../home/national-view-model.js";
+import { compareHighCourtPressure, describeClearanceTrend, describePileTrend } from "../home/national-view-model.js";
 import { formatDate } from "../home/view-model.js";
 
 export interface PublicHighCourtIndexEntry {
@@ -56,6 +56,10 @@ export function renderHighCourtsIndexPage(
                     snapshot.stats.disposedLastMonthTotalCases,
                     snapshot.stats.institutedLastMonthTotalCases,
                   ),
+                  trendSignal: describeClearanceTrend(
+                    snapshot.stats.disposedLastMonthTotalCases,
+                    snapshot.stats.institutedLastMonthTotalCases,
+                  ),
                 })}
                 ${renderStatTile({
                   label: "Last-month pile change",
@@ -64,6 +68,10 @@ export function renderHighCourtsIndexPage(
                     snapshot.stats.disposedLastMonthTotalCases,
                   ),
                   tone: isTop ? "accent" : undefined,
+                  trendSignal: describePileTrend(
+                    snapshot.stats.institutedLastMonthTotalCases,
+                    snapshot.stats.disposedLastMonthTotalCases,
+                  ),
                 })}
               </div>
               <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Inspect High Court</a></p>

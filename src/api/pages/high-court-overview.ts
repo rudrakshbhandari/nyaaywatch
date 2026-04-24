@@ -4,6 +4,7 @@ import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import { renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import type { PublicHighCourtPageContext } from "../public-high-court.js";
+import { describeClearanceTrend, describePileTrend } from "../home/national-view-model.js";
 import { formatDate } from "../home/view-model.js";
 
 export function renderHighCourtOverviewPage(
@@ -43,11 +44,19 @@ export function renderHighCourtOverviewPage(
           label: "Cleared / 100 filed",
           value: clearanceRateDisplay,
           note: "How quickly this High Court cleared incoming work in the latest monthly window.",
+          trendSignal: describeClearanceTrend(
+            snapshot.stats.disposedLastMonthTotalCases,
+            snapshot.stats.institutedLastMonthTotalCases,
+          ),
         })}
         ${renderStatTile({
           label: "Last-month pile change",
           value: pileChange.display,
           note: pileChange.note,
+          trendSignal: describePileTrend(
+            snapshot.stats.institutedLastMonthTotalCases,
+            snapshot.stats.disposedLastMonthTotalCases,
+          ),
         })}
         ${renderStatTile({
           label: "Older than 10 years",

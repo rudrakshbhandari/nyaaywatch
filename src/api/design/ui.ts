@@ -94,6 +94,14 @@ export interface StatTileOptions {
    * (e.g. clearance rate).
    */
   deltaDirectionHint?: "up-is-good" | "up-is-bad";
+  /**
+   * Optional small uppercase mono tag rendered under the value to flag
+   * direction in plain language ("Falling behind", "Pile growing").
+   * Worsening renders in --accent, improving in --ink-muted, neutral
+   * renders nothing. Skipped when a sparkline+delta chip is shown for the
+   * same tile (the chip already conveys direction).
+   */
+  trendSignal?: { tone: "worsening" | "improving" | "neutral"; label: string };
 }
 
 export function renderStatTile(options: StatTileOptions): string {
@@ -123,10 +131,17 @@ export function renderStatTile(options: StatTileOptions): string {
     ? `<div class="stat-tile__spark-row">${sparkSvg}${deltaChip}</div>`
     : "";
 
+  const trend = options.trendSignal;
+  const trendTag =
+    trend && trend.tone !== "neutral" && !seriesMoves
+      ? `<span class="stat-tile__signal stat-tile__signal--${trend.tone}">${escapeHtml(trend.label)}</span>`
+      : "";
+
   return `<article class="stat-tile${tone}${withSparkClass}"${anchor}>
     <div class="stat-tile__label">${labelText}${info}</div>
     <div class="stat-tile__value">${escapeHtml(options.value)}${unit}</div>
     ${sparkRow}
+    ${trendTag}
     ${note}
   </article>`;
 }
