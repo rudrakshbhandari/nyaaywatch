@@ -73,7 +73,7 @@ jobs:
         continue-on-error: true
         run: |
           set +e
-          npm run ops:verify-public-alpha -- --base-url="$PUBLIC_BASE_URL" > public-alpha-summary.json
+          npm run --silent ops:verify-public-alpha -- --base-url="$PUBLIC_BASE_URL" > public-alpha-summary.json
           status=$?
           [[ -f public-alpha-summary.json ]] && cat public-alpha-summary.json
           exit "$status"
@@ -83,7 +83,7 @@ jobs:
         continue-on-error: true
         run: |
           set +e
-          npm run ops:verify-internal-fetch-schedule -- \
+          npm run --silent ops:verify-internal-fetch-schedule -- \
             --base-url="$PUBLIC_BASE_URL" \
             --stack-name="$STAGING_STACK_NAME" \
             > internal-fetch-schedule-summary.json
