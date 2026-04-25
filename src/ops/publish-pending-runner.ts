@@ -119,6 +119,14 @@ export async function runPublishPendingSweep(
         `Publish-pending candidates for ${scope.scopeLabel}: ${candidates.length} run(s) — ${candidates.map((c) => c.id).join(", ")}`,
       );
 
+      // The candidate's trends array — and therefore its previousPending baseline —
+      // is captured at fetch time. When we publish multiple candidates in one
+      // sweep, runs after the first need to be evaluated against the run we just
+      // published, not against whatever was the latest publication when this run
+      // was first captured. Track the running pending value here and feed it into
+      // the gate as previousPendingOverride.
+      let runningPreviousPending: number | undefined;
+
       for (const candidate of candidates) {
         try {
           const inspectResult = await runOperatorInvocation(
@@ -133,9 +141,14 @@ export async function runPublishPendingSweep(
               fetchResult: inspectResult,
               pendingField: scope.pendingField,
               note: "Daily publish-pending sweep",
+              previousPendingOverride: runningPreviousPending,
             },
             { rawEnv },
           );
+
+          if (outcome.action === "published" && outcome.decision?.currentPending !== undefined) {
+            runningPreviousPending = outcome.decision.currentPending;
+          }
 
           const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
           console.log(

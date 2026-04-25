@@ -17,6 +17,16 @@ export interface AutoPublishRequest {
   fetchResult: unknown;
   pendingField: "pendingTotalCases" | "pendingCases";
   note?: string;
+  /**
+   * Override the gate's `previousPending` baseline. The candidate's `trends`
+   * array is built when the run is captured, so it reflects the publication
+   * history at fetch time — not the publication history at publish time. When
+   * a sweep publishes multiple runs in sequence, the second and later runs
+   * need to be evaluated against the immediately-prior just-published run, not
+   * against whatever was already published when this run was originally
+   * captured. Pass that value here to short-circuit the candidate's trends.
+   */
+  previousPendingOverride?: number;
 }
 
 export interface AutoPublishRunnerDeps {
@@ -38,10 +48,15 @@ export async function runAutoPublish(
     return { action: "gate_inputs_missing" };
   }
 
+  const previousPending =
+    request.previousPendingOverride !== undefined && Number.isFinite(request.previousPendingOverride)
+      ? request.previousPendingOverride
+      : inputs.previousPending;
+
   const decision = evaluateAutoPublish({
     qualityState: inputs.qualityState,
     currentPending: inputs.currentPending,
-    previousPending: inputs.previousPending,
+    previousPending,
   });
 
   if (!decision.publish) {

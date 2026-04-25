@@ -114,6 +114,49 @@ describe("runAutoPublish", () => {
     expect(notifier.calls).toHaveLength(0);
   });
 
+  it("prefers previousPendingOverride over the candidate trends baseline", async () => {
+    const notifier = makeNotifier();
+    const runOperator = vi.fn();
+
+    // Candidate trends say previous=10000, current=11500 → 15% delta (would pass).
+    // Override forces the gate to compare against 9000 instead → 27.8% delta → blocked.
+    const outcome = await runAutoPublish(
+      {
+        scopeLabel: "Supreme Court (supreme-court)",
+        selector: { supremeCourt: true },
+        fetchResult: baseFetchResult("complete", 11500, 10000),
+        pendingField: "pendingTotalCases",
+        previousPendingOverride: 9000,
+      },
+      { runOperator, notifier },
+    );
+
+    expect(outcome.action).toBe("skipped_review");
+    expect(outcome.decision?.reason).toBe("outlier_pending_delta");
+    expect(outcome.decision?.previousPending).toBe(9000);
+    expect(runOperator).not.toHaveBeenCalled();
+    expect(notifier.calls).toHaveLength(1);
+  });
+
+  it("ignores a non-finite previousPendingOverride and falls back to candidate trends", async () => {
+    const notifier = makeNotifier();
+    const runOperator = vi.fn().mockResolvedValue({ ok: true });
+
+    const outcome = await runAutoPublish(
+      {
+        scopeLabel: "Supreme Court (supreme-court)",
+        selector: { supremeCourt: true },
+        fetchResult: baseFetchResult("complete", 10500, 10000),
+        pendingField: "pendingTotalCases",
+        previousPendingOverride: Number.NaN,
+      },
+      { runOperator, notifier },
+    );
+
+    expect(outcome.action).toBe("published");
+    expect(outcome.decision?.previousPending).toBe(10000);
+  });
+
   it("notifies with failure subject when the publish call throws", async () => {
     const notifier = makeNotifier();
     const runOperator = vi.fn().mockRejectedValue(new Error("boom"));
