@@ -1,10 +1,11 @@
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
-import type { SnapshotHistoryEntry } from "../../services/published-snapshot-service.js";
+import type { PublicationHistoryEntry } from "../../services/published-snapshot-service.js";
 import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { renderAnchorLink, renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
+import { dedupeLineageByReferenceDate } from "./lineage-dedup.js";
 
 /**
  * /methodology — the contract with the reader. Explains what the numbers
@@ -13,7 +14,7 @@ import { formatDate } from "../home/view-model.js";
  */
 export function renderMethodologyPage(
   snapshot: PublishedSnapshot["snapshot"] | null,
-  history: SnapshotHistoryEntry[],
+  history: PublicationHistoryEntry[],
   context: PublicPageContext,
 ): string {
   const ticker = snapshot
@@ -95,9 +96,12 @@ export function renderMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published methodology and snapshot lineage",
-        lede: "Every public publication is listed here with its source date, methodology version, and quality state.",
+        lede: "One row per source-snapshot date, showing the latest publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
       })}
-      ${history.length > 0 ? renderHistoryTable(history) : emptyHistoryCallout()}
+      ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
+        referenceDateLabel: (entry) => formatDate(entry.snapshot.sourceSnapshotAt),
+        publicationTimestamp: (entry) => entry.publication.createdAt,
+      })) : emptyHistoryCallout()}
     </section>
   `;
 
@@ -119,13 +123,13 @@ export function renderMethodologyPage(
   });
 }
 
-function renderHistoryTable(history: SnapshotHistoryEntry[]): string {
+function renderHistoryTable(history: PublicationHistoryEntry[]): string {
   const rows = history
     .map(
       (entry) => `
         <tr>
           <td>${escapeHtml(formatDate(entry.snapshot.sourceSnapshotAt))}</td>
-          <td>${escapeHtml(formatDate(entry.snapshot.publishedAt))}</td>
+          <td>${escapeHtml(formatDate(entry.publication.createdAt))}</td>
           <td><code>${escapeHtml(entry.snapshot.methodologyVersion)}</code></td>
           <td>${escapeHtml(entry.snapshot.qualityState)}</td>
           <td class="num">${entry.stats.pendingCases.toLocaleString("en-IN")}</td>
