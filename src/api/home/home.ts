@@ -90,7 +90,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           <p class="numbers__caption">${escapeHtml(n.wait.caption)}</p>
         </article>
         <article class="numbers__cell numbers__cell--reveal" id="stat-clearance">
-          <div class="numbers__value">${model.clearanceRate.toFixed(0)}<span class="numbers__unit">/ 100</span></div>
+          <div class="numbers__value">${model.clearanceRate.toFixed(0)}</div>
           <div class="numbers__label"><a href="${context.routes.methodology}#metric-clearance">${escapeHtml(n.clearance.label)}</a> ${infoIcon("clearance")}</div>
           <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
         </article>
@@ -309,7 +309,7 @@ const HOME_PAGE_CSS = `
     border-radius: 999px;
     box-shadow: 0 0 0 4px var(--paper);
   }
-  .numbers__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .numbers__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
   .numbers__cell {
     position: relative;
     padding: 0 24px 0 28px;
@@ -318,19 +318,21 @@ const HOME_PAGE_CSS = `
     flex-direction: column;
     gap: 14px;
     min-height: 280px;
+    min-width: 0;
   }
   .numbers__cell:first-child { border-left: none; padding-left: 0; }
   .numbers__cell:last-child { padding-right: 0; }
   .numbers__value {
     font-family: "Inter Tight", sans-serif;
     font-weight: 900;
-    font-size: clamp(74px, 10vw, 148px);
+    font-size: clamp(72px, 8.6vw, 112px);
     line-height: 0.88;
     letter-spacing: -0.048em;
     font-variant-numeric: lining-nums tabular-nums;
     color: var(--ink);
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 6px;
     margin-top: -8px;
   }
@@ -340,6 +342,7 @@ const HOME_PAGE_CSS = `
     letter-spacing: -0.01em;
     color: var(--ink-muted);
     text-transform: lowercase;
+    white-space: nowrap;
   }
   .numbers__label {
     font-family: "IBM Plex Mono", ui-monospace, monospace;

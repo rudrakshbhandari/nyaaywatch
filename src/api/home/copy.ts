@@ -100,7 +100,6 @@ export function buildCopy(
     longWaitDistricts.length > 0
       ? Math.round(longWaitDistricts[0].medianAgeDays / 30)
       : 0;
-  const longWaitSampleName = longWaitDistricts[0]?.districtName ?? model.topDistrict.districtName;
 
   return {
     brand: "NyaayWatch",
@@ -124,12 +123,7 @@ export function buildCopy(
       },
       wait: {
         label: "typical wait",
-        caption: buildWaitCaption(
-          longWaitDistricts.length,
-          longWaitMonths,
-          longWaitSampleName,
-          lowerCourtCopy.aggregateAdjective,
-        ),
+        caption: "Half the cases pending today have been waiting longer than this.",
       },
       clearance: {
         label: "cleared per 100 filed",
@@ -173,21 +167,6 @@ function buildHeroLede(
     );
   }
   return `${base} A backlog this big is not going to move on its own.`;
-}
-
-function buildWaitCaption(
-  longWaitCount: number,
-  longWaitMonths: number,
-  sampleName: string,
-  aggregateAdjective: string,
-): string {
-  if (longWaitCount === 0) {
-    return "Middle of the backlog. Half the cases have been waiting longer than this.";
-  }
-  if (longWaitCount === 1) {
-    return `Middle of the ${aggregateAdjective} backlog. In ${sampleName}, the middle is closer to ${longWaitMonths} months.`;
-  }
-  return `Middle of the ${aggregateAdjective} backlog. In ${longWaitCount} districts, the middle is closer to ${longWaitMonths} months.`;
 }
 
 function buildClearanceCaption(rate: number): string {
