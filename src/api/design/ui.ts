@@ -96,8 +96,6 @@ export interface StatTileOptions {
   deltaDirectionHint?: "up-is-good" | "up-is-bad";
   /** Optional short label rendered inside the delta chip before the value. */
   deltaLabel?: string;
-  /** Use "neutral" when a short series is context, not a good/bad verdict. */
-  deltaTone?: "semantic" | "neutral";
   /**
    * Optional small uppercase mono tag rendered under the value to flag
    * direction in plain language ("Falling behind", "Backlog growing").
@@ -127,7 +125,6 @@ export function renderStatTile(options: StatTileOptions): string {
     ? renderDeltaChip(series, {
         hint: options.deltaDirectionHint ?? "up-is-bad",
         label: options.deltaLabel,
-        tone: options.deltaTone ?? "semantic",
       })
     : "";
   const withSparkClass = seriesMoves ? " stat-tile--with-spark" : "";
@@ -186,7 +183,7 @@ function renderSparklineSvg(series: number[], ariaLabel: string): string {
 
 function renderDeltaChip(
   series: number[],
-  options: { hint: "up-is-good" | "up-is-bad"; label?: string; tone: "semantic" | "neutral" },
+  options: { hint: "up-is-good" | "up-is-bad"; label?: string },
 ): string {
   const first = series[0];
   const last = series[series.length - 1];
@@ -224,9 +221,7 @@ function renderDeltaChip(
   // series going nowhere.
   if (direction === "flat") return "";
   const sentiment =
-    options.tone === "neutral"
-      ? "neutral"
-      : options.hint === "up-is-bad"
+    options.hint === "up-is-bad"
       ? direction === "up"
         ? "bad"
         : "good"

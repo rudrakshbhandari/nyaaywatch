@@ -52,18 +52,17 @@ describe("renderStatTile — optional sparkline + delta", () => {
     expect(html).not.toContain("stat-tile__delta--bad");
   });
 
-  it("can render a neutral labeled delta for short context series", () => {
+  it("can render a labeled semantic delta", () => {
     const html = renderStatTile({
       label: "Pending total",
       value: "92,409",
       series: [94158, 94311, 92409],
       deltaDirectionHint: "up-is-bad",
-      deltaLabel: "Recent change",
-      deltaTone: "neutral",
+      deltaLabel: "Pending trend",
     });
-    expect(html).toContain("stat-tile__delta--neutral");
-    expect(html).toContain("Recent change −1.9%");
-    expect(html).not.toContain("stat-tile__delta--good");
+    expect(html).toContain("stat-tile__delta--good");
+    expect(html).toContain("Pending trend −1.9%");
+    expect(html).not.toContain("stat-tile__delta--bad");
   });
 
   it("keeps a current condition signal visible when a sparkline is present", () => {
