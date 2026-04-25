@@ -1,5 +1,5 @@
 import request from "supertest";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createTestApp, createTestContext, seedTestSnapshot } from "./helpers.js";
 
@@ -207,6 +207,44 @@ describe("Subscribe and RSS routes", () => {
       ["unsub@example.com"],
     );
     expect(check.rows[0]!.unsubscribed_at).not.toBeNull();
+  });
+
+  it("redacts newsletter tokens from structured request logs", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(
+      context.config,
+      context.service,
+      context.publicServices,
+      context.highCourtServices,
+      context.supremeCourtService,
+      context.pool,
+    );
+    const infoSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    try {
+      await request(app)
+        .post("/subscribe")
+        .type("form")
+        .send({ email: "redacted@example.com", scope: "HP" });
+
+      const row = await context.pool.query<{ token: string }>(
+        `SELECT token FROM newsletter_subscriptions WHERE email = $1`,
+        ["redacted@example.com"],
+      );
+      const token = row.rows[0]!.token;
+
+      await request(app).get(`/subscribe/confirm/${token}`);
+      await request(app).get(`/unsubscribe/${token}`);
+
+      const messages = infoSpy.mock.calls.map((call) => String(call[0]));
+      expect(messages.join("\n")).not.toContain(token);
+      expect(messages.some((message) => message.includes("/subscribe/confirm/[redacted]"))).toBe(true);
+      expect(messages.some((message) => message.includes("/unsubscribe/[redacted]"))).toBe(true);
+    } finally {
+      infoSpy.mockRestore();
+    }
   });
 
   it("GET /states/himachal-pradesh/feed.xml returns valid RSS 2.0", async () => {

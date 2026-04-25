@@ -93,7 +93,7 @@ npm run release:record -- --publication-id=<publication-id> --base-url=https://n
 npm run release:purge-public-routes -- --high-court=<court-slug>
 ```
 
-Each release helper accepts `--state-slug=<slug>` or `--high-court=<slug>` to scope to the right court family.
+Each release helper accepts `--state-slug=<slug>` or `--high-court=<slug>` to scope to the right court family. `release:verify` also accepts `--supreme-court` for the apex-tier public surface.
 
 ## Scheduled Internal Fetches
 
