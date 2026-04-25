@@ -342,12 +342,12 @@ function describeMtdGapDirection(
   }
   const gap = snapshot.stats.institutedLastMonthTotalCases - snapshot.stats.disposedLastMonthTotalCases;
   if (gap > 0) {
-    return "More matters have been filed than cleared,";
+    return "More cases have been filed than cleared,";
   }
   if (gap < 0) {
-    return "More matters have been cleared than filed,";
+    return "More cases have been cleared than filed,";
   }
-  return "Filings and disposals have moved in lockstep,";
+  return "Filings and clearances matched,";
 }
 
 // Inline scroll-spy: IntersectionObserver keeps the TOC rail's active entry in
