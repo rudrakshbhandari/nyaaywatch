@@ -67,7 +67,37 @@ export function renderMethodologyPage(
         <article class="card" id="metric-watchlist">
           ${renderAnchorLink("metric-watchlist", "Districts to watch")}
           <h3>Districts to watch</h3>
-          <p>Districts are ranked by queue size, then annotated with waiting-time and file-clear-gap context so a reader can see why a district rose. This list is a signal for closer inspection, not a judgment on any court or official.</p>
+          <p>Districts are ranked by queue size, then annotated with waiting-time and file-clear-gap context so a reader can see why a district rose. This list is a signal for closer inspection, not a finding about any court or official.</p>
+        </article>
+        <article class="card" id="metric-old-case-burden">
+          ${renderAnchorLink("metric-old-case-burden", "Old-case burden")}
+          <h3>Old-case burden</h3>
+          <p>Calculated from the same NJDG age buckets used for the typical-wait estimate. The 3-year, 5-year, and 10-year shares show how much of the pending load is already old.</p>
+        </article>
+        <article class="card" id="metric-backlog-movement">
+          ${renderAnchorLink("metric-backlog-movement", "Backlog movement")}
+          <h3>Backlog movement as share of pending load</h3>
+          <p>Calculated as cases filed last month minus cases cleared last month, divided by pending cases. This makes monthly growth or shrinkage easier to read across differently sized districts and geographies.</p>
+        </article>
+        <article class="card" id="metric-break-even-clearances">
+          ${renderAnchorLink("metric-break-even-clearances", "Break-even clearances")}
+          <h3>Break-even clearances</h3>
+          <p>Calculated as the extra clearances needed last month to keep the backlog from growing. If clearances already matched or exceeded filings, this value is zero.</p>
+        </article>
+        <article class="card" id="metric-catch-up-burden">
+          ${renderAnchorLink("metric-catch-up-burden", "Catch-up burden")}
+          <h3>10% reduction scenario</h3>
+          <p>A scenario metric, not a forecast. It estimates the extra clearances per month needed to reduce the pending load by 10% over 12 months while also covering last month's filing-clearance gap.</p>
+        </article>
+        <article class="card" id="metric-watchlist-persistence">
+          ${renderAnchorLink("metric-watchlist-persistence", "Watchlist persistence")}
+          <h3>Watchlist persistence</h3>
+          <p>Counts how often the same district appeared among the clearest pressure signals in the recent published snapshot history. Repeated pressure is more serious than a one-snapshot spike, but it remains a signal for inspection.</p>
+        </article>
+        <article class="card" id="metric-backlog-concentration">
+          ${renderAnchorLink("metric-backlog-concentration", "Backlog concentration")}
+          <h3>Backlog concentration</h3>
+          <p>Shows how much of a geography's pending load sits in the largest district queues. A concentrated backlog points to a different public question than a backlog spread evenly across districts.</p>
         </article>
       </div>
     </section>

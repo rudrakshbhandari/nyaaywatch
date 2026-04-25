@@ -35,6 +35,7 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
+- [x] Use `docs/METRIC_STRATEGY.md` as the source of truth for the next metric slice: preserve lower-court filed/cleared counts plus age buckets first, then add old-case burden share, scale-aware backlog movement, break-even clearances, watchlist persistence, backlog concentration, and civil-criminal imbalance.
 - [x] Reconciled the legacy `.com -> .in` ALB redirect rules back under CloudFormation ownership. The repo now includes `infra/aws/staging/import-canonical-redirect-rules.sh`, the live `nyaaywatch-staging` stack imported both priority-10 listener rules on `2026-04-20T05:44Z`, and `ManageCanonicalRedirectRules=false` is now only a temporary recovery lever for older-stack reconciliation.
 - [x] Turned the initial multi-jurisdiction High Court design into a concrete phase-1 implementation plan in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`, with a court-first identity migration, schema widening, and Punjab and Haryana High Court as the first internal pilot boundary.
 - [x] Added the common High Court of Jammu & Kashmir and Ladakh as an internal-only High Court profile using the current official court name, one HC NJDG selector (`1~12`), and explicit union-territory coverage for Jammu and Kashmir plus Ladakh; source-review and internal-readiness docs now record the upstream legacy-label mismatch without splitting the court into fake separate High Courts.

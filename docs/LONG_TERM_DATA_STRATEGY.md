@@ -8,6 +8,8 @@ This doc exists to answer three questions clearly:
 2. When should NyaayWatch add case-level records, orders, judgments, or faster-moving feeds?
 3. Which public metrics come directly from government dashboards versus NyaayWatch's own calculations?
 
+Use `docs/METRIC_STRATEGY.md` for the product-level metric inventory and the ranked list of metric additions.
+
 ## Bottom Line
 
 Yes, the current strategy is the right foundation.

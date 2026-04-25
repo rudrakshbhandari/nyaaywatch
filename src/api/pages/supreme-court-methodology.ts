@@ -50,6 +50,26 @@ export function renderSupremeCourtMethodologyPage(
           <h3>NyaayWatch framing</h3>
           <p>NyaayWatch adds publication timestamps, freshness, methodology versioning, and an explicit rule for which date to show so the snapshot is citeable and auditable.</p>
         </article>
+        <article class="card" id="metric-backlog-movement">
+          ${renderAnchorLink("metric-backlog-movement", "Backlog movement")}
+          <h3>Backlog movement as share of pending load</h3>
+          <p>Calculated as cases filed this month minus cases cleared this month, divided by pending cases. It gives a scale-aware view of whether the pending pile is growing or shrinking in the current publication.</p>
+        </article>
+        <article class="card" id="metric-break-even-clearances">
+          ${renderAnchorLink("metric-break-even-clearances", "Break-even clearances")}
+          <h3>Break-even clearances</h3>
+          <p>The number of extra clearances needed in the current monthly accumulator to keep the Supreme Court backlog from growing. It is zero when clearances matched or exceeded filings.</p>
+        </article>
+        <article class="card" id="metric-catch-up-burden">
+          ${renderAnchorLink("metric-catch-up-burden", "Catch-up burden")}
+          <h3>10% reduction scenario</h3>
+          <p>A scenario metric, not a prediction. It estimates the extra monthly clearances needed to reduce the pending load by 10% over 12 months while covering the current filing-clearance gap.</p>
+        </article>
+        <article class="card" id="metric-civil-criminal-imbalance">
+          ${renderAnchorLink("metric-civil-criminal-imbalance", "Civil-criminal imbalance")}
+          <h3>Civil-criminal imbalance</h3>
+          <p>Compares the criminal share of pending cases with the criminal share of current monthly clearances. The result is a docket signal for inspection, not a cause or blame claim.</p>
+        </article>
       </div>
     </section>
 

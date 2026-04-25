@@ -4,6 +4,7 @@ import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
+import { formatShare } from "./metric-insights.js";
 
 type DistrictSort = "rank" | "backlog" | "disposal" | "age" | "gap";
 type DistrictView = "all" | "flagged";
@@ -96,8 +97,16 @@ export function renderDistrictsPage(
         label: "Districts to watch",
         value: snapshot.stats.flaggedDistricts.toLocaleString("en-IN"),
         infoKey: "watchlist",
-        note: "These are the clearest districts to inspect first — not a judgment on any court or official.",
+        note: "These are the clearest districts to inspect first, not a finding about any court or official.",
         tone: "flag",
+      })}
+      ${renderStatTile({
+        label: "Oldest burden",
+        value: highestBacklog ? formatShare(highestBacklog.oldCaseBurden.fivePlusYearsShare) : "—",
+        note: highestBacklog
+          ? `${highestBacklog.districtName}: share of pending cases older than 5 years.`
+          : "No district data.",
+        tone: "accent",
       })}
       ${renderStatTile({
         label: "Showing",
@@ -219,6 +228,8 @@ function renderTable(districts: DistrictSnapshot[], context: PublicPageContext):
           <td class="num">${district.backlogCases.toLocaleString("en-IN")}</td>
           <td class="num">${district.disposalRate.toFixed(1)}</td>
           <td class="num">${Math.round(district.medianAgeDays / 30)} mo</td>
+          <td class="num">${district.oldCaseBurden.fivePlusYearsShare.toFixed(1)}%</td>
+          <td class="num">${district.watchlistPersistence.flaggedInLastSix}/${district.watchlistPersistence.lastSixWindow}</td>
           <td class="num flag">${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</td>
           <td class="district-row__reason">${escapeHtml(district.flagReason)}</td>
         </tr>
@@ -236,6 +247,8 @@ function renderTable(districts: DistrictSnapshot[], context: PublicPageContext):
             <th>Cases waiting ${infoIcon("backlog")}</th>
             <th>Cleared / 100 filed ${infoIcon("clearance")}</th>
             <th>Typical wait ${infoIcon("typicalWait")}</th>
+            <th>Older than 5 years</th>
+            <th>Repeat signal</th>
             <th>File-clear gap ${infoIcon("fileClearGap")}</th>
             <th>Why it stands out</th>
           </tr>

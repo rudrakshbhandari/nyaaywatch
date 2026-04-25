@@ -60,7 +60,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
             <code class="download__path">${escapeHtml(context.routes.districtsCsv)}</code>
           </div>
           <h3>${aggregateAdjectiveTitle} district table</h3>
-          <p>One row per district with rank, pending cases, cases cleared per 100 filed, typical wait, file-clear gap, and flag reason. Includes the source snapshot date, methodology version, freshness, and source attribution as columns so the download is self-describing.</p>
+          <p>One row per district with rank, pending cases, cases filed and cleared last month, cases cleared per 100 filed, typical wait, old-case burden, file-clear gap, backlog movement, repeat signal, and flag reason. Includes the source snapshot date, methodology version, freshness, and source attribution as columns so the download is self-describing.</p>
           <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.districtsCsv}">Download CSV</a></p>
         </article>
         <article class="card download">
@@ -80,7 +80,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>What is in the CSV</h3>
-          <p>Normalized snapshot fields only: the same numbers, labels, and flag reasons that appear on the public pages.</p>
+          <p>Normalized snapshot fields only: the same numbers, labels, derived pressure signals, and flag reasons that appear on the public pages.</p>
           <p>Each row references the source snapshot date and methodology version so a published number is always citeable.</p>
         </article>
         <article class="card">

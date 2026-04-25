@@ -73,7 +73,7 @@ export function renderSupremeCourtDataPage(
         </article>
         <article class="card">
           <h3>No case-level export yet</h3>
-          <p>NyaayWatch links to the official Supreme Court site instead of pretending this page is a case-search or judgment archive surface.</p>
+          <p>NyaayWatch links to the official Supreme Court site instead of pretending this page is a case-search or court-record archive surface.</p>
           <p><a class="btn btn--ghost btn--small" href="${context.profile.sourceUrls.officialSite}">Open official Supreme Court site</a></p>
         </article>
       </div>

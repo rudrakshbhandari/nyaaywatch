@@ -154,6 +154,7 @@ Design and product:
 - [Brand system](brand/BRAND.md)
 - [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
 - [Long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md)
+- [Metric strategy](docs/METRIC_STRATEGY.md)
 
 Operations and release:
 

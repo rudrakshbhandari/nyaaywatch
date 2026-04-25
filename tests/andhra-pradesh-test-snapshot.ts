@@ -1,7 +1,7 @@
-import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
+import { PublishedSnapshotSchema, type PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 
 export function buildAndhraPradeshTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "AP",
       stateName: "Andhra Pradesh",
@@ -68,5 +68,5 @@ export function buildAndhraPradeshTestSnapshot(): PublishedSnapshot {
         disposalRate: 111.4,
       },
     ],
-  };
+  });
 }

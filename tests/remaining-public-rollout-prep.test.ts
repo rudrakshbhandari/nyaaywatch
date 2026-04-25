@@ -3,7 +3,7 @@ import { createServer, type Server } from "node:http";
 import request from "supertest";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
+import { PublishedSnapshotSchema, type PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 import { verifyPublicRelease } from "../src/dev/release-verification.js";
 import type { SupportedStateCode } from "../src/geographies.js";
 import { createTestApp, createTestContext, insertPublishedSnapshot, seedTestSnapshot } from "./helpers.js";
@@ -43,7 +43,7 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
   const districtSlugThree = `${input.districtId}-west`;
   const districtNameThree = `${input.districtName} West`;
 
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: input.stateCode,
       stateName: input.stateName,
@@ -104,7 +104,7 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
         disposalRate: input.disposalRate,
       },
     ],
-  };
+  });
 }
 
 describe("supported state public route coverage", () => {
