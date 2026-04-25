@@ -114,15 +114,19 @@ export function renderNationalHome(input: {
   const scGapSeries = scFinalized.map((entry) => entry.institutedTotalCases - entry.disposedTotalCases);
   const lcPendingSeries = lcTrends.map((point) => point.pendingCases);
 
-  // In-progress-month qualifier for the three flow tiles. The headline number
-  // on those tiles is the current month-to-date accumulator, so the reader
-  // needs to know which date that "so far" ends on. Falls back to the generic
-  // "so far this month" when we somehow lack a reference date.
+  // The three flow tiles ("Cleared / 100 filed", "Disposed", "Backlog change")
+  // all describe month-to-date accumulators read from the current snapshot.
+  // The reader needs to know which date that "so far" ends on, but pinning the
+  // exact date in the inline note bloats every card with the same string —
+  // so the date and the "trend line compares finalized months" methodology
+  // line both move into each tile's "i" popover, leaving one plain-language
+  // line visible.
   const scReferenceIso = input.supremeCourtSnapshot?.snapshot.referenceDateAt ?? null;
-  const scThroughLabel = scReferenceIso ? `through ${formatDate(scReferenceIso)}` : "so far this month";
-  const scGapDirectionNote = describeMtdGapDirection(input.supremeCourtSnapshot);
+  const scThroughSentence = scReferenceIso ? `Through ${formatDate(scReferenceIso)}.` : "";
+  const scTrendLineSentence = scFinalized.length >= 2 ? "Trend line compares finalized months." : "";
+  const scFlowInfoBody = [scThroughSentence, scTrendLineSentence].filter(Boolean).join(" ");
+  const scGapDirectionSentence = describeMtdGapDirection(input.supremeCourtSnapshot);
   const scGapSignal = describeMtdGapSignal(input.supremeCourtSnapshot);
-  const scTrendLineSuffix = scFinalized.length >= 2 ? " Trend line compares finalized months." : "";
 
   const tocItems = [
     { id: "hero", index: "01", label: "At a glance" },
@@ -176,7 +180,11 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
-                note: "Cases still pending at the Supreme Court. This month's clearance pace is shown separately.",
+                note: "Cases still pending at the Supreme Court.",
+                infoDetail: {
+                  term: "Pending total",
+                  body: "This month's clearance pace is shown separately.",
+                },
                 series: scPendingSeries,
                 seriesLabel: "Pending total across Supreme Court readings",
                 deltaDirectionHint: "up-is-bad",
@@ -185,7 +193,10 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Cleared / 100 filed this month",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
-                note: `How quickly the Supreme Court is clearing cases this month, ${scThroughLabel}. 100 means it is keeping pace with filings.${scTrendLineSuffix}`,
+                note: "How quickly the Supreme Court is clearing cases this month. 100 means it is keeping pace with filings.",
+                infoDetail: scFlowInfoBody
+                  ? { term: "Clearance pace", body: scFlowInfoBody }
+                  : undefined,
                 tone: "accent",
                 series: scClearanceSeries,
                 seriesLabel: "Clearance rate across finalized months",
@@ -194,7 +205,10 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Disposed this month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
-                note: `Cases the Supreme Court has cleared this month, ${scThroughLabel}.${scTrendLineSuffix}`,
+                note: "Cases the Supreme Court has cleared this month.",
+                infoDetail: scFlowInfoBody
+                  ? { term: "Disposed this month", body: scFlowInfoBody }
+                  : undefined,
                 series: scDisposedSeries,
                 seriesLabel: "Disposed across finalized months",
                 deltaDirectionHint: "up-is-good",
@@ -202,7 +216,10 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Backlog change this month",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
-                note: `${scGapDirectionNote} ${scThroughLabel}.${scTrendLineSuffix}`,
+                note: scGapDirectionSentence,
+                infoDetail: scFlowInfoBody
+                  ? { term: "Backlog change", body: scFlowInfoBody }
+                  : undefined,
                 series: scGapSeries,
                 seriesLabel: "Backlog change across finalized months",
                 deltaDirectionHint: "up-is-bad",
@@ -341,16 +358,16 @@ function describeMtdGapDirection(
   snapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null,
 ): string {
   if (!snapshot) {
-    return "Filed minus cleared,";
+    return "Filed minus cleared this month.";
   }
   const gap = snapshot.stats.institutedLastMonthTotalCases - snapshot.stats.disposedLastMonthTotalCases;
   if (gap > 0) {
-    return "More cases have been filed than cleared,";
+    return "More cases have been filed than cleared this month.";
   }
   if (gap < 0) {
-    return "More cases have been cleared than filed,";
+    return "More cases have been cleared than filed this month.";
   }
-  return "Filings and clearances matched,";
+  return "Filings and clearances have matched this month.";
 }
 
 function describeMtdGapSignal(
