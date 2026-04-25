@@ -574,7 +574,7 @@ export function createApp(
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
       const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
       const snapshot = await currentService.getPublishedSnapshot();
-      const history = await currentService.listSnapshotHistory();
+      const history = await currentService.listPublicationHistory();
       response.send(
         renderMethodologyPage(
           snapshot?.payload.snapshot ?? null,
@@ -763,7 +763,7 @@ export function createApp(
       }
 
       const snapshot = await resolved.service.getPublishedSnapshot();
-      const history = await resolved.service.listSnapshotHistory();
+      const history = await resolved.service.listPublicationHistory();
       response.send(
         renderMethodologyPage(
           snapshot?.payload.snapshot ?? null,
