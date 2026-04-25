@@ -89,23 +89,21 @@ function buildTrendPoints(
 
 // Returns the full chronological series of distinct captures (ascending by
 // referenceDateAt) ending with the current extract. `previousSnapshots` is
-// expected ascending; we dedupe by (referenceDateKind, referenceDateAt).
+// expected ascending by publishedAt; we dedupe by (referenceDateKind,
+// referenceDateAt), keeping the most-recently-published value for each key so
+// that replays and corrections overwrite stale values while preserving
+// chronological order (Map preserves insertion order of first-seen keys).
 function buildChronologicalCaptureHistory(
   previousSnapshots: SupremeCourtPublishedSnapshot[],
   extracted: ExtractedSupremeCourtSnapshot,
 ): SupremeCourtTrendPoint[] {
   const referenceDateAt = extracted.sourceSnapshotAt ?? extracted.capturedAt;
   const referenceDateKind = extracted.sourceSnapshotAt ? "source_snapshot_at" : "captured_at";
-  const seen = new Set<string>();
-  const points: SupremeCourtTrendPoint[] = [];
+  const byKey = new Map<string, SupremeCourtTrendPoint>();
 
   for (const snapshot of previousSnapshots) {
     const dedupeKey = `${snapshot.snapshot.referenceDateKind}:${snapshot.snapshot.referenceDateAt}`;
-    if (seen.has(dedupeKey)) {
-      continue;
-    }
-    seen.add(dedupeKey);
-    points.push({
+    byKey.set(dedupeKey, {
       referenceDateAt: snapshot.snapshot.referenceDateAt,
       referenceDateKind: snapshot.snapshot.referenceDateKind,
       pendingTotalCases: snapshot.stats.pendingTotalCases,
@@ -115,8 +113,8 @@ function buildChronologicalCaptureHistory(
   }
 
   const currentDedupeKey = `${referenceDateKind}:${referenceDateAt}`;
-  if (!seen.has(currentDedupeKey)) {
-    points.push({
+  if (!byKey.has(currentDedupeKey)) {
+    byKey.set(currentDedupeKey, {
       referenceDateAt,
       referenceDateKind,
       pendingTotalCases: extracted.pendingTotalCases,
@@ -125,7 +123,7 @@ function buildChronologicalCaptureHistory(
     });
   }
 
-  return points;
+  return [...byKey.values()];
 }
 
 // `instituted in last month` / `disposal in last month` are accumulators on the
