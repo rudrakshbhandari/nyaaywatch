@@ -76,28 +76,24 @@ function buildSweepScopes(): SweepScope[] {
   return scopes;
 }
 
-function findUnpublishedCompleteRun(runs: RunRecord[], since: string): RunRecord | undefined {
-  // runs are sorted DESC by created_at; find the most recent eligible candidate
-  const candidate = runs.find(
-    (run) =>
-      run.status === "completed" &&
-      run.qualityState === "complete" &&
-      run.createdAt >= since,
+export function findUnpublishedCompleteRuns(runs: RunRecord[], since: string): RunRecord[] {
+  // runs are sorted DESC by created_at. Anything older than the most recent
+  // published/replayed run is considered superseded — publishing it would
+  // regress freshness or undo an intentional replay.
+  const latestPublication = runs.find(
+    (run) => run.status === "published" || run.status === "replayed",
   );
+  const publicationFloor = latestPublication?.createdAt;
 
-  if (!candidate) {
-    return undefined;
-  }
-
-  // Skip if a published or replayed run exists that is newer than the candidate —
-  // publishing the older run would undo an intentional replay or regress freshness.
-  const hasNewerPublication = runs.some(
-    (run) =>
-      (run.status === "published" || run.status === "replayed") &&
-      run.createdAt > candidate.createdAt,
-  );
-
-  return hasNewerPublication ? undefined : candidate;
+  return runs
+    .filter(
+      (run) =>
+        run.status === "completed" &&
+        run.qualityState === "complete" &&
+        run.createdAt >= since &&
+        (publicationFloor === undefined || run.createdAt > publicationFloor),
+    )
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
 
 export async function runPublishPendingSweep(
@@ -114,59 +110,65 @@ export async function runPublishPendingSweep(
 
     for (const scope of scopes) {
       const runs = await store.listRuns(scope.scopeCode, scope.scopeType);
-      const candidate = findUnpublishedCompleteRun(runs, since);
-      if (!candidate) {
+      const candidates = findUnpublishedCompleteRuns(runs, since);
+      if (candidates.length === 0) {
         continue;
       }
 
-      console.log(`Publish-pending candidate: ${scope.scopeLabel} run ${candidate.id}`);
+      console.log(
+        `Publish-pending candidates for ${scope.scopeLabel}: ${candidates.length} run(s) — ${candidates.map((c) => c.id).join(", ")}`,
+      );
 
-      try {
-        const inspectResult = await runOperatorInvocation(
-          { ...scope.selector, command: "inspect", targetId: candidate.id },
-          rawEnv,
-        );
+      for (const candidate of candidates) {
+        try {
+          const inspectResult = await runOperatorInvocation(
+            { ...scope.selector, command: "inspect", targetId: candidate.id },
+            rawEnv,
+          );
 
-        const outcome = await runAutoPublish(
-          {
+          const outcome = await runAutoPublish(
+            {
+              scopeLabel: scope.scopeLabel,
+              selector: scope.selector,
+              fetchResult: inspectResult,
+              pendingField: scope.pendingField,
+              note: "Daily publish-pending sweep",
+            },
+            { rawEnv },
+          );
+
+          const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
+          console.log(
+            `Publish-pending outcome for ${scope.scopeLabel} run ${candidate.id}: ${outcome.action}${outcome.decision?.reason ? ` (${outcome.decision.reason})` : ""}`,
+          );
+
+          if (sweepFailed) {
+            console.error(
+              `Publish-pending error for ${scope.scopeLabel} run ${candidate.id}: ${outcome.action}${outcome.error ? ` — ${outcome.error}` : ""}`,
+            );
+          }
+
+          results.push({
             scopeLabel: scope.scopeLabel,
-            selector: scope.selector,
-            fetchResult: inspectResult,
-            pendingField: scope.pendingField,
-            note: "Post-deploy publish-pending sweep",
-          },
-          { rawEnv },
-        );
-
-        const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
-        console.log(
-          `Publish-pending outcome for ${scope.scopeLabel}: ${outcome.action}${outcome.decision?.reason ? ` (${outcome.decision.reason})` : ""}`,
-        );
-
-        if (sweepFailed) {
-          console.error(`Publish-pending error for ${scope.scopeLabel}: ${outcome.action}${outcome.error ? ` — ${outcome.error}` : ""}`);
+            scopeCode: scope.scopeCode,
+            scopeType: scope.scopeType,
+            runId: candidate.id,
+            ok: !sweepFailed,
+            autoPublish: outcome.action,
+            autoPublishReason: outcome.decision?.reason,
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          console.error(`Publish-pending failed for ${scope.scopeLabel} run ${candidate.id}: ${message}`);
+          results.push({
+            scopeLabel: scope.scopeLabel,
+            scopeCode: scope.scopeCode,
+            scopeType: scope.scopeType,
+            runId: candidate.id,
+            ok: false,
+            error: message,
+          });
         }
-
-        results.push({
-          scopeLabel: scope.scopeLabel,
-          scopeCode: scope.scopeCode,
-          scopeType: scope.scopeType,
-          runId: candidate.id,
-          ok: !sweepFailed,
-          autoPublish: outcome.action,
-          autoPublishReason: outcome.decision?.reason,
-        });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        console.error(`Publish-pending failed for ${scope.scopeLabel}: ${message}`);
-        results.push({
-          scopeLabel: scope.scopeLabel,
-          scopeCode: scope.scopeCode,
-          scopeType: scope.scopeType,
-          runId: candidate.id,
-          ok: false,
-          error: message,
-        });
       }
     }
   } finally {
@@ -188,6 +190,6 @@ export function assertPublishPendingSweepSucceeded(summary: PublishPendingSummar
     return;
   }
 
-  const failed = summary.results.filter((r) => !r.ok).map((r) => r.scopeLabel);
-  throw new Error(`Publish-pending sweep failed for ${summary.failedCount} scope(s): ${failed.join(", ")}`);
+  const failed = summary.results.filter((r) => !r.ok).map((r) => `${r.scopeLabel} (${r.runId})`);
+  throw new Error(`Publish-pending sweep failed for ${summary.failedCount} run(s): ${failed.join(", ")}`);
 }

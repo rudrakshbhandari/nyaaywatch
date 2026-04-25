@@ -3,7 +3,7 @@ set -euo pipefail
 
 if [[ $# -gt 1 ]]; then
   echo "Usage: $0 [stack-name]" >&2
-  echo "Env overrides: STATE_INTERNAL_FETCH_*, SUPREME_COURT_INTERNAL_FETCH_*, HIGH_COURT_INTERNAL_FETCH_*, PUBLIC_ALPHA_OPS_*, INTERNAL_FETCH_SCHEDULER_ROLE_ARN" >&2
+  echo "Env overrides: STATE_INTERNAL_FETCH_*, SUPREME_COURT_INTERNAL_FETCH_*, HIGH_COURT_INTERNAL_FETCH_*, PUBLIC_ALPHA_OPS_*, PUBLISH_PENDING_*, INTERNAL_FETCH_SCHEDULER_ROLE_ARN" >&2
   exit 1
 fi
 
@@ -29,6 +29,11 @@ public_alpha_ops_schedule_timezone="${PUBLIC_ALPHA_OPS_SCHEDULE_TIMEZONE:-Asia/K
 public_alpha_ops_schedule_state="${PUBLIC_ALPHA_OPS_SCHEDULE_STATE:-ENABLED}"
 public_alpha_ops_schedule_name="${PUBLIC_ALPHA_OPS_SCHEDULE_NAME:-${stack_name}-public-alpha-ops-monitor}"
 public_alpha_ops_note_prefix="${PUBLIC_ALPHA_OPS_NOTE_PREFIX:-Scheduled public alpha ops verification}"
+publish_pending_schedule_expression="${PUBLISH_PENDING_SCHEDULE_EXPRESSION:-cron(30 8 * * ? *)}"
+publish_pending_schedule_timezone="${PUBLISH_PENDING_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
+publish_pending_schedule_state="${PUBLISH_PENDING_SCHEDULE_STATE:-ENABLED}"
+publish_pending_schedule_name="${PUBLISH_PENDING_SCHEDULE_NAME:-${stack_name}-publish-pending-sweep}"
+publish_pending_note_prefix="${PUBLISH_PENDING_NOTE_PREFIX:-Scheduled daily publish-pending sweep}"
 role_name="${INTERNAL_FETCH_SCHEDULER_ROLE_NAME:-${stack_name}-internal-fetch-scheduler}"
 role_policy_name="${INTERNAL_FETCH_SCHEDULER_POLICY_NAME:-${stack_name}-internal-fetch-scheduler}"
 role_arn_override="${INTERNAL_FETCH_SCHEDULER_ROLE_ARN:-}"
@@ -436,3 +441,12 @@ reconcile_schedule \
   "Scheduled public alpha verification across every live public state. Failures emit alert log lines and trigger the staging SNS alarm path." \
   "dist/src/dev/ecs-public-alpha-ops-entrypoint.js" \
   "$public_alpha_ops_note_prefix"
+
+reconcile_schedule \
+  "$publish_pending_schedule_name" \
+  "$publish_pending_schedule_expression" \
+  "$publish_pending_schedule_timezone" \
+  "$publish_pending_schedule_state" \
+  "Daily publish-pending sweep across every implemented court tier. Publishes any quality-complete runs from the last 3 days that have no newer publication, via the auto-publish gate." \
+  "dist/src/dev/ecs-publish-pending-entrypoint.js" \
+  "$publish_pending_note_prefix"

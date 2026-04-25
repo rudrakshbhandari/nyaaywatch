@@ -198,16 +198,17 @@ What it does:
 
 - discovers the current live ECS service, task definition, and awsvpc network settings
 - creates or updates the scheduler IAM role
-- creates or updates the EventBridge Scheduler schedules for lower courts, Supreme Court, reviewed High Courts, and the public-alpha monitor
+- creates or updates the EventBridge Scheduler schedules for lower courts, Supreme Court, reviewed High Courts, the publish-pending sweep, and the public-alpha monitor
 - keeps all schedules pointed at the current ECS task definition after each deploy
 
 Bootstrap note:
 
 - the GitHub Actions deploy role can update the schedule target, but it cannot create or rewrite IAM roles
-- the GitHub Actions deploy role must allow `scheduler:GetSchedule`, `scheduler:UpdateSchedule`, and `scheduler:CreateSchedule` for all four schedule ARNs:
+- the GitHub Actions deploy role must allow `scheduler:GetSchedule`, `scheduler:UpdateSchedule`, and `scheduler:CreateSchedule` for all five schedule ARNs:
   - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
   - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-supreme-court-internal-fetch`
   - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-high-courts-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-publish-pending-sweep`
   - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-public-alpha-ops-monitor`
 - first-time schedule bootstrap or scheduler-role policy changes still require an IAM-capable operator run
 - once the role exists, CI reconciles the schedule against the latest ECS task definition on every `main` deploy
