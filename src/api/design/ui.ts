@@ -18,6 +18,21 @@ export function infoIcon(key: GlossaryKey): string {
   </details>`;
 }
 
+/**
+ * Ad-hoc info popover for content that doesn't live in the GLOSSARY — e.g.
+ * per-tile date qualifiers and methodology footnotes that depend on the
+ * current snapshot. Reuses the same `.info` / `.info-popover` styles.
+ */
+export function infoDetailIcon(detail: { term: string; body: string }): string {
+  return `<details class="info">
+    <summary aria-label="More about ${escapeHtml(detail.term)}">i</summary>
+    <div class="info-popover" role="tooltip">
+      <strong>${escapeHtml(detail.term)}</strong>
+      <p class="info-short">${escapeHtml(detail.body)}</p>
+    </div>
+  </details>`;
+}
+
 export interface SectionHeadOptions {
   eyebrow?: string;
   headline: string;
@@ -68,6 +83,12 @@ export interface StatTileOptions {
   tone?: "default" | "accent" | "flag";
   infoKey?: GlossaryKey;
   /**
+   * Ad-hoc info popover for content that depends on runtime values (dates,
+   * snapshot-specific qualifiers) and so can't live in the static GLOSSARY.
+   * Ignored when `infoKey` is also set — the glossary entry wins.
+   */
+  infoDetail?: { term: string; body: string };
+  /**
    * When set, the label text becomes a link to the methodology page anchor
    * that explains the metric. The info-icon stays alongside for the
    * glossary popover so the reader has two affordances: hover for a blurb,
@@ -109,7 +130,11 @@ export function renderStatTile(options: StatTileOptions): string {
   const tone = options.tone && options.tone !== "default" ? ` stat-tile--${options.tone}` : "";
   const unit = options.unit ? `<span class="stat-tile__unit">${escapeHtml(options.unit)}</span>` : "";
   const note = options.note ? `<p class="stat-tile__note">${escapeHtml(options.note)}</p>` : "";
-  const info = options.infoKey ? ` ${infoIcon(options.infoKey)}` : "";
+  const info = options.infoKey
+    ? ` ${infoIcon(options.infoKey)}`
+    : options.infoDetail
+      ? ` ${infoDetailIcon(options.infoDetail)}`
+      : "";
   const labelText = options.methodologyHref
     ? `<a class="stat-tile__link" href="${options.methodologyHref}">${escapeHtml(options.label)}</a>`
     : escapeHtml(options.label);
