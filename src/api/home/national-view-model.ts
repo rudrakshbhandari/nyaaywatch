@@ -232,7 +232,7 @@ export function describePileTrend(institutedCases: number, disposedCases: number
   if (difference < 0) {
     return { tone: "improving", label: "Backlog shrinking" };
   }
-  return { tone: "neutral", label: "In lockstep" };
+  return { tone: "neutral", label: "Steady" };
 }
 
 function describeSupremeCourtReference(snapshot: SupremeCourtPublishedSnapshot["snapshot"]) {
