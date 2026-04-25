@@ -126,11 +126,12 @@ export function renderMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published methodology and snapshot lineage",
-        lede: "One row per source-snapshot date, showing the latest publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
+        lede: "One row per source-snapshot date, sorted newest first, showing the publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
       })}
       ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
         referenceDateLabel: (entry) => formatDate(entry.snapshot.sourceSnapshotAt),
         publicationTimestamp: (entry) => entry.publication.createdAt,
+        referenceDateSortKey: (entry) => entry.snapshot.sourceSnapshotAt,
       })) : emptyHistoryCallout()}
     </section>
   `;
@@ -159,7 +160,6 @@ function renderHistoryTable(history: PublicationHistoryEntry[]): string {
       (entry) => `
         <tr>
           <td>${escapeHtml(formatDate(entry.snapshot.sourceSnapshotAt))}</td>
-          <td>${escapeHtml(formatDate(entry.publication.createdAt))}</td>
           <td><code>${escapeHtml(entry.snapshot.methodologyVersion)}</code></td>
           <td>${escapeHtml(entry.snapshot.qualityState)}</td>
           <td class="num">${entry.stats.pendingCases.toLocaleString("en-IN")}</td>
@@ -175,7 +175,6 @@ function renderHistoryTable(history: PublicationHistoryEntry[]): string {
         <thead>
           <tr>
             <th>Source snapshot</th>
-            <th>Published</th>
             <th>Methodology</th>
             <th>Quality</th>
             <th>Cases waiting</th>

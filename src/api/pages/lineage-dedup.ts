@@ -26,6 +26,13 @@ export function dedupeLineageByReferenceDate<T>(
      * that's the one that's actually live for that day.
      */
     publicationTimestamp: (entry: T) => string;
+    /**
+     * A sortable timestamp (ISO string) representing the *reference date* of
+     * the snapshot — the source data the row is about, not when it was
+     * published. The deduped output is sorted DESC on this so readers see
+     * recent reference dates first regardless of when they were backfilled.
+     */
+    referenceDateSortKey: (entry: T) => string;
   },
 ): T[] {
   const winners = new Map<string, T>();
@@ -37,19 +44,11 @@ export function dedupeLineageByReferenceDate<T>(
     }
   }
 
-  // Preserve the original list's relative order (typically DESC by publication
-  // time): walk the input again and keep only entries that are the winning
-  // representative of their group. This avoids re-sorting and keeps callers
-  // in control of the table's outer ordering.
-  const seen = new Set<string>();
-  const result: T[] = [];
-  for (const entry of history) {
-    const key = options.referenceDateLabel(entry);
-    if (seen.has(key)) continue;
-    if (winners.get(key) === entry) {
-      seen.add(key);
-      result.push(entry);
-    }
-  }
-  return result;
+  // Sort by reference date DESC so the most recent calendar date is at the
+  // top of the table. This is independent of publication.createdAt — a
+  // backfilled entry for an old date should still appear in its historical
+  // slot, not at the top just because the publish event fired today.
+  return [...winners.values()].sort((a, b) =>
+    options.referenceDateSortKey(b).localeCompare(options.referenceDateSortKey(a)),
+  );
 }
