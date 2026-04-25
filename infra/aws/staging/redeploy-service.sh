@@ -208,9 +208,12 @@ aws ecs wait services-stable \
   --services "$service_arn"
 
 for attempt in {1..12}; do
-  if health_payload="$(curl --fail --silent --show-error "$service_url/health")"; then
-    echo "$health_payload"
-    exit 0
+  if health_payload="$(curl --fail --silent --show-error --location --insecure "$service_url/health")"; then
+    if [[ "$health_payload" == *'"ok":true'* ]]; then
+      echo "$health_payload"
+      exit 0
+    fi
+    echo "Health endpoint returned an unexpected payload: $health_payload" >&2
   fi
   sleep 10
 done

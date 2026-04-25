@@ -127,7 +127,11 @@ export class PublishedSupremeCourtSnapshotService {
     const artifacts = await this.store.listArtifactsForRun(runId);
     const candidateArtifact = artifacts.find((artifact) => artifact.artifactType === SNAPSHOT_CANDIDATE_ARTIFACT_TYPE);
     const candidate = candidateArtifact
-      ? SupremeCourtSnapshotCandidateSchema.parse(await this.artifactStore.downloadJson(candidateArtifact.s3Key))
+      ? SupremeCourtSnapshotCandidateSchema.parse(
+          await this.artifactStore.downloadJson(candidateArtifact.s3Key, {
+            expectedChecksumSha256: candidateArtifact.checksumSha256,
+          }),
+        )
       : null;
 
     return {
@@ -188,7 +192,7 @@ export class PublishedSupremeCourtSnapshotService {
         },
       });
 
-      await this.buildAndStoreSnapshotCandidate(run.id, rawArtifact.key, note);
+      await this.buildAndStoreSnapshotCandidate(run.id, rawArtifact.key, rawArtifact.checksumSha256, note);
       const inspection = await this.inspectRun(run.id);
       if (!inspection) {
         throw new Error(`Run ${run.id} was not found after Supreme Court capture.`);
@@ -334,7 +338,12 @@ export class PublishedSupremeCourtSnapshotService {
         },
       });
 
-      await this.buildAndStoreSnapshotCandidate(replayRun.id, copiedArtifact.key, note);
+      await this.buildAndStoreSnapshotCandidate(
+        replayRun.id,
+        copiedArtifact.key,
+        copiedArtifact.checksumSha256 || rawArtifact.checksumSha256,
+        note,
+      );
       const replayResult = await this.publishRun(replayRun.id, note ?? `Replayed publication from ${runId}.`);
       logInfo("supreme_court_operator_replay_completed", {
         sourceRunId: sourceInspection.run.id,
@@ -400,8 +409,15 @@ export class PublishedSupremeCourtSnapshotService {
     return rollback;
   }
 
-  private async buildAndStoreSnapshotCandidate(runId: string, rawArtifactKey: string, note?: string) {
-    const bundle = await this.artifactStore.downloadJson<SupremeCourtCaptureBundle>(rawArtifactKey);
+  private async buildAndStoreSnapshotCandidate(
+    runId: string,
+    rawArtifactKey: string,
+    rawArtifactChecksumSha256: string,
+    note?: string,
+  ) {
+    const bundle = await this.artifactStore.downloadJson<SupremeCourtCaptureBundle>(rawArtifactKey, {
+      expectedChecksumSha256: rawArtifactChecksumSha256,
+    });
     const previousSnapshots = await this.loadHistoricalSnapshots();
     const candidate = buildSupremeCourtSnapshotCandidate(extractSupremeCourtCaptureBundle(bundle), previousSnapshots);
 

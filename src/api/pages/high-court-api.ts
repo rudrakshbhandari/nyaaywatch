@@ -25,7 +25,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
             <pre class="code-sample">{
   "snapshot": {
     "courtTier": "high_court",
-    "courtCode": "HPH",
+    "courtCode": "HPHC",
     "courtSlug": "himachal",
     "courtName": "High Court of Himachal Pradesh",
     "coveredGeographies": [
@@ -57,7 +57,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
   },
   "trends": [
     { "referenceDateAt": "2025-01-15T00:00:00.000Z", "referenceDateKind": "source_snapshot_at", "pendingTotalCases": 74310, "institutedLastMonthTotalCases": 1760, "disposedLastMonthTotalCases": 1690 },
-    // \u2026 one point per published snapshot
+    { "referenceDateAt": "2025-02-15T00:00:00.000Z", "referenceDateKind": "source_snapshot_at", "pendingTotalCases": 76170, "institutedLastMonthTotalCases": 1820, "disposedLastMonthTotalCases": 1650 }
   ]
 }</pre>
           </details>

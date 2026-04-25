@@ -227,21 +227,36 @@ export function registerOgRoutes(
   // ── National OG card ─────────────────────────────────────────────────────
   router.get("/national.png", async (_req, res) => {
     try {
-      const service = publicServices[DEFAULT_STATE_CODE];
-      if (!service) { res.status(404).end(); return; }
+      const publishedRecords = (
+        await Promise.all(
+          Object.entries(publicServices).map(async ([stateCode, service]) => {
+            if (!service) {
+              return null;
+            }
 
-      const record = await service.getPublishedSnapshot();
-      if (!record) { res.status(404).end(); return; }
+            const record = await service.getPublishedSnapshot();
+            return record ? { stateCode, record } : null;
+          }),
+        )
+      ).filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
-      const model = buildViewModel(record.payload);
-      const statesWithData = Object.keys(publicServices).length;
+      if (publishedRecords.length === 0) { res.status(404).end(); return; }
+
+      const totalPendingCases = publishedRecords.reduce(
+        (sum, entry) => sum + entry.record.payload.stats.pendingCases,
+        0,
+      );
+      const latestPublishedAt = publishedRecords
+        .map((entry) => entry.record.payload.snapshot.publishedAt)
+        .sort()
+        .at(-1);
       const data: NationalOgCardData = {
         headline: "How long is India waiting for justice?",
-        totalPendingLakh: model.pendingLakh,
-        statesCount: statesWithData,
-        sourceDateLabel: model.sourceDateLabel,
+        totalPendingLakh: formatLakh(totalPendingCases),
+        statesCount: publishedRecords.length,
+        sourceDateLabel: "latest published snapshots",
       };
-      const cacheKey = `national:${record.payload.snapshot.publishedAt}`;
+      const cacheKey = `national:${publishedRecords.length}:${totalPendingCases}:${latestPublishedAt ?? "none"}`;
       const png = await renderNationalOgCard(data, cacheKey);
 
       res.setHeader("Content-Type", "image/png");

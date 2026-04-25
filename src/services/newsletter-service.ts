@@ -35,7 +35,19 @@ export class NewsletterService {
       `INSERT INTO newsletter_subscriptions (id, email, scope, token)
        VALUES ($1, $2, $3, $4)
        ON CONFLICT (email, scope) DO UPDATE
-         SET unsubscribed_at = NULL
+         SET token = CASE
+               WHEN newsletter_subscriptions.unsubscribed_at IS NOT NULL THEN EXCLUDED.token
+               ELSE newsletter_subscriptions.token
+             END,
+             confirmed = CASE
+               WHEN newsletter_subscriptions.unsubscribed_at IS NOT NULL THEN FALSE
+               ELSE newsletter_subscriptions.confirmed
+             END,
+             confirmed_at = CASE
+               WHEN newsletter_subscriptions.unsubscribed_at IS NOT NULL THEN NULL
+               ELSE newsletter_subscriptions.confirmed_at
+             END,
+             unsubscribed_at = NULL
        RETURNING token, confirmed`,
       [id, email.trim().toLowerCase(), scope, token],
     );

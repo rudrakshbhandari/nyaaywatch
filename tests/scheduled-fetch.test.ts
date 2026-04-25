@@ -68,24 +68,18 @@ describe("scheduled fetch", () => {
           stateName: "Himachal Pradesh",
           ok: true,
           runId: "run_hp_123",
-          autoPublish: "gate_inputs_missing",
-          autoPublishReason: undefined,
         },
         {
           stateCode: "PB",
           stateName: "Punjab",
           ok: true,
           runId: "run_pb_456",
-          autoPublish: "gate_inputs_missing",
-          autoPublishReason: undefined,
         },
         {
           stateCode: "UP",
           stateName: "Uttar Pradesh",
           ok: true,
           runId: "run_up_789",
-          autoPublish: "gate_inputs_missing",
-          autoPublishReason: undefined,
         },
       ],
     });
@@ -114,8 +108,6 @@ describe("scheduled fetch", () => {
         stateName: "Himachal Pradesh",
         ok: true,
         runId: "run_hp_123",
-        autoPublish: "gate_inputs_missing",
-        autoPublishReason: undefined,
       },
       {
         stateCode: "PB",
@@ -128,8 +120,6 @@ describe("scheduled fetch", () => {
         stateName: "Uttar Pradesh",
         ok: true,
         runId: "run_up_789",
-        autoPublish: "gate_inputs_missing",
-        autoPublishReason: undefined,
       },
     ]);
 

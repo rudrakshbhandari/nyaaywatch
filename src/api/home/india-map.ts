@@ -185,7 +185,7 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
       <header class="india-choropleth__head">
         <p class="india-choropleth__eyebrow">JUDICIAL PRESSURE INDEX</p>
         <h2 class="india-choropleth__hed">Where is delay piling up across India?</h2>
-        <p class="india-choropleth__lede">Each published State or Union Territory is shaded by its rank on a composite index: pending backlog, median case age, clearance shortfall, and share of flagged districts. Published lower-court geographies are split into five pressure quintiles — darker red means higher pressure relative to the rest of the country. Click any shaded geography to open its published snapshot.</p>
+        <p class="india-choropleth__lede">Each published State or Union Territory is shaded by its rank on a composite index computed from published lower-court snapshots: 40% pending backlog, 30% median case age, 20% clearance shortfall, and 10% share of flagged districts. Published lower-court geographies are split into five pressure quintiles — darker red means higher pressure relative to the rest of the country. Click any shaded geography to open its published snapshot and methodology.</p>
       </header>
       <div class="india-choropleth__layout">
         <figure class="india-choropleth__frame" aria-labelledby="india-choropleth-title">
