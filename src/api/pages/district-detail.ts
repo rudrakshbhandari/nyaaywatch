@@ -6,6 +6,13 @@ import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
+import {
+  describeBacklogMovement,
+  describeBreakEven,
+  describeCatchUp,
+  describeWatchlistPersistence,
+  formatShare,
+} from "./metric-insights.js";
 
 /**
  * /districts/:id — district evidence page. Pairs the headline stats with the
@@ -117,6 +124,38 @@ export function renderDistrictPage(
 
     ${renderWaitingClock(typicalWaitMonths, district.districtName)}
 
+    <section class="stat-grid" id="district-pressure-context">
+      ${renderStatTile({
+        label: "Older than 5 years",
+        value: formatShare(district.oldCaseBurden.fivePlusYearsShare),
+        note: `${district.oldCaseBurden.fivePlusYearsCases.toLocaleString("en-IN")} pending cases in this district are older than 5 years.`,
+        tone: "accent",
+        methodologyHref: `${context.routes.methodology}#metric-old-case-burden`,
+      })}
+      ${renderStatTile({
+        label: "Backlog movement",
+        value: `${district.backlogMovementShare > 0 ? "+" : ""}${district.backlogMovementShare.toFixed(1)}%`,
+        note: describeBacklogMovement(district.backlogMovementShare),
+        methodologyHref: `${context.routes.methodology}#metric-backlog-movement`,
+      })}
+      ${renderStatTile({
+        label: "Break-even clearances",
+        value: district.breakEvenClearancesNeeded.toLocaleString("en-IN"),
+        note: describeBreakEven(district.breakEvenClearancesNeeded),
+        methodologyHref: `${context.routes.methodology}#metric-break-even-clearances`,
+      })}
+      ${renderStatTile({
+        label: "Repeat signal",
+        value: `${district.watchlistPersistence.flaggedInLastSix}/${district.watchlistPersistence.lastSixWindow}`,
+        note: describeWatchlistPersistence(
+          district.watchlistPersistence.flaggedInLastSix,
+          district.watchlistPersistence.lastSixWindow,
+        ),
+        tone: "flag",
+        methodologyHref: `${context.routes.methodology}#metric-watchlist-persistence`,
+      })}
+    </section>
+
     <section class="district-grid">
       <div class="district-col">
         <article class="card" id="district-flag">
@@ -126,6 +165,7 @@ export function renderDistrictPage(
           </header>
           <p>${escapeHtml(district.flagReason)}</p>
           <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</strong> percentage points in the latest data.</p>
+          <p class="card__meta">${escapeHtml(describeCatchUp(district.catchUpClearancesPerMonth))}</p>
         </article>
 
         <article class="card" id="district-history">

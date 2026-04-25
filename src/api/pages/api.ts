@@ -41,13 +41,25 @@ export function renderApiPage(context: PublicPageContext): string {
   },
   "stats": {
     "pendingCases": 94158,
+    "filedLastMonthCases": 10420,
+    "clearedLastMonthCases": 9820,
     "disposalRate": 74.3,
     "medianCaseAgeDays": 847,
-    "flaggedDistricts": 9
+    "flaggedDistricts": 9,
+    "oldCaseBurden": {
+      "fivePlusYearsCases": 18430,
+      "fivePlusYearsShare": 19.6
+    },
+    "backlogMovementShare": 0.6,
+    "breakEvenClearancesNeeded": 600,
+    "catchUpClearancesPerMonth": 1385,
+    "backlogConcentration": {
+      "topFiveDistrictsShare": 57.8
+    }
   },
   "trends": [
-    { "snapshotDate": "2025-01-15T00:00:00.000Z", "pendingCases": 91240, "disposalRate": 71.8 },
-    { "snapshotDate": "2025-02-15T00:00:00.000Z", "pendingCases": 94158, "disposalRate": 74.3 }
+    { "snapshotDate": "2025-01-15T00:00:00.000Z", "pendingCases": 91240, "filedLastMonthCases": 10120, "clearedLastMonthCases": 9460, "disposalRate": 71.8 },
+    { "snapshotDate": "2025-02-15T00:00:00.000Z", "pendingCases": 94158, "filedLastMonthCases": 10420, "clearedLastMonthCases": 9820, "disposalRate": 74.3 }
   ]
 }</pre>
           </details>
@@ -65,9 +77,21 @@ export function renderApiPage(context: PublicPageContext): string {
       "districtName": "Kangra",
       "rank": 1,
       "backlogCases": 12453,
+      "filedLastMonthCases": 1520,
+      "clearedLastMonthCases": 1360,
       "disposalRate": 68.2,
       "medianAgeDays": 912,
       "filingVsDisposalGap": 8.4,
+      "oldCaseBurden": {
+        "fivePlusYearsCases": 3210,
+        "fivePlusYearsShare": 25.8
+      },
+      "backlogMovementShare": 1.3,
+      "breakEvenClearancesNeeded": 160,
+      "watchlistPersistence": {
+        "flaggedInLastSix": 5,
+        "lastSixWindow": 6
+      },
       "flagReason": "High file-clear gap with growing backlog.",
       "summary": "Kangra shows a widening backlog \u2026"
     },
@@ -76,9 +100,21 @@ export function renderApiPage(context: PublicPageContext): string {
       "districtName": "Shimla",
       "rank": 2,
       "backlogCases": 10421,
+      "filedLastMonthCases": 1210,
+      "clearedLastMonthCases": 1240,
       "disposalRate": 71.5,
       "medianAgeDays": 874,
       "filingVsDisposalGap": 5.9,
+      "oldCaseBurden": {
+        "fivePlusYearsCases": 2240,
+        "fivePlusYearsShare": 21.5
+      },
+      "backlogMovementShare": -0.3,
+      "breakEvenClearancesNeeded": 0,
+      "watchlistPersistence": {
+        "flaggedInLastSix": 3,
+        "lastSixWindow": 6
+      },
       "flagReason": "Backlog remains above the state median.",
       "summary": "Shimla remains a high-volume district in this snapshot."
     }
@@ -94,8 +130,8 @@ export function renderApiPage(context: PublicPageContext): string {
             <summary>Sample response</summary>
             <pre class="code-sample">{
   "trends": [
-    { "snapshotDate": "2025-01-15T00:00:00.000Z", "pendingCases": 91240, "disposalRate": 71.8 },
-    { "snapshotDate": "2025-03-15T00:00:00.000Z", "pendingCases": 94158, "disposalRate": 74.3 }
+    { "snapshotDate": "2025-01-15T00:00:00.000Z", "pendingCases": 91240, "filedLastMonthCases": 10120, "clearedLastMonthCases": 9460, "disposalRate": 71.8 },
+    { "snapshotDate": "2025-03-15T00:00:00.000Z", "pendingCases": 94158, "filedLastMonthCases": 10420, "clearedLastMonthCases": 9820, "disposalRate": 74.3 }
   ]
 }</pre>
           </details>

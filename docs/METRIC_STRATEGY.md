@@ -374,13 +374,15 @@ It belongs, if ever, in a separate criminal-justice outcomes module because:
 
 ## Recommended Implementation Order
 
-1. Preserve lower-court filed/cleared counts and age buckets in the public snapshot schema.
-2. Add old-case burden share to lower-court state and district pages.
-3. Add backlog movement as share of pending load to Supreme Court, High Court, and lower-court overview pages.
-4. Add break-even clearances needed as a plain-language companion to clearance pace.
-5. Add watchlist persistence to district pages and the movers surface.
-6. Add backlog concentration to lower-court state pages and High Court case-type pages where source support exists.
-7. Add civil-criminal imbalance to Supreme Court and High Court pages.
+Implementation status:
+
+1. Done: preserve lower-court filed/cleared counts and age buckets in the public snapshot schema, JSON endpoints, and CSV exports.
+2. Done: add old-case burden share to lower-court state and district pages.
+3. Done: add backlog movement as share of pending load to Supreme Court, High Court, and lower-court overview pages.
+4. Done: add break-even clearances needed as a plain-language companion to clearance pace.
+5. Done: add watchlist persistence to district pages and the movers surface.
+6. Done: add backlog concentration to lower-court state pages and High Court overview pages where case-type source support exists.
+7. Done: add civil-criminal imbalance to Supreme Court and High Court pages.
 8. Only after those ship, evaluate judge-adjusted pressure and population-normalized pressure as sourced-data expansion projects.
 
 ## Public Copy Rules
@@ -390,4 +392,3 @@ It belongs, if ever, in a separate criminal-justice outcomes module because:
 - Describe scenario metrics as scenarios, not predictions.
 - Describe repeated pressure as a signal, not a verdict.
 - Keep cross-tier comparisons limited to shared concepts like backlog pressure and clearance pace; do not flatten tier-specific semantics into one national scoreboard.
-

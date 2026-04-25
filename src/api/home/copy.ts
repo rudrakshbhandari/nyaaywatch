@@ -42,7 +42,7 @@ export const GLOSSARY: Record<
     term: "districts to watch",
     short: "Districts where several pressure signals line up at once.",
     long:
-      "A district lands on this list when it combines a large backlog of pending cases with slower clearance or longer waits than the state average. It is a signal for closer inspection, not a judgment about any specific court or official.",
+      "A district lands on this list when it combines a large backlog of pending cases with slower clearance or longer waits than the state average. It is a signal for closer inspection, not a finding about any specific court or official.",
   },
   fileClearGap: {
     term: "file-clear gap",
@@ -146,7 +146,7 @@ export function buildCopy(
 
     sectionWatchlist: "Three districts to inspect first",
     sectionWatchlistLede:
-      `A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the ${lowerCourtCopy.geographyLabelLower}. These are signals for closer inspection, not judgments.`,
+      `A district lands here when its backlog, its waiting time, or its pace of work is out of line with the rest of the ${lowerCourtCopy.geographyLabelLower}. These are signals for closer inspection, not findings.`,
 
     sectionTrend: `How the ${lowerCourtCopy.aggregateAdjective} backlog has moved`,
     sectionTrendLede:

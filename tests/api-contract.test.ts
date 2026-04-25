@@ -35,11 +35,60 @@ function createStatsContract(stateCode: "HP" | "PB", stateName: string) {
     stats: z
       .object({
         pendingCases: z.number().int().nonnegative(),
+        filedLastMonthCases: z.number().int().nonnegative(),
+        clearedLastMonthCases: z.number().int().nonnegative(),
         disposalRate: z.number().nonnegative(),
         medianCaseAgeDays: z.number().int().nonnegative(),
         flaggedDistricts: z.number().int().nonnegative(),
+        ageBuckets: createAgeBucketsContract(),
+        oldCaseBurden: createOldCaseBurdenContract(),
+        backlogMovementShare: z.number(),
+        breakEvenClearancesNeeded: z.number().int().nonnegative(),
+        catchUpClearancesPerMonth: z.number().int().nonnegative(),
+        backlogConcentration: z
+          .object({
+            topFiveDistrictsShare: z.number().nonnegative(),
+            topTenDistrictsShare: z.number().nonnegative(),
+          })
+          .strict(),
       })
       .strict(),
+    })
+    .strict();
+}
+
+function createAgeBucketsContract() {
+  return z
+    .object({
+      lessThanOneYear: z.number().int().nonnegative(),
+      oneToThreeYears: z.number().int().nonnegative(),
+      threeToFiveYears: z.number().int().nonnegative(),
+      fiveToTenYears: z.number().int().nonnegative(),
+      aboveTenYears: z.number().int().nonnegative(),
+    })
+    .strict();
+}
+
+function createOldCaseBurdenContract() {
+  return z
+    .object({
+      threePlusYearsCases: z.number().int().nonnegative(),
+      fivePlusYearsCases: z.number().int().nonnegative(),
+      tenPlusYearsCases: z.number().int().nonnegative(),
+      threePlusYearsShare: z.number().nonnegative(),
+      fivePlusYearsShare: z.number().nonnegative(),
+      tenPlusYearsShare: z.number().nonnegative(),
+    })
+    .strict();
+}
+
+function createWatchlistPersistenceContract() {
+  return z
+    .object({
+      flaggedInLastThree: z.number().int().nonnegative(),
+      lastThreeWindow: z.number().int().nonnegative(),
+      flaggedInLastSix: z.number().int().nonnegative(),
+      lastSixWindow: z.number().int().nonnegative(),
     })
     .strict();
 }
@@ -56,9 +105,17 @@ function createDistrictsContract(stateCode: "HP" | "PB", stateName: string) {
             districtName: z.string().min(1),
             rank: z.number().int().positive(),
             backlogCases: z.number().int().nonnegative(),
+            filedLastMonthCases: z.number().int().nonnegative(),
+            clearedLastMonthCases: z.number().int().nonnegative(),
             disposalRate: z.number().nonnegative(),
             medianAgeDays: z.number().int().nonnegative(),
             filingVsDisposalGap: z.number(),
+            ageBuckets: createAgeBucketsContract(),
+            oldCaseBurden: createOldCaseBurdenContract(),
+            backlogMovementShare: z.number(),
+            breakEvenClearancesNeeded: z.number().int().nonnegative(),
+            catchUpClearancesPerMonth: z.number().int().nonnegative(),
+            watchlistPersistence: createWatchlistPersistenceContract(),
             flagReason: z.string().min(1),
             summary: z.string().min(1),
           })
@@ -79,6 +136,8 @@ function createTrendsContract(stateCode: "HP" | "PB", stateName: string) {
           .object({
             snapshotDate: z.string().datetime(),
             pendingCases: z.number().int().nonnegative(),
+            filedLastMonthCases: z.number().int().nonnegative(),
+            clearedLastMonthCases: z.number().int().nonnegative(),
             disposalRate: z.number().nonnegative(),
           })
           .strict(),
@@ -138,9 +197,17 @@ describe("API contract stability", () => {
       "districtName",
       "rank",
       "backlogCases",
+      "filedLastMonthCases",
+      "clearedLastMonthCases",
       "disposalRate",
       "medianAgeDays",
       "filingVsDisposalGap",
+      "ageBuckets",
+      "oldCaseBurden",
+      "backlogMovementShare",
+      "breakEvenClearancesNeeded",
+      "catchUpClearancesPerMonth",
+      "watchlistPersistence",
       "flagReason",
       "summary",
     ]);
@@ -160,6 +227,8 @@ describe("API contract stability", () => {
     expect(Object.keys(parsed.trends[0] ?? {})).toEqual([
       "snapshotDate",
       "pendingCases",
+      "filedLastMonthCases",
+      "clearedLastMonthCases",
       "disposalRate",
     ]);
   });

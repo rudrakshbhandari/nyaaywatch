@@ -51,6 +51,8 @@ export interface DistrictMover {
   disposalRate: number;
   disposalDelta: number;
   rankDelta: number;
+  watchlistFlaggedInLastSix: number;
+  watchlistLastSixWindow: number;
 }
 
 export interface DistrictMoversResult {
@@ -77,9 +79,16 @@ export interface DistrictHistoryPoint {
   freshnessDays: number;
   rank: number;
   backlogCases: number;
+  filedLastMonthCases: number;
+  clearedLastMonthCases: number;
   disposalRate: number;
   medianAgeDays: number;
   filingVsDisposalGap: number;
+  oldCaseBurdenFivePlusShare: number;
+  backlogMovementShare: number;
+  breakEvenClearancesNeeded: number;
+  watchlistFlaggedInLastSix: number;
+  watchlistLastSixWindow: number;
   flagReason: string;
   summary: string;
 }
@@ -180,6 +189,8 @@ export class PublishedSnapshotService {
         disposalRate: d.disposalRate,
         disposalDelta: Math.round((d.disposalRate - prev.disposalRate) * 10) / 10,
         rankDelta: prev.rank - d.rank,
+        watchlistFlaggedInLastSix: d.watchlistPersistence.flaggedInLastSix,
+        watchlistLastSixWindow: d.watchlistPersistence.lastSixWindow,
       });
     }
     return {
@@ -539,9 +550,20 @@ export class PublishedSnapshotService {
       "district_name",
       "rank",
       "backlog_cases",
+      "filed_last_month_cases",
+      "cleared_last_month_cases",
       "disposal_rate",
       "median_age_days",
       "filing_vs_disposal_gap",
+      "old_cases_3y_plus",
+      "old_cases_5y_plus",
+      "old_cases_10y_plus",
+      "old_cases_5y_plus_share",
+      "backlog_movement_share",
+      "break_even_clearances_needed",
+      "catch_up_clearances_per_month",
+      "watchlist_flagged_last_6",
+      "watchlist_last_6_window",
       "flag_reason",
       "summary",
     ].join(",");
@@ -559,9 +581,20 @@ export class PublishedSnapshotService {
         csvCell(district.districtName),
         district.rank,
         district.backlogCases,
+        district.filedLastMonthCases,
+        district.clearedLastMonthCases,
         district.disposalRate,
         district.medianAgeDays,
         district.filingVsDisposalGap,
+        district.oldCaseBurden.threePlusYearsCases,
+        district.oldCaseBurden.fivePlusYearsCases,
+        district.oldCaseBurden.tenPlusYearsCases,
+        district.oldCaseBurden.fivePlusYearsShare,
+        district.backlogMovementShare,
+        district.breakEvenClearancesNeeded,
+        district.catchUpClearancesPerMonth,
+        district.watchlistPersistence.flaggedInLastSix,
+        district.watchlistPersistence.lastSixWindow,
         csvCell(district.flagReason),
         csvCell(district.summary),
       ].join(","),
@@ -586,9 +619,16 @@ export class PublishedSnapshotService {
       "district_name",
       "rank",
       "backlog_cases",
+      "filed_last_month_cases",
+      "cleared_last_month_cases",
       "disposal_rate",
       "median_age_days",
       "filing_vs_disposal_gap",
+      "old_cases_5y_plus_share",
+      "backlog_movement_share",
+      "break_even_clearances_needed",
+      "watchlist_flagged_last_6",
+      "watchlist_last_6_window",
       "flag_reason",
       "summary",
     ].join(",");
@@ -603,9 +643,16 @@ export class PublishedSnapshotService {
         csvCell(point.districtName),
         point.rank,
         point.backlogCases,
+        point.filedLastMonthCases,
+        point.clearedLastMonthCases,
         point.disposalRate,
         point.medianAgeDays,
         point.filingVsDisposalGap,
+        point.oldCaseBurdenFivePlusShare,
+        point.backlogMovementShare,
+        point.breakEvenClearancesNeeded,
+        point.watchlistFlaggedInLastSix,
+        point.watchlistLastSixWindow,
         csvCell(point.flagReason),
         csvCell(point.summary),
       ].join(","),
@@ -794,9 +841,16 @@ function buildDistrictHistoryPoint(snapshot: PublishedSnapshot, districtId: stri
     freshnessDays: snapshot.snapshot.freshnessDays,
     rank: district.rank,
     backlogCases: district.backlogCases,
+    filedLastMonthCases: district.filedLastMonthCases,
+    clearedLastMonthCases: district.clearedLastMonthCases,
     disposalRate: district.disposalRate,
     medianAgeDays: district.medianAgeDays,
     filingVsDisposalGap: district.filingVsDisposalGap,
+    oldCaseBurdenFivePlusShare: district.oldCaseBurden.fivePlusYearsShare,
+    backlogMovementShare: district.backlogMovementShare,
+    breakEvenClearancesNeeded: district.breakEvenClearancesNeeded,
+    watchlistFlaggedInLastSix: district.watchlistPersistence.flaggedInLastSix,
+    watchlistLastSixWindow: district.watchlistPersistence.lastSixWindow,
     flagReason: district.flagReason,
     summary: district.summary,
   };
