@@ -10,6 +10,9 @@ export interface PublicAlphaMonitorAlertPayload {
   baseUrl: string;
   checkedAt: string;
   error: string;
+  staleTargets: string[];
+  dailyFetchLagTargets: string[];
+  failingTargets: string[];
   staleStates: string[];
   dailyFetchLagStates: string[];
   failingStates: string[];
@@ -47,6 +50,9 @@ export function buildPublicAlphaMonitorAlertPayload(
     baseUrl: normalizeBaseUrl(baseUrl),
     checkedAt: checkedAt.toISOString(),
     error: error instanceof Error ? error.message : String(error),
+    staleTargets: summary?.staleTargets ?? [],
+    dailyFetchLagTargets: summary?.dailyFetchLagTargets ?? [],
+    failingTargets: summary?.failingTargets ?? [],
     staleStates: summary?.staleStates ?? [],
     dailyFetchLagStates: summary?.dailyFetchLagStates ?? [],
     failingStates: summary?.failingStates ?? [],

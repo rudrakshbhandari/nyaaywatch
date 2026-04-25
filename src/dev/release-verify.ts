@@ -3,8 +3,8 @@ import { readFlag } from "./cli-flags.js";
 
 async function main() {
   const baseUrl = readBaseUrl();
-  const stateSlug = readStateSlug();
-  const summary = await verifyPublicRelease(baseUrl, stateSlug ? { stateSlug } : undefined);
+  const target = readTarget();
+  const summary = await verifyPublicRelease(baseUrl, target);
   console.log(JSON.stringify(summary, null, 2));
 }
 
@@ -27,18 +27,17 @@ function readBaseUrl() {
   throw new Error("Usage: tsx src/dev/release-verify.ts --base-url <https://nyaaywatch.in>");
 }
 
-function readStateSlug() {
+function readTarget() {
   const args = process.argv.slice(2);
-  const value = readFlag(args, "--state-slug");
-  if (value) {
-    return value;
+  const stateSlug = readFlag(args, "--state-slug") ?? process.env.STATE_SLUG;
+  const highCourtSlug = readFlag(args, "--high-court") ?? process.env.HIGH_COURT_SLUG;
+  const supremeCourt = args.includes("--supreme-court") || process.env.SUPREME_COURT === "1";
+  const selectedCount = [stateSlug, highCourtSlug, supremeCourt ? "supreme-court" : undefined].filter(Boolean).length;
+  if (selectedCount > 1) {
+    throw new Error("Select only one release target: --state-slug, --high-court, or --supreme-court.");
   }
 
-  if (process.env.STATE_SLUG) {
-    return process.env.STATE_SLUG;
-  }
-
-  return undefined;
+  return { stateSlug, highCourtSlug, supremeCourt };
 }
 
 await main();
