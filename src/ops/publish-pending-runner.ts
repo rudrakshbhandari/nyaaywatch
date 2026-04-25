@@ -123,16 +123,21 @@ export async function runPublishPendingSweep(
           { rawEnv },
         );
 
+        const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
         console.log(
           `Publish-pending outcome for ${scope.scopeLabel}: ${outcome.action}${outcome.decision?.reason ? ` (${outcome.decision.reason})` : ""}`,
         );
+
+        if (sweepFailed) {
+          console.error(`Publish-pending error for ${scope.scopeLabel}: ${outcome.action}${outcome.error ? ` — ${outcome.error}` : ""}`);
+        }
 
         results.push({
           scopeLabel: scope.scopeLabel,
           scopeCode: scope.scopeCode,
           scopeType: scope.scopeType,
           runId: candidate.id,
-          ok: true,
+          ok: !sweepFailed,
           autoPublish: outcome.action,
           autoPublishReason: outcome.decision?.reason,
         });
