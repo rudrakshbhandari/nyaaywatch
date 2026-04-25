@@ -124,7 +124,7 @@ function renderHistoryTable(history: HighCourtPublicationHistoryEntry[]) {
       (entry) => `
         <tr>
           <td>${escapeHtml(describeReferenceDate(entry.snapshot))}</td>
-          <td>${escapeHtml(formatDate(entry.snapshot.publishedAt))}</td>
+          <td>${escapeHtml(formatDate(entry.publication.createdAt))}</td>
           <td><code>${escapeHtml(entry.snapshot.methodologyVersion)}</code></td>
           <td>${escapeHtml(entry.snapshot.qualityState)}</td>
           <td>${escapeHtml(entry.publication.action)}</td>

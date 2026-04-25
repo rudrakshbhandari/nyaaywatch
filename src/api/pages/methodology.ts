@@ -129,7 +129,7 @@ function renderHistoryTable(history: PublicationHistoryEntry[]): string {
       (entry) => `
         <tr>
           <td>${escapeHtml(formatDate(entry.snapshot.sourceSnapshotAt))}</td>
-          <td>${escapeHtml(formatDate(entry.snapshot.publishedAt))}</td>
+          <td>${escapeHtml(formatDate(entry.publication.createdAt))}</td>
           <td><code>${escapeHtml(entry.snapshot.methodologyVersion)}</code></td>
           <td>${escapeHtml(entry.snapshot.qualityState)}</td>
           <td class="num">${entry.stats.pendingCases.toLocaleString("en-IN")}</td>
