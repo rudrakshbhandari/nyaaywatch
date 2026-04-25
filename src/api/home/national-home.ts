@@ -121,6 +121,7 @@ export function renderNationalHome(input: {
   const scReferenceIso = input.supremeCourtSnapshot?.snapshot.referenceDateAt ?? null;
   const scThroughLabel = scReferenceIso ? `through ${formatDate(scReferenceIso)}` : "so far this month";
   const scGapDirectionNote = describeMtdGapDirection(input.supremeCourtSnapshot);
+  const scTrendLineSuffix = scFinalized.length >= 2 ? " Trend line compares finalized months." : "";
 
   const tocItems = [
     { id: "hero", index: "01", label: "At a glance" },
@@ -182,7 +183,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Cleared / 100 filed this month",
                 value: model.supremeCourt.clearanceRateDisplay ?? "—",
-                note: `How quickly the Supreme Court is clearing cases this month, ${scThroughLabel}. 100 means it is keeping pace with filings. Trend line compares finalized months.`,
+                note: `How quickly the Supreme Court is clearing cases this month, ${scThroughLabel}. 100 means it is keeping pace with filings.${scTrendLineSuffix}`,
                 tone: "accent",
                 series: scClearanceSeries,
                 seriesLabel: "Clearance rate across finalized months",
@@ -191,7 +192,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Disposed this month",
                 value: model.supremeCourt.disposedLastMonthDisplay ?? "—",
-                note: `Cases the Supreme Court has cleared this month, ${scThroughLabel}. Trend line compares finalized months.`,
+                note: `Cases the Supreme Court has cleared this month, ${scThroughLabel}.${scTrendLineSuffix}`,
                 series: scDisposedSeries,
                 seriesLabel: "Disposed across finalized months",
                 deltaDirectionHint: "up-is-good",
@@ -199,7 +200,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Backlog change this month",
                 value: model.supremeCourt.monthlyGapDisplay ?? "—",
-                note: `${scGapDirectionNote} ${scThroughLabel}. Trend line compares finalized months.`,
+                note: `${scGapDirectionNote} ${scThroughLabel}.${scTrendLineSuffix}`,
                 series: scGapSeries,
                 seriesLabel: "Backlog change across finalized months",
                 deltaDirectionHint: "up-is-bad",

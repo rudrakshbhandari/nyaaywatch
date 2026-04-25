@@ -18,7 +18,7 @@ export const SupremeCourtSnapshotCandidateSchema = z.object({
   snapshot: SupremeCourtSnapshotCandidateMetadataSchema,
   stats: SupremeCourtStatsSchema,
   trends: z.array(SupremeCourtTrendPointSchema).min(1),
-  monthlyFinalized: z.array(SupremeCourtMonthlyFinalizedSchema),
+  monthlyFinalized: z.array(SupremeCourtMonthlyFinalizedSchema).default([]),
 });
 
 export type SupremeCourtSnapshotCandidate = z.infer<typeof SupremeCourtSnapshotCandidateSchema>;
