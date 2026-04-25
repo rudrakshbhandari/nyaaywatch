@@ -62,6 +62,7 @@ export interface DistrictMoversResult {
 export interface PublicationHistoryEntry {
   publication: PublicationRecord;
   snapshot: PublishedSnapshot["snapshot"] & { id: string };
+  stats: Pick<PublishedSnapshot["stats"], "pendingCases" | "flaggedDistricts">;
   run: Pick<RunRecord, "id" | "status" | "replayOfRunId" | "sourceSnapshotAt" | "methodologyVersion" | "qualityState">;
   isActive: boolean;
 }
@@ -215,6 +216,10 @@ export class PublishedSnapshotService {
           snapshot: {
             id: snapshot.id,
             ...snapshot.payload.snapshot,
+          },
+          stats: {
+            pendingCases: snapshot.payload.stats.pendingCases,
+            flaggedDistricts: snapshot.payload.stats.flaggedDistricts,
           },
           run: {
             id: run.id,
