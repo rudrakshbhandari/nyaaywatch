@@ -89,10 +89,12 @@ function findUnpublishedCompleteRun(runs: RunRecord[], since: string): RunRecord
     return undefined;
   }
 
-  // Skip if a published run exists that is newer than the candidate — publishing
-  // the older run would regress the live snapshot to stale data.
+  // Skip if a published or replayed run exists that is newer than the candidate —
+  // publishing the older run would undo an intentional replay or regress freshness.
   const hasNewerPublication = runs.some(
-    (run) => run.status === "published" && run.createdAt > candidate.createdAt,
+    (run) =>
+      (run.status === "published" || run.status === "replayed") &&
+      run.createdAt > candidate.createdAt,
   );
 
   return hasNewerPublication ? undefined : candidate;
