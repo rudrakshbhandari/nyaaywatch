@@ -1,0 +1,71 @@
+{
+  "snapshot": {
+    "courtTier": "supreme_court",
+    "courtCode": "SCI",
+    "courtSlug": "supreme-court",
+    "courtName": "Supreme Court of India",
+    "sourceName": "Supreme Court NJDG dashboard",
+    "sourceSnapshotAt": null,
+    "referenceDateAt": "2026-04-23T21:47:06.884Z",
+    "referenceDateKind": "captured_at",
+    "publishedAt": "2026-04-23T21:47:08.150Z",
+    "methodologyVersion": "2026.04-supreme-court-draft",
+    "qualityState": "complete",
+    "freshnessDays": 0,
+    "sourceAttribution": "Supreme Court of India National Judicial Data Grid",
+    "publishedFromRunId": "run_919434cc-f4f1-409d-b82e-8aa10059595e"
+  },
+  "stats": {
+    "pendingCivilRegisteredCases": 55488,
+    "pendingCivilUnregisteredCases": 18506,
+    "pendingCivilTotalCases": 73994,
+    "pendingCriminalRegisteredCases": 16157,
+    "pendingCriminalUnregisteredCases": 4160,
+    "pendingCriminalTotalCases": 20317,
+    "pendingRegisteredCases": 71645,
+    "pendingUnregisteredCases": 22666,
+    "pendingTotalCases": 94311,
+    "institutedLastMonthCivilCases": 4083,
+    "institutedLastMonthCriminalCases": 2065,
+    "institutedLastMonthTotalCases": 6148,
+    "disposedLastMonthCivilCases": 3039,
+    "disposedLastMonthCriminalCases": 1517,
+    "disposedLastMonthTotalCases": 4556,
+    "institutedCurrentYearCivilCases": 16495,
+    "institutedCurrentYearCriminalCases": 8182,
+    "institutedCurrentYearTotalCases": 24677,
+    "disposedCurrentYearCivilCases": 14969,
+    "disposedCurrentYearCriminalCases": 7222,
+    "disposedCurrentYearTotalCases": 22191
+  },
+  "trends": [
+    {
+      "referenceDateAt": "2026-04-19T06:41:34.634Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 94158,
+      "institutedLastMonthTotalCases": 6148,
+      "disposedLastMonthTotalCases": 4552
+    },
+    {
+      "referenceDateAt": "2026-04-19T07:06:34.049Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 94158,
+      "institutedLastMonthTotalCases": 6148,
+      "disposedLastMonthTotalCases": 4552
+    },
+    {
+      "referenceDateAt": "2026-04-23T21:18:51.592Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 94311,
+      "institutedLastMonthTotalCases": 6148,
+      "disposedLastMonthTotalCases": 4556
+    },
+    {
+      "referenceDateAt": "2026-04-23T21:47:06.884Z",
+      "referenceDateKind": "captured_at",
+      "pendingTotalCases": 94311,
+      "institutedLastMonthTotalCases": 6148,
+      "disposedLastMonthTotalCases": 4556
+    }
+  ]
+}
