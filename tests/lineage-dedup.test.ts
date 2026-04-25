@@ -72,6 +72,36 @@ describe("dedupeLineageByReferenceDate", () => {
     expect(result[0]!.id).toBe("rollback_late");
   });
 
+  it("treats publicationTimestamp (not snapshot publishedAt) as the tiebreaker so rollbacks pick the actually-live entry", () => {
+    // Reproduces the rollback scenario Codex flagged:
+    //   publish A (snapshot_a, originally published T1)
+    //   publish B (snapshot_b, originally published T2 > T1)
+    //   rollback to A (new publication event at T3 > T2; snapshot.publishedAt is still T1)
+    // The actually-live entry for that reference date is the rollback (back to A).
+    // If we ranked by snapshot.publishedAt we'd wrongly keep B; ranking by
+    // publication.createdAt (the rollback's timestamp) keeps the rollback entry.
+    const input: Entry[] = [
+      // entries are typically DESC by publication.createdAt
+      { id: "rollback_to_A", refDate: "23 April 2026", publishedAt: "2026-04-23T07:00:00Z" },
+      { id: "publish_B", refDate: "23 April 2026", publishedAt: "2026-04-23T18:00:00Z" },
+      { id: "publish_A", refDate: "23 April 2026", publishedAt: "2026-04-23T07:00:00Z" },
+    ];
+
+    // Use a publicationTimestamp that mirrors publication.createdAt: the
+    // rollback fired most recently (T3), so it must win even though its
+    // snapshot.publishedAt (T1) is older than publish_B's (T2).
+    const result = dedupeLineageByReferenceDate(input, {
+      referenceDateLabel: (e) => e.refDate,
+      publicationTimestamp: (e) =>
+        e.id === "rollback_to_A" ? "2026-04-24T03:00:00Z" : // T3
+        e.id === "publish_B" ? "2026-04-23T18:00:00Z" : // T2
+        "2026-04-23T07:00:00Z", // T1 publish_A
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0]!.id).toBe("rollback_to_A");
+  });
+
   it("returns an empty array for empty input", () => {
     expect(dedupeLineageByReferenceDate([], opts)).toEqual([]);
   });

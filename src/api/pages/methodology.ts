@@ -1,5 +1,5 @@
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
-import type { SnapshotHistoryEntry } from "../../services/published-snapshot-service.js";
+import type { PublicationHistoryEntry } from "../../services/published-snapshot-service.js";
 import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
@@ -14,7 +14,7 @@ import { dedupeLineageByReferenceDate } from "./lineage-dedup.js";
  */
 export function renderMethodologyPage(
   snapshot: PublishedSnapshot["snapshot"] | null,
-  history: SnapshotHistoryEntry[],
+  history: PublicationHistoryEntry[],
   context: PublicPageContext,
 ): string {
   const ticker = snapshot
@@ -100,7 +100,7 @@ export function renderMethodologyPage(
       })}
       ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
         referenceDateLabel: (entry) => formatDate(entry.snapshot.sourceSnapshotAt),
-        publicationTimestamp: (entry) => entry.snapshot.publishedAt,
+        publicationTimestamp: (entry) => entry.publication.createdAt,
       })) : emptyHistoryCallout()}
     </section>
   `;
@@ -123,7 +123,7 @@ export function renderMethodologyPage(
   });
 }
 
-function renderHistoryTable(history: SnapshotHistoryEntry[]): string {
+function renderHistoryTable(history: PublicationHistoryEntry[]): string {
   const rows = history
     .map(
       (entry) => `
