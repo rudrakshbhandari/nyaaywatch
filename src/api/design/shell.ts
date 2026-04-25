@@ -190,6 +190,7 @@ function renderColophon(
       { href: "/api", label: "API" },
     ]),
     { href: "/press", label: "Press" },
+    { href: "https://github.com/rudrakshbhandari/nyaaywatch", label: "Source code" },
   ];
 
   return `<footer class="colophon">
