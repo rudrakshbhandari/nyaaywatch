@@ -146,6 +146,14 @@ If Playwright browsers are not installed: `npx playwright install`.
 
 Coverage spans migration safety, golden-fixture capture, publish gating, replay/rollback, district history and CSV export parity, browser E2E for citizen/reporter/developer flows, responsive and accessibility checks, stable API contracts, persistent-stack replay/rollback through local PostgreSQL plus LocalStack S3, and operator token enforcement.
 
+## Screenshot Assets
+
+```bash
+npm run screenshots:linkedin
+```
+
+This captures the current public site into `~/Desktop/nyaaywatch-linkedin` for LinkedIn launch assets.
+
 ## Key Docs
 
 Design and product:
