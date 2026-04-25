@@ -52,6 +52,32 @@ describe("renderStatTile — optional sparkline + delta", () => {
     expect(html).not.toContain("stat-tile__delta--bad");
   });
 
+  it("can render a labeled semantic delta", () => {
+    const html = renderStatTile({
+      label: "Pending total",
+      value: "92,409",
+      series: [94158, 94311, 92409],
+      deltaDirectionHint: "up-is-bad",
+      deltaLabel: "Pending trend",
+    });
+    expect(html).toContain("stat-tile__delta--good");
+    expect(html).toContain("Pending trend −1.9%");
+    expect(html).not.toContain("stat-tile__delta--bad");
+  });
+
+  it("keeps a current condition signal visible when a sparkline is present", () => {
+    const html = renderStatTile({
+      label: "Backlog change this month",
+      value: "+1,591",
+      series: [1200, 1591],
+      deltaDirectionHint: "up-is-bad",
+      trendSignal: { tone: "worsening", label: "Backlog growing" },
+    });
+    expect(html).toContain("stat-tile--with-spark");
+    expect(html).toContain("stat-tile__signal--worsening");
+    expect(html).toContain("Backlog growing");
+  });
+
   it("suppresses both the sparkline and the delta chip for a perfectly flat series", () => {
     // Rationale: a horizontal sparkline next to a "flat" chip is visual noise,
     // not signal — the big number already carries the information. We only

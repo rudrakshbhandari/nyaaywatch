@@ -94,12 +94,13 @@ export interface StatTileOptions {
    * (e.g. clearance rate).
    */
   deltaDirectionHint?: "up-is-good" | "up-is-bad";
+  /** Optional short label rendered inside the delta chip before the value. */
+  deltaLabel?: string;
   /**
    * Optional small uppercase mono tag rendered under the value to flag
    * direction in plain language ("Falling behind", "Backlog growing").
    * Worsening renders in --accent, improving in --ink-muted, neutral
-   * renders nothing. Skipped when a sparkline+delta chip is shown for the
-   * same tile (the chip already conveys direction).
+   * renders nothing.
    */
   trendSignal?: { tone: "worsening" | "improving" | "neutral"; label: string };
 }
@@ -120,7 +121,12 @@ export function renderStatTile(options: StatTileOptions): string {
   const series = (options.series ?? []).filter((n) => Number.isFinite(n));
   const seriesMoves = series.length >= 2 && Math.min(...series) !== Math.max(...series);
   const sparkSvg = seriesMoves ? renderSparklineSvg(series, options.seriesLabel ?? options.label) : "";
-  const deltaChip = seriesMoves ? renderDeltaChip(series, options.deltaDirectionHint ?? "up-is-bad") : "";
+  const deltaChip = seriesMoves
+    ? renderDeltaChip(series, {
+        hint: options.deltaDirectionHint ?? "up-is-bad",
+        label: options.deltaLabel,
+      })
+    : "";
   const withSparkClass = seriesMoves ? " stat-tile--with-spark" : "";
 
   // Sparkline + delta live on a row *below* the value, left-aligned with it,
@@ -133,7 +139,7 @@ export function renderStatTile(options: StatTileOptions): string {
 
   const trend = options.trendSignal;
   const trendTag =
-    trend && trend.tone !== "neutral" && !seriesMoves
+    trend && trend.tone !== "neutral"
       ? `<span class="stat-tile__signal stat-tile__signal--${trend.tone}">${escapeHtml(trend.label)}</span>`
       : "";
 
@@ -175,7 +181,10 @@ function renderSparklineSvg(series: number[], ariaLabel: string): string {
   </svg>`;
 }
 
-function renderDeltaChip(series: number[], hint: "up-is-good" | "up-is-bad"): string {
+function renderDeltaChip(
+  series: number[],
+  options: { hint: "up-is-good" | "up-is-bad"; label?: string },
+): string {
   const first = series[0];
   const last = series[series.length - 1];
   if (first === undefined || last === undefined) return "";
@@ -212,14 +221,15 @@ function renderDeltaChip(series: number[], hint: "up-is-good" | "up-is-bad"): st
   // series going nowhere.
   if (direction === "flat") return "";
   const sentiment =
-    hint === "up-is-bad"
+    options.hint === "up-is-bad"
       ? direction === "up"
         ? "bad"
         : "good"
       : direction === "up"
         ? "good"
         : "bad";
-  return `<span class="stat-tile__delta stat-tile__delta--${sentiment}">${escapeHtml(display)}</span>`;
+  const label = options.label ? `${options.label} ` : "";
+  return `<span class="stat-tile__delta stat-tile__delta--${sentiment}">${escapeHtml(`${label}${display}`)}</span>`;
 }
 
 function formatCompactNumber(n: number): string {

@@ -104,7 +104,7 @@ export function renderNationalHome(input: {
   const scTrends = input.supremeCourtSnapshot?.trends ?? [];
   const scFinalized = input.supremeCourtSnapshot?.monthlyFinalized ?? [];
   const lcTrends = input.lowerCourtSnapshot.trends;
-  const scPendingSeries = scTrends.map((point) => point.pendingTotalCases);
+  const scPendingSeries = buildPendingTrendSeries(scTrends);
   const scClearanceSeries = scFinalized.map((entry) =>
     entry.institutedTotalCases > 0
       ? (entry.disposedTotalCases / entry.institutedTotalCases) * 100
@@ -121,6 +121,7 @@ export function renderNationalHome(input: {
   const scReferenceIso = input.supremeCourtSnapshot?.snapshot.referenceDateAt ?? null;
   const scThroughLabel = scReferenceIso ? `through ${formatDate(scReferenceIso)}` : "so far this month";
   const scGapDirectionNote = describeMtdGapDirection(input.supremeCourtSnapshot);
+  const scGapSignal = describeMtdGapSignal(input.supremeCourtSnapshot);
   const scTrendLineSuffix = scFinalized.length >= 2 ? " Trend line compares finalized months." : "";
 
   const tocItems = [
@@ -175,10 +176,11 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
-                note: "Cases still pending at the Supreme Court.",
+                note: "Cases still pending at the Supreme Court. This month's clearance pace is shown separately.",
                 series: scPendingSeries,
-                seriesLabel: "Pending total across recent snapshots",
+                seriesLabel: "Pending total across Supreme Court readings",
                 deltaDirectionHint: "up-is-bad",
+                deltaLabel: "Pending trend",
               })}
               ${renderStatTile({
                 label: "Cleared / 100 filed this month",
@@ -204,6 +206,7 @@ export function renderNationalHome(input: {
                 series: scGapSeries,
                 seriesLabel: "Backlog change across finalized months",
                 deltaDirectionHint: "up-is-bad",
+                trendSignal: scGapSignal,
               })}
             `
             : `
@@ -348,6 +351,47 @@ function describeMtdGapDirection(
     return "More cases have been cleared than filed,";
   }
   return "Filings and clearances matched,";
+}
+
+function describeMtdGapSignal(
+  snapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null,
+) {
+  if (!snapshot) {
+    return { tone: "neutral" as const, label: "Steady" };
+  }
+  const gap = snapshot.stats.institutedLastMonthTotalCases - snapshot.stats.disposedLastMonthTotalCases;
+  if (gap > 0) {
+    return { tone: "worsening" as const, label: "Backlog growing" };
+  }
+  if (gap < 0) {
+    return { tone: "improving" as const, label: "Backlog shrinking" };
+  }
+  return { tone: "neutral" as const, label: "Steady" };
+}
+
+function buildPendingTrendSeries(
+  trends: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot["trends"],
+) {
+  const byDate = new Map<string, number>();
+  for (const point of trends) {
+    byDate.set(point.referenceDateAt.slice(0, 10), point.pendingTotalCases);
+  }
+
+  const datedPoints = [...byDate.entries()].sort(([left], [right]) => left.localeCompare(right));
+  if (datedPoints.length < 4) {
+    return [];
+  }
+
+  const firstPoint = datedPoints[0]!;
+  const lastPoint = datedPoints[datedPoints.length - 1]!;
+  const firstDate = Date.parse(`${firstPoint[0]}T00:00:00.000Z`);
+  const lastDate = Date.parse(`${lastPoint[0]}T00:00:00.000Z`);
+  const spanDays = Math.floor((lastDate - firstDate) / 86_400_000);
+  if (spanDays < 14) {
+    return [];
+  }
+
+  return datedPoints.map(([, pendingTotalCases]) => pendingTotalCases);
 }
 
 // Inline scroll-spy: IntersectionObserver keeps the TOC rail's active entry in
