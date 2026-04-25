@@ -66,6 +66,7 @@ Keep boundaries legible as the repo grows:
 - Add or update tests for every behavior change.
 - Update docs when product behavior, methodology, schema, or operator workflows change.
 - Update `docs/MVP_EXECUTION_PLAN.md` in the same change when a plan item is completed, superseded, or reordered.
+- Update `README.md` in the same PR when any of the following change: the Architecture bullets, the Repository Map (`src/` entries), the Operator Workflow scripts, the Scheduled Internal Fetches section, or the Public/Operator API shape. Do not leave these sections describing behavior that no longer exists — README.md is the first thing external contributors and operators read.
 - Prefer explicit schemas, typed boundaries, and deterministic transforms over implicit behavior.
 - Preserve reproducibility. Ingestion, normalization, and publish steps should be replayable and auditable.
 - Do not introduce hidden background behavior that changes published data without an explicit run or publish step.
