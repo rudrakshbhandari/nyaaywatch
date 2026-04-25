@@ -1,5 +1,6 @@
 import {
   CreateBucketCommand,
+  GetObjectCommand,
   GetBucketTaggingCommand,
   HeadBucketCommand,
   PutBucketTaggingCommand,
@@ -85,5 +86,41 @@ describe("S3ArtifactStore.ensureBucket", () => {
     expect(send).toHaveBeenCalledTimes(2);
     expect(send.mock.calls[0]?.[0]).toBeInstanceOf(HeadBucketCommand);
     expect(send.mock.calls[1]?.[0]).toBeInstanceOf(GetBucketTaggingCommand);
+  });
+});
+
+describe("S3ArtifactStore.downloadJson", () => {
+  it("rejects artifacts whose stored bytes do not match the recorded checksum", async () => {
+    const store = new S3ArtifactStore(
+      loadConfig({
+        NODE_ENV: "test",
+        PORT: "3000",
+        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
+        AWS_REGION: "ap-south-1",
+        AWS_ACCESS_KEY_ID: "test",
+        AWS_SECRET_ACCESS_KEY: "test",
+        S3_BUCKET: "nyaaywatch-test-artifacts",
+        DEPLOY_ENV: "staging",
+        OPERATOR_API_TOKEN: "operator-test-token",
+        STATE_CODE: "HP",
+      }),
+    );
+
+    const send = vi.fn().mockResolvedValueOnce({
+      Body: {
+        transformToString: async () => JSON.stringify({ ok: true }),
+      },
+    });
+
+    (store as unknown as { client: { send: typeof send } }).client = { send };
+
+    await expect(
+      store.downloadJson("raw/run.json", {
+        expectedChecksumSha256: "not-the-recorded-sha",
+      }),
+    ).rejects.toThrow("checksum mismatch");
+
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(send.mock.calls[0]?.[0]).toBeInstanceOf(GetObjectCommand);
   });
 });

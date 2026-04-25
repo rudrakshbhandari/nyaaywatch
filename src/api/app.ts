@@ -1526,7 +1526,7 @@ export function createApp(
       statusCode: 500,
       error: message,
     });
-    response.status(500).json({ error: message });
+    response.status(500).json({ error: "Unexpected error" });
   });
 
   return app;

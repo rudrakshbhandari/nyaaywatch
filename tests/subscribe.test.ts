@@ -209,6 +209,56 @@ describe("Subscribe and RSS routes", () => {
     expect(check.rows[0]!.unsubscribed_at).not.toBeNull();
   });
 
+  it("requires a new confirmation before reactivating an unsubscribed email", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(
+      context.config,
+      context.service,
+      context.publicServices,
+      context.highCourtServices,
+      context.supremeCourtService,
+      context.pool,
+    );
+
+    await request(app)
+      .post("/subscribe")
+      .type("form")
+      .send({ email: "resub@example.com", scope: "HP" });
+
+    await context.pool.query(
+      `UPDATE newsletter_subscriptions
+       SET confirmed = TRUE, confirmed_at = NOW()
+       WHERE email = $1`,
+      ["resub@example.com"],
+    );
+
+    const existing = await context.pool.query<{ token: string }>(
+      `SELECT token FROM newsletter_subscriptions WHERE email = $1`,
+      ["resub@example.com"],
+    );
+    const oldToken = existing.rows[0]!.token;
+
+    await request(app).get(`/unsubscribe/${oldToken}`);
+
+    const resubscribe = await request(app)
+      .post("/subscribe")
+      .type("form")
+      .send({ email: "resub@example.com", scope: "HP" });
+
+    expect(resubscribe.status).toBe(200);
+    expect(resubscribe.text).toContain("Confirmation sent");
+
+    const check = await context.pool.query<{ token: string; confirmed: boolean; unsubscribed_at: string | null }>(
+      `SELECT token, confirmed, unsubscribed_at FROM newsletter_subscriptions WHERE email = $1`,
+      ["resub@example.com"],
+    );
+    expect(check.rows[0]!.token).not.toBe(oldToken);
+    expect(check.rows[0]!.confirmed).toBe(false);
+    expect(check.rows[0]!.unsubscribed_at).toBeNull();
+  });
+
   it("redacts newsletter tokens from structured request logs", async () => {
     const context = await createTestContext();
     pools.push(context.pool);

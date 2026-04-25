@@ -1,4 +1,3 @@
-import { runAutoPublish, type AutoPublishAction } from "../ops/auto-publish-runner.js";
 import type { SupremeCourtProfile } from "../supreme-court.js";
 import { runOperatorInvocation } from "./operator-ops.js";
 import { getReviewedSupremeCourtProfileForScheduledFetch } from "./scheduled-fetch-targets.js";
@@ -15,8 +14,6 @@ export interface ScheduledSupremeCourtFetchSummary {
   ok: boolean;
   runId?: string;
   error?: string;
-  autoPublish?: AutoPublishAction;
-  autoPublishReason?: string;
 }
 
 export function normalizeScheduledSupremeCourtFetchNotePrefix(notePrefix?: string) {
@@ -50,20 +47,6 @@ export async function runScheduledSupremeCourtFetch(
     const runId = extractRunId(result);
     console.log(`Completed scheduled internal Supreme Court fetch for ${profile.courtSlug}${runId ? ` (${runId})` : ""}`);
 
-    const autoPublishOutcome = await runAutoPublish(
-      {
-        scopeLabel: `Supreme Court (${profile.courtSlug})`,
-        selector: { supremeCourt: true },
-        fetchResult: result,
-        pendingField: "pendingTotalCases",
-        note: `${normalizedNotePrefix} auto-publish`,
-      },
-      { rawEnv },
-    );
-    console.log(
-      `Auto-publish outcome for ${profile.courtSlug}: ${autoPublishOutcome.action}${autoPublishOutcome.decision?.reason ? ` (${autoPublishOutcome.decision.reason})` : ""}`,
-    );
-
     return {
       notePrefix: normalizedNotePrefix,
       target: {
@@ -73,8 +56,6 @@ export async function runScheduledSupremeCourtFetch(
       },
       ok: true,
       runId,
-      autoPublish: autoPublishOutcome.action,
-      autoPublishReason: autoPublishOutcome.decision?.reason,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

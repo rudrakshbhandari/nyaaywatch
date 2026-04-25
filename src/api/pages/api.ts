@@ -47,7 +47,7 @@ export function renderApiPage(context: PublicPageContext): string {
   },
   "trends": [
     { "snapshotDate": "2025-01-15T00:00:00.000Z", "pendingCases": 91240, "disposalRate": 71.8 },
-    // \u2026 one point per published snapshot
+    { "snapshotDate": "2025-02-15T00:00:00.000Z", "pendingCases": 94158, "disposalRate": 74.3 }
   ]
 }</pre>
           </details>
@@ -71,7 +71,17 @@ export function renderApiPage(context: PublicPageContext): string {
       "flagReason": "High file-clear gap with growing backlog.",
       "summary": "Kangra shows a widening backlog \u2026"
     },
-    // \u2026 one object per district in the snapshot
+    {
+      "districtId": "shimla",
+      "districtName": "Shimla",
+      "rank": 2,
+      "backlogCases": 10421,
+      "disposalRate": 71.5,
+      "medianAgeDays": 874,
+      "filingVsDisposalGap": 5.9,
+      "flagReason": "Backlog remains above the state median.",
+      "summary": "Shimla remains a high-volume district in this snapshot."
+    }
   ]
 }</pre>
           </details>

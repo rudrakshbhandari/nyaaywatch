@@ -51,7 +51,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
   },
   "trends": [
     { "referenceDateAt": "2025-01-01T00:00:00.000Z", "referenceDateKind": "captured_at", "pendingTotalCases": 78440, "institutedLastMonthTotalCases": 3180, "disposedLastMonthTotalCases": 3090 },
-    // \u2026 one point per published snapshot
+    { "referenceDateAt": "2025-02-01T00:00:00.000Z", "referenceDateKind": "captured_at", "pendingTotalCases": 80131, "institutedLastMonthTotalCases": 3240, "disposedLastMonthTotalCases": 3108 }
   ]
 }</pre>
           </details>

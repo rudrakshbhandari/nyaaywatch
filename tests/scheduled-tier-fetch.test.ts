@@ -84,8 +84,6 @@ describe("scheduled tier fetch helpers", () => {
           coveredGeographies: [{ geographyCode: "HP", geographyName: "Himachal Pradesh", geographyType: "state", lowerCourtStateCode: "HP" }],
           ok: true,
           runId: "run_hphc_123",
-          autoPublish: "gate_inputs_missing",
-          autoPublishReason: undefined,
         },
         {
           courtCode: "UPHC",
@@ -94,8 +92,6 @@ describe("scheduled tier fetch helpers", () => {
           coveredGeographies: [{ geographyCode: "UP", geographyName: "Uttar Pradesh", geographyType: "state", lowerCourtStateCode: "UP" }],
           ok: true,
           runId: "run_uphc_456",
-          autoPublish: "gate_inputs_missing",
-          autoPublishReason: undefined,
         },
       ],
     });
@@ -130,8 +126,6 @@ describe("scheduled tier fetch helpers", () => {
       },
       ok: true,
       runId: "run_sci_123",
-      autoPublish: "gate_inputs_missing",
-      autoPublishReason: undefined,
     });
   });
 

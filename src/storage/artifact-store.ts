@@ -20,11 +20,15 @@ export interface StoredArtifact {
   sizeBytes: number;
 }
 
+export interface DownloadJsonOptions {
+  expectedChecksumSha256?: string | null;
+}
+
 export interface ArtifactStore {
   ensureBucket(): Promise<void>;
   uploadJson(key: string, payload: unknown, metadata?: Record<string, string>): Promise<StoredArtifact>;
   copyObject(sourceKey: string, destinationKey: string, metadata?: Record<string, string>): Promise<StoredArtifact>;
-  downloadJson<T>(key: string): Promise<T>;
+  downloadJson<T>(key: string, options?: DownloadJsonOptions): Promise<T>;
 }
 
 type BucketTag = { Key: string; Value: string };
@@ -83,7 +87,7 @@ export class S3ArtifactStore implements ArtifactStore {
         Key: key,
         Body: body,
         ContentType: "application/json",
-        Metadata: metadata,
+        Metadata: { ...metadata, checksumsha256: checksumSha256 },
       }),
     );
 
@@ -125,7 +129,7 @@ export class S3ArtifactStore implements ArtifactStore {
     };
   }
 
-  async downloadJson<T>(key: string): Promise<T> {
+  async downloadJson<T>(key: string, options: DownloadJsonOptions = {}): Promise<T> {
     const response = await this.client.send(
       new GetObjectCommand({
         Bucket: this.config.S3_BUCKET,
@@ -137,6 +141,8 @@ export class S3ArtifactStore implements ArtifactStore {
     if (!body) {
       throw new Error(`Artifact ${key} was empty.`);
     }
+
+    verifyArtifactChecksum(key, body, options.expectedChecksumSha256);
 
     return JSON.parse(body) as T;
   }
@@ -257,12 +263,27 @@ export class InMemoryArtifactStore implements ArtifactStore {
     };
   }
 
-  async downloadJson<T>(key: string): Promise<T> {
+  async downloadJson<T>(key: string, options: DownloadJsonOptions = {}): Promise<T> {
     const body = this.objects.get(key);
     if (!body) {
       throw new Error(`Missing artifact ${key}`);
     }
 
+    verifyArtifactChecksum(key, body, options.expectedChecksumSha256);
+
     return JSON.parse(body) as T;
+  }
+}
+
+function verifyArtifactChecksum(key: string, body: string, expectedChecksumSha256?: string | null): void {
+  if (!expectedChecksumSha256) {
+    return;
+  }
+
+  const actualChecksumSha256 = sha256(body);
+  if (actualChecksumSha256 !== expectedChecksumSha256) {
+    throw new Error(
+      `Artifact ${key} checksum mismatch: expected ${expectedChecksumSha256}, received ${actualChecksumSha256}.`,
+    );
   }
 }

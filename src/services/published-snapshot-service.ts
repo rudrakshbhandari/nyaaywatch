@@ -241,7 +241,11 @@ export class PublishedSnapshotService {
     const artifacts = await this.store.listArtifactsForRun(runId);
     const candidateArtifact = artifacts.find((artifact) => artifact.artifactType === SNAPSHOT_CANDIDATE_ARTIFACT_TYPE);
     const candidate = candidateArtifact
-      ? SnapshotCandidateSchema.parse(await this.artifactStore.downloadJson(candidateArtifact.s3Key))
+      ? SnapshotCandidateSchema.parse(
+          await this.artifactStore.downloadJson(candidateArtifact.s3Key, {
+            expectedChecksumSha256: candidateArtifact.checksumSha256,
+          }),
+        )
       : null;
 
     return {
@@ -298,7 +302,7 @@ export class PublishedSnapshotService {
         },
       });
 
-      await this.buildAndStoreSnapshotCandidate(run.id, rawArtifact.key, note);
+      await this.buildAndStoreSnapshotCandidate(run.id, rawArtifact.key, rawArtifact.checksumSha256, note);
       const inspection = await this.inspectRun(run.id);
       if (!inspection) {
         throw new Error(`Run ${run.id} was not found after capture.`);
@@ -435,7 +439,12 @@ export class PublishedSnapshotService {
         },
       });
 
-      await this.buildAndStoreSnapshotCandidate(replayRun.id, copiedArtifact.key, note);
+      await this.buildAndStoreSnapshotCandidate(
+        replayRun.id,
+        copiedArtifact.key,
+        copiedArtifact.checksumSha256 || rawArtifact.checksumSha256,
+        note,
+      );
       const replayResult = await this.publishRun(replayRun.id, note ?? `Replay publish of ${sourceInspection.run.id}`);
       logInfo("operator_replay_completed", {
         sourceRunId: sourceInspection.run.id,
@@ -600,8 +609,15 @@ export class PublishedSnapshotService {
     return [header, ...rows].join("\n");
   }
 
-  private async buildAndStoreSnapshotCandidate(runId: string, rawArtifactKey: string, note?: string): Promise<SnapshotCandidate> {
-    const bundle = await this.artifactStore.downloadJson<NjdgCaptureBundle>(rawArtifactKey);
+  private async buildAndStoreSnapshotCandidate(
+    runId: string,
+    rawArtifactKey: string,
+    rawArtifactChecksumSha256: string,
+    note?: string,
+  ): Promise<SnapshotCandidate> {
+    const bundle = await this.artifactStore.downloadJson<NjdgCaptureBundle>(rawArtifactKey, {
+      expectedChecksumSha256: rawArtifactChecksumSha256,
+    });
     const previousSnapshots = await this.loadHistoricalSnapshots();
     const candidate = buildSnapshotCandidate(extractCaptureBundle(bundle), previousSnapshots);
 

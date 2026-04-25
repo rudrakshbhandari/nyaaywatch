@@ -36,7 +36,7 @@ Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stab
 - PostgreSQL as the canonical store for runs, artifacts, and publication state
 - S3 for raw scrape evidence and normalized snapshot candidates
 - explicit ingestion pipeline: fetch → extract → normalize → publish, all operator-gated
-- auto-publish runner validates fresh internal runs against guardrails and pages a reviewer via SNS when a candidate is ready
+- scheduled internal fetches create completed runs and snapshot candidates, but never publish public snapshots
 - published snapshot read models drive every public surface; rollback is one operator call
 
 ## Repository Map
@@ -46,7 +46,7 @@ Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stab
 - `src/storage/` — PostgreSQL and S3 adapters
 - `src/db/` — migrations and migration tooling
 - `src/ingest/`, `src/extract/`, `src/normalize/` — pipeline stages
-- `src/ops/` — auto-publish runner and review alerting
+- `src/ops/` — explicit publish gate helpers and review alerting
 - `fixtures/` — captured NJDG inputs for local dev and tests
 
 ## Quickstart
@@ -104,7 +104,7 @@ The live deploy runs four daily ECS schedules, all reconciled to the latest task
 - reviewed High Courts — `8:20 AM Asia/Kolkata`
 - public-alpha ops monitor — every `30` minutes against `https://nyaaywatch.in`
 
-The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Public publishes remain operator-reviewed — auto-publish only validates and alerts.
+The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Scheduled fetches stop after creating completed internal runs and candidates; public publication remains a separate operator action through the publish/release-review flow.
 
 ## Public API
 
