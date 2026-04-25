@@ -17,6 +17,14 @@ const disallowedPublicPhrases = [
   /\blive (?:feed|status|data|dashboard|monitoring)\b/i,
   /\bpredictive\b/i,
   /\bverdicts?\b/i,
+  // Plain-language drift guards. See docs/COPY_VOICE.md.
+  // "latest published snapshot" is intentionally NOT here because the
+  // methodology page uses it as a term of art.
+  /\blatest monthly window\b/i,
+  /\blatest published month\b/i,
+  /\btop of the court system\b/i,
+  /\b(?:moved )?in lockstep\b/i,
+  /\bincoming work\b/i,
 ];
 
 describe("public copy guardrails", () => {
