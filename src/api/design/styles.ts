@@ -235,6 +235,10 @@ export const BASE_CSS = `
 
   /* --- info icon (tooltip popover used site-wide) --- */
   .info { display: inline-block; position: relative; }
+  /* Lift the whole info element above sibling positioned content (e.g. the
+     next tile in a 4-up grid) so the popover paints above neighbors instead
+     of sitting trapped in its parent's stacking neighborhood. */
+  .info[open], .info:hover, .info:focus-within { z-index: 50; }
   .info summary {
     list-style: none; cursor: pointer;
     display: inline-flex; align-items: center; justify-content: center;
@@ -251,7 +255,7 @@ export const BASE_CSS = `
     outline: none;
   }
   .info-popover {
-    position: absolute; z-index: 20; top: calc(100% + 10px); left: 50%;
+    position: absolute; z-index: 200; top: calc(100% + 10px); left: 50%;
     transform: translateX(-50%);
     /* Cap at the narrower of: preferred 320px, or viewport minus a 16px
        gutter on each side. Stops the tooltip from overflowing the viewport
@@ -263,6 +267,9 @@ export const BASE_CSS = `
     box-shadow: 4px 4px 0 var(--ink);
     font-family: "Inter Tight", sans-serif;
     text-transform: none; letter-spacing: 0;
+    /* Ensure no descendant text leaks through the opaque panel even if a
+       sibling tile creates its own stacking context. */
+    isolation: isolate;
   }
   .info:hover .info-popover, .info[open] .info-popover, .info:focus-within .info-popover { display: block; }
   .info .info-popover { display: none; }
