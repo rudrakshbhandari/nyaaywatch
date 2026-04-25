@@ -102,7 +102,12 @@ describe("internal fetch schedule watchdog", () => {
 
     expect(summary.ok).toBe(true);
     expect(summary.failingTiers).toEqual([]);
-    expect(summary.tiers.map((tier) => tier.tier)).toEqual(["lower_courts", "supreme_court", "high_courts"]);
+    expect(summary.tiers.map((tier) => tier.tier)).toEqual([
+      "lower_courts",
+      "supreme_court",
+      "high_courts",
+      "publish_pending_sweep",
+    ]);
     expect(summary.tiers.every((tier) => tier.schedulerTargetMatchesService)).toBe(true);
     expect(summary.tiers.every((tier) => tier.usesScheduledFetchEntrypoint)).toBe(true);
     expect(summary.tiers.every((tier) => tier.scheduleExecutionLagDetected === false)).toBe(true);
@@ -196,6 +201,99 @@ describe("internal fetch schedule watchdog", () => {
       "Internal fetch schedule watchdog failed: supreme_court:",
     );
   });
+
+  it("keeps the publish-pending-sweep tier green even when no scope-level runs exist (the sweep does not produce its own runs)", async () => {
+    listStateProfiles.mockReturnValueOnce([{ stateCode: "HP", stateSlug: "himachal-pradesh", stateName: "Himachal Pradesh" }]);
+    getReviewedSupremeCourtProfileForScheduledFetch.mockReturnValueOnce({
+      courtCode: "SCI",
+      courtSlug: "supreme-court",
+      courtName: "Supreme Court of India",
+    });
+    listReviewedHighCourtProfilesForScheduledFetch.mockReturnValueOnce([
+      {
+        courtCode: "HPHC",
+        courtSlug: "himachal",
+        courtName: "High Court of Himachal Pradesh",
+        coveredGeographies: [{ geographyCode: "HP", geographyName: "Himachal Pradesh", geographyType: "state", lowerCourtStateCode: "HP" }],
+      },
+    ]);
+
+    // Sweep schedule LastModificationDate is intentionally stale (10 days old):
+    // for the per-scope tiers that would trigger an execution-lag fail, but the
+    // sweep tier opts out of run-lag detection so it should stay green.
+    mockAwsSequence({
+      clusterName: "nyaaywatch-staging",
+      serviceName: "nyaaywatch-staging-Service-zXxqGRuc7amS",
+      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:141",
+      scheduleLastModificationDate: "2026-04-10T00:00:00.000Z",
+    });
+
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({ runs: [{ id: "run_lower_1", status: "completed", note: "Scheduled daily lower-court internal raw fetch (<aws.scheduler.scheduled-time>) for Himachal Pradesh [HP]", sourceSnapshotAt: "2026-04-20T00:00:00.000Z", createdAt: "2026-04-20T02:30:00.000Z", completedAt: "2026-04-20T02:35:00.000Z" }] }))
+      .mockResolvedValueOnce(jsonResponse({ runs: [{ id: "run_sci_1", status: "completed", note: "Scheduled daily Supreme Court internal raw fetch (<aws.scheduler.scheduled-time>) for Supreme Court of India", sourceSnapshotAt: "2026-04-20T00:00:00.000Z", createdAt: "2026-04-20T02:40:00.000Z", completedAt: "2026-04-20T02:45:00.000Z" }] }))
+      .mockResolvedValueOnce(jsonResponse({ runs: [{ id: "run_hc_1", status: "completed", note: "Scheduled daily High Court internal raw fetch (<aws.scheduler.scheduled-time>) for High Court of Himachal Pradesh [himachal]", sourceSnapshotAt: "2026-04-20T00:00:00.000Z", createdAt: "2026-04-20T02:50:00.000Z", completedAt: "2026-04-20T02:55:00.000Z" }] }));
+
+    const { verifyInternalFetchSchedules } = await import("../src/dev/internal-fetch-schedule-watchdog.js");
+    const summary = await verifyInternalFetchSchedules("https://nyaaywatch.in", {
+      now: new Date("2026-04-20T12:00:00.000Z"),
+      operatorToken: "operator-test-token",
+    });
+
+    const sweep = summary.tiers.find((tier) => tier.tier === "publish_pending_sweep");
+    expect(sweep).toBeDefined();
+    expect(sweep!.scheduleExecutionLagDetected).toBe(false);
+    expect(sweep!.schedulerTargetMatchesService).toBe(true);
+    expect(sweep!.usesScheduledFetchEntrypoint).toBe(true);
+    expect(sweep!.ok).toBe(true);
+    // The sweep tier never tries to discover scope-level runs.
+    expect(sweep!.latestScheduledRunId).toBeNull();
+  });
+
+  it("fails the publish-pending-sweep tier when the schedule is pointed at a stale task definition", async () => {
+    listStateProfiles.mockReturnValueOnce([{ stateCode: "HP", stateSlug: "himachal-pradesh", stateName: "Himachal Pradesh" }]);
+    getReviewedSupremeCourtProfileForScheduledFetch.mockReturnValueOnce({
+      courtCode: "SCI",
+      courtSlug: "supreme-court",
+      courtName: "Supreme Court of India",
+    });
+    listReviewedHighCourtProfilesForScheduledFetch.mockReturnValueOnce([
+      {
+        courtCode: "HPHC",
+        courtSlug: "himachal",
+        courtName: "High Court of Himachal Pradesh",
+        coveredGeographies: [{ geographyCode: "HP", geographyName: "Himachal Pradesh", geographyType: "state", lowerCourtStateCode: "HP" }],
+      },
+    ]);
+
+    mockAwsSequence({
+      clusterName: "nyaaywatch-staging",
+      serviceName: "nyaaywatch-staging-Service-zXxqGRuc7amS",
+      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:141",
+      publishPendingSweepTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:138",
+    });
+
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse({ runs: [{ id: "run_lower_1", status: "completed", note: "Scheduled daily lower-court internal raw fetch (<aws.scheduler.scheduled-time>) for Himachal Pradesh [HP]", sourceSnapshotAt: "2026-04-20T00:00:00.000Z", createdAt: "2026-04-20T02:30:00.000Z", completedAt: "2026-04-20T02:35:00.000Z" }] }))
+      .mockResolvedValueOnce(jsonResponse({ runs: [{ id: "run_sci_1", status: "completed", note: "Scheduled daily Supreme Court internal raw fetch (<aws.scheduler.scheduled-time>) for Supreme Court of India", sourceSnapshotAt: "2026-04-20T00:00:00.000Z", createdAt: "2026-04-20T02:40:00.000Z", completedAt: "2026-04-20T02:45:00.000Z" }] }))
+      .mockResolvedValueOnce(jsonResponse({ runs: [{ id: "run_hc_1", status: "completed", note: "Scheduled daily High Court internal raw fetch (<aws.scheduler.scheduled-time>) for High Court of Himachal Pradesh [himachal]", sourceSnapshotAt: "2026-04-20T00:00:00.000Z", createdAt: "2026-04-20T02:50:00.000Z", completedAt: "2026-04-20T02:55:00.000Z" }] }));
+
+    const { assertInternalFetchSchedulesHealthy, verifyInternalFetchSchedules } = await import(
+      "../src/dev/internal-fetch-schedule-watchdog.js"
+    );
+    const summary = await verifyInternalFetchSchedules("https://nyaaywatch.in", {
+      now: new Date("2026-04-20T12:00:00.000Z"),
+      operatorToken: "operator-test-token",
+    });
+
+    expect(summary.failingTiers).toEqual(["publish_pending_sweep"]);
+    expect(summary.tiers.find((tier) => tier.tier === "publish_pending_sweep")).toMatchObject({
+      schedulerTargetMatchesService: false,
+      ok: false,
+    });
+    expect(() => assertInternalFetchSchedulesHealthy(summary)).toThrow(
+      "Internal fetch schedule watchdog failed: publish_pending_sweep:",
+    );
+  });
 });
 
 function jsonResponse(body: unknown) {
@@ -210,6 +308,7 @@ function mockAwsSequence(input: {
   serviceName: string;
   liveTaskDefinitionArn: string;
   supremeCourtTaskDefinitionArn?: string;
+  publishPendingSweepTaskDefinitionArn?: string;
   scheduleLastModificationDate?: string;
 }) {
   const liveTaskDefinitionArn = input.liveTaskDefinitionArn;
@@ -291,6 +390,21 @@ function mockAwsSequence(input: {
           liveTaskDefinitionArn,
           "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js",
           "Scheduled daily High Court internal raw fetch",
+          scheduleLastModificationDate,
+        ),
+      ),
+      stderr: "",
+    });
+  });
+
+  execFile.mockImplementationOnce((_file: string, _args: string[], options: unknown, callback: (error: Error | null, result: { stdout: string; stderr: string }) => void) => {
+    callback(null, {
+      stdout: JSON.stringify(
+        scheduleJson(
+          "nyaaywatch-staging-publish-pending-sweep",
+          input.publishPendingSweepTaskDefinitionArn ?? liveTaskDefinitionArn,
+          "dist/src/dev/ecs-publish-pending-entrypoint.js",
+          "Scheduled daily publish-pending sweep",
           scheduleLastModificationDate,
         ),
       ),

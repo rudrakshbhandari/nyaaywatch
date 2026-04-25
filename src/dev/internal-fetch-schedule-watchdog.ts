@@ -20,10 +20,12 @@ export const DEFAULT_FETCH_SCHEDULE_EXECUTION_LAG_THRESHOLD_DAYS = 2;
 export const DEFAULT_STATE_SCHEDULE_NAME_SUFFIX = "weekday-internal-fetch";
 export const DEFAULT_SUPREME_COURT_SCHEDULE_NAME_SUFFIX = "supreme-court-internal-fetch";
 export const DEFAULT_HIGH_COURT_SCHEDULE_NAME_SUFFIX = "high-courts-internal-fetch";
+export const DEFAULT_PUBLISH_PENDING_SWEEP_SCHEDULE_NAME_SUFFIX = "publish-pending-sweep";
 
 export const DEFAULT_STATE_FETCH_NOTE_PREFIX = "Scheduled daily lower-court internal raw fetch";
 export const DEFAULT_SUPREME_COURT_FETCH_NOTE_PREFIX = "Scheduled daily Supreme Court internal raw fetch";
 export const DEFAULT_HIGH_COURT_FETCH_NOTE_PREFIX = "Scheduled daily High Court internal raw fetch";
+export const DEFAULT_PUBLISH_PENDING_SWEEP_NOTE_PREFIX = "Scheduled daily publish-pending sweep";
 
 const DEFAULT_SCHEDULE_GROUP_NAME = "default";
 
@@ -33,18 +35,36 @@ const TIER_CONFIG = {
     entrypointPath: "dist/src/dev/ecs-scheduled-fetch-entrypoint.js",
     defaultNotePrefix: DEFAULT_STATE_FETCH_NOTE_PREFIX,
     defaultNameSuffix: DEFAULT_STATE_SCHEDULE_NAME_SUFFIX,
+    monitorExecutionLag: true,
   },
   supreme_court: {
     scopeType: "supreme_court",
     entrypointPath: "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js",
     defaultNotePrefix: DEFAULT_SUPREME_COURT_FETCH_NOTE_PREFIX,
     defaultNameSuffix: DEFAULT_SUPREME_COURT_SCHEDULE_NAME_SUFFIX,
+    monitorExecutionLag: true,
   },
   high_courts: {
     scopeType: "high_court",
     entrypointPath: "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js",
     defaultNotePrefix: DEFAULT_HIGH_COURT_FETCH_NOTE_PREFIX,
     defaultNameSuffix: DEFAULT_HIGH_COURT_SCHEDULE_NAME_SUFFIX,
+    monitorExecutionLag: true,
+  },
+  publish_pending_sweep: {
+    // Cross-scope: the sweep walks every state / Supreme Court / High Court
+    // and publishes any quality-complete runs from the last 3 days that have
+    // no newer publication. It does not produce its own scope-level run
+    // records, so we cannot read execution freshness from the operator runs
+    // API the way we do for the per-scope fetches. We still want to know if
+    // the EventBridge schedule itself is misconfigured or disabled, so we
+    // verify schedule existence, state, and task-definition alignment but
+    // skip the run-lag check.
+    scopeType: "publish_pending_sweep",
+    entrypointPath: "dist/src/dev/ecs-publish-pending-entrypoint.js",
+    defaultNotePrefix: DEFAULT_PUBLISH_PENDING_SWEEP_NOTE_PREFIX,
+    defaultNameSuffix: DEFAULT_PUBLISH_PENDING_SWEEP_SCHEDULE_NAME_SUFFIX,
+    monitorExecutionLag: false,
   },
 } as const;
 
@@ -113,7 +133,11 @@ type HighCourtAnchor = {
   coveredGeographies: HighCourtProfile["coveredGeographies"];
 };
 
-type TierAnchor = LowerCourtAnchor | SupremeCourtAnchor | HighCourtAnchor;
+type PublishPendingSweepAnchor = {
+  tier: "publish_pending_sweep";
+};
+
+type TierAnchor = LowerCourtAnchor | SupremeCourtAnchor | HighCourtAnchor | PublishPendingSweepAnchor;
 
 export interface InternalFetchTierSummary {
   tier: InternalFetchScheduleTier;
@@ -181,6 +205,10 @@ export function parseInternalFetchScheduleWatchdogOptions(args: string[]) {
       readFlag(args, "--high-court-schedule-name") ??
       process.env.HIGH_COURT_INTERNAL_FETCH_SCHEDULE_NAME ??
       `${readFlag(args, "--stack-name") ?? process.env.STACK_NAME ?? DEFAULT_FETCH_SCHEDULE_WATCHDOG_STACK}-${DEFAULT_HIGH_COURT_SCHEDULE_NAME_SUFFIX}`,
+    publishPendingSweepScheduleName:
+      readFlag(args, "--publish-pending-sweep-schedule-name") ??
+      process.env.PUBLISH_PENDING_SCHEDULE_NAME ??
+      `${readFlag(args, "--stack-name") ?? process.env.STACK_NAME ?? DEFAULT_FETCH_SCHEDULE_WATCHDOG_STACK}-${DEFAULT_PUBLISH_PENDING_SWEEP_SCHEDULE_NAME_SUFFIX}`,
     scheduleExecutionLagThresholdDays:
       readNumberFlag(args, "--schedule-execution-lag-days") ?? DEFAULT_FETCH_SCHEDULE_EXECUTION_LAG_THRESHOLD_DAYS,
     operatorToken: process.env.OPERATOR_API_TOKEN,
@@ -197,6 +225,7 @@ export async function verifyInternalFetchSchedules(
     stateScheduleName?: string;
     supremeCourtScheduleName?: string;
     highCourtScheduleName?: string;
+    publishPendingSweepScheduleName?: string;
     scheduleExecutionLagThresholdDays?: number;
     operatorToken?: string;
   } = {},
@@ -212,6 +241,8 @@ export async function verifyInternalFetchSchedules(
   const stateScheduleName = options.stateScheduleName ?? `${stackName}-${DEFAULT_STATE_SCHEDULE_NAME_SUFFIX}`;
   const supremeCourtScheduleName = options.supremeCourtScheduleName ?? `${stackName}-${DEFAULT_SUPREME_COURT_SCHEDULE_NAME_SUFFIX}`;
   const highCourtScheduleName = options.highCourtScheduleName ?? `${stackName}-${DEFAULT_HIGH_COURT_SCHEDULE_NAME_SUFFIX}`;
+  const publishPendingSweepScheduleName =
+    options.publishPendingSweepScheduleName ?? `${stackName}-${DEFAULT_PUBLISH_PENDING_SWEEP_SCHEDULE_NAME_SUFFIX}`;
   const scheduleExecutionLagThresholdDays =
     options.scheduleExecutionLagThresholdDays ?? DEFAULT_FETCH_SCHEDULE_EXECUTION_LAG_THRESHOLD_DAYS;
 
@@ -221,16 +252,25 @@ export async function verifyInternalFetchSchedules(
 
   const clusterName = await fetchClusterName(stackName, region);
   const serviceName = await fetchServiceName(stackName, region);
-  const [service, lowerCourtSchedule, supremeCourtSchedule, highCourtSchedule, lowerCourtRuns, supremeCourtRuns, highCourtRuns] =
-    await Promise.all([
-      fetchService(clusterName, serviceName, region),
-      fetchSchedule(stateScheduleName, scheduleGroupName, region),
-      fetchSchedule(supremeCourtScheduleName, scheduleGroupName, region),
-      fetchSchedule(highCourtScheduleName, scheduleGroupName, region),
-      fetchLowerCourtRuns(baseUrl, lowerCourtAnchor.stateCode, options.operatorToken),
-      fetchSupremeCourtRuns(baseUrl, options.operatorToken),
-      fetchHighCourtRuns(baseUrl, highCourtAnchor.courtSlug, options.operatorToken),
-    ]);
+  const [
+    service,
+    lowerCourtSchedule,
+    supremeCourtSchedule,
+    highCourtSchedule,
+    publishPendingSweepSchedule,
+    lowerCourtRuns,
+    supremeCourtRuns,
+    highCourtRuns,
+  ] = await Promise.all([
+    fetchService(clusterName, serviceName, region),
+    fetchSchedule(stateScheduleName, scheduleGroupName, region),
+    fetchSchedule(supremeCourtScheduleName, scheduleGroupName, region),
+    fetchSchedule(highCourtScheduleName, scheduleGroupName, region),
+    fetchSchedule(publishPendingSweepScheduleName, scheduleGroupName, region),
+    fetchLowerCourtRuns(baseUrl, lowerCourtAnchor.stateCode, options.operatorToken),
+    fetchSupremeCourtRuns(baseUrl, options.operatorToken),
+    fetchHighCourtRuns(baseUrl, highCourtAnchor.courtSlug, options.operatorToken),
+  ]);
 
   const liveTaskDefinitionArn = service.taskDefinition ?? null;
   const tiers: InternalFetchTierSummary[] = [
@@ -266,6 +306,17 @@ export async function verifyInternalFetchSchedules(
       anchor: highCourtAnchor,
       runs: highCourtRuns,
       tier: "high_courts",
+    }),
+    buildTierSummary({
+      checkedAt,
+      schedule: publishPendingSweepSchedule,
+      scheduleName: publishPendingSweepScheduleName,
+      scheduleGroupName,
+      scheduleExecutionLagThresholdDays,
+      liveTaskDefinitionArn,
+      anchor: { tier: "publish_pending_sweep" },
+      runs: [],
+      tier: "publish_pending_sweep",
     }),
   ];
 
@@ -377,12 +428,13 @@ function buildTierSummary(input: {
     : null;
   const scheduleUpdatedAt = input.schedule.LastModificationDate ?? input.schedule.CreationDate ?? null;
   const scheduleUpdatedFreshnessDays = scheduleUpdatedAt ? freshnessDays(scheduleUpdatedAt, input.checkedAt) : null;
-  const scheduleExecutionLagDetected =
-    latestScheduledRunFreshnessDays !== null
+  const scheduleExecutionLagDetected = config.monitorExecutionLag
+    ? latestScheduledRunFreshnessDays !== null
       ? latestScheduledRunFreshnessDays > input.scheduleExecutionLagThresholdDays
       : scheduleUpdatedFreshnessDays !== null
         ? scheduleUpdatedFreshnessDays > input.scheduleExecutionLagThresholdDays
-        : true;
+        : true
+    : false;
   const configHealthy =
     input.schedule.State === "ENABLED" && schedulerTargetMatchesService && usesScheduledFetchEntrypoint;
   const executionHealthy = !scheduleExecutionLagDetected;
