@@ -105,7 +105,7 @@ The live deploy runs four daily ECS schedules, all reconciled to the latest task
 - reviewed High Courts — `8:20 AM Asia/Kolkata`
 - public-alpha ops monitor — every `30` minutes against `https://nyaaywatch.in`
 
-The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it only alerts when a candidate needs human review. Each deploy also runs a publish-pending sweep that catches any runs fetched before the latest auto-publish code was active.
+The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it only alerts when a candidate needs human review. Each deploy also runs a publish-pending sweep that catches runs completed in the past 3 days that were not yet published.
 
 ## Public API
 
