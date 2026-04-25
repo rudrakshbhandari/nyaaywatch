@@ -78,7 +78,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           <p class="numbers__caption">${escapeHtml(n.wait.caption)}</p>
         </article>
         <article class="numbers__cell numbers__cell--reveal" id="stat-clearance">
-          <div class="numbers__value">${model.clearanceRate.toFixed(0)}<span class="numbers__unit">/ 100</span></div>
+          <div class="numbers__value">${model.clearanceRate.toFixed(0)}</div>
           <div class="numbers__label"><a href="${context.routes.methodology}#metric-clearance">${escapeHtml(n.clearance.label)}</a> ${infoIcon("clearance")}</div>
           <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
         </article>
@@ -323,6 +323,7 @@ const HOME_PAGE_CSS = `
     color: var(--ink);
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 6px;
     margin-top: -8px;
   }
@@ -332,6 +333,7 @@ const HOME_PAGE_CSS = `
     letter-spacing: -0.01em;
     color: var(--ink-muted);
     text-transform: lowercase;
+    white-space: nowrap;
   }
   .numbers__label {
     font-family: "IBM Plex Mono", ui-monospace, monospace;
