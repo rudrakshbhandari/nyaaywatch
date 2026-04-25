@@ -28,7 +28,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:103`
+- ECS task definition: `nyaaywatch-staging:212`
 - Internal raw fetch schedules:
   - lower-court states: `nyaaywatch-staging-weekday-internal-fetch` at `8:00 AM Asia/Kolkata`
   - Supreme Court: `nyaaywatch-staging-supreme-court-internal-fetch` at `8:10 AM Asia/Kolkata`
@@ -620,6 +620,10 @@ Latest confirmed operator validation:
   - `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` passed with `totalStates=36`, `staleStates=[]`, `dailyFetchLagStates=[]`, and `failingStates=[]`
   - no Cloudflare purge was run because `release:purge-public-routes` currently supports deploy-only Supreme Court and High Court route families, not lower-court state or Union Territory route exposure; the stable live lower-court routes returned `200` without a manual purge
   - this closes the post-deploy evidence gap for the April 23 lower-court Union Territory public-alpha promotion; `docs/RELEASE_HISTORY.md` now records the deploy-only exposure against the active UT publications
+- Supreme Court legacy published-snapshot parse incident remediated on 2026-04-24:
+  - CloudWatch alarms `nyaaywatch-staging-app-errors` and `nyaaywatch-staging-alb-target-5xx` fired after deployed code required `monthlyFinalized` on an older active Supreme Court published snapshot
+  - PR `#206` restored backward compatibility by defaulting missing `monthlyFinalized` to `[]`; PR `#207` added frozen production-shape fixture tests for published-snapshot schemas
+  - follow-up live check confirmed the ECS service stable on task definition `nyaaywatch-staging:212`, `/health`, `/supreme-court`, and `/v1/supreme-court/stats` returning `200`, both alarms back to `OK`, and no post-remediation structured app-error log events in the checked window
 
 ## Release Use
 
