@@ -46,6 +46,11 @@ describe("snapshot candidate normalization", () => {
     );
 
     expect(candidate.stats.medianCaseAgeDays).toBe(0);
+    expect(candidate.stats.oldCaseBurden).toEqual({ state: "missing", reason: "source-not-published" });
+    expect(candidate.stats.backlogMovementShare).toEqual({ state: "missing", reason: "not-applicable" });
+    expect(candidate.stats.breakEvenClearancesNeeded).toEqual({ state: "missing", reason: "source-not-published" });
+    expect(candidate.stats.catchUpClearancesPerMonth).toEqual({ state: "missing", reason: "not-applicable" });
+    expect(candidate.stats.backlogConcentration).toEqual({ state: "missing", reason: "not-applicable" });
     expect(candidate.districts[0]?.medianAgeDays).toBe(0);
     expect(candidate.districts[0]?.disposalRate).toBe(0);
     expect(candidate.districts[0]?.filingVsDisposalGap).toBe(0);

@@ -27,6 +27,33 @@ import { buildSupremeCourtCaptureBundle } from "./fixtures/supreme-court.js";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+const EMPTY_TEST_AGE_BUCKETS = {
+  lessThanOneYear: 0,
+  oneToThreeYears: 0,
+  threeToFiveYears: 0,
+  fiveToTenYears: 0,
+  aboveTenYears: 0,
+};
+
+const MISSING_SOURCE_TEST_METRIC = {
+  state: "missing",
+  reason: "source-not-published",
+} as const;
+
+const SYNTHETIC_STATE_PRESSURE_STATS = {
+  filedLastMonthCases: 0,
+  clearedLastMonthCases: 0,
+  ageBuckets: EMPTY_TEST_AGE_BUCKETS,
+  oldCaseBurden: MISSING_SOURCE_TEST_METRIC,
+  backlogMovementShare: MISSING_SOURCE_TEST_METRIC,
+  breakEvenClearancesNeeded: MISSING_SOURCE_TEST_METRIC,
+  catchUpClearancesPerMonth: MISSING_SOURCE_TEST_METRIC,
+  backlogConcentration: {
+    state: "missing",
+    reason: "incomplete-breakdown",
+  } as const,
+};
+
 export async function createTestContext(options: { stateCode?: SupportedStateCode } = {}) {
   const db = newDb({ autoCreateForeignKeyIndices: true, noAstCoverageCheck: true });
   db.public.registerFunction({
@@ -342,6 +369,7 @@ export function buildPunjabTestSnapshot(): PublishedSnapshot {
       disposalRate: 102.7,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -413,6 +441,7 @@ export function buildLadakhTestSnapshot(): PublishedSnapshot {
       disposalRate: 104.3,
       medianCaseAgeDays: 365,
       flaggedDistricts: 1,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -471,6 +500,7 @@ export function buildHaryanaTestSnapshot(): PublishedSnapshot {
       disposalRate: 97.4,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -542,6 +572,7 @@ export function buildAssamTestSnapshot(): PublishedSnapshot {
       disposalRate: 104.0,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -613,6 +644,7 @@ export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
       disposalRate: 101.6,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -684,6 +716,7 @@ export function buildKeralaTestSnapshot(): PublishedSnapshot {
       disposalRate: 134.9,
       medianCaseAgeDays: 365,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -755,6 +788,7 @@ export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
       disposalRate: 53.4,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -826,6 +860,7 @@ export function buildKarnatakaTestSnapshot(): PublishedSnapshot {
       disposalRate: 144.5,
       medianCaseAgeDays: 365,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -897,6 +932,7 @@ export function buildTripuraTestSnapshot(): PublishedSnapshot {
       disposalRate: 146.9,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
@@ -968,6 +1004,7 @@ export function buildNagalandTestSnapshot(): PublishedSnapshot {
       disposalRate: 108.6,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {

@@ -41,16 +41,11 @@ function createStatsContract(stateCode: "HP" | "PB", stateName: string) {
         medianCaseAgeDays: z.number().int().nonnegative(),
         flaggedDistricts: z.number().int().nonnegative(),
         ageBuckets: createAgeBucketsContract(),
-        oldCaseBurden: createOldCaseBurdenContract(),
-        backlogMovementShare: z.number(),
-        breakEvenClearancesNeeded: z.number().int().nonnegative(),
-        catchUpClearancesPerMonth: z.number().int().nonnegative(),
-        backlogConcentration: z
-          .object({
-            topFiveDistrictsShare: z.number().nonnegative(),
-            topTenDistrictsShare: z.number().nonnegative(),
-          })
-          .strict(),
+        oldCaseBurden: createOldCaseBurdenMetricContract(),
+        backlogMovementShare: createMetricValueContract(),
+        breakEvenClearancesNeeded: createMetricValueContract(),
+        catchUpClearancesPerMonth: createMetricValueContract(),
+        backlogConcentration: createBacklogConcentrationMetricContract(),
       })
       .strict(),
     })
@@ -80,6 +75,51 @@ function createOldCaseBurdenContract() {
       tenPlusYearsShare: z.number().nonnegative(),
     })
     .strict();
+}
+
+function createMissingMetricContract() {
+  return z
+    .object({
+      state: z.literal("missing"),
+      reason: z.enum([
+        "source-not-published",
+        "insufficient-history",
+        "incomplete-breakdown",
+        "not-applicable",
+      ]),
+    })
+    .strict();
+}
+
+function createMetricValueContract() {
+  return z.discriminatedUnion("state", [
+    z.object({ state: z.literal("ok"), value: z.number() }).strict(),
+    createMissingMetricContract(),
+  ]);
+}
+
+function createOldCaseBurdenMetricContract() {
+  return z.discriminatedUnion("state", [
+    z.object({ state: z.literal("ok"), value: createOldCaseBurdenContract() }).strict(),
+    createMissingMetricContract(),
+  ]);
+}
+
+function createBacklogConcentrationMetricContract() {
+  return z.discriminatedUnion("state", [
+    z
+      .object({
+        state: z.literal("ok"),
+        value: z
+          .object({
+            topFiveDistrictsShare: z.number().nonnegative(),
+            topTenDistrictsShare: z.number().nonnegative(),
+          })
+          .strict(),
+      })
+      .strict(),
+    createMissingMetricContract(),
+  ]);
 }
 
 function createWatchlistPersistenceContract() {

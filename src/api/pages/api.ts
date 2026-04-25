@@ -47,14 +47,34 @@ export function renderApiPage(context: PublicPageContext): string {
     "medianCaseAgeDays": 847,
     "flaggedDistricts": 9,
     "oldCaseBurden": {
-      "fivePlusYearsCases": 18430,
-      "fivePlusYearsShare": 19.6
+      "state": "ok",
+      "value": {
+        "threePlusYearsCases": 31200,
+        "fivePlusYearsCases": 18430,
+        "tenPlusYearsCases": 4200,
+        "threePlusYearsShare": 33.1,
+        "fivePlusYearsShare": 19.6,
+        "tenPlusYearsShare": 4.5
+      }
     },
-    "backlogMovementShare": 0.6,
-    "breakEvenClearancesNeeded": 600,
-    "catchUpClearancesPerMonth": 1385,
+    "backlogMovementShare": {
+      "state": "ok",
+      "value": 0.6
+    },
+    "breakEvenClearancesNeeded": {
+      "state": "ok",
+      "value": 600
+    },
+    "catchUpClearancesPerMonth": {
+      "state": "ok",
+      "value": 1385
+    },
     "backlogConcentration": {
-      "topFiveDistrictsShare": 57.8
+      "state": "ok",
+      "value": {
+        "topFiveDistrictsShare": 57.8,
+        "topTenDistrictsShare": 81.4
+      }
     }
   },
   "trends": [
@@ -141,7 +161,7 @@ export function renderApiPage(context: PublicPageContext): string {
 
     <section class="endpoints__notes">
       ${renderSectionHead({ headline: "What the API guarantees" })}
-      <div class="card-grid card-grid--2">
+      <div class="card-grid card-grid--3">
         <article class="card">
           <h3>CSV parity</h3>
           <p>The <code>/data</code> downloads stay aligned with the same published read model, so the CSV columns and the JSON fields mean the same thing.</p>
@@ -149,6 +169,10 @@ export function renderApiPage(context: PublicPageContext): string {
         <article class="card">
           <h3>Published only</h3>
           <p>The API never exposes fresher unpublished data than the public pages themselves. Operator captures in review stay private.</p>
+        </article>
+        <article class="card">
+          <h3>Missing data</h3>
+          <p>State-level pressure metrics that depend on optional NJDG inputs return <code>{ state: "missing", reason }</code> instead of turning unavailable source data into zero.</p>
         </article>
       </div>
     </section>
