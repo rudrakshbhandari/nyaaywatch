@@ -39,6 +39,18 @@ const MetricValueOrLegacyNumberSchema = z
   ])
   .default(MISSING_SOURCE_NOT_PUBLISHED);
 
+const NonNegativeIntegerMetricValueSchema = z.discriminatedUnion("state", [
+  z.object({ state: z.literal("ok"), value: z.number().int().nonnegative() }),
+  MissingMetricSchema,
+]);
+
+const NonNegativeIntegerMetricValueOrLegacyNumberSchema = z
+  .union([
+    z.number().int().nonnegative().transform((value) => ({ state: "ok" as const, value })),
+    NonNegativeIntegerMetricValueSchema,
+  ])
+  .default(MISSING_SOURCE_NOT_PUBLISHED);
+
 const EMPTY_AGE_BUCKETS = {
   lessThanOneYear: 0,
   oneToThreeYears: 0,
@@ -136,8 +148,8 @@ export const StateStatsSchema = z.object({
   ageBuckets: AgeBucketsSchema.default(EMPTY_AGE_BUCKETS),
   oldCaseBurden: OldCaseBurdenMetricSchema,
   backlogMovementShare: MetricValueOrLegacyNumberSchema,
-  breakEvenClearancesNeeded: MetricValueOrLegacyNumberSchema,
-  catchUpClearancesPerMonth: MetricValueOrLegacyNumberSchema,
+  breakEvenClearancesNeeded: NonNegativeIntegerMetricValueOrLegacyNumberSchema,
+  catchUpClearancesPerMonth: NonNegativeIntegerMetricValueOrLegacyNumberSchema,
   backlogConcentration: BacklogConcentrationMetricSchema,
 });
 

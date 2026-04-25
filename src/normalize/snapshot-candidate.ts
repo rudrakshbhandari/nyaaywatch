@@ -357,7 +357,7 @@ function buildBacklogConcentrationMetric(
   if (totalPendingCases <= 0) {
     return { state: "missing", reason: "not-applicable" };
   }
-  if (backlogCases.length < 5) {
+  if (backlogCases.length === 0) {
     return { state: "missing", reason: "incomplete-breakdown" };
   }
 
