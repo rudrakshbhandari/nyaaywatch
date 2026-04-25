@@ -179,6 +179,11 @@ jobs:
           chmod +x infra/aws/staging/reconcile-internal-fetch-schedule.sh
           ./infra/aws/staging/reconcile-internal-fetch-schedule.sh "$STAGING_STACK_NAME"
 
+      - name: Publish any pending complete runs
+        run: |
+          chmod +x infra/aws/staging/run-publish-pending.sh
+          ./infra/aws/staging/run-publish-pending.sh "$STAGING_STACK_NAME"
+
   preview:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
     needs:
