@@ -5,6 +5,7 @@ import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { renderAnchorLink, renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
+import { dedupeLineageByReferenceDate } from "./lineage-dedup.js";
 
 /**
  * /methodology — the contract with the reader. Explains what the numbers
@@ -95,9 +96,12 @@ export function renderMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published methodology and snapshot lineage",
-        lede: "Every public publication is listed here with its source date, methodology version, and quality state.",
+        lede: "One row per source-snapshot date, showing the latest publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
       })}
-      ${history.length > 0 ? renderHistoryTable(history) : emptyHistoryCallout()}
+      ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
+        referenceDateLabel: (entry) => formatDate(entry.snapshot.sourceSnapshotAt),
+        publicationTimestamp: (entry) => entry.snapshot.publishedAt,
+      })) : emptyHistoryCallout()}
     </section>
   `;
 

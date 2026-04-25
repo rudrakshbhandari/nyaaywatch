@@ -5,6 +5,7 @@ import { renderPageShell } from "../design/shell.js";
 import { renderAnchorLink, renderSectionHead } from "../design/ui.js";
 import type { PublicSupremeCourtPageContext } from "../public-supreme-court.js";
 import { formatDate } from "../home/view-model.js";
+import { dedupeLineageByReferenceDate } from "./lineage-dedup.js";
 
 export function renderSupremeCourtMethodologyPage(
   snapshot: SupremeCourtPublishedSnapshot["snapshot"] | null,
@@ -90,9 +91,12 @@ export function renderSupremeCourtMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published snapshot lineage",
-        lede: "Every public Supreme Court publication is listed here with its reference date, publication time, and methodology version.",
+        lede: "One row per Supreme Court reference date, showing the latest publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
       })}
-      ${history.length > 0 ? renderHistoryTable(history) : `<article class="card"><p>No published Supreme Court history is available yet.</p></article>`}
+      ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
+        referenceDateLabel: (entry) => describeReferenceDate(entry.snapshot),
+        publicationTimestamp: (entry) => entry.publication.createdAt,
+      })) : `<article class="card"><p>No published Supreme Court history is available yet.</p></article>`}
     </section>
   `;
 
