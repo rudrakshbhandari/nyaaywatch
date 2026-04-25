@@ -429,7 +429,18 @@ const DISTRICTS_PAGE_CSS = `
   }
   .controls__links a { color: var(--ink-soft); }
 
-  .districts-table-wrap { overflow-x: auto; margin-bottom: 72px; }
+  .districts-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 72px;
+    background:
+      linear-gradient(to right, var(--paper) 30%, rgba(244, 240, 232, 0)),
+      linear-gradient(to right, rgba(244, 240, 232, 0), var(--paper) 70%) 100% 0,
+      linear-gradient(to right, rgba(12, 10, 8, 0.12), rgba(12, 10, 8, 0)),
+      linear-gradient(to left, rgba(12, 10, 8, 0.12), rgba(12, 10, 8, 0)) 100% 0;
+    background-repeat: no-repeat;
+    background-size: 32px 100%, 32px 100%, 14px 100%, 14px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
   .districts-table { table-layout: auto; }
   .districts-table th:first-child, .districts-table td:first-child { min-width: 200px; }
   .district-row__name {
@@ -456,5 +467,18 @@ const DISTRICTS_PAGE_CSS = `
   }
   @media (max-width: 720px) {
     .controls__form { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .your-district-chip {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      padding: 12px 14px 14px;
+    }
+    .your-district-chip__input {
+      width: 100%;
+      font-size: 16px;
+      padding: 6px 0;
+    }
   }
 `;
