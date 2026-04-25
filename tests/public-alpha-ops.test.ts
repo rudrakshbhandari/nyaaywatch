@@ -1,11 +1,21 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const listPublicStateProfiles = vi.fn();
+const listPublicHighCourtProfiles = vi.fn();
+const getSupremeCourtProfile = vi.fn();
 const verifyPublicRelease = vi.fn();
 const fetchMock = vi.fn();
 
 vi.mock("../src/geographies.js", () => ({
   listPublicStateProfiles,
+}));
+
+vi.mock("../src/high-courts.js", () => ({
+  listPublicHighCourtProfiles,
+}));
+
+vi.mock("../src/supreme-court.js", () => ({
+  getSupremeCourtProfile,
 }));
 
 vi.mock("../src/dev/release-verification.js", () => ({
@@ -14,6 +24,16 @@ vi.mock("../src/dev/release-verification.js", () => ({
 
 describe("public alpha ops verification", () => {
   global.fetch = fetchMock as typeof fetch;
+
+  beforeEach(() => {
+    listPublicHighCourtProfiles.mockReturnValue([]);
+    getSupremeCourtProfile.mockReturnValue({
+      courtCode: "SCI",
+      courtSlug: "supreme-court",
+      courtName: "Supreme Court of India",
+      publicBeta: false,
+    });
+  });
 
   afterEach(() => {
     vi.clearAllMocks();
@@ -128,10 +148,157 @@ describe("public alpha ops verification", () => {
     });
 
     expect(summary.totalStates).toBe(2);
+    expect(summary.totalTargets).toBe(2);
     expect(summary.healthyStates).toEqual(["HP", "PB"]);
+    expect(summary.healthyTargets).toEqual(["HP", "PB"]);
     expect(summary.staleStates).toEqual([]);
     expect(summary.dailyFetchLagStates).toEqual([]);
     expect(summary.failingStates).toEqual([]);
+    expect(() => assertPublicAlphaOperationsHealthy(summary)).not.toThrow();
+  });
+
+  it("covers public High Court and Supreme Court release targets in the ops sweep", async () => {
+    listPublicStateProfiles.mockReturnValueOnce([]);
+    listPublicHighCourtProfiles.mockReturnValueOnce([
+      {
+        courtCode: "HPHC",
+        courtName: "High Court of Himachal Pradesh",
+        courtSlug: "himachal",
+      },
+    ]);
+    getSupremeCourtProfile.mockReturnValueOnce({
+      courtCode: "SCI",
+      courtName: "Supreme Court of India",
+      courtSlug: "supreme-court",
+      publicBeta: true,
+    });
+    verifyPublicRelease
+      .mockResolvedValueOnce({
+        baseUrl: "https://nyaaywatch.in",
+        checkedAt: "2026-04-18T12:00:00.000Z",
+        target: {
+          tier: "high_court",
+          identifier: "HPHC",
+          label: "High Court of Himachal Pradesh",
+          courtCode: "HPHC",
+          courtName: "High Court of Himachal Pradesh",
+          courtSlug: "himachal",
+          statsPath: "/v1/high-courts/himachal/stats",
+          trendsPath: "/v1/high-courts/himachal/trends",
+          dataPagePath: "/high-courts/himachal/data",
+          operatorAuthPath: "/operator/high-courts/himachal/publications",
+        },
+        snapshot: {
+          sourceSnapshotAt: "2026-04-18T00:00:00.000Z",
+          referenceDateAt: "2026-04-18T00:00:00.000Z",
+          referenceDateKind: "source_snapshot_at",
+          publishedAt: "2026-04-18T08:00:00.000Z",
+          freshnessDaysAtPublish: 0,
+          currentFreshnessDays: 0,
+          methodologyVersion: "2026.04-alpha",
+          qualityState: "complete",
+          publishedFromRunId: "run_hphc",
+          replayedFromRunId: null,
+        },
+        health: { region: "ap-south-1", stateCode: "HP" },
+        districtCount: null,
+        trendCount: 1,
+        csvMetadataParity: null,
+        publicDataCacheProtected: true,
+        operatorAuthProtected: true,
+      })
+      .mockResolvedValueOnce({
+        baseUrl: "https://nyaaywatch.in",
+        checkedAt: "2026-04-18T12:00:00.000Z",
+        target: {
+          tier: "supreme_court",
+          identifier: "SCI",
+          label: "Supreme Court of India",
+          courtCode: "SCI",
+          courtName: "Supreme Court of India",
+          courtSlug: "supreme-court",
+          statsPath: "/v1/supreme-court/stats",
+          trendsPath: "/v1/supreme-court/trends",
+          dataPagePath: "/supreme-court/data",
+          operatorAuthPath: "/operator/supreme-court/publications",
+        },
+        snapshot: {
+          sourceSnapshotAt: "2026-04-18T00:00:00.000Z",
+          referenceDateAt: "2026-04-18T00:00:00.000Z",
+          referenceDateKind: "source_snapshot_at",
+          publishedAt: "2026-04-18T08:05:00.000Z",
+          freshnessDaysAtPublish: 0,
+          currentFreshnessDays: 0,
+          methodologyVersion: "2026.04-alpha",
+          qualityState: "complete",
+          publishedFromRunId: "run_sci",
+          replayedFromRunId: null,
+        },
+        health: { region: "ap-south-1", stateCode: "HP" },
+        districtCount: null,
+        trendCount: 1,
+        csvMetadataParity: null,
+        publicDataCacheProtected: true,
+        operatorAuthProtected: true,
+      });
+    fetchMock
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            runs: [
+              {
+                id: "run_hphc",
+                stateCode: "HPHC",
+                sourceSnapshotAt: "2026-04-18T00:00:00.000Z",
+                status: "completed",
+                completedAt: "2026-04-18T08:10:00.000Z",
+              },
+            ],
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            runs: [
+              {
+                id: "run_sci",
+                stateCode: "SCI",
+                sourceSnapshotAt: "2026-04-18T00:00:00.000Z",
+                status: "completed",
+                completedAt: "2026-04-18T08:12:00.000Z",
+              },
+            ],
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+      );
+
+    const { assertPublicAlphaOperationsHealthy, verifyPublicAlphaOperations } = await import(
+      "../src/dev/public-alpha-ops.js"
+    );
+    const summary = await verifyPublicAlphaOperations("https://nyaaywatch.in", {
+      now: new Date("2026-04-18T12:00:00.000Z"),
+      operatorToken: "operator-test-token",
+    });
+
+    expect(summary.totalStates).toBe(0);
+    expect(summary.totalTargets).toBe(2);
+    expect(summary.healthyTargets).toEqual(["high_court:HPHC", "supreme_court:SCI"]);
+    expect(summary.targets.map((target) => target.tier)).toEqual(["high_court", "supreme_court"]);
+    expect(verifyPublicRelease).toHaveBeenNthCalledWith(1, "https://nyaaywatch.in", {
+      highCourtSlug: "himachal",
+      now: new Date("2026-04-18T12:00:00.000Z"),
+    });
+    expect(verifyPublicRelease).toHaveBeenNthCalledWith(2, "https://nyaaywatch.in", {
+      supremeCourt: true,
+      now: new Date("2026-04-18T12:00:00.000Z"),
+    });
+    expect(fetchMock.mock.calls.map((call) => String(call[0]))).toEqual([
+      "https://nyaaywatch.in/operator/high-courts/himachal/runs",
+      "https://nyaaywatch.in/operator/supreme-court/runs",
+    ]);
     expect(() => assertPublicAlphaOperationsHealthy(summary)).not.toThrow();
   });
 

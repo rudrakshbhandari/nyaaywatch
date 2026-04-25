@@ -1,6 +1,6 @@
 import type { DistrictSnapshot, PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import type { DistrictHistoryPoint } from "../../services/published-snapshot-service.js";
-import { escapeHtml } from "../../lib/html.js";
+import { escapeHtml, safeJsonForHtmlScript } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
@@ -36,6 +36,36 @@ export function renderDistrictPage(
   const rankDelta = currentPoint && previousPoint ? previousPoint.rank - currentPoint.rank : null;
 
   const typicalWaitMonths = Math.round(district.medianAgeDays / 30);
+  const plainCitation = buildPlainCitation(
+    district.districtName,
+    snapshot.sourceAttribution,
+    formatDate(snapshot.sourceSnapshotAt),
+    `${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
+  );
+  const citationsJson = safeJsonForHtmlScript({
+    plain: plainCitation,
+    apa: `NyaayWatch. (${new Date(snapshot.sourceSnapshotAt).getFullYear()}). ${district.districtName} district court backlog. ${snapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
+    mla: `NyaayWatch. "${district.districtName} District Court Backlog." ${snapshot.sourceAttribution}, ${formatDate(snapshot.sourceSnapshotAt)}, ${SITE_ORIGIN}${context.routes.district(district.districtId)}.`,
+  });
+  const structuredDataJson = safeJsonForHtmlScript({
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": `${district.districtName} District Court Backlog Data — NyaayWatch`,
+    "description": `Published court backlog, disposal rate, and pending case data for ${district.districtName} district courts in ${snapshot.stateName}. Source: ${snapshot.sourceAttribution}. Methodology: ${snapshot.methodologyVersion}.`,
+    "url": `${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
+    "creator": { "@type": "Organization", "name": "NyaayWatch", "url": SITE_ORIGIN },
+    "datePublished": snapshot.publishedAt,
+    "dateModified": snapshot.publishedAt,
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "isAccessibleForFree": true,
+    "distribution": [
+      {
+        "@type": "DataDownload",
+        "encodingFormat": "text/csv",
+        "contentUrl": `${SITE_ORIGIN}${context.routes.districtCsv(district.districtId)}`,
+      },
+    ],
+  });
 
   const body = `
     <section class="district-hero">
@@ -131,7 +161,7 @@ export function renderDistrictPage(
                 <option value="mla">MLA</option>
               </select>
             </div>
-            <pre id="cite-text" class="cite-block__pre">${escapeHtml(buildPlainCitation(district.districtName, snapshot.sourceAttribution, formatDate(snapshot.sourceSnapshotAt), `${SITE_ORIGIN}${context.routes.district(district.districtId)}`))}</pre>
+            <pre id="cite-text" class="cite-block__pre">${escapeHtml(plainCitation)}</pre>
             <button class="btn btn--ghost btn--small cite-block__copy" onclick="copyCite()">Copy</button>
           </div>
           <div class="district-col__cta">
@@ -154,11 +184,9 @@ export function renderDistrictPage(
 
     <script>
     (function() {
-      var PLAIN = ${JSON.stringify(buildPlainCitation(district.districtName, snapshot.sourceAttribution, formatDate(snapshot.sourceSnapshotAt), `${SITE_ORIGIN}${context.routes.district(district.districtId)}`))};
-      var APA = ${JSON.stringify(`NyaayWatch. (${new Date(snapshot.sourceSnapshotAt).getFullYear()}). ${district.districtName} district court backlog. ${snapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)};
-      var MLA = ${JSON.stringify(`NyaayWatch. "${district.districtName} District Court Backlog." ${snapshot.sourceAttribution}, ${formatDate(snapshot.sourceSnapshotAt)}, ${SITE_ORIGIN}${context.routes.district(district.districtId)}.`)};
+      var CITES = ${citationsJson};
       window.updateCite = function(fmt) {
-        var t = fmt === "apa" ? APA : fmt === "mla" ? MLA : PLAIN;
+        var t = fmt === "apa" ? CITES.apa : fmt === "mla" ? CITES.mla : CITES.plain;
         document.getElementById("cite-text").textContent = t;
       };
       window.copyCite = function() {
@@ -197,25 +225,7 @@ export function renderDistrictPage(
       nyaaywatch.in${escapeHtml(context.routes.district(district.districtId))}
     </div>
 
-    <script type="application/ld+json">${JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "Dataset",
-      "name": `${district.districtName} District Court Backlog Data — NyaayWatch`,
-      "description": `Published court backlog, disposal rate, and pending case data for ${district.districtName} district courts in ${snapshot.stateName}. Source: ${snapshot.sourceAttribution}. Methodology: ${snapshot.methodologyVersion}.`,
-      "url": `${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
-      "creator": { "@type": "Organization", "name": "NyaayWatch", "url": SITE_ORIGIN },
-      "datePublished": snapshot.publishedAt,
-      "dateModified": snapshot.publishedAt,
-      "license": "https://creativecommons.org/licenses/by/4.0/",
-      "isAccessibleForFree": true,
-      "distribution": [
-        {
-          "@type": "DataDownload",
-          "encodingFormat": "text/csv",
-          "contentUrl": `${SITE_ORIGIN}${context.routes.districtCsv(district.districtId)}`,
-        },
-      ],
-    })}</script>
+    <script type="application/ld+json">${structuredDataJson}</script>
   `;
 
   const ogDescription = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. The typical case has been waiting about ${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch`;
