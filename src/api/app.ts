@@ -104,7 +104,7 @@ export function createApp(
 
       logInfo("http_request", {
         method: request.method,
-        path: request.originalUrl,
+        path: redactSensitiveRequestUrl(request.originalUrl),
         statusCode: response.statusCode,
         durationMs: Date.now() - startedAt,
         isOperatorRoute: request.path.startsWith("/operator/"),
@@ -819,6 +819,7 @@ export function createApp(
   app.get(
     "/supreme-court/data",
     asyncRoute(async (_request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
       if (!resolved) {
         response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
@@ -916,6 +917,7 @@ export function createApp(
   app.get(
     "/high-courts/:courtSlug/data",
     asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
       const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
       if (!resolved) {
         response.status(404).send(renderEmptyState("High Court Not Found", "This High Court is not available on the public site."));
@@ -1520,7 +1522,7 @@ export function createApp(
     const message = error instanceof Error ? error.message : "Unexpected error";
     logError("http_request_failed", {
       method: _request.method,
-      path: _request.originalUrl,
+      path: redactSensitiveRequestUrl(_request.originalUrl),
       statusCode: 500,
       error: message,
     });
@@ -1827,6 +1829,27 @@ function applyPublishedDataCacheHeaders(response: Response) {
     "CDN-Cache-Control": "no-store",
     "Cloudflare-CDN-Cache-Control": "no-store",
   });
+}
+
+function redactSensitiveRequestUrl(originalUrl: string): string {
+  const [rawPath = "", rawQuery] = originalUrl.split("?", 2);
+  const path = rawPath
+    .replace(/^\/subscribe\/confirm\/[^/?#]+/, "/subscribe/confirm/[redacted]")
+    .replace(/^\/unsubscribe\/[^/?#]+/, "/unsubscribe/[redacted]");
+
+  if (!rawQuery) {
+    return path;
+  }
+
+  const params = new URLSearchParams(rawQuery);
+  for (const key of ["token", "confirmToken", "unsubscribeToken"]) {
+    if (params.has(key)) {
+      params.set(key, "[redacted]");
+    }
+  }
+
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
 }
 
 function operatorOnly(config: AppConfig) {

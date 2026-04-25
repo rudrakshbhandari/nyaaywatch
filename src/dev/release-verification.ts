@@ -1,8 +1,20 @@
 import { z } from "zod";
 
+import {
+  HighCourtSnapshotMetadataSchema,
+  HighCourtStatsSchema,
+  HighCourtTrendPointSchema,
+} from "../domain/high-court-snapshot-schema.js";
 import { SnapshotMetadataSchema, StateStatsSchema, TrendPointSchema, type QualityState } from "../domain/snapshot-schema.js";
+import {
+  SupremeCourtSnapshotMetadataSchema,
+  SupremeCourtStatsSchema,
+  SupremeCourtTrendPointSchema,
+} from "../domain/supreme-court-snapshot-schema.js";
 import { getPublicStateProfileBySlug } from "../geographies.js";
+import { getPublicHighCourtProfileBySlug } from "../high-courts.js";
 import { freshnessDays } from "../lib/time.js";
+import { getSupremeCourtProfile } from "../supreme-court.js";
 
 const HealthResponseSchema = z.object({
   ok: z.literal(true),
@@ -31,27 +43,60 @@ const TrendsResponseSchema = z.object({
   trends: z.array(TrendPointSchema),
 });
 
+const HighCourtStatsResponseSchema = z.object({
+  snapshot: HighCourtSnapshotMetadataSchema,
+  stats: HighCourtStatsSchema,
+});
+
+const HighCourtTrendsResponseSchema = z.object({
+  snapshot: HighCourtSnapshotMetadataSchema,
+  trends: z.array(HighCourtTrendPointSchema),
+});
+
+const SupremeCourtStatsResponseSchema = z.object({
+  snapshot: SupremeCourtSnapshotMetadataSchema,
+  stats: SupremeCourtStatsSchema,
+});
+
+const SupremeCourtTrendsResponseSchema = z.object({
+  snapshot: SupremeCourtSnapshotMetadataSchema,
+  trends: z.array(SupremeCourtTrendPointSchema),
+});
+
 const OperatorUnauthorizedSchema = z.object({
   error: z.literal("Operator token required."),
 });
 
 type SnapshotMetadata = z.infer<typeof SnapshotMetadataSchema>;
+type HighCourtSnapshotMetadata = z.infer<typeof HighCourtSnapshotMetadataSchema>;
+type SupremeCourtSnapshotMetadata = z.infer<typeof SupremeCourtSnapshotMetadataSchema>;
+type CourtSnapshotMetadata = HighCourtSnapshotMetadata | SupremeCourtSnapshotMetadata;
+type ReleaseTarget = ReturnType<typeof resolveReleaseTarget>;
 
 export interface ReleaseVerificationSummary {
   baseUrl: string;
   checkedAt: string;
   target: {
-    stateCode: string;
-    stateName: string;
-    stateSlug: string;
+    tier: "lower_court_state" | "high_court" | "supreme_court";
+    identifier: string;
+    label: string;
+    stateCode?: string;
+    stateName?: string;
+    stateSlug?: string;
+    courtCode?: string;
+    courtName?: string;
+    courtSlug?: string;
     statsPath: string;
-    districtsPath: string;
     trendsPath: string;
     dataPagePath: string;
-    districtsCsvPath: string;
+    operatorAuthPath: string;
+    districtsPath?: string;
+    districtsCsvPath?: string;
   };
   snapshot: {
-    sourceSnapshotAt: string;
+    sourceSnapshotAt: string | null;
+    referenceDateAt: string;
+    referenceDateKind?: string;
     publishedAt: string;
     freshnessDaysAtPublish: number;
     currentFreshnessDays: number;
@@ -64,9 +109,9 @@ export interface ReleaseVerificationSummary {
     region: string;
     stateCode: string;
   };
-  districtCount: number;
+  districtCount: number | null;
   trendCount: number;
-  csvMetadataParity: true;
+  csvMetadataParity: true | null;
   publicDataCacheProtected: true;
   operatorAuthProtected: true;
 }
@@ -75,19 +120,36 @@ export async function verifyPublicRelease(
   baseUrl: string,
   options: {
     stateSlug?: string;
+    highCourtSlug?: string;
+    supremeCourt?: boolean;
     now?: Date;
   } = {},
 ): Promise<ReleaseVerificationSummary> {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
-  const target = resolveReleaseTarget(options.stateSlug);
+  const target = resolveReleaseTarget(options);
   const checkedAt = options.now ?? new Date();
+  if (target.tier === "high_court") {
+    return verifyHighCourtRelease(normalizedBaseUrl, target, checkedAt);
+  }
+  if (target.tier === "supreme_court") {
+    return verifySupremeCourtRelease(normalizedBaseUrl, target, checkedAt);
+  }
+
+  return verifyLowerCourtRelease(normalizedBaseUrl, target, checkedAt);
+}
+
+async function verifyLowerCourtRelease(
+  normalizedBaseUrl: string,
+  target: Extract<ReleaseTarget, { tier: "lower_court_state" }>,
+  checkedAt: Date,
+): Promise<ReleaseVerificationSummary> {
   const [health, statsPayload, districtsPayload, trendsPayload, operatorAuthResult, dataPage, districtsCsv] =
     await Promise.all([
       fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
       fetchJson(`${normalizedBaseUrl}${target.statsPath}`, StatsResponseSchema),
       fetchJson(`${normalizedBaseUrl}${target.districtsPath}`, DistrictsResponseSchema),
       fetchJson(`${normalizedBaseUrl}${target.trendsPath}`, TrendsResponseSchema),
-      fetchJson(`${normalizedBaseUrl}/operator/publications`, OperatorUnauthorizedSchema, 401),
+      fetchJson(`${normalizedBaseUrl}${target.operatorAuthPath}`, OperatorUnauthorizedSchema, 401),
       fetchTextResponse(`${normalizedBaseUrl}${target.dataPagePath}`),
       fetchTextResponse(`${normalizedBaseUrl}${target.districtsCsvPath}`),
     ]);
@@ -106,6 +168,7 @@ export async function verifyPublicRelease(
     target,
     snapshot: {
       sourceSnapshotAt: statsPayload.snapshot.sourceSnapshotAt,
+      referenceDateAt: statsPayload.snapshot.sourceSnapshotAt,
       publishedAt: statsPayload.snapshot.publishedAt,
       freshnessDaysAtPublish: statsPayload.snapshot.freshnessDays,
       currentFreshnessDays,
@@ -126,6 +189,76 @@ export async function verifyPublicRelease(
   };
 }
 
+async function verifyHighCourtRelease(
+  normalizedBaseUrl: string,
+  target: Extract<ReleaseTarget, { tier: "high_court" }>,
+  checkedAt: Date,
+): Promise<ReleaseVerificationSummary> {
+  const [health, statsPayload, trendsPayload, operatorAuthResult, dataPage] = await Promise.all([
+    fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.statsPath}`, HighCourtStatsResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.trendsPath}`, HighCourtTrendsResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.operatorAuthPath}`, OperatorUnauthorizedSchema, 401),
+    fetchTextResponse(`${normalizedBaseUrl}${target.dataPagePath}`),
+  ]);
+
+  assertHighCourtSnapshot(statsPayload.snapshot, target);
+  assertMatchingSnapshotJson("high court trends", trendsPayload.snapshot, statsPayload.snapshot);
+  assertCacheProtection(`${target.label} data page`, dataPage.response);
+  const currentFreshnessDays = freshnessDays(statsPayload.snapshot.referenceDateAt, checkedAt);
+
+  return {
+    baseUrl: normalizedBaseUrl,
+    checkedAt: checkedAt.toISOString(),
+    target,
+    snapshot: buildCourtSnapshotSummary(statsPayload.snapshot, currentFreshnessDays),
+    health: {
+      region: health.region,
+      stateCode: health.stateCode,
+    },
+    districtCount: null,
+    trendCount: trendsPayload.trends.length,
+    csvMetadataParity: null,
+    publicDataCacheProtected: true,
+    operatorAuthProtected: true,
+  };
+}
+
+async function verifySupremeCourtRelease(
+  normalizedBaseUrl: string,
+  target: Extract<ReleaseTarget, { tier: "supreme_court" }>,
+  checkedAt: Date,
+): Promise<ReleaseVerificationSummary> {
+  const [health, statsPayload, trendsPayload, operatorAuthResult, dataPage] = await Promise.all([
+    fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.statsPath}`, SupremeCourtStatsResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.trendsPath}`, SupremeCourtTrendsResponseSchema),
+    fetchJson(`${normalizedBaseUrl}${target.operatorAuthPath}`, OperatorUnauthorizedSchema, 401),
+    fetchTextResponse(`${normalizedBaseUrl}${target.dataPagePath}`),
+  ]);
+
+  assertSupremeCourtSnapshot(statsPayload.snapshot, target);
+  assertMatchingSnapshotJson("supreme court trends", trendsPayload.snapshot, statsPayload.snapshot);
+  assertCacheProtection("Supreme Court data page", dataPage.response);
+  const currentFreshnessDays = freshnessDays(statsPayload.snapshot.referenceDateAt, checkedAt);
+
+  return {
+    baseUrl: normalizedBaseUrl,
+    checkedAt: checkedAt.toISOString(),
+    target,
+    snapshot: buildCourtSnapshotSummary(statsPayload.snapshot, currentFreshnessDays),
+    health: {
+      region: health.region,
+      stateCode: health.stateCode,
+    },
+    districtCount: null,
+    trendCount: trendsPayload.trends.length,
+    csvMetadataParity: null,
+    publicDataCacheProtected: true,
+    operatorAuthProtected: true,
+  };
+}
+
 function normalizeBaseUrl(baseUrl: string) {
   const trimmed = baseUrl.trim();
   if (trimmed.length === 0) {
@@ -135,9 +268,51 @@ function normalizeBaseUrl(baseUrl: string) {
   return trimmed.replace(/\/+$/, "");
 }
 
-function resolveReleaseTarget(stateSlug?: string) {
+function resolveReleaseTarget(options: { stateSlug?: string; highCourtSlug?: string; supremeCourt?: boolean }) {
+  const selectedTargets = [options.stateSlug, options.highCourtSlug, options.supremeCourt ? "supreme-court" : undefined]
+    .filter((value) => typeof value === "string" && value.trim().length > 0);
+  if (selectedTargets.length > 1) {
+    throw new Error("Select only one release target: --state-slug, --high-court, or --supreme-court.");
+  }
+
+  if (options.supremeCourt) {
+    const profile = getSupremeCourtProfile();
+    return {
+      tier: "supreme_court" as const,
+      identifier: profile.courtCode,
+      label: profile.courtName,
+      courtCode: profile.courtCode,
+      courtName: profile.courtName,
+      courtSlug: profile.courtSlug,
+      statsPath: "/v1/supreme-court/stats",
+      trendsPath: "/v1/supreme-court/trends",
+      dataPagePath: "/supreme-court/data",
+      operatorAuthPath: "/operator/supreme-court/publications",
+    };
+  }
+
+  if (options.highCourtSlug) {
+    const profile = getPublicHighCourtProfileBySlug(options.highCourtSlug);
+    if (!profile) {
+      throw new Error(`Unsupported public High Court slug: ${options.highCourtSlug}`);
+    }
+
+    return {
+      tier: "high_court" as const,
+      identifier: profile.courtCode,
+      label: profile.courtName,
+      courtCode: profile.courtCode,
+      courtName: profile.courtName,
+      courtSlug: profile.courtSlug,
+      statsPath: `/v1/high-courts/${profile.courtSlug}/stats`,
+      trendsPath: `/v1/high-courts/${profile.courtSlug}/trends`,
+      dataPagePath: `/high-courts/${profile.courtSlug}/data`,
+      operatorAuthPath: `/operator/high-courts/${profile.courtSlug}/publications`,
+    };
+  }
+
   const defaultStateSlug = "himachal-pradesh";
-  const resolvedStateSlug = stateSlug?.trim() || defaultStateSlug;
+  const resolvedStateSlug = options.stateSlug?.trim() || defaultStateSlug;
   const profile = getPublicStateProfileBySlug(resolvedStateSlug);
   if (!profile) {
     throw new Error(`Unsupported public state slug: ${resolvedStateSlug}`);
@@ -145,6 +320,9 @@ function resolveReleaseTarget(stateSlug?: string) {
 
   if (profile.stateCode === "HP") {
     return {
+      tier: "lower_court_state" as const,
+      identifier: profile.stateCode,
+      label: profile.stateName,
       stateCode: profile.stateCode,
       stateName: profile.stateName,
       stateSlug: profile.stateSlug,
@@ -153,10 +331,14 @@ function resolveReleaseTarget(stateSlug?: string) {
       trendsPath: "/v1/trends",
       dataPagePath: "/data",
       districtsCsvPath: "/data/districts.csv",
+      operatorAuthPath: "/operator/publications",
     };
   }
 
   return {
+    tier: "lower_court_state" as const,
+    identifier: profile.stateCode,
+    label: profile.stateName,
     stateCode: profile.stateCode,
     stateName: profile.stateName,
     stateSlug: profile.stateSlug,
@@ -165,6 +347,7 @@ function resolveReleaseTarget(stateSlug?: string) {
     trendsPath: `/v1/states/${profile.stateSlug}/trends`,
     dataPagePath: `/states/${profile.stateSlug}/data`,
     districtsCsvPath: `/states/${profile.stateSlug}/data/districts.csv`,
+    operatorAuthPath: "/operator/publications",
   };
 }
 
@@ -200,9 +383,13 @@ async function readResponse(url: string, response: Response, expectedStatus: num
 }
 
 function assertMatchingSnapshot(label: string, actual: SnapshotMetadata, expected: SnapshotMetadata) {
-  const actualJson = JSON.stringify(actual);
-  const expectedJson = JSON.stringify(expected);
-  if (actualJson !== expectedJson) {
+  if (!snapshotsMatch(actual, expected)) {
+    throw new Error(`Snapshot metadata mismatch for ${label}.`);
+  }
+}
+
+function assertMatchingSnapshotJson(label: string, actual: CourtSnapshotMetadata, expected: CourtSnapshotMetadata) {
+  if (!snapshotsMatch(actual, expected)) {
     throw new Error(`Snapshot metadata mismatch for ${label}.`);
   }
 }
@@ -213,6 +400,55 @@ function assertSnapshotState(snapshot: SnapshotMetadata, expectedStateCode: stri
       `Snapshot state mismatch. Expected ${expectedStateCode}/${expectedStateName}, received ${snapshot.stateCode}/${snapshot.stateName}.`,
     );
   }
+}
+
+function assertHighCourtSnapshot(
+  snapshot: HighCourtSnapshotMetadata,
+  target: Extract<ReleaseTarget, { tier: "high_court" }>,
+) {
+  if (
+    snapshot.courtCode !== target.courtCode ||
+    snapshot.courtSlug !== target.courtSlug ||
+    snapshot.courtName !== target.courtName
+  ) {
+    throw new Error(
+      `High Court snapshot mismatch. Expected ${target.courtCode}/${target.courtSlug}, received ${snapshot.courtCode}/${snapshot.courtSlug}.`,
+    );
+  }
+}
+
+function assertSupremeCourtSnapshot(
+  snapshot: SupremeCourtSnapshotMetadata,
+  target: Extract<ReleaseTarget, { tier: "supreme_court" }>,
+) {
+  if (
+    snapshot.courtCode !== target.courtCode ||
+    snapshot.courtSlug !== target.courtSlug ||
+    snapshot.courtName !== target.courtName
+  ) {
+    throw new Error(
+      `Supreme Court snapshot mismatch. Expected ${target.courtCode}/${target.courtSlug}, received ${snapshot.courtCode}/${snapshot.courtSlug}.`,
+    );
+  }
+}
+
+function snapshotsMatch(actual: unknown, expected: unknown) {
+  return JSON.stringify(actual) === JSON.stringify(expected);
+}
+
+function buildCourtSnapshotSummary(snapshot: CourtSnapshotMetadata, currentFreshnessDays: number) {
+  return {
+    sourceSnapshotAt: snapshot.sourceSnapshotAt,
+    referenceDateAt: snapshot.referenceDateAt,
+    referenceDateKind: snapshot.referenceDateKind,
+    publishedAt: snapshot.publishedAt,
+    freshnessDaysAtPublish: snapshot.freshnessDays,
+    currentFreshnessDays,
+    methodologyVersion: snapshot.methodologyVersion,
+    qualityState: snapshot.qualityState,
+    publishedFromRunId: snapshot.publishedFromRunId ?? null,
+    replayedFromRunId: snapshot.replayedFromRunId ?? null,
+  };
 }
 
 function assertCsvMetadataParity(csv: string, snapshot: SnapshotMetadata) {

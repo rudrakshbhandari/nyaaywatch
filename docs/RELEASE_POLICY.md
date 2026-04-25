@@ -89,13 +89,13 @@ Treat a release as blocked if any one of these is true:
    ```bash
    npm run release:verify -- --base-url=https://nyaaywatch.in
    ```
-   For an approved state-scoped rollout, run the same command with `--state-slug=<state-slug>` as an additional check.
-5. For the broad post-launch sweep, run the all-public-states ops check:
+   For an approved state-scoped rollout, run the same command with `--state-slug=<state-slug>` as an additional check. For tier-level release checks, run `--supreme-court` for the Supreme Court surface and `--high-court=<court-slug>` for the relevant High Court surface; each verifies the tier-specific stats, trends, data page, cache headers, and operator-auth boundary.
+5. For the broad post-launch sweep, run the all-public-targets ops check:
    ```bash
    export OPERATOR_API_TOKEN=...
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
    ```
-   This must stay green before treating the release window as operationally quiet. It fails if any public state has route/parity drift, a stale public snapshot, or a latest successful internal fetch run old enough to suggest the daily internal fetch cadence is slipping.
+   This must stay green before treating the release window as operationally quiet. It fails if any public lower-court state, public High Court, or the Supreme Court surface has route/parity drift, a stale public snapshot, or a latest successful internal fetch run old enough to suggest the daily internal fetch cadence is slipping.
    Outside the release window, the live stack now reruns the same sweep every `30` minutes through the `nyaaywatch-staging-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-staging-public-alpha-ops` CloudWatch alarm if the sweep fails.
 6. Run prepublish verification for the candidate run and note the rollback target:
    ```bash
@@ -120,7 +120,9 @@ For the next 15 minutes:
 - confirm the public hostname still passes `/health`
 - confirm `GET /v1/stats/himachal` reflects the intended active publication
 - if rolling out an additional approved state, confirm its explicit state-scoped stats route reflects the intended active publication
+- if rolling out a High Court or Supreme Court publication, confirm the matching `/v1/high-courts/:courtSlug/stats` or `/v1/supreme-court/stats` route reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
+- rerun `release:verify` with `--supreme-court`, `--high-court=<court-slug>`, or `--state-slug=<state-slug>` for the tier actually published
 - if `CLOUDFLARE_API_TOKEN` is configured for the live runtime via ECS `secrets`, confirm the public data page and CSV verification no longer require manual cache-busting and that `release:verify` passes on the stable URL alone
 - run `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in` and keep the generated markdown evidence file
 - run the same postpublish command with `--state-slug=<state-slug>` for any approved state-scoped rollout
@@ -135,7 +137,7 @@ At least once each week, even without a publish:
 - review app errors for recurring patterns
 - confirm the dashboard still reflects the real stack resources
 - run `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`
-- confirm `nyaaywatch-staging-public-alpha-ops` has not entered `ALARM` and that any previous alarm has a reviewed root cause
+- confirm `nyaaywatch-staging-public-alpha-ops` has not entered `ALARM` and that any previous all-public-target alarm has a reviewed root cause
 - if the repo-level ops watchdog is being audited or repaired, also run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` so the three live scheduler tiers are checked directly against EventBridge and recent operator history
 - treat any reported daily-fetch lag as an operator issue even if the public snapshot is not yet old enough to count as stale by the product trust model, because the sweep now checks internal run history rather than published snapshot age
 

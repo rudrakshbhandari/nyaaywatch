@@ -1,6 +1,6 @@
 import { createServer, type Server } from "node:http";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildLadakhTestSnapshot,
@@ -8,9 +8,13 @@ import {
   createTestApp,
   createTestContext,
   insertPublishedSnapshot,
+  seedTestHighCourtSnapshot,
   seedTestSnapshot,
+  seedTestSupremeCourtSnapshot,
 } from "./helpers.js";
 import { verifyPublicRelease } from "../src/dev/release-verification.js";
+
+vi.setConfig({ testTimeout: 15_000 });
 
 describe("verifyPublicRelease", () => {
   const pools: Array<{ end: () => Promise<void> }> = [];
@@ -119,6 +123,58 @@ describe("verifyPublicRelease", () => {
     expect(result.trendCount).toBeGreaterThan(0);
     expect(result.csvMetadataParity).toBe(true);
     expect(result.publicDataCacheProtected).toBe(true);
+  });
+
+  it("verifies public High Court and Supreme Court release targets", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    await seedTestHighCourtSnapshot(context.highCourtServices.HPHC!);
+    await seedTestSupremeCourtSnapshot(context.supremeCourtService);
+
+    const app = createTestApp(
+      context.config,
+      context.service,
+      context.publicServices,
+      context.highCourtServices,
+      context.supremeCourtService,
+    );
+    const server = createServer(app);
+    servers.push(server);
+
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    const baseUrl = `http://127.0.0.1:${address.port}`;
+    const highCourt = await verifyPublicRelease(baseUrl, { highCourtSlug: "himachal" });
+    const supremeCourt = await verifyPublicRelease(baseUrl, { supremeCourt: true });
+
+    expect(highCourt.target).toMatchObject({
+      tier: "high_court",
+      courtCode: "HPHC",
+      courtSlug: "himachal",
+      operatorAuthPath: "/operator/high-courts/himachal/publications",
+    });
+    expect(highCourt.districtCount).toBeNull();
+    expect(highCourt.trendCount).toBeGreaterThan(0);
+    expect(highCourt.csvMetadataParity).toBeNull();
+    expect(highCourt.publicDataCacheProtected).toBe(true);
+    expect(highCourt.operatorAuthProtected).toBe(true);
+
+    expect(supremeCourt.target).toMatchObject({
+      tier: "supreme_court",
+      courtCode: "SCI",
+      courtSlug: "supreme-court",
+      operatorAuthPath: "/operator/supreme-court/publications",
+    });
+    expect(supremeCourt.districtCount).toBeNull();
+    expect(supremeCourt.trendCount).toBeGreaterThan(0);
+    expect(supremeCourt.csvMetadataParity).toBeNull();
+    expect(supremeCourt.publicDataCacheProtected).toBe(true);
+    expect(supremeCourt.operatorAuthProtected).toBe(true);
   });
 
   it("fails when release metadata drifts between public endpoints", async () => {
