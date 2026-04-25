@@ -35,7 +35,7 @@ Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stab
 - one AWS-hosted containerized app, fronted by Cloudflare
 - PostgreSQL as the canonical store for runs, artifacts, and publication state
 - S3 for raw scrape evidence and normalized snapshot candidates
-- explicit ingestion pipeline: fetch → extract → normalize → publish, all operator-gated
+- explicit ingestion pipeline: fetch → extract → normalize → publish; the publish step requires an operator action or a passing auto-publish gate
 - auto-publish runner validates fresh internal runs against guardrails; publishes automatically when quality and delta checks pass, and pages via SNS when the gate blocks or the publish step fails
 - post-deploy publish-pending sweep attempts to publish the most recent quality-complete run per scope (within 3 days) that has no newer publication, using the same gate
 - published snapshot read models drive every public surface; rollback is one operator call
