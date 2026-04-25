@@ -77,12 +77,25 @@ function buildSweepScopes(): SweepScope[] {
 }
 
 function findUnpublishedCompleteRun(runs: RunRecord[], since: string): RunRecord | undefined {
-  return runs.find(
+  // runs are sorted DESC by created_at; find the most recent eligible candidate
+  const candidate = runs.find(
     (run) =>
       run.status === "completed" &&
       run.qualityState === "complete" &&
       run.createdAt >= since,
   );
+
+  if (!candidate) {
+    return undefined;
+  }
+
+  // Skip if a published run exists that is newer than the candidate — publishing
+  // the older run would regress the live snapshot to stale data.
+  const hasNewerPublication = runs.some(
+    (run) => run.status === "published" && run.createdAt > candidate.createdAt,
+  );
+
+  return hasNewerPublication ? undefined : candidate;
 }
 
 export async function runPublishPendingSweep(
