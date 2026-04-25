@@ -117,6 +117,20 @@ If asking becomes necessary, include:
 - If a claim cannot be defended from stored evidence, do not ship it.
 - Prefer “we observed in this published snapshot” over real-time framing.
 
+## Public Copy Voice
+
+Plain Indian English on every public-facing surface — home, Supreme Court / High Court overviews, district pages, `/api`, `/data`, `/press`, OG cards, 404s, and the flag reasons / tile notes generated in `src/normalize/` and `src/api/home/`.
+
+The full spec lives in `docs/COPY_VOICE.md`. Read it before writing or editing any of those surfaces. Highlights:
+
+- Name courts directly. "Supreme Court", not "the top of the court system" or bare "the Court".
+- Time windows are concrete. "last month", not "the latest monthly window" or "the latest published month".
+- "cases", not "matters". "filed/cleared", not "instituted/disposed".
+- Tile notes describe what the number means, not where it came from. The publishing-pipeline vocabulary ("latest published snapshot", "captured run") is reserved for the methodology pages.
+- Contractions are fine.
+
+Banned phrases on public routes are enforced by the `disallowedPublicPhrases` regex list in `tests/public-copy-guardrails.test.ts`. If a copy change adds new jargon worth banning project-wide, extend that list in the same PR rather than writing a one-off test.
+
 ## Git And Worktree Rules
 
 - Use one active branch per worktree.
