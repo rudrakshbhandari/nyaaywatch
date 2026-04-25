@@ -624,7 +624,8 @@ const NATIONAL_HOME_CSS = `
     .toc__heading { margin-left: 0; }
     .toc__list { flex-direction: row; flex-wrap: wrap; gap: 6px 14px; }
     .toc__list a {
-      padding: 6px 10px;
+      padding: 12px 10px;
+      min-height: 44px;
       border-left: none;
       border-bottom: 2px solid transparent;
       margin-left: 0;
