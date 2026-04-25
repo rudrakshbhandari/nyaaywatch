@@ -1,7 +1,7 @@
-import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
+import { PublishedSnapshotSchema, type PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 
 export function buildTelanganaTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "TS",
       stateName: "Telangana",
@@ -68,5 +68,5 @@ export function buildTelanganaTestSnapshot(): PublishedSnapshot {
         disposalRate: 124.0,
       },
     ],
-  };
+  });
 }

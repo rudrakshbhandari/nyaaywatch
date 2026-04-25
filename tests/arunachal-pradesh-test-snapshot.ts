@@ -1,7 +1,7 @@
-import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
+import { PublishedSnapshotSchema, type PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 
 export function buildArunachalPradeshTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "AR",
       stateName: "Arunachal Pradesh",
@@ -68,5 +68,5 @@ export function buildArunachalPradeshTestSnapshot(): PublishedSnapshot {
         disposalRate: 118.5,
       },
     ],
-  };
+  });
 }

@@ -1,7 +1,7 @@
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
-import { infoIcon } from "../design/ui.js";
+import { infoIcon, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { buildCopy } from "./copy.js";
 import {
   buildViewModel,
@@ -11,6 +11,13 @@ import {
 } from "./view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import { computeWaitingRoomRates, renderWaitingRoom } from "../landing/waiting-room.js";
+import {
+  describeBacklogMovement,
+  describeBreakEven,
+  describeCatchUp,
+  describeWatchlistPersistence,
+  formatShare,
+} from "../pages/metric-insights.js";
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
@@ -80,6 +87,59 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           <div class="numbers__label"><a href="${context.routes.methodology}#metric-watchlist">${escapeHtml(n.flagged.label)}</a> ${infoIcon("watchlist")}</div>
           <p class="numbers__caption">${escapeHtml(n.flagged.caption)}</p>
         </article>
+      </div>
+    </section>
+
+    <section class="metric-deepening">
+      ${renderSectionHead({
+        headline: "What the pressure means.",
+        lede:
+          "These numbers add scale and persistence to the headline backlog. They are scenarios and signals from the same published data, not predictions.",
+      })}
+      <div class="stat-grid">
+        ${renderStatTile({
+          label: "Older than 5 years",
+          value: formatShare(snapshot.stats.oldCaseBurden.fivePlusYearsShare),
+          note: `${snapshot.stats.oldCaseBurden.fivePlusYearsCases.toLocaleString("en-IN")} pending cases are already older than 5 years.`,
+          tone: "accent",
+          methodologyHref: `${context.routes.methodology}#metric-old-case-burden`,
+        })}
+        ${renderStatTile({
+          label: "Backlog movement",
+          value: `${snapshot.stats.backlogMovementShare > 0 ? "+" : ""}${snapshot.stats.backlogMovementShare.toFixed(1)}%`,
+          note: describeBacklogMovement(snapshot.stats.backlogMovementShare),
+          methodologyHref: `${context.routes.methodology}#metric-backlog-movement`,
+        })}
+        ${renderStatTile({
+          label: "Break-even clearances",
+          value: snapshot.stats.breakEvenClearancesNeeded.toLocaleString("en-IN"),
+          note: describeBreakEven(snapshot.stats.breakEvenClearancesNeeded),
+          methodologyHref: `${context.routes.methodology}#metric-break-even-clearances`,
+        })}
+        ${renderStatTile({
+          label: "10% reduction scenario",
+          value: snapshot.stats.catchUpClearancesPerMonth.toLocaleString("en-IN"),
+          note: describeCatchUp(snapshot.stats.catchUpClearancesPerMonth),
+          tone: "flag",
+          methodologyHref: `${context.routes.methodology}#metric-catch-up-burden`,
+        })}
+      </div>
+      <div class="stat-grid metric-deepening__secondary">
+        ${renderStatTile({
+          label: "Top 5 district share",
+          value: formatShare(snapshot.stats.backlogConcentration.topFiveDistrictsShare),
+          note: "Share of the pending load held by the five largest district backlogs.",
+          methodologyHref: `${context.routes.methodology}#metric-backlog-concentration`,
+        })}
+        ${renderStatTile({
+          label: "Top district persistence",
+          value: `${model.topDistrict.watchlistPersistence.flaggedInLastSix}/${model.topDistrict.watchlistPersistence.lastSixWindow}`,
+          note: describeWatchlistPersistence(
+            model.topDistrict.watchlistPersistence.flaggedInLastSix,
+            model.topDistrict.watchlistPersistence.lastSixWindow,
+          ),
+          methodologyHref: `${context.routes.methodology}#metric-watchlist-persistence`,
+        })}
       </div>
     </section>
 
@@ -311,6 +371,8 @@ const HOME_PAGE_CSS = `
 
   /* --- watchlist cards --- */
   .watchlist { margin-bottom: 96px; }
+  .metric-deepening { margin-bottom: 88px; }
+  .metric-deepening__secondary { margin-top: 32px; }
   .watchlist__grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
     background: var(--ink); border: 1px solid var(--ink);

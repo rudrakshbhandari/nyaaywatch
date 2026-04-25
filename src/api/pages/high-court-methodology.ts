@@ -68,6 +68,31 @@ export function renderHighCourtMethodologyPage(
           <h3>NyaayWatch framing</h3>
           <p>NyaayWatch adds publication timestamps, freshness, methodology versioning, and an explicit rule for which date to show so the snapshot is citeable and auditable.</p>
         </article>
+        <article class="card" id="metric-backlog-movement">
+          ${renderAnchorLink("metric-backlog-movement", "Backlog movement")}
+          <h3>Backlog movement as share of pending load</h3>
+          <p>Calculated as cases filed last month minus cases cleared last month, divided by pending cases. It gives a scale-aware view of whether the pending pile grew or shrank.</p>
+        </article>
+        <article class="card" id="metric-break-even-clearances">
+          ${renderAnchorLink("metric-break-even-clearances", "Break-even clearances")}
+          <h3>Break-even clearances</h3>
+          <p>The number of extra clearances needed last month to keep the High Court backlog from growing. It is zero when clearances matched or exceeded filings.</p>
+        </article>
+        <article class="card" id="metric-catch-up-burden">
+          ${renderAnchorLink("metric-catch-up-burden", "Catch-up burden")}
+          <h3>10% reduction scenario</h3>
+          <p>A scenario metric, not a prediction. It estimates the extra monthly clearances needed to reduce the pending load by 10% over 12 months while covering last month's filing-clearance gap.</p>
+        </article>
+        <article class="card" id="metric-civil-criminal-imbalance">
+          ${renderAnchorLink("metric-civil-criminal-imbalance", "Civil-criminal imbalance")}
+          <h3>Civil-criminal imbalance</h3>
+          <p>Compares the criminal share of pending cases with the criminal share of last-month clearances. The result is a docket signal for inspection, not a cause or blame claim.</p>
+        </article>
+        <article class="card" id="metric-backlog-concentration">
+          ${renderAnchorLink("metric-backlog-concentration", "Backlog concentration")}
+          <h3>Case-type concentration</h3>
+          <p>When the source exposes case-type rows, NyaayWatch shows how much of the pending load sits in the five largest case types. It is omitted when the source does not provide a defensible case-type breakdown.</p>
+        </article>
       </div>
     </section>
 

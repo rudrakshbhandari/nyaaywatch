@@ -13,7 +13,7 @@ import type { SupremeCourtCaptureBundle } from "../src/domain/supreme-court-capt
 import { getHighCourtProfile, listHighCourtProfiles, type SupportedHighCourtCode } from "../src/high-courts.js";
 import type { HighCourtSourceClient } from "../src/ingest/high-court-source-client.js";
 import type { SupremeCourtSourceClient } from "../src/ingest/supreme-court-source-client.js";
-import type { PublishedSnapshot } from "../src/domain/snapshot-schema.js";
+import { PublishedSnapshotSchema, type PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../src/geographies.js";
 import { createApp } from "../src/api/app.js";
 import { PublishedHighCourtSnapshotService } from "../src/services/published-high-court-snapshot-service.js";
@@ -200,6 +200,8 @@ export async function insertPublishedSnapshot(
     previousPublicationId?: string | null;
   },
 ) {
+  const payload = PublishedSnapshotSchema.parse(input.payload);
+
   await pool.query(
     `INSERT INTO runs (
       id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note, completed_at
@@ -209,11 +211,11 @@ export async function insertPublishedSnapshot(
       "lower_court_state",
       input.stateCode,
       input.stateCode,
-      input.payload.snapshot.sourceName,
-      input.payload.snapshot.sourceSnapshotAt,
-      input.payload.snapshot.methodologyVersion,
+      payload.snapshot.sourceName,
+      payload.snapshot.sourceSnapshotAt,
+      payload.snapshot.methodologyVersion,
       "published",
-      input.payload.snapshot.qualityState,
+      payload.snapshot.qualityState,
       input.note ?? "Inserted published snapshot for tests",
     ],
   );
@@ -229,7 +231,7 @@ export async function insertPublishedSnapshot(
       input.stateCode,
       input.stateCode,
       1,
-      JSON.stringify(input.payload),
+      JSON.stringify(payload),
       `checksum-${input.snapshotId}`,
     ],
   );
@@ -298,7 +300,9 @@ function createTestConfig(stateCode: SupportedStateCode = "HP"): AppConfig {
 }
 
 function loadFixturePublishedSnapshot(): PublishedSnapshot {
-  return JSON.parse(readFileSync(join(repoRoot, "fixtures/himachal/published-snapshot.json"), "utf8")) as PublishedSnapshot;
+  return PublishedSnapshotSchema.parse(
+    JSON.parse(readFileSync(join(repoRoot, "fixtures/himachal/published-snapshot.json"), "utf8")),
+  );
 }
 
 function createFixtureHighCourtSourceClient(courtCode: SupportedHighCourtCode): HighCourtSourceClient {
@@ -320,7 +324,7 @@ function createFixtureSupremeCourtSourceClient(): SupremeCourtSourceClient {
 }
 
 export function buildPunjabTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "PB",
       stateName: "Punjab",
@@ -387,11 +391,11 @@ export function buildPunjabTestSnapshot(): PublishedSnapshot {
         disposalRate: 102.7,
       },
     ],
-  };
+  });
 }
 
 export function buildLadakhTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "LA",
       stateName: "Ladakh",
@@ -445,11 +449,11 @@ export function buildLadakhTestSnapshot(): PublishedSnapshot {
         disposalRate: 104.3,
       },
     ],
-  };
+  });
 }
 
 export function buildHaryanaTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "HR",
       stateName: "Haryana",
@@ -516,11 +520,11 @@ export function buildHaryanaTestSnapshot(): PublishedSnapshot {
         disposalRate: 97.4,
       },
     ],
-  };
+  });
 }
 
 export function buildAssamTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "AS",
       stateName: "Assam",
@@ -587,11 +591,11 @@ export function buildAssamTestSnapshot(): PublishedSnapshot {
         disposalRate: 104.0,
       },
     ],
-  };
+  });
 }
 
 export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "TN",
       stateName: "Tamil Nadu",
@@ -658,11 +662,11 @@ export function buildTamilNaduTestSnapshot(): PublishedSnapshot {
         disposalRate: 101.6,
       },
     ],
-  };
+  });
 }
 
 export function buildKeralaTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "KL",
       stateName: "Kerala",
@@ -729,11 +733,11 @@ export function buildKeralaTestSnapshot(): PublishedSnapshot {
         disposalRate: 134.9,
       },
     ],
-  };
+  });
 }
 
 export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "ML",
       stateName: "Meghalaya",
@@ -800,11 +804,11 @@ export function buildMeghalayaTestSnapshot(): PublishedSnapshot {
         disposalRate: 53.4,
       },
     ],
-  };
+  });
 }
 
 export function buildKarnatakaTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "KA",
       stateName: "Karnataka",
@@ -871,11 +875,11 @@ export function buildKarnatakaTestSnapshot(): PublishedSnapshot {
         disposalRate: 144.5,
       },
     ],
-  };
+  });
 }
 
 export function buildTripuraTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "TR",
       stateName: "Tripura",
@@ -942,11 +946,11 @@ export function buildTripuraTestSnapshot(): PublishedSnapshot {
         disposalRate: 146.9,
       },
     ],
-  };
+  });
 }
 
 export function buildNagalandTestSnapshot(): PublishedSnapshot {
-  return {
+  return PublishedSnapshotSchema.parse({
     snapshot: {
       stateCode: "NL",
       stateName: "Nagaland",
@@ -1013,5 +1017,5 @@ export function buildNagalandTestSnapshot(): PublishedSnapshot {
         disposalRate: 108.6,
       },
     ],
-  };
+  });
 }

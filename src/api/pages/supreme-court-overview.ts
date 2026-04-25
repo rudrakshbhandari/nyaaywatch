@@ -5,6 +5,15 @@ import { renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js"
 import type { PublicSupremeCourtPageContext } from "../public-supreme-court.js";
 import { describeClearanceTrend, describePileTrend } from "../home/national-view-model.js";
 import { formatDate } from "../home/view-model.js";
+import {
+  calculateBacklogMovementShare,
+  calculateBreakEvenClearancesNeeded,
+  calculateCatchUpClearancesPerMonth,
+  describeBacklogMovement,
+  describeBreakEven,
+  describeCatchUp,
+  summarizeSupremeCourtCivilCriminalImbalance,
+} from "./metric-insights.js";
 
 export function renderSupremeCourtOverviewPage(
   profile: SupremeCourtProfile,
@@ -20,6 +29,21 @@ export function renderSupremeCourtOverviewPage(
     snapshot.stats.institutedLastMonthTotalCases,
     snapshot.stats.disposedLastMonthTotalCases,
   );
+  const backlogMovement = calculateBacklogMovementShare(
+    snapshot.stats.pendingTotalCases,
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
+  const breakEvenClearances = calculateBreakEvenClearancesNeeded(
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
+  const catchUpClearances = calculateCatchUpClearancesPerMonth(
+    snapshot.stats.pendingTotalCases,
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
+  const civilCriminalImbalance = summarizeSupremeCourtCivilCriminalImbalance(snapshot);
 
   const body = `
     <div class="hero-rail">
@@ -63,6 +87,42 @@ export function renderSupremeCourtOverviewPage(
         })}
       </section>
     </div>
+
+    <section class="sc-section">
+      ${renderSectionHead({
+        headline: "Scale-aware pressure signals",
+        lede:
+          "These derived metrics put the month-to-date movement in context. They are scenario and imbalance signals, not forecasts or causal claims.",
+      })}
+      <div class="stat-grid">
+        ${renderStatTile({
+          label: "Backlog movement",
+          value: `${backlogMovement > 0 ? "+" : ""}${backlogMovement.toFixed(1)}%`,
+          note: describeBacklogMovement(backlogMovement, "in the current publication"),
+          methodologyHref: `${context.routes.methodology}#metric-backlog-movement`,
+        })}
+        ${renderStatTile({
+          label: "Break-even clearances",
+          value: breakEvenClearances.toLocaleString("en-IN"),
+          note: describeBreakEven(breakEvenClearances, "in the current publication"),
+          methodologyHref: `${context.routes.methodology}#metric-break-even-clearances`,
+        })}
+        ${renderStatTile({
+          label: "10% reduction scenario",
+          value: catchUpClearances.toLocaleString("en-IN"),
+          note: describeCatchUp(catchUpClearances),
+          tone: "flag",
+          methodologyHref: `${context.routes.methodology}#metric-catch-up-burden`,
+        })}
+        ${renderStatTile({
+          label: "Criminal imbalance",
+          value: civilCriminalImbalance.value,
+          note: civilCriminalImbalance.note,
+          tone: "accent",
+          methodologyHref: `${context.routes.methodology}#metric-civil-criminal-imbalance`,
+        })}
+      </div>
+    </section>
 
     <section class="sc-section">
       ${renderSectionHead({
@@ -124,7 +184,7 @@ export function renderSupremeCourtOverviewPage(
         </article>
         <article class="card">
           <h3>Official court site</h3>
-          <p>Case status, orders, judgments, cause lists, and institutional material remain on the official Supreme Court site.</p>
+          <p>Case status, orders, cause lists, and institutional material remain on the official Supreme Court site.</p>
           <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.officialSite}">Open official site</a></p>
         </article>
         <article class="card">

@@ -9,6 +9,7 @@ This document answers one strategic question:
 It is intentionally product-level, not implementation-level. Use:
 
 - `docs/LONG_TERM_DATA_STRATEGY.md` for data-source and trust-model evolution
+- `docs/METRIC_STRATEGY.md` for metric inventory, candidate additions, and metric sequencing
 - `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` for the current public-source inventory
 - `docs/MULTI_STATE_EXPANSION_GATES.md` for public expansion gates
 - `docs/ACCELERATED_EXPANSION_PLAN.md` for rollout sequencing

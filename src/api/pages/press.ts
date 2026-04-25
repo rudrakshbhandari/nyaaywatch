@@ -119,7 +119,7 @@ export function renderPressPage(): string {
           <h3>What it isn't</h3>
           <ul class="press-list">
             <li>A live or real-time data feed — numbers are published after review</li>
-            <li>A ranking or judgment of judicial performance</li>
+            <li>A ranking or performance assessment of judicial work</li>
             <li>A predictor of when any specific case will be decided</li>
             <li>Affiliated with any government body, court, or judicial authority</li>
           </ul>

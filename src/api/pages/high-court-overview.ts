@@ -6,6 +6,17 @@ import { renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js"
 import type { PublicHighCourtPageContext } from "../public-high-court.js";
 import { describeClearanceTrend, describePileTrend } from "../home/national-view-model.js";
 import { formatDate } from "../home/view-model.js";
+import {
+  calculateBacklogMovementShare,
+  calculateBreakEvenClearancesNeeded,
+  calculateCatchUpClearancesPerMonth,
+  describeBacklogMovement,
+  describeBreakEven,
+  describeCatchUp,
+  formatShare,
+  summarizeHighCourtCaseTypeConcentration,
+  summarizeHighCourtCivilCriminalImbalance,
+} from "./metric-insights.js";
 
 export function renderHighCourtOverviewPage(
   profile: HighCourtProfile,
@@ -23,6 +34,22 @@ export function renderHighCourtOverviewPage(
     snapshot.stats.disposedLastMonthTotalCases,
   );
   const olderThanTenYearsShare = ageTotal > 0 ? `${((snapshot.ageBuckets.aboveTenYears / ageTotal) * 100).toFixed(1)}%` : "0.0%";
+  const backlogMovement = calculateBacklogMovementShare(
+    snapshot.stats.pendingTotalCases,
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
+  const breakEvenClearances = calculateBreakEvenClearancesNeeded(
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
+  const catchUpClearances = calculateCatchUpClearancesPerMonth(
+    snapshot.stats.pendingTotalCases,
+    snapshot.stats.institutedLastMonthTotalCases,
+    snapshot.stats.disposedLastMonthTotalCases,
+  );
+  const civilCriminalImbalance = summarizeHighCourtCivilCriminalImbalance(snapshot);
+  const caseTypeConcentration = summarizeHighCourtCaseTypeConcentration(snapshot);
 
   const body = `
     <div class="hero-rail">
@@ -66,6 +93,42 @@ export function renderHighCourtOverviewPage(
         })}
       </section>
     </div>
+
+    <section class="hc-section">
+      ${renderSectionHead({
+        headline: "Scale-aware pressure signals",
+        lede:
+          "These derived metrics compare last month's movement against the size and shape of this High Court's pending load. They are descriptive signals, not forecasts.",
+      })}
+      <div class="stat-grid">
+        ${renderStatTile({
+          label: "Backlog movement",
+          value: `${backlogMovement > 0 ? "+" : ""}${backlogMovement.toFixed(1)}%`,
+          note: describeBacklogMovement(backlogMovement),
+          methodologyHref: `${context.routes.methodology}#metric-backlog-movement`,
+        })}
+        ${renderStatTile({
+          label: "Break-even clearances",
+          value: breakEvenClearances.toLocaleString("en-IN"),
+          note: describeBreakEven(breakEvenClearances),
+          methodologyHref: `${context.routes.methodology}#metric-break-even-clearances`,
+        })}
+        ${renderStatTile({
+          label: "10% reduction scenario",
+          value: catchUpClearances.toLocaleString("en-IN"),
+          note: describeCatchUp(catchUpClearances),
+          tone: "flag",
+          methodologyHref: `${context.routes.methodology}#metric-catch-up-burden`,
+        })}
+        ${renderStatTile({
+          label: "Criminal imbalance",
+          value: civilCriminalImbalance.value,
+          note: civilCriminalImbalance.note,
+          tone: "accent",
+          methodologyHref: `${context.routes.methodology}#metric-civil-criminal-imbalance`,
+        })}
+      </div>
+    </section>
 
     <section class="hc-section hc-section--compact">
       <div class="card-grid card-grid--2">
@@ -119,7 +182,31 @@ export function renderHighCourtOverviewPage(
         ${renderAgeBucket("5 to 10 years", snapshot.ageBuckets.fiveToTenYears, ageTotal)}
         ${renderAgeBucket("Above 10 years", snapshot.ageBuckets.aboveTenYears, ageTotal, "accent")}
       </div>
+      <p class="hc-section__note">${formatShare(calculateFivePlusShare(snapshot.ageBuckets, ageTotal))} of visible pendency is older than 5 years.</p>
     </section>
+
+    ${caseTypeConcentration ? `
+      <section class="hc-section">
+        ${renderSectionHead({
+          headline: "Case-type concentration",
+          lede:
+            "Where the source exposes a case-type breakdown, this shows whether pending cases are concentrated in a few categories or spread across the docket.",
+        })}
+        <div class="stat-grid">
+          ${renderStatTile({
+            label: "Top 5 case types",
+            value: formatShare(caseTypeConcentration.topFiveShare),
+            note: "Share of this High Court's pending cases held by the five largest source case-type rows.",
+            methodologyHref: `${context.routes.methodology}#metric-backlog-concentration`,
+          })}
+          ${renderStatTile({
+            label: "Largest case type",
+            value: caseTypeConcentration.topCaseType ?? "—",
+            note: `${formatShare(caseTypeConcentration.topCaseShare)} of pending cases in this publication.`,
+          })}
+        </div>
+      </section>
+    ` : ""}
 
     <section class="hc-section">
       ${renderSectionHead({
@@ -135,7 +222,7 @@ export function renderHighCourtOverviewPage(
         </article>
         <article class="card">
           <h3>High Court Services</h3>
-          <p>Official case-status, cause-list, order, and judgment utilities for High Courts.</p>
+          <p>Official case-status, cause-list, order, and court-record utilities for High Courts.</p>
           <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.hcServices}">Open High Court Services</a></p>
         </article>
         <article class="card">
@@ -186,6 +273,13 @@ function renderAgeBucket(
   });
 }
 
+function calculateFivePlusShare(ageBuckets: HighCourtPublishedSnapshot["ageBuckets"], total: number) {
+  if (total <= 0) {
+    return 0;
+  }
+  return ((ageBuckets.fiveToTenYears + ageBuckets.aboveTenYears) / total) * 100;
+}
+
 function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
   if (institutedCases <= 0) {
     return "—";
@@ -219,6 +313,7 @@ function describePileChange(institutedCases: number, disposedCases: number) {
 const HIGH_COURT_OVERVIEW_CSS = `
   .hc-section { margin-bottom: 72px; }
   .hc-section--compact { margin-bottom: 28px; }
+  .hc-section__note { margin-top: 18px; color: var(--ink-muted); font-size: 14px; }
   .stat-grid--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   .stat-grid--5 .stat-tile__value { font-size: clamp(40px, 4cqw, 52px); }
   @media (max-width: 1100px) {

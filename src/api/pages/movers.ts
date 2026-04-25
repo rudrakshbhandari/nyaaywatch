@@ -4,6 +4,7 @@ import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
+import { describeWatchlistPersistence } from "./metric-insights.js";
 
 export function renderMoversPage(result: DistrictMoversResult, context: PublicPageContext): string {
   const currentDate = formatDate(result.currentSnapshot.sourceSnapshotAt);
@@ -99,6 +100,7 @@ function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "
       <td class="num">${m.backlogCases.toLocaleString("en-IN")}</td>
       <td class="num movers-delta ${tone}">${deltaStr}</td>
       <td class="num">${m.disposalRate.toFixed(1)}</td>
+      <td>${escapeHtml(describeWatchlistPersistence(m.watchlistFlaggedInLastSix, m.watchlistLastSixWindow))}</td>
     </tr>`;
   }).join("");
 
@@ -112,6 +114,7 @@ function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "
             <th>Cases waiting</th>
             <th>Change</th>
             <th>Cleared / 100</th>
+            <th>Repeat signal</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -129,6 +132,7 @@ function renderRankTable(movers: DistrictMover[], context: PublicPageContext): s
       <td class="num">#${previousRank} → #${m.rank}</td>
       <td class="num movers-delta movers-delta--worse">Worsened ${places} place${places === 1 ? "" : "s"}</td>
       <td class="num">${m.backlogCases.toLocaleString("en-IN")}</td>
+      <td>${escapeHtml(describeWatchlistPersistence(m.watchlistFlaggedInLastSix, m.watchlistLastSixWindow))}</td>
     </tr>`;
   }).join("");
 
@@ -141,6 +145,7 @@ function renderRankTable(movers: DistrictMover[], context: PublicPageContext): s
             <th>Rank (prev → now)</th>
             <th>Rank change</th>
             <th>Cases waiting</th>
+            <th>Repeat signal</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
