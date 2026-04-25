@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { SupremeCourtSnapshotCandidateSchema } from "../src/domain/supreme-court-snapshot-candidate-schema.js";
 import {
   SupremeCourtPublishedSnapshotSchema,
   type SupremeCourtPublishedSnapshot,
@@ -263,6 +264,31 @@ describe("SupremeCourtPublishedSnapshotSchema", () => {
     });
     const { monthlyFinalized: _drop, ...withoutField } = legacy;
     const parsed = SupremeCourtPublishedSnapshotSchema.parse(withoutField);
+    expect(parsed.monthlyFinalized).toEqual([]);
+  });
+});
+
+describe("SupremeCourtSnapshotCandidateSchema", () => {
+  it("parses candidate artifacts written before monthlyFinalized existed and defaults the field to []", () => {
+    const published = makePublishedSnapshot({
+      referenceDateAt: "2026-04-19T00:00:00.000Z",
+      institutedLastMonthTotalCases: 6638,
+      disposedLastMonthTotalCases: 4735,
+    });
+    const {
+      publishedAt: _publishedAt,
+      freshnessDays: _freshnessDays,
+      publishedFromRunId: _publishedFromRunId,
+      replayedFromRunId: _replayedFromRunId,
+      ...snapshot
+    } = published.snapshot;
+    const legacy = {
+      snapshot,
+      stats: published.stats,
+      trends: published.trends,
+    };
+
+    const parsed = SupremeCourtSnapshotCandidateSchema.parse(legacy);
     expect(parsed.monthlyFinalized).toEqual([]);
   });
 });
