@@ -37,7 +37,7 @@ Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stab
 - S3 for raw scrape evidence and normalized snapshot candidates
 - explicit ingestion pipeline: fetch → extract → normalize → publish, all operator-gated
 - auto-publish runner validates fresh internal runs against guardrails; publishes automatically when quality and delta checks pass, pages a reviewer via SNS when they do not
-- post-deploy publish-pending sweep catches any runs that completed before the auto-publish code was deployed and puts them through the same gate
+- post-deploy publish-pending sweep catches runs completed in the past 3 days that were not yet published and puts them through the same gate
 - published snapshot read models drive every public surface; rollback is one operator call
 
 ## Repository Map
