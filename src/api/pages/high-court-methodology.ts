@@ -116,11 +116,12 @@ export function renderHighCourtMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published snapshot lineage",
-        lede: "One row per High Court reference date, showing the latest publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
+        lede: "One row per High Court reference date, sorted newest first, showing the publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
       })}
       ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
         referenceDateLabel: (entry) => describeReferenceDate(entry.snapshot),
         publicationTimestamp: (entry) => entry.publication.createdAt,
+        referenceDateSortKey: (entry) => entry.snapshot.referenceDateAt,
       })) : `<article class="card"><p>No published High Court history is available yet.</p></article>`}
     </section>
   `;
@@ -149,7 +150,6 @@ function renderHistoryTable(history: HighCourtPublicationHistoryEntry[]) {
       (entry) => `
         <tr>
           <td>${escapeHtml(describeReferenceDate(entry.snapshot))}</td>
-          <td>${escapeHtml(formatDate(entry.publication.createdAt))}</td>
           <td><code>${escapeHtml(entry.snapshot.methodologyVersion)}</code></td>
           <td>${escapeHtml(entry.snapshot.qualityState)}</td>
           <td>${escapeHtml(entry.publication.action)}</td>
@@ -166,7 +166,6 @@ function renderHistoryTable(history: HighCourtPublicationHistoryEntry[]) {
         <thead>
           <tr>
             <th>Reference date</th>
-            <th>Published</th>
             <th>Methodology</th>
             <th>Quality</th>
             <th>Action</th>
