@@ -37,7 +37,7 @@ Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stab
 - S3 for raw scrape evidence and normalized snapshot candidates
 - explicit ingestion pipeline: fetch → extract → normalize → publish; the publish step requires an operator action or a passing auto-publish gate
 - auto-publish runner validates fresh internal runs against guardrails; publishes automatically when quality and delta checks pass, and pages via SNS when the gate blocks or the publish step fails
-- post-deploy publish-pending sweep attempts to publish the most recent quality-complete run per scope (within 3 days) that has no newer publication, using the same gate
+- a daily publish-pending sweep iterates every quality-complete run per scope (within 3 days) that has no newer publication and runs each through the same gate, in chronological order
 - published snapshot read models drive every public surface; rollback is one operator call
 
 ## Repository Map
@@ -98,14 +98,15 @@ Each release helper accepts `--state-slug=<slug>` or `--high-court=<slug>` to sc
 
 ## Scheduled Internal Fetches
 
-The live deploy runs four daily ECS schedules, all reconciled to the latest task definition with `npm run operator:reconcile-fetch-schedule`:
+The live deploy runs five ECS schedules, all reconciled to the latest task definition with `npm run operator:reconcile-fetch-schedule`:
 
 - lower-court state and UT profiles — `8:00 AM Asia/Kolkata`
 - Supreme Court — `8:10 AM Asia/Kolkata`
 - reviewed High Courts — `8:20 AM Asia/Kolkata`
+- publish-pending sweep — `8:30 AM Asia/Kolkata`
 - public-alpha ops monitor — every `30` minutes against `https://nyaaywatch.in`
 
-The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails. Each deploy also runs a publish-pending sweep that attempts to publish the most recent quality-complete run per scope from the past 3 days if no newer publication exists.
+The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails. The publish-pending sweep runs daily after the fetch schedules, walks every quality-complete run per scope from the past 3 days that has no newer publication, and publishes each one in chronological order through the auto-publish gate. Each deploy also runs the same sweep so post-deploy fixes pick up immediately.
 
 ## Public API
 
