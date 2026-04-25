@@ -1,5 +1,7 @@
 import { listPublicStateProfiles } from "../geographies.js";
+import { listPublicHighCourtProfiles } from "../high-courts.js";
 import { freshnessDays, STALE_SNAPSHOT_THRESHOLD_DAYS } from "../lib/time.js";
+import { getSupremeCourtProfile } from "../supreme-court.js";
 import { verifyPublicRelease, type ReleaseVerificationSummary } from "./release-verification.js";
 
 export const DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS = 2;
@@ -13,10 +15,36 @@ interface OperatorRunRecord {
   completedAt: string | null;
 }
 
-export interface PublicAlphaOpsStateSummary {
-  stateCode: string;
-  stateName: string;
-  stateSlug: string;
+type PublicAlphaOpsTier = "lower_court_state" | "high_court" | "supreme_court";
+
+interface PublicAlphaOpsTargetDescriptor {
+  tier: PublicAlphaOpsTier;
+  identifier: string;
+  label: string;
+  stateCode?: string;
+  stateName?: string;
+  stateSlug?: string;
+  courtCode?: string;
+  courtName?: string;
+  courtSlug?: string;
+  verifyOptions: {
+    stateSlug?: string;
+    highCourtSlug?: string;
+    supremeCourt?: boolean;
+  };
+  runsPath: string;
+}
+
+export interface PublicAlphaOpsTargetSummary {
+  tier: PublicAlphaOpsTier;
+  identifier: string;
+  label: string;
+  stateCode?: string;
+  stateName?: string;
+  stateSlug?: string;
+  courtCode?: string;
+  courtName?: string;
+  courtSlug?: string;
   ok: boolean;
   qualityState: ReleaseVerificationSummary["snapshot"]["qualityState"] | null;
   sourceSnapshotAt: string | null;
@@ -32,11 +60,24 @@ export interface PublicAlphaOpsStateSummary {
   error?: string;
 }
 
+export interface PublicAlphaOpsStateSummary extends PublicAlphaOpsTargetSummary {
+  tier: "lower_court_state";
+  stateCode: string;
+  stateName: string;
+  stateSlug: string;
+}
+
 export interface PublicAlphaOpsSummary {
   baseUrl: string;
   checkedAt: string;
   staleSnapshotThresholdDays: number;
   dailyFetchLagThresholdDays: number;
+  totalTargets: number;
+  healthyTargets: string[];
+  staleTargets: string[];
+  dailyFetchLagTargets: string[];
+  failingTargets: string[];
+  targets: PublicAlphaOpsTargetSummary[];
   totalStates: number;
   healthyStates: string[];
   staleStates: string[];
@@ -58,25 +99,31 @@ export async function verifyPublicAlphaOperations(
   if (!options.operatorToken?.trim()) {
     throw new Error("verifyPublicAlphaOperations requires an operator token so daily internal fetch cadence is measured from operator run history.");
   }
-  const states: PublicAlphaOpsStateSummary[] = [];
+  const targets: PublicAlphaOpsTargetSummary[] = [];
 
-  for (const profile of listPublicStateProfiles()) {
+  for (const target of buildPublicReleaseTargets()) {
     try {
       const verification = await verifyPublicRelease(baseUrl, {
-        stateSlug: profile.stateSlug,
+        ...target.verifyOptions,
         now: checkedAt,
       });
-      const latestSuccessfulRun = await fetchLatestSuccessfulRun(baseUrl, profile.stateCode, options.operatorToken);
+      const latestSuccessfulRun = await fetchLatestSuccessfulRun(baseUrl, target, options.operatorToken);
       const currentFreshnessDays = verification.snapshot.currentFreshnessDays;
       const staleSnapshotDetected =
         verification.snapshot.qualityState === "stale" || currentFreshnessDays > STALE_SNAPSHOT_THRESHOLD_DAYS;
       const latestSuccessfulRunLagDays = latestSuccessfulRun ? latestSuccessfulRunAgeDays(latestSuccessfulRun, checkedAt) : null;
       const dailyFetchLagDetected =
         latestSuccessfulRunLagDays === null || latestSuccessfulRunLagDays > dailyFetchLagThresholdDays;
-      states.push({
-        stateCode: profile.stateCode,
-        stateName: profile.stateName,
-        stateSlug: profile.stateSlug,
+      targets.push({
+        tier: target.tier,
+        identifier: target.identifier,
+        label: target.label,
+        stateCode: target.stateCode,
+        stateName: target.stateName,
+        stateSlug: target.stateSlug,
+        courtCode: target.courtCode,
+        courtName: target.courtName,
+        courtSlug: target.courtSlug,
         ok: !staleSnapshotDetected && !dailyFetchLagDetected,
         qualityState: verification.snapshot.qualityState,
         sourceSnapshotAt: verification.snapshot.sourceSnapshotAt,
@@ -91,10 +138,16 @@ export async function verifyPublicAlphaOperations(
         verification,
       });
     } catch (error) {
-      states.push({
-        stateCode: profile.stateCode,
-        stateName: profile.stateName,
-        stateSlug: profile.stateSlug,
+      targets.push({
+        tier: target.tier,
+        identifier: target.identifier,
+        label: target.label,
+        stateCode: target.stateCode,
+        stateName: target.stateName,
+        stateSlug: target.stateSlug,
+        courtCode: target.courtCode,
+        courtName: target.courtName,
+        courtSlug: target.courtSlug,
         ok: false,
         qualityState: null,
         sourceSnapshotAt: null,
@@ -111,11 +164,19 @@ export async function verifyPublicAlphaOperations(
     }
   }
 
+  const states = targets.filter((target): target is PublicAlphaOpsStateSummary => target.tier === "lower_court_state");
+
   return {
     baseUrl: baseUrl.trim().replace(/\/+$/, ""),
     checkedAt: checkedAt.toISOString(),
     staleSnapshotThresholdDays: STALE_SNAPSHOT_THRESHOLD_DAYS,
     dailyFetchLagThresholdDays,
+    totalTargets: targets.length,
+    healthyTargets: targets.filter((target) => target.ok).map(formatTargetIdentifier),
+    staleTargets: targets.filter((target) => target.staleSnapshotDetected).map(formatTargetIdentifier),
+    dailyFetchLagTargets: targets.filter((target) => target.dailyFetchLagDetected).map(formatTargetIdentifier),
+    failingTargets: targets.filter((target) => target.error).map(formatTargetIdentifier),
+    targets,
     totalStates: states.length,
     healthyStates: states.filter((state) => state.ok).map((state) => state.stateCode),
     staleStates: states.filter((state) => state.staleSnapshotDetected).map((state) => state.stateCode),
@@ -128,16 +189,16 @@ export async function verifyPublicAlphaOperations(
 export function assertPublicAlphaOperationsHealthy(summary: PublicAlphaOpsSummary) {
   const failures: string[] = [];
 
-  if (summary.failingStates.length > 0) {
-    failures.push(`verification failures: ${summary.failingStates.join(", ")}`);
+  if (summary.failingTargets.length > 0) {
+    failures.push(`verification failures: ${summary.failingTargets.join(", ")}`);
   }
 
-  if (summary.staleStates.length > 0) {
-    failures.push(`stale public snapshots: ${summary.staleStates.join(", ")}`);
+  if (summary.staleTargets.length > 0) {
+    failures.push(`stale public snapshots: ${summary.staleTargets.join(", ")}`);
   }
 
-  if (summary.dailyFetchLagStates.length > 0) {
-    failures.push(`daily internal fetch lag: ${summary.dailyFetchLagStates.join(", ")}`);
+  if (summary.dailyFetchLagTargets.length > 0) {
+    failures.push(`daily internal fetch lag: ${summary.dailyFetchLagTargets.join(", ")}`);
   }
 
   if (failures.length === 0) {
@@ -147,9 +208,54 @@ export function assertPublicAlphaOperationsHealthy(summary: PublicAlphaOpsSummar
   throw new Error(`Public alpha operations check failed: ${failures.join("; ")}`);
 }
 
-async function fetchLatestSuccessfulRun(baseUrl: string, stateCode: string, operatorToken: string): Promise<OperatorRunRecord | null> {
+function buildPublicReleaseTargets(): PublicAlphaOpsTargetDescriptor[] {
+  const stateTargets = listPublicStateProfiles().map((profile) => ({
+    tier: "lower_court_state" as const,
+    identifier: profile.stateCode,
+    label: profile.stateName,
+    stateCode: profile.stateCode,
+    stateName: profile.stateName,
+    stateSlug: profile.stateSlug,
+    verifyOptions: { stateSlug: profile.stateSlug },
+    runsPath: `/operator/runs?stateCode=${encodeURIComponent(profile.stateCode)}`,
+  }));
+  const highCourtTargets = listPublicHighCourtProfiles().map((profile) => ({
+    tier: "high_court" as const,
+    identifier: profile.courtCode,
+    label: profile.courtName,
+    courtCode: profile.courtCode,
+    courtName: profile.courtName,
+    courtSlug: profile.courtSlug,
+    verifyOptions: { highCourtSlug: profile.courtSlug },
+    runsPath: `/operator/high-courts/${profile.courtSlug}/runs`,
+  }));
+  const supremeCourt = getSupremeCourtProfile();
+  const supremeCourtTargets = supremeCourt.publicBeta
+    ? [
+        {
+          tier: "supreme_court" as const,
+          identifier: supremeCourt.courtCode,
+          label: supremeCourt.courtName,
+          courtCode: supremeCourt.courtCode,
+          courtName: supremeCourt.courtName,
+          courtSlug: supremeCourt.courtSlug,
+          verifyOptions: { supremeCourt: true },
+          runsPath: "/operator/supreme-court/runs",
+        },
+      ]
+    : [];
+
+  return [...stateTargets, ...highCourtTargets, ...supremeCourtTargets];
+}
+
+async function fetchLatestSuccessfulRun(
+  baseUrl: string,
+  target: PublicAlphaOpsTargetDescriptor,
+  operatorToken: string,
+): Promise<OperatorRunRecord | null> {
   const normalizedBaseUrl = baseUrl.trim().replace(/\/+$/, "");
-  const response = await fetch(`${normalizedBaseUrl}/operator/runs?stateCode=${encodeURIComponent(stateCode)}`, {
+  const url = `${normalizedBaseUrl}${target.runsPath}`;
+  const response = await fetch(url, {
     headers: {
       accept: "application/json",
       "x-operator-token": operatorToken,
@@ -158,13 +264,21 @@ async function fetchLatestSuccessfulRun(baseUrl: string, stateCode: string, oper
   });
 
   if (!response.ok) {
-    throw new Error(`Expected ${normalizedBaseUrl}/operator/runs?stateCode=${stateCode} to return 200, received ${response.status}`);
+    throw new Error(`Expected ${url} to return 200, received ${response.status}`);
   }
 
   const payload = (await response.json()) as { runs?: unknown };
   const runs = Array.isArray(payload.runs) ? payload.runs : [];
   const latestSuccessfulRun = runs.find(isSuccessfulOperatorRun);
   return latestSuccessfulRun ?? null;
+}
+
+function formatTargetIdentifier(target: Pick<PublicAlphaOpsTargetSummary, "tier" | "identifier">) {
+  if (target.tier === "lower_court_state") {
+    return target.identifier;
+  }
+
+  return `${target.tier}:${target.identifier}`;
 }
 
 function isSuccessfulOperatorRun(value: unknown): value is OperatorRunRecord {

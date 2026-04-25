@@ -1,5 +1,5 @@
 import type { DistrictSnapshot, PublishedSnapshot } from "../../domain/snapshot-schema.js";
-import { escapeHtml } from "../../lib/html.js";
+import { escapeHtml, safeJsonForHtmlScript } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
@@ -51,6 +51,15 @@ export function renderDistrictsPage(
   );
   const highestBacklog = sortedByBacklog[0];
   const slowestClearance = sortedByDisposal[0];
+  const districtSuggestions = safeJsonForHtmlScript(
+    snapshot.districts.map((d) => ({
+      id: d.districtId,
+      name: d.districtName,
+      href: context.routes.district(d.districtId),
+      wait: Math.round(d.medianAgeDays / 30),
+      backlog: d.backlogCases,
+    })),
+  );
 
   const body = `
     ${renderSectionHead({
@@ -103,21 +112,13 @@ export function renderDistrictsPage(
 
     <script>
     (function() {
-      var DISTRICTS = ${JSON.stringify(
-        snapshot.districts.map((d) => ({
-          id: d.districtId,
-          name: d.districtName,
-          href: context.routes.district(d.districtId),
-          wait: Math.round(d.medianAgeDays / 30),
-          backlog: d.backlogCases,
-        }))
-      )};
+      var DISTRICTS = ${districtSuggestions};
       var input = document.getElementById("your-district-input");
       var box = document.getElementById("your-district-suggestions");
       if (!input || !box) return;
       input.addEventListener("input", function() {
         var q = input.value.toLowerCase().trim();
-        box.innerHTML = "";
+        box.textContent = "";
         if (q.length < 2) { box.style.display = "none"; return; }
         var matches = DISTRICTS.filter(function(d) { return d.name.toLowerCase().includes(q); }).slice(0, 6);
         if (matches.length === 0) { box.style.display = "none"; return; }
@@ -126,7 +127,12 @@ export function renderDistrictsPage(
           el.className = "your-district-chip__option";
           el.href = d.href;
           el.setAttribute("role", "option");
-          el.innerHTML = "<strong>" + d.name + "</strong><span>" + d.backlog.toLocaleString("en-IN") + " cases waiting · ~" + d.wait + " mo typical wait</span>";
+          var name = document.createElement("strong");
+          name.textContent = d.name;
+          var meta = document.createElement("span");
+          meta.textContent = d.backlog.toLocaleString("en-IN") + " cases waiting · ~" + d.wait + " mo typical wait";
+          el.appendChild(name);
+          el.appendChild(meta);
           box.appendChild(el);
         });
         box.style.display = "block";
