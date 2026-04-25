@@ -1,8 +1,9 @@
 import { chromium } from "playwright";
 import path from "node:path";
 import fs from "node:fs";
+import os from "node:os";
 
-const OUT = path.join(process.env.HOME, "Desktop", "nyaaywatch-linkedin");
+const OUT = path.join(os.homedir(), "Desktop", "nyaaywatch-linkedin");
 fs.mkdirSync(OUT, { recursive: true });
 
 const VIEWPORT_WIDTH = 1600;
