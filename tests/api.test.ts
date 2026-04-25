@@ -74,6 +74,8 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("data:image/svg+xml,");
     expect(homepage.text).toContain("How long is India waiting for justice?");
     expect(homepage.text).toContain("Track the Supreme Court");
+    expect(homepage.text).toContain("Recent change is separate from this month&#39;s clearance pace.");
+    expect(homepage.text).toContain("Backlog growing");
     expect(homepage.text).toContain("Lower courts show the broadest pressure.");
     expect(homepage.text).toContain("Where is delay piling up across India?");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");

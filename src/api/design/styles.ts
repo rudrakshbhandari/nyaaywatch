@@ -389,6 +389,7 @@ export const BASE_CSS = `
   }
   .stat-tile__delta--good { color: #2a7a3f; }
   .stat-tile__delta--bad { color: var(--accent-dark); }
+  .stat-tile__delta--neutral { color: var(--ink-muted); }
   .stat-tile__delta--flat { color: var(--ink-muted); }
 
   /* --- shared card surface used for callouts --- */

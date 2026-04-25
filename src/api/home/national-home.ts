@@ -121,6 +121,7 @@ export function renderNationalHome(input: {
   const scReferenceIso = input.supremeCourtSnapshot?.snapshot.referenceDateAt ?? null;
   const scThroughLabel = scReferenceIso ? `through ${formatDate(scReferenceIso)}` : "so far this month";
   const scGapDirectionNote = describeMtdGapDirection(input.supremeCourtSnapshot);
+  const scGapSignal = describeMtdGapSignal(input.supremeCourtSnapshot);
   const scTrendLineSuffix = scFinalized.length >= 2 ? " Trend line compares finalized months." : "";
 
   const tocItems = [
@@ -175,10 +176,12 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Pending total",
                 value: model.supremeCourt.pendingTotalDisplay ?? "—",
-                note: "Cases still pending at the Supreme Court.",
+                note: "Cases still pending at the Supreme Court. Recent change is separate from this month's clearance pace.",
                 series: scPendingSeries,
-                seriesLabel: "Pending total across recent snapshots",
+                seriesLabel: "Pending total across recent readings",
                 deltaDirectionHint: "up-is-bad",
+                deltaLabel: "Recent change",
+                deltaTone: "neutral",
               })}
               ${renderStatTile({
                 label: "Cleared / 100 filed this month",
@@ -204,6 +207,7 @@ export function renderNationalHome(input: {
                 series: scGapSeries,
                 seriesLabel: "Backlog change across finalized months",
                 deltaDirectionHint: "up-is-bad",
+                trendSignal: scGapSignal,
               })}
             `
             : `
@@ -348,6 +352,22 @@ function describeMtdGapDirection(
     return "More cases have been cleared than filed,";
   }
   return "Filings and clearances matched,";
+}
+
+function describeMtdGapSignal(
+  snapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null,
+) {
+  if (!snapshot) {
+    return { tone: "neutral" as const, label: "Steady" };
+  }
+  const gap = snapshot.stats.institutedLastMonthTotalCases - snapshot.stats.disposedLastMonthTotalCases;
+  if (gap > 0) {
+    return { tone: "worsening" as const, label: "Backlog growing" };
+  }
+  if (gap < 0) {
+    return { tone: "improving" as const, label: "Backlog shrinking" };
+  }
+  return { tone: "neutral" as const, label: "Steady" };
 }
 
 // Inline scroll-spy: IntersectionObserver keeps the TOC rail's active entry in
