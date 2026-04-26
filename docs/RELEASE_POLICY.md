@@ -76,7 +76,8 @@ Treat a release as blocked if any one of these is true:
 - `/health` is failing through the public hostname
 - ALB target health is not fully healthy
 - a new run is `partial`, `failed`, or missing required artifacts
-- the operator cannot complete `fetch -> inspect -> publish -> replay -> rollback` in dedicated staging or an equivalent isolated environment before production release work
+- dedicated staging exists and the operator cannot complete `fetch -> inspect -> publish -> replay -> rollback` there before production release work
+- until dedicated staging exists, the production-lane operator validation is not release-scoped, recorded, or backed by a clear rollback target
 - the homepage, district pages, CSV, and API do not agree on the active publication
 - freshness, methodology version, source attribution, or quality state are missing from trust-critical surfaces
 - the public copy implies real-time monitoring, prediction, or verdicts

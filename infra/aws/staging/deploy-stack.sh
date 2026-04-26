@@ -20,14 +20,46 @@ environment_name="${ENVIRONMENT_NAME:-staging}"
 canonical_host="${CANONICAL_HOST:-nyaaywatch.in}"
 legacy_hosts="${LEGACY_HOSTS:-nyaaywatch.com,www.nyaaywatch.com}"
 manage_canonical_redirect_rules="${MANAGE_CANONICAL_REDIRECT_RULES:-}"
+legacy_production_stack="${LEGACY_PRODUCTION_STACK:-false}"
+reclaimed_staging_name="${RECLAIMED_STAGING_NAME:-false}"
+
+url_host() {
+  local url="$1"
+  if [[ "$url" =~ ^https?://([^/:?#]+) ]]; then
+    printf "%s" "${BASH_REMATCH[1]}"
+  fi
+}
 
 is_legacy_production_stack=false
-if [[ "$stack_name" == "nyaaywatch-staging" && "$project_name" == "nyaaywatch" && "$environment_name" == "staging" ]]; then
+if [[ "$legacy_production_stack" == "true" ]]; then
   is_legacy_production_stack=true
 fi
 
 if [[ "$environment_name" != "staging" && "$environment_name" != "production" ]]; then
   echo "ENVIRONMENT_NAME must be staging or production for the AWS stack template." >&2
+  exit 1
+fi
+
+if [[ "$legacy_production_stack" != "true" && "$legacy_production_stack" != "false" ]]; then
+  echo "LEGACY_PRODUCTION_STACK must be true or false." >&2
+  exit 1
+fi
+
+if [[ "$reclaimed_staging_name" != "true" && "$reclaimed_staging_name" != "false" ]]; then
+  echo "RECLAIMED_STAGING_NAME must be true or false." >&2
+  exit 1
+fi
+
+if [[ "$is_legacy_production_stack" == "true" ]]; then
+  if [[ "$stack_name" != "nyaaywatch-staging" || "$project_name" != "nyaaywatch" || "$environment_name" != "staging" ]]; then
+    echo "LEGACY_PRODUCTION_STACK=true is only valid for the current production-serving nyaaywatch-staging stack." >&2
+    exit 1
+  fi
+fi
+
+if [[ "$stack_name" == "nyaaywatch-staging" && "$project_name" == "nyaaywatch" && "$environment_name" == "staging" && "$is_legacy_production_stack" != "true" && "$reclaimed_staging_name" != "true" ]]; then
+  echo "Refusing to deploy to nyaaywatch-staging without an explicit legacy-production or reclaimed-staging flag." >&2
+  echo "Use LEGACY_PRODUCTION_STACK=true for the current production-serving stack, or RECLAIMED_STAGING_NAME=true only after production has been cut over to nyaaywatch-production." >&2
   exit 1
 fi
 
@@ -50,8 +82,19 @@ if [[ -z "$manage_canonical_redirect_rules" ]]; then
   fi
 fi
 
+if [[ "$canonical_host" == http://* || "$canonical_host" == https://* || "$canonical_host" == */* ]]; then
+  echo "CANONICAL_HOST must be a hostname, not a URL." >&2
+  exit 1
+fi
+
+public_base_url_host="$(url_host "${PUBLIC_BASE_URL:-}")"
+if [[ -n "${PUBLIC_BASE_URL:-}" && -z "$public_base_url_host" ]]; then
+  echo "PUBLIC_BASE_URL must be an http(s) URL." >&2
+  exit 1
+fi
+
 if [[ "$environment_name" != "production" && "$is_legacy_production_stack" != "true" ]]; then
-  if [[ "$canonical_host" == "nyaaywatch.in" || "${PUBLIC_BASE_URL:-}" == "https://nyaaywatch.in" || "${PUBLIC_BASE_URL:-}" == "http://nyaaywatch.in" ]]; then
+  if [[ "$canonical_host" == "nyaaywatch.in" || "$public_base_url_host" == "nyaaywatch.in" ]]; then
     echo "Refusing to deploy a non-production stack with the production hostname or PUBLIC_BASE_URL." >&2
     exit 1
   fi
