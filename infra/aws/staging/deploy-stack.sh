@@ -23,10 +23,20 @@ manage_canonical_redirect_rules="${MANAGE_CANONICAL_REDIRECT_RULES:-}"
 legacy_production_stack="${LEGACY_PRODUCTION_STACK:-false}"
 reclaimed_staging_name="${RECLAIMED_STAGING_NAME:-false}"
 
+normalize_host() {
+  local host="$1"
+  host="${host//[[:space:]]/}"
+  host="$(printf "%s" "$host" | tr "[:upper:]" "[:lower:]")"
+  while [[ "$host" == *. ]]; do
+    host="${host%.}"
+  done
+  printf "%s" "$host"
+}
+
 url_host() {
   local url="$1"
   if [[ "$url" =~ ^https?://([^/:?#]+) ]]; then
-    printf "%s" "${BASH_REMATCH[1]}"
+    normalize_host "${BASH_REMATCH[1]}"
   fi
 }
 
@@ -45,7 +55,7 @@ legacy_hosts_include_production_host() {
   local host
   IFS="," read -ra hosts <<< "$legacy_hosts"
   for host in "${hosts[@]}"; do
-    host="${host//[[:space:]]/}"
+    host="$(normalize_host "$host")"
     if is_production_host "$host"; then
       return 0
     fi
@@ -112,6 +122,12 @@ fi
 
 if [[ "$canonical_host" == http://* || "$canonical_host" == https://* || "$canonical_host" == */* ]]; then
   echo "CANONICAL_HOST must be a hostname, not a URL." >&2
+  exit 1
+fi
+
+canonical_host="$(normalize_host "$canonical_host")"
+if [[ -z "$canonical_host" ]]; then
+  echo "CANONICAL_HOST must be a hostname, not an empty value." >&2
   exit 1
 fi
 
