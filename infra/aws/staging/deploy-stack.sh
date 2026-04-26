@@ -128,6 +128,11 @@ if [[ "$canonical_host" == http://* || "$canonical_host" == https://* || "$canon
   exit 1
 fi
 
+if [[ "$canonical_host" == *:* ]]; then
+  echo "CANONICAL_HOST must be a hostname without a port." >&2
+  exit 1
+fi
+
 canonical_host="$(normalize_host "$canonical_host")"
 if [[ -z "$canonical_host" ]]; then
   echo "CANONICAL_HOST must be a hostname, not an empty value." >&2
