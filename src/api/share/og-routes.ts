@@ -23,6 +23,7 @@ import type { PublishedSnapshotService } from "../../services/published-snapshot
 import type { PublishedHighCourtSnapshotService } from "../../services/published-high-court-snapshot-service.js";
 import type { PublishedSupremeCourtSnapshotService } from "../../services/published-supreme-court-snapshot-service.js";
 import { buildViewModel, formatDate, formatLakh } from "../home/view-model.js";
+import { describePileChange, formatClearanceRateDisplay } from "../home/national-view-model.js";
 import {
   renderStateOgCard,
   renderDistrictOgCard,
@@ -227,6 +228,54 @@ export function registerOgRoutes(
   // ── National OG card ─────────────────────────────────────────────────────
   router.get("/national.png", async (_req, res) => {
     try {
+      const supremeCourtRecord = supremeCourtService
+        ? await supremeCourtService.getPublishedSnapshot()
+        : null;
+
+      if (supremeCourtRecord) {
+        const stats = supremeCourtRecord.payload.stats;
+        const data: NationalOgCardData = {
+          eyebrow: "INDIA'S COURT SYSTEM",
+          headline: "How long is India waiting for justice?",
+          sourceDateLabel: formatDate(supremeCourtRecord.payload.snapshot.referenceDateAt),
+          stats: [
+            {
+              value: stats.pendingTotalCases.toLocaleString("en-IN"),
+              unit: "",
+              label: "PENDING TOTAL",
+            },
+            {
+              value: formatClearanceRateDisplay(
+                stats.disposedLastMonthTotalCases,
+                stats.institutedLastMonthTotalCases,
+              ),
+              unit: "",
+              label: "CLEARED / 100 FILED",
+            },
+            {
+              value: stats.disposedLastMonthTotalCases.toLocaleString("en-IN"),
+              unit: "",
+              label: "DISPOSED THIS MONTH",
+            },
+            {
+              value: describePileChange(
+                stats.institutedLastMonthTotalCases,
+                stats.disposedLastMonthTotalCases,
+              ).display,
+              unit: "",
+              label: "BACKLOG CHANGE",
+            },
+          ],
+        };
+        const cacheKey = `national:sc:${supremeCourtRecord.payload.snapshot.publishedAt}`;
+        const png = await renderNationalOgCard(data, cacheKey);
+        res.setHeader("Content-Type", "image/png");
+        res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+        res.send(png);
+        return;
+      }
+
+      // Fallback: no Supreme Court snapshot — mirror the lower-court hero.
       const publishedRecords = (
         await Promise.all(
           Object.entries(publicServices).map(async ([stateCode, service]) => {
@@ -250,13 +299,19 @@ export function registerOgRoutes(
         .map((entry) => entry.record.payload.snapshot.publishedAt)
         .sort()
         .at(-1);
+      const totalPendingLakh = formatLakh(totalPendingCases);
+      const pendingNum = totalPendingLakh.replace(/\s*(lakh|crore).*/i, "").trim();
+      const pendingUnit = totalPendingLakh.match(/(lakh|crore)/i)?.[1]?.toLowerCase() ?? "";
       const data: NationalOgCardData = {
-        headline: "How long is India waiting for justice?",
-        totalPendingLakh: formatLakh(totalPendingCases),
-        statesCount: publishedRecords.length,
+        eyebrow: "INDIA'S COURT SYSTEM",
+        headline: "Where is delay building in India's court system?",
         sourceDateLabel: "latest published snapshots",
+        stats: [
+          { value: pendingNum, unit: pendingUnit, label: "PENDING CASES" },
+          { value: publishedRecords.length.toLocaleString("en-IN"), unit: "", label: "STATES COVERED" },
+        ],
       };
-      const cacheKey = `national:${publishedRecords.length}:${totalPendingCases}:${latestPublishedAt ?? "none"}`;
+      const cacheKey = `national:lc:${publishedRecords.length}:${totalPendingCases}:${latestPublishedAt ?? "none"}`;
       const png = await renderNationalOgCard(data, cacheKey);
 
       res.setHeader("Content-Type", "image/png");
