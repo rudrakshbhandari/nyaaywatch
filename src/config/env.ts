@@ -21,7 +21,7 @@ const EnvSchema = z.object({
     .string()
     .min(1)
     .regex(/^nyaaywatch-[a-z0-9-]+$/, "S3_BUCKET must be nyaaywatch-prefixed"),
-  DEPLOY_ENV: z.enum(["dev", "staging"]).default("dev"),
+  DEPLOY_ENV: z.enum(["dev", "staging", "production"]).default("dev"),
   OPERATOR_API_TOKEN: z.string().min(8),
   ENABLE_OPERATOR_ROUTES: z
     .string()

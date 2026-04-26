@@ -12,10 +12,10 @@ NyaayWatch should operate with four distinct lanes:
 
 - **Local development**: local Node, PostgreSQL, and LocalStack S3 for implementation and fixture-backed operator checks.
 - **Pull request previews**: fixture-backed public web previews for copy, UI, and responsive review. Previews do not expose operator routes or touch live evidence.
-- **Dedicated AWS staging**: target environment for rehearsal against isolated RDS, S3, operator token, schedules, and alarms before public release work. This is not provisioned yet.
-- **Production / public alpha**: `https://nyaaywatch.in`, serving public snapshots and live operator schedules.
+- **Dedicated AWS staging**: target environment for rehearsal against isolated RDS, S3, operator token, schedules, and alarms before public release work. This is not provisioned yet; the eventual stack name should be `nyaaywatch-staging` after production is moved off the legacy name.
+- **Production / public alpha**: `https://nyaaywatch.in`, serving public snapshots and live operator schedules. The target reality-named production stack is `nyaaywatch-production`.
 
-Important current-state note: the production public-alpha site is still backed by AWS resources named `nyaaywatch-staging`. Treat those resources as production until a separate dedicated staging stack exists. The word `staging` in current AWS names is historical naming drift, not permission to run sandbox experiments against public data.
+Important current-state note: the production public-alpha site is still backed by AWS resources named `nyaaywatch-staging`. Treat those resources as production until a reality-named production replacement is cut over and the `nyaaywatch-staging` name can be reclaimed for dedicated staging. The word `staging` in current AWS names is historical naming drift, not permission to run sandbox experiments against public data.
 
 ## Current Environments
 
@@ -35,6 +35,7 @@ Important current-state note: the production public-alpha site is still backed b
 ### Dedicated AWS Staging
 
 - Status: `not provisioned`
+- Target stack name: `nyaaywatch-staging` after the production cutover frees the legacy name; use any interim staging name only as a temporary bridge and record it here
 - Target URL: `staging.nyaaywatch.in` or an equivalent non-public hostname
 - Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, EventBridge schedules, CloudWatch dashboard, SNS alarm topic, and operator token
 - Intended use: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
@@ -42,7 +43,7 @@ Important current-state note: the production public-alpha site is still backed b
 
 ### Production Backing Stack
 
-- Stack name: `nyaaywatch-staging`
+- Stack name: `nyaaywatch-staging` (legacy name; target replacement is `nyaaywatch-production`)
 - Region: `ap-south-1`
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
@@ -80,8 +81,8 @@ Operational notes:
 - Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
-- For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
-- On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through `npm run operator:staging`; this repo change promotes them to public lower-court routes after the UT-aware copy and methodology pass.
+- For heavier internal-only operator runs, use `npm run operator:production -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
+- On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through the legacy `npm run operator:staging` command; future production runs should use `npm run operator:production`.
 - The documented internal raw-fetch policy is to run lower-court geography fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
 - The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.

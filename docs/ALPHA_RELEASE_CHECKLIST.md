@@ -47,7 +47,7 @@ Use `docs/RELEASE_POLICY.md` for cadence and blocking rules, `docs/internal/DEPL
 
 ### 5. Publish Safety
 
-- [x] Operator `fetch -> inspect -> publish -> replay -> rollback` flow succeeds in dedicated staging or an equivalent isolated environment. Until dedicated staging is provisioned, any production operator validation must be release-scoped, recorded, and backed by an explicit rollback target.
+- [x] Operator `fetch -> inspect -> publish -> replay -> rollback` flow succeeds in dedicated staging or an equivalent isolated environment. Until `nyaaywatch-production` and `nyaaywatch-staging` are split, any production operator validation must use the production lane, be release-scoped, be recorded, and be backed by an explicit rollback target.
 - [x] Publish gating still requires completed run state, required artifacts, and non-partial quality state.
 - [x] Rollback returns the public API and UI to the intended prior publication.
 - [x] Cloud logs and operator notes are available for the release run.

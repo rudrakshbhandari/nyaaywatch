@@ -39,16 +39,16 @@ Treat the daily fetches as internal evidence collection only:
 
 ## Environment Rule
 
-`https://nyaaywatch.in` is production, even though the AWS resources currently use `nyaaywatch-staging` names. Treat the current `nyaaywatch-staging` stack as production for release and operator safety decisions.
+`https://nyaaywatch.in` is production, even though the AWS resources currently use `nyaaywatch-staging` names. Treat the current `nyaaywatch-staging` stack as production for release and operator safety decisions until a reality-named `nyaaywatch-production` replacement is verified and cut over.
 
 The intended environment split is:
 
 - local development for implementation and fixture-backed checks
 - PR previews for public UI, copy, and responsive review only
-- dedicated AWS staging for isolated release rehearsal once provisioned
-- production public alpha at `https://nyaaywatch.in`
+- dedicated AWS staging for isolated release rehearsal once provisioned as `nyaaywatch-staging`
+- production public alpha at `https://nyaaywatch.in`, target stack name `nyaaywatch-production`
 
-Until dedicated AWS staging exists, do not treat production as a sandbox for destructive rehearsal. Production operator actions should be release-scoped, recorded, and backed by an explicit rollback target.
+Until the production and staging names are corrected, do not treat production as a sandbox for destructive rehearsal. Production operator actions should use `npm run operator:production`, be release-scoped, be recorded, and be backed by an explicit rollback target.
 
 ## Publish Authority
 

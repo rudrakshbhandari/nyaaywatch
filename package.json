@@ -35,6 +35,7 @@
     "operator:replay": "tsx src/dev/operator.ts replay",
     "operator:rollback": "tsx src/dev/operator.ts rollback",
     "operator:remote": "tsx src/dev/operator-remote.ts",
+    "operator:production": "tsx src/dev/staging-operator.ts --stack nyaaywatch-staging",
     "operator:staging": "tsx src/dev/staging-operator.ts",
     "operator:reconcile-fetch-schedule": "bash infra/aws/staging/reconcile-internal-fetch-schedule.sh",
     "release:prepublish": "tsx src/dev/release-prepublish.ts",
