@@ -171,6 +171,7 @@ export PROJECT_NAME=nyaaywatch-stage
 export ENVIRONMENT_NAME=staging
 export PUBLIC_BASE_URL=https://staging.nyaaywatch.in
 export CANONICAL_HOST=staging.nyaaywatch.in
+export LEGACY_HOSTS=
 export MANAGE_CANONICAL_REDIRECT_RULES=false
 
 ./infra/aws/staging/deploy-stack.sh \
@@ -182,7 +183,7 @@ export MANAGE_CANONICAL_REDIRECT_RULES=false
   '[alarm-email]'
 ```
 
-`deploy-stack.sh` refuses the dangerous combinations that would reuse the legacy production `nyaaywatch-staging` resource names for a second stack, deploy non-production with `nyaaywatch.in`, or let non-production manage production canonical redirect rules. The old production-serving stack now requires `LEGACY_PRODUCTION_STACK=true`; a future reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true` only after production has been cut over to `nyaaywatch-production`.
+`deploy-stack.sh` refuses the dangerous combinations that would reuse the legacy production `nyaaywatch-staging` resource names for a second stack, deploy non-production with production hostnames, or let non-production manage production canonical redirect rules. The old production-serving stack now requires `LEGACY_PRODUCTION_STACK=true`; a future reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true` only after production has been cut over to `nyaaywatch-production`.
 
 3. Wait for the stack to finish and note the outputs:
    - `ServiceUrl`

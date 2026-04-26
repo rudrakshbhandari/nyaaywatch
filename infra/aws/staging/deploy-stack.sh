@@ -18,7 +18,7 @@ region="ap-south-1"
 project_name="${PROJECT_NAME:-nyaaywatch}"
 environment_name="${ENVIRONMENT_NAME:-staging}"
 canonical_host="${CANONICAL_HOST:-nyaaywatch.in}"
-legacy_hosts="${LEGACY_HOSTS:-nyaaywatch.com,www.nyaaywatch.com}"
+legacy_hosts="${LEGACY_HOSTS:-}"
 manage_canonical_redirect_rules="${MANAGE_CANONICAL_REDIRECT_RULES:-}"
 legacy_production_stack="${LEGACY_PRODUCTION_STACK:-false}"
 reclaimed_staging_name="${RECLAIMED_STAGING_NAME:-false}"
@@ -28,6 +28,30 @@ url_host() {
   if [[ "$url" =~ ^https?://([^/:?#]+) ]]; then
     printf "%s" "${BASH_REMATCH[1]}"
   fi
+}
+
+is_production_host() {
+  case "$1" in
+    nyaaywatch.in | www.nyaaywatch.in | nyaaywatch.com | www.nyaaywatch.com)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+legacy_hosts_include_production_host() {
+  local host
+  IFS="," read -ra hosts <<< "$legacy_hosts"
+  for host in "${hosts[@]}"; do
+    host="${host//[[:space:]]/}"
+    if is_production_host "$host"; then
+      return 0
+    fi
+  done
+
+  return 1
 }
 
 is_legacy_production_stack=false
@@ -82,6 +106,10 @@ if [[ -z "$manage_canonical_redirect_rules" ]]; then
   fi
 fi
 
+if [[ -z "$legacy_hosts" && ( "$environment_name" == "production" || "$is_legacy_production_stack" == "true" ) ]]; then
+  legacy_hosts="nyaaywatch.com,www.nyaaywatch.com"
+fi
+
 if [[ "$canonical_host" == http://* || "$canonical_host" == https://* || "$canonical_host" == */* ]]; then
   echo "CANONICAL_HOST must be a hostname, not a URL." >&2
   exit 1
@@ -94,8 +122,13 @@ if [[ -n "${PUBLIC_BASE_URL:-}" && -z "$public_base_url_host" ]]; then
 fi
 
 if [[ "$environment_name" != "production" && "$is_legacy_production_stack" != "true" ]]; then
-  if [[ "$canonical_host" == "nyaaywatch.in" || "$public_base_url_host" == "nyaaywatch.in" ]]; then
+  if is_production_host "$canonical_host" || is_production_host "$public_base_url_host"; then
     echo "Refusing to deploy a non-production stack with the production hostname or PUBLIC_BASE_URL." >&2
+    exit 1
+  fi
+
+  if [[ -n "$legacy_hosts" ]] && legacy_hosts_include_production_host; then
+    echo "Refusing to deploy a non-production stack with production hostnames in LEGACY_HOSTS." >&2
     exit 1
   fi
 
