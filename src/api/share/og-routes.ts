@@ -237,6 +237,7 @@ export function registerOgRoutes(
         const data: NationalOgCardData = {
           eyebrow: "INDIA'S COURT SYSTEM",
           headline: "How long is India waiting for justice?",
+          lede: "Backlog, clearance pace, and monthly change across the Supreme Court, High Courts, and lower courts.",
           sourceDateLabel: formatDate(supremeCourtRecord.payload.snapshot.referenceDateAt),
           stats: [
             {
@@ -305,6 +306,7 @@ export function registerOgRoutes(
       const data: NationalOgCardData = {
         eyebrow: "INDIA'S COURT SYSTEM",
         headline: "Where is delay building in India's court system?",
+        lede: "Reviewed snapshots from public NJDG data — backlog, clearance pace, and pressure across India's lower courts.",
         sourceDateLabel: "latest published snapshots",
         stats: [
           { value: pendingNum, unit: pendingUnit, label: "PENDING CASES" },
