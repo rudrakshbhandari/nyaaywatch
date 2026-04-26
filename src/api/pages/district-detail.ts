@@ -288,7 +288,7 @@ export function renderDistrictPage(
     og: {
       title: `${district.districtName} — District Evidence`,
       description: ogDescription,
-      image: `${SITE_ORIGIN}/og/district/${district.districtId}.png?v=2026-04-2`,
+      image: `${SITE_ORIGIN}/og/district/${district.districtId}.png?v=2026-04-3`,
       imageAlt: `NyaayWatch district evidence for ${district.districtName}`,
     },
   });
