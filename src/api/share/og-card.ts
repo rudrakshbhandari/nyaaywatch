@@ -105,11 +105,17 @@ export type DistrictOgCardData = {
   sourceDateLabel: string;
 };
 
+export type NationalOgCardStat = {
+  value: string;
+  unit: string;
+  label: string;
+};
+
 export type NationalOgCardData = {
+  eyebrow: string;
   headline: string;
-  totalPendingLakh: string;
-  statesCount: number;
   sourceDateLabel: string;
+  stats: NationalOgCardStat[];
 };
 
 export type HighCourtOgCardData = {
@@ -314,9 +320,6 @@ export async function renderDistrictOgCard(data: DistrictOgCardData, cacheKey: s
 }
 
 export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: string): Promise<Buffer> {
-  const pendingNum = data.totalPendingLakh.replace(/\s*(lakh|crore).*/i, "").trim();
-  const pendingUnit = data.totalPendingLakh.match(/(lakh|crore)/i)?.[1]?.toLowerCase() ?? "";
-
   const vnode = col(
     { background: PAPER, padding: "52px 64px", width: "100%", height: "100%", gap: 0 },
     [
@@ -333,7 +336,7 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
           letterSpacing: "0.18em",
           marginBottom: 16,
         },
-        "THE WAIT",
+        data.eyebrow,
       ),
 
       text(
@@ -344,6 +347,7 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
           color: INK,
           lineHeight: 1.0,
           letterSpacing: "-0.035em",
+          maxWidth: 900,
           flex: 1,
         },
         data.headline,
@@ -359,10 +363,7 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
             paddingTop: 24,
             gap: 0,
           },
-          children: [
-            numberCell(pendingNum, pendingUnit, "PENDING CASES"),
-            numberCell(data.statesCount.toLocaleString("en-IN"), "", "STATES COVERED"),
-          ],
+          children: data.stats.map((stat) => numberCell(stat.value, stat.unit, stat.label)),
         },
       },
     ],

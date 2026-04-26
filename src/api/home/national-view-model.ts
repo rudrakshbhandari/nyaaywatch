@@ -183,7 +183,7 @@ export function buildNationalHomeViewModel(input: {
   };
 }
 
-function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
+export function formatClearanceRateDisplay(disposedCases: number, institutedCases: number) {
   if (institutedCases <= 0) {
     return "—";
   }
@@ -191,7 +191,7 @@ function formatClearanceRateDisplay(disposedCases: number, institutedCases: numb
   return calculateClearanceRate(disposedCases, institutedCases).toFixed(1);
 }
 
-function describePileChange(institutedCases: number, disposedCases: number) {
+export function describePileChange(institutedCases: number, disposedCases: number) {
   const difference = calculateMonthlyGap(institutedCases, disposedCases);
   if (difference === 0) {
     return {
