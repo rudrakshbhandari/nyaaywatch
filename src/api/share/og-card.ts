@@ -114,6 +114,7 @@ export type NationalOgCardStat = {
 export type NationalOgCardData = {
   eyebrow: string;
   headline: string;
+  lede: string;
   sourceDateLabel: string;
   stats: NationalOgCardStat[];
 };
@@ -343,14 +344,28 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
         {
           fontFamily: "Inter Tight",
           fontWeight: 800,
-          fontSize: 52,
+          fontSize: 56,
           color: INK,
           lineHeight: 1.0,
           letterSpacing: "-0.035em",
-          maxWidth: 900,
-          flex: 1,
+          maxWidth: 1000,
+          marginBottom: 20,
         },
         data.headline,
+      ),
+
+      text(
+        {
+          fontFamily: "Inter Tight",
+          fontWeight: 600,
+          fontSize: 24,
+          color: INK_SOFT,
+          lineHeight: 1.35,
+          letterSpacing: "-0.005em",
+          maxWidth: 1000,
+          flex: 1,
+        },
+        data.lede,
       ),
 
       {
