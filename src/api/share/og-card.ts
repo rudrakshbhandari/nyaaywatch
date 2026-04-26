@@ -115,6 +115,7 @@ export type NationalOgCardData = {
   eyebrow: string;
   headline: string;
   lede: string;
+  accountability: string;
   sourceDateLabel: string;
   stats: NationalOgCardStat[];
 };
@@ -344,12 +345,12 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
         {
           fontFamily: "Inter Tight",
           fontWeight: 800,
-          fontSize: 56,
+          fontSize: 68,
           color: INK,
-          lineHeight: 1.0,
-          letterSpacing: "-0.035em",
-          maxWidth: 1000,
-          marginBottom: 20,
+          lineHeight: 1.02,
+          letterSpacing: "-0.04em",
+          maxWidth: 1050,
+          marginBottom: 22,
         },
         data.headline,
       ),
@@ -358,14 +359,27 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
         {
           fontFamily: "Inter Tight",
           fontWeight: 600,
-          fontSize: 24,
+          fontSize: 27,
           color: INK_SOFT,
-          lineHeight: 1.35,
+          lineHeight: 1.4,
           letterSpacing: "-0.005em",
-          maxWidth: 1000,
-          flex: 1,
+          maxWidth: 1050,
+          marginBottom: 18,
         },
         data.lede,
+      ),
+
+      text(
+        {
+          fontFamily: "IBM Plex Mono",
+          fontWeight: 500,
+          fontSize: 13,
+          color: INK_MUTED,
+          textTransform: "uppercase",
+          letterSpacing: "0.14em",
+          flex: 1,
+        },
+        data.accountability,
       ),
 
       {

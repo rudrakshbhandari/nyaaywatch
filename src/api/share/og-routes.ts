@@ -234,11 +234,13 @@ export function registerOgRoutes(
 
       if (supremeCourtRecord) {
         const stats = supremeCourtRecord.payload.stats;
+        const scSnapshot = supremeCourtRecord.payload.snapshot;
         const data: NationalOgCardData = {
           eyebrow: "INDIA'S COURT SYSTEM",
           headline: "How long is India waiting for justice?",
-          lede: "Backlog, clearance pace, and monthly change across the Supreme Court, High Courts, and lower courts.",
-          sourceDateLabel: formatDate(supremeCourtRecord.payload.snapshot.referenceDateAt),
+          lede: "NyaayWatch tracks backlog pressure, clearance pace, and monthly backlog change across the Supreme Court, High Courts, and lower courts.",
+          accountability: `REFERENCE ${formatDate(scSnapshot.referenceDateAt).toUpperCase()} · METHOD ${scSnapshot.methodologyVersion.toUpperCase()} · ${scSnapshot.sourceAttribution.toUpperCase()}`,
+          sourceDateLabel: formatDate(scSnapshot.referenceDateAt),
           stats: [
             {
               value: stats.pendingTotalCases.toLocaleString("en-IN"),
@@ -306,7 +308,8 @@ export function registerOgRoutes(
       const data: NationalOgCardData = {
         eyebrow: "INDIA'S COURT SYSTEM",
         headline: "Where is delay building in India's court system?",
-        lede: "Reviewed snapshots from public NJDG data — backlog, clearance pace, and pressure across India's lower courts.",
+        lede: "NyaayWatch publishes reviewed court snapshots from public NJDG data — backlog, clearance pace, and pressure across India's lower courts.",
+        accountability: `${publishedRecords.length} STATES & UNION TERRITORIES PUBLISHED · LATEST SNAPSHOTS`,
         sourceDateLabel: "latest published snapshots",
         stats: [
           { value: pendingNum, unit: pendingUnit, label: "PENDING CASES" },

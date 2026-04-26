@@ -348,7 +348,7 @@ export function renderNationalHome(input: {
     og: {
       title: "How long is India waiting for justice?",
       description: "NyaayWatch tracks court backlogs and wait times across India's judiciary — Supreme Court, High Courts, and district courts — from public NJDG data.",
-      image: `${SITE_ORIGIN}/og/national.png?v=2026-04-4`,
+      image: `${SITE_ORIGIN}/og/national.png?v=2026-04-5`,
       imageAlt: "NyaayWatch — India's court system at a glance",
     },
   });
