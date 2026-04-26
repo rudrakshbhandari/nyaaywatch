@@ -1,10 +1,21 @@
 # Deployment Status
 
-Operational source of truth for where NyaayWatch is currently running and how to verify the live environment.
+Operational source of truth for where NyaayWatch is currently running and how to verify each environment.
 
-Keep this file updated whenever the staging stack changes, a public alpha URL is assigned, or a domain cutover is completed.
+Keep this file updated whenever an environment stack changes, a public alpha URL is assigned, a dedicated staging URL is assigned, or a domain cutover is completed.
 
 Use this document as the live environment map. For routine release go/no-go decisions, use `docs/ALPHA_RELEASE_CHECKLIST.md` plus `docs/RELEASE_POLICY.md`. Use `docs/DOMAIN_CUTOVER_CHECKLIST.md` only for future hostname, certificate, or DNS changes.
+
+## Environment Model
+
+NyaayWatch should operate with four distinct lanes:
+
+- **Local development**: local Node, PostgreSQL, and LocalStack S3 for implementation and fixture-backed operator checks.
+- **Pull request previews**: fixture-backed public web previews for copy, UI, and responsive review. Previews do not expose operator routes or touch live evidence.
+- **Dedicated AWS staging**: target environment for rehearsal against isolated RDS, S3, operator token, schedules, and alarms before public release work. This is not provisioned yet; the eventual stack name should be `nyaaywatch-staging` after production is moved off the legacy name.
+- **Production / public alpha**: `https://nyaaywatch.in`, serving public snapshots and live operator schedules. The target reality-named production stack is `nyaaywatch-production`.
+
+Important current-state note: the production public-alpha site is still backed by AWS resources named `nyaaywatch-staging`. Treat those resources as production until a reality-named production replacement is cut over and the `nyaaywatch-staging` name can be reclaimed for dedicated staging. The word `staging` in current AWS names is historical naming drift, not permission to run sandbox experiments against public data.
 
 ## Current Environments
 
@@ -21,9 +32,18 @@ Use this document as the live environment map. For routine release go/no-go deci
 - Data source: in-memory fixture-seeded published snapshot
 - Intended use: web design, UI/UX, copy, and responsive review without live infra dependencies
 
-### AWS Staging
+### Dedicated AWS Staging
 
-- Stack name: `nyaaywatch-staging`
+- Status: `not provisioned`
+- Target stack name: `nyaaywatch-staging` after the production cutover frees the legacy name; use any interim staging name only as a temporary bridge and record it here
+- Target URL: `staging.nyaaywatch.in` or an equivalent non-public hostname
+- Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, EventBridge schedules, CloudWatch dashboard, SNS alarm topic, and operator token
+- Intended use: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
+- Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
+
+### Production Backing Stack
+
+- Stack name: `nyaaywatch-staging` (legacy name; target replacement is `nyaaywatch-production`)
 - Region: `ap-south-1`
 - Public URL: `http://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
@@ -50,18 +70,19 @@ Use this document as the live environment map. For routine release go/no-go deci
   - `nyaaywatch-staging-public-alpha-ops`
 - Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
-- Intended use: operator validation, pre-release public-alpha verification, domain cutover target
+- Intended use: production public-alpha serving, scheduled internal fetches, public-alpha ops monitoring, release verification, and release-scoped operator actions
 - Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the lower-court, Supreme Court, reviewed-High-Court, and public-alpha monitor schedules against the live task definition while reusing the existing scheduler role
 
 Operational notes:
 
+- This stack serves production despite its `staging` resource names. Do not use it as a general staging sandbox.
 - Port `80` on the ALB redirects to `443`.
 - The app itself redirects legacy `.com` host headers to the canonical `.in` hostname.
 - Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.
 - Direct `https://nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` checks will fail hostname validation because the certificate is for the public domain, not the raw ELB hostname.
 - Use `https://nyaaywatch.in` for browser validation and the ALB DNS name for low-level AWS resource identification only.
-- For heavier internal-only operator runs, use `npm run operator:staging -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
-- On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through `npm run operator:staging`; this repo change promotes them to public lower-court routes after the UT-aware copy and methodology pass.
+- For heavier internal-only operator runs, use `npm run operator:production -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
+- On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through the legacy `npm run operator:staging` command; future production runs should use `npm run operator:production`.
 - The documented internal raw-fetch policy is to run lower-court geography fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
 - The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
@@ -240,9 +261,9 @@ Operational notes:
 - Current Mizoram source snapshot date: `2026-04-16`
 - Public methodology version: `2026.04-alpha`
 
-## How To Retrieve The AWS Staging URL
+## How To Retrieve The Production Backing Stack URL
 
-If the staging URL is not already recorded above, retrieve it from CloudFormation:
+If the production backing stack URL is not already recorded above, retrieve it from CloudFormation:
 
 ```bash
 aws cloudformation describe-stacks \
@@ -262,7 +283,7 @@ Then write those values back into this file in the same PR or deployment change.
 
 ## Minimum Live Verification
 
-Run these checks against the current public URL or staging `ServiceUrl`:
+Run these checks against the current public production URL. Once dedicated staging exists, run the same shape against staging before production release work:
 
 ```bash
 export OPERATOR_API_TOKEN=...
@@ -619,7 +640,7 @@ Latest confirmed operator validation:
   - direct route verification covered each `/states/:slug`, `/states/:slug/districts`, `/states/:slug/data`, `/states/:slug/methodology`, `/states/:slug/api`, `/v1/states/:slug/stats`, `/v1/states/:slug/districts`, and `/v1/states/:slug/trends` family
   - `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` passed with `totalStates=36`, `staleStates=[]`, `dailyFetchLagStates=[]`, and `failingStates=[]`
   - no Cloudflare purge was run because `release:purge-public-routes` currently supports deploy-only Supreme Court and High Court route families, not lower-court state or Union Territory route exposure; the stable live lower-court routes returned `200` without a manual purge
-  - this closes the post-deploy evidence gap for the April 23 lower-court Union Territory public-alpha promotion; `docs/RELEASE_HISTORY.md` now records the deploy-only exposure against the active UT publications
+  - this closes the post-deploy evidence gap for the April 23 lower-court Union Territory public-alpha promotion; `docs/internal/RELEASE_HISTORY.md` now records the deploy-only exposure against the active UT publications
 - Supreme Court legacy published-snapshot parse incident remediated on 2026-04-24:
   - CloudWatch alarms `nyaaywatch-staging-app-errors` and `nyaaywatch-staging-alb-target-5xx` fired after deployed code required `monthlyFinalized` on an older active Supreme Court published snapshot
   - PR `#206` restored backward compatibility by defaulting missing `monthlyFinalized` to `[]`; PR `#207` added frozen production-shape fixture tests for published-snapshot schemas

@@ -1,6 +1,6 @@
 # AWS Staging Stack
 
-This directory defines the isolated AWS staging shape for NyaayWatch's Himachal alpha:
+This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for NyaayWatch staging:
 
 - one ECS Fargate service running the application container
 - one PostgreSQL RDS instance as the canonical store
@@ -8,7 +8,20 @@ This directory defines the isolated AWS staging shape for NyaayWatch's Himachal 
 - CloudWatch Logs for structured application logging
 - CloudWatch alarms for health-check failure, ALB target 5xx responses, and structured app errors
 - one CloudWatch dashboard for release-time operational review
-- an operator validation flow that exercises fetch, inspect, publish, replay, and rollback against staging
+- an operator validation flow that exercises fetch, inspect, publish, replay, and rollback against the target environment
+
+## Current Naming Caveat
+
+The current `nyaaywatch-staging` AWS stack serves the production public alpha at `https://nyaaywatch.in`. Treat that stack, its RDS database, its S3 bucket, its schedules, and its operator token as production until a reality-named production stack is cut over and the staging name can be reclaimed.
+
+The target environment split is:
+
+- `local`: local Node, PostgreSQL, and LocalStack S3
+- `preview`: fixture-backed App Runner PR previews with `APP_MODE=preview`
+- `staging`: future isolated AWS stack named `nyaaywatch-staging` for release and operator-flow rehearsal
+- `production`: `https://nyaaywatch.in`, target stack name `nyaaywatch-production`, currently backed by historically staging-named resources
+
+Do not run sandbox experiments against the production backing stack just because the AWS names contain `staging`.
 
 ## Resources
 
@@ -60,7 +73,7 @@ You need:
 
 - an ECR image URI for the app container
 - a strong database password
-- an operator API token for staging
+- an operator API token for the target environment
 - an ACM certificate ARN for every public hostname the ALB must terminate, including `nyaaywatch.in`, `www.nyaaywatch.in`, `nyaaywatch.com`, and `www.nyaaywatch.com` if `.com -> .in` canonical redirects are enabled
 
 Optional:
@@ -81,7 +94,7 @@ The stack creates its own isolated VPC with:
 
 Application config constraints to preserve during staging validation:
 
-- `EnvironmentName` must remain `staging` so `DEPLOY_ENV` satisfies the app env schema.
+- `EnvironmentName` should reflect the target environment: `production` for the reality-named production stack and `staging` for the isolated staging stack.
 - `ProjectName` must stay `nyaaywatch`-prefixed so the derived `S3_BUCKET` passes env validation.
 - The generated `DATABASE_URL` now uses `uselibpqcompat=true&sslmode=require` because the app container must connect to RDS over TLS without assuming a bundled CA chain.
 - The stack now stores the generated `DATABASE_URL` and operator token in AWS Secrets Manager and injects them through ECS `secrets`, not plain environment variables. Existing stacks can instead point at already-created secret ARNs so CloudFormation can be reconciled without recreating those secrets.
@@ -90,9 +103,12 @@ Application config constraints to preserve during staging validation:
 
 Recommended naming:
 
-- stack name: `nyaaywatch-staging`
-- ECR repo: `nyaaywatch-staging`
-- alarm dashboard: `nyaaywatch-staging`
+- current production-serving stack name: `nyaaywatch-staging` (legacy; do not create another stack with the same effective resource names)
+- target production stack name: `nyaaywatch-production`
+- target staging stack name: `nyaaywatch-staging` after the legacy production stack is retired, or a clearly temporary staging bridge name recorded in `docs/internal/DEPLOYMENT_STATUS.md`
+- current production-serving ECR repo: `nyaaywatch-staging`
+- current production-serving alarm dashboard: `nyaaywatch-staging`
+- future dedicated staging stack: use distinct RDS, S3, Secrets Manager, schedules, and alert resources even if the template is reused
 
 ## Deploy
 
@@ -113,6 +129,8 @@ Why the explicit platform:
 
 ```bash
 export PUBLIC_BASE_URL=https://nyaaywatch.in
+export CANONICAL_HOST=nyaaywatch.in
+export LEGACY_PRODUCTION_STACK=true
 export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
 export CLOUDFLARE_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/cloudflare-api-token
 export EXISTING_DATABASE_URL_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/database-url
@@ -126,6 +144,46 @@ export EXISTING_OPERATOR_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:
   '<certificate-arn>' \
   '[alarm-email]'
 ```
+
+For a future reality-named production replacement, use a separate stack name and explicit environment values rather than mutating the legacy stack in place:
+
+```bash
+export PROJECT_NAME=nyaaywatch
+export ENVIRONMENT_NAME=production
+export PUBLIC_BASE_URL=https://nyaaywatch.in
+export CANONICAL_HOST=nyaaywatch.in
+export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
+export MANAGE_CANONICAL_REDIRECT_RULES=true
+
+./infra/aws/staging/deploy-stack.sh \
+  nyaaywatch-production \
+  723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
+  '<operator-token>' \
+  '<database-password>' \
+  '<certificate-arn>' \
+  '[alarm-email]'
+```
+
+For an isolated staging rehearsal stack, do not use the production host, production Cloudflare purge path, or production resource prefix:
+
+```bash
+export PROJECT_NAME=nyaaywatch-stage
+export ENVIRONMENT_NAME=staging
+export PUBLIC_BASE_URL=https://staging.nyaaywatch.in
+export CANONICAL_HOST=staging.nyaaywatch.in
+export LEGACY_HOSTS=
+export MANAGE_CANONICAL_REDIRECT_RULES=false
+
+./infra/aws/staging/deploy-stack.sh \
+  nyaaywatch-staging-v2 \
+  723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
+  '<operator-token>' \
+  '<database-password>' \
+  '<staging-certificate-arn>' \
+  '[alarm-email]'
+```
+
+`deploy-stack.sh` refuses the dangerous combinations that would reuse the legacy production `nyaaywatch-staging` resource names for a second stack, deploy non-production with production hostnames, or let non-production manage production canonical redirect rules. The old production-serving stack now requires `LEGACY_PRODUCTION_STACK=true`; a future reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true` only after production has been cut over to `nyaaywatch-production`.
 
 3. Wait for the stack to finish and note the outputs:
    - `ServiceUrl`
@@ -142,7 +200,7 @@ export EXISTING_OPERATOR_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:
    - `CertificateArn`
    - `OperatorApiTokenSecretArn`
 
-4. Copy the live values into `docs/DEPLOYMENT_STATUS.md` so the current staging URL and resource names are discoverable without re-querying AWS.
+4. Copy the live values into `docs/internal/DEPLOYMENT_STATUS.md` so the current environment URL and resource names are discoverable without re-querying AWS.
 
 If an older stack already had the priority-10 `.com -> .in` listener rules outside CloudFormation and the first reconciliation had to use `MANAGE_CANONICAL_REDIRECT_RULES=false`, import those live rules immediately after the stack is otherwise healthy:
 
@@ -161,7 +219,7 @@ Note:
 
 ## Automatic Deploy From `main`
 
-Merges to `main` now auto-deploy through GitHub Actions after the verify job passes.
+Merges to `main` now auto-deploy the current production public-alpha stack through GitHub Actions after the verify job passes.
 
 The deploy job:
 
@@ -225,7 +283,7 @@ Long-running internal-state fetches should use the ECS-backed operator lane inst
 Default command:
 
 ```bash
-npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:production -- --state UP fetch "Internal Uttar Pradesh fetch"
 ```
 
 What it does:
@@ -308,6 +366,8 @@ aws cloudwatch get-dashboard --dashboard-name nyaaywatch-staging --region ap-sou
 
 `P4.5` was completed on 2026-04-15 against the live `nyaaywatch-staging` stack in `ap-south-1`.
 
+That same stack now backs `https://nyaaywatch.in`, so the validated stack is production-serving despite its staging name.
+
 Validated successfully:
 
 - `/health`
@@ -330,4 +390,4 @@ Temporary proof stacks from earlier failed attempts can be deleted after validat
 
 ## Next Operational Step
 
-After staging is healthy and documented, use `docs/DOMAIN_CUTOVER_CHECKLIST.md` to attach the real public domain to the ALB if you want this stack to serve the public alpha.
+Provision `nyaaywatch-production` as a replacement production stack, verify it in parallel, cut the public domain over, and only then reclaim `nyaaywatch-staging` for a dedicated staging stack. The existing `nyaaywatch-staging` stack should remain treated as production until that split is complete.
