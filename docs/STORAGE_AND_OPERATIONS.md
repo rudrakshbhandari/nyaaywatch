@@ -191,7 +191,7 @@ npm run operator:staging -- --state UP rollback <publication-id> "Rollback Uttar
 
 Requirements:
 
-- AWS CLI configured with access to the staging stack
+- AWS CLI configured with access to the production backing stack currently named `nyaaywatch-staging`
 - access to run ECS and CloudWatch Logs commands in `ap-south-1`
 - the local machine does not need direct database or operator-token access because the command runs inside ECS
 

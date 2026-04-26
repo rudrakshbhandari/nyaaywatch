@@ -83,7 +83,7 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court=gujarat
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal SC fetch"
 ```
 
-Use `npm run operator:staging` for heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
+Use `npm run operator:staging` for heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. Despite the command name, it currently targets the production backing stack named `nyaaywatch-staging`, so use it only for recorded release or internal-proof work until a dedicated staging stack exists. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
 
 Release helpers (run before, after, and to record a publication):
 
@@ -175,8 +175,8 @@ Operations and release:
 - [Public data exposure policy](docs/PUBLIC_DATA_EXPOSURE_POLICY.md)
 - [Public alpha launch comms](docs/PUBLIC_ALPHA_LAUNCH_COMMS.md)
 - [Domain cutover checklist](docs/DOMAIN_CUTOVER_CHECKLIST.md)
-- [Deployment status](docs/DEPLOYMENT_STATUS.md)
-- [Release history](docs/RELEASE_HISTORY.md)
+- [Deployment status and environment map](docs/internal/DEPLOYMENT_STATUS.md)
+- [Release history](docs/internal/RELEASE_HISTORY.md)
 
 Per-state and per-court readiness reviews, source reviews, methodology drafts, and go-live checklists live alongside these in `docs/`. Start from [INDIA_COURT_COVERAGE_AUDIT.md](docs/INDIA_COURT_COVERAGE_AUDIT.md) for the full jurisdiction map, or [TODOS.md](TODOS.md) for the working backlog.
 
