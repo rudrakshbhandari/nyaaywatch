@@ -35,8 +35,11 @@ normalize_host() {
 
 url_host() {
   local url="$1"
-  if [[ "$url" =~ ^https?://([^/:?#]+) ]]; then
-    normalize_host "${BASH_REMATCH[1]}"
+  if [[ "$url" =~ ^https?://([^/?#]+) ]]; then
+    local authority="${BASH_REMATCH[1]}"
+    authority="${authority##*@}"
+    authority="${authority%%:*}"
+    normalize_host "$authority"
   fi
 }
 
