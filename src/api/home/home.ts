@@ -208,7 +208,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
     og: {
       title: copy.headline,
       description: ogDescription,
-      image: `${SITE_ORIGIN}/og/state/${stateSlug}.png?v=2026-04-4`,
+      image: `${SITE_ORIGIN}/og/state/${stateSlug}.png?v=2026-04-5`,
       imageAlt: `NyaayWatch — ${copy.headline}`,
     },
   });
