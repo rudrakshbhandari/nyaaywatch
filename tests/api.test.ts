@@ -83,6 +83,8 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
     expect(homepage.text).toContain("Browse lower-court pages");
+    expect(homepage.text).toContain('href="#lower-court-pages"');
+    expect(homepage.text).toContain('id="lower-court-pages" open');
     expect(homepage.text).toContain("Pending across public geographies");
     expect(homepage.text).toContain("Highest-pressure geography");
     expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
