@@ -281,6 +281,18 @@ Look for:
 
 Then write those values back into this file in the same PR or deployment change.
 
+## Production Cutover Preflight
+
+Before provisioning or reviewing a parallel `nyaaywatch-production` stack, run the read-only preflight:
+
+```bash
+npm run infra:production-preflight
+```
+
+The preflight checks the current production backing stack outputs, confirms whether `nyaaywatch-production` already exists, and verifies `https://nyaaywatch.in/health`. It is intentionally non-mutating: it does not deploy CloudFormation, roll ECS, change DNS, rename resources, or reconcile schedules.
+
+If a target `nyaaywatch-production` stack already exists, the preflight exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review.
+
 ## Minimum Live Verification
 
 Run these checks against the current public production URL. Once dedicated staging exists, run the same shape against staging before production release work:

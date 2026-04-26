@@ -20,7 +20,7 @@ jobs:
     env:
       AWS_REGION: ap-south-1
       PUBLIC_BASE_URL: https://nyaaywatch.in
-      STAGING_STACK_NAME: nyaaywatch-staging
+      PRODUCTION_STACK_NAME: nyaaywatch-staging
 
     steps:
       - name: Checkout repository
@@ -46,14 +46,14 @@ jobs:
           operator_token_secret_arn="$(
             aws cloudformation describe-stacks \
               --region "$AWS_REGION" \
-              --stack-name "$STAGING_STACK_NAME" \
+              --stack-name "$PRODUCTION_STACK_NAME" \
               --query "Stacks[0].Outputs[?OutputKey=='OperatorApiTokenSecretArn'].OutputValue | [0]" \
               --output text
           )"
           alarm_topic_arn="$(
             aws cloudformation describe-stacks \
               --region "$AWS_REGION" \
-              --stack-name "$STAGING_STACK_NAME" \
+              --stack-name "$PRODUCTION_STACK_NAME" \
               --query "Stacks[0].Outputs[?OutputKey=='AlarmTopicArn'].OutputValue | [0]" \
               --output text
           )"
@@ -85,7 +85,7 @@ jobs:
           set +e
           npm run --silent ops:verify-internal-fetch-schedule -- \
             --base-url="$PUBLIC_BASE_URL" \
-            --stack-name="$STAGING_STACK_NAME" \
+            --stack-name="$PRODUCTION_STACK_NAME" \
             > internal-fetch-schedule-summary.json
           status=$?
           [[ -f internal-fetch-schedule-summary.json ]] && cat internal-fetch-schedule-summary.json
