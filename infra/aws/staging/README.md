@@ -31,7 +31,7 @@ Run the read-only preflight before provisioning or reviewing a parallel `nyaaywa
 npm run infra:production-preflight
 ```
 
-The helper checks the current production backing stack outputs, confirms whether the target production stack already exists, and verifies `https://nyaaywatch.in/health`. It does not deploy CloudFormation, update ECS, change DNS, rename resources, or modify schedules.
+The helper checks the current production backing stack is in a stable terminal CloudFormation status, checks its required outputs, confirms whether the target production stack already exists, and verifies `https://nyaaywatch.in/health`. It does not deploy CloudFormation, update ECS, change DNS, rename resources, or modify schedules.
 
 Useful overrides:
 

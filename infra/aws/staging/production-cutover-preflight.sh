@@ -83,6 +83,21 @@ stack_output() {
     2>/dev/null || true
 }
 
+is_stable_stack_status() {
+  case "$1" in
+    CREATE_COMPLETE | \
+      UPDATE_COMPLETE | \
+      UPDATE_ROLLBACK_COMPLETE | \
+      IMPORT_COMPLETE | \
+      IMPORT_ROLLBACK_COMPLETE)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 print_output() {
   local stack_name="$1"
   local output_key="$2"
@@ -125,7 +140,7 @@ if [[ -z "$legacy_status" || "$legacy_status" == "None" ]]; then
   exit 1
 fi
 
-if [[ "$legacy_status" == DELETE_* || "$legacy_status" == *"_FAILED" ]]; then
+if ! is_stable_stack_status "$legacy_status"; then
   echo "Current production backing stack is not in a cutover-safe status: $legacy_status" >&2
   exit 1
 fi
@@ -171,6 +186,11 @@ fi
 
 if [[ "$target_stack_exists" == "true" && -n "$target_status" && "$target_status" != "None" ]]; then
   echo "Target production stack already exists: $target_stack ($target_status)"
+  if ! is_stable_stack_status "$target_status"; then
+    echo "Target production stack is not in a review-safe status: $target_status" >&2
+    exit 1
+  fi
+
   echo "Review this stack before proceeding; preflight will not assume it is safe to cut over."
   echo "Target-stack outputs:"
   for output_key in ServiceUrl ArtifactsBucketName DatabaseEndpoint CertificateArn AlarmTopicArn ClusterName; do
