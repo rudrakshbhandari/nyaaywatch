@@ -135,6 +135,7 @@ cluster_name="$(stack_output "$legacy_stack" ClusterName)"
 service_arn="$(stack_resource "$legacy_stack" Service)"
 service_url="$(stack_output "$legacy_stack" ServiceUrl)"
 artifacts_bucket="$(stack_output "$legacy_stack" ArtifactsBucketName)"
+database_instance_identifier="$(stack_resource "$legacy_stack" StagingDatabase)"
 database_endpoint="$(stack_output "$legacy_stack" DatabaseEndpoint)"
 database_url_secret_arn="$(stack_output "$legacy_stack" DatabaseUrlSecretArn)"
 operator_api_token_secret_arn="$(stack_output "$legacy_stack" OperatorApiTokenSecretArn)"
@@ -154,6 +155,7 @@ task_definition_arn="$(
 echo "Current stack outputs:"
 echo "  ServiceUrl: $service_url"
 echo "  ArtifactsBucketName: $artifacts_bucket"
+echo "  DatabaseInstanceIdentifier: $database_instance_identifier"
 echo "  DatabaseEndpoint: $database_endpoint"
 echo "  DatabaseUrlSecretArn: $database_url_secret_arn"
 echo "  OperatorApiTokenSecretArn: $operator_api_token_secret_arn"
@@ -200,8 +202,9 @@ fi
 echo
 
 echo "Cutover data decision still required before DNS:"
-echo "  - clone the current production RDS data into the target production database, or explicitly choose shared-database cutover with a documented rollback tradeoff"
+echo "  - preferred path: create a manual RDS snapshot from $database_instance_identifier, then deploy the target stack with DATABASE_SNAPSHOT_IDENTIFIER set to that snapshot ID"
 echo "  - sync the current artifacts bucket into the target production artifacts bucket if the target uses a new S3 bucket"
+echo "  - bridge-only path: explicitly choose shared-database cutover with a documented rollback tradeoff"
 echo "  - keep schedules disabled or unconfigured on the target stack until the DNS cutover window"
 echo
 echo "Inventory complete. No AWS resources were changed."

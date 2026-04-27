@@ -76,6 +76,7 @@ Important current-state note: the production public-alpha site is still backed b
 Operational notes:
 
 - This stack serves production despite its `staging` resource names. Do not use it as a general staging sandbox.
+- The preferred `nyaaywatch-production` cutover path is now an isolated target stack restored from a manual RDS snapshot by setting `DATABASE_SNAPSHOT_IDENTIFIER`, followed by an S3 artifact sync before DNS. Do not mix that path with the temporary shared-database bridge.
 - Port `80` on the ALB redirects to `443`.
 - The app itself redirects legacy `.com` host headers to the canonical `.in` hostname.
 - Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.

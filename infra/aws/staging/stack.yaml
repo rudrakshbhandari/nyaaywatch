@@ -29,6 +29,15 @@ Parameters:
   DatabasePassword:
     Type: String
     NoEcho: true
+  DatabaseAllocatedStorage:
+    Type: Number
+    Default: 20
+    MinValue: 20
+    Description: Allocated storage in GiB for the managed RDS instance. Must be at least the source snapshot size when restoring from a snapshot.
+  DatabaseSnapshotIdentifier:
+    Type: String
+    Default: ""
+    Description: Optional RDS DB snapshot identifier to restore the managed database from during isolated environment bootstrap.
   OperatorApiToken:
     Type: String
     Default: ""
@@ -89,6 +98,7 @@ Conditions:
   ShouldManageCanonicalRedirectRules: !Equals [!Ref ManageCanonicalRedirectRules, "true"]
   HasExistingDatabaseUrlSecretArn: !Not [!Equals [!Ref ExistingDatabaseUrlSecretArn, ""]]
   HasExistingOperatorApiTokenSecretArn: !Not [!Equals [!Ref ExistingOperatorApiTokenSecretArn, ""]]
+  HasDatabaseSnapshotIdentifier: !Not [!Equals [!Ref DatabaseSnapshotIdentifier, ""]]
   CreateManagedDatabaseUrlSecret: !Equals [!Ref ExistingDatabaseUrlSecretArn, ""]
   CreateManagedOperatorApiTokenSecret: !Equals [!Ref ExistingOperatorApiTokenSecretArn, ""]
 
@@ -364,17 +374,18 @@ Resources:
     DeletionPolicy: Snapshot
     UpdateReplacePolicy: Snapshot
     Properties:
-      AllocatedStorage: 20
+      AllocatedStorage: !Ref DatabaseAllocatedStorage
       DBInstanceClass: db.t4g.micro
-      DBName: !Ref DatabaseName
+      DBSnapshotIdentifier: !If [HasDatabaseSnapshotIdentifier, !Ref DatabaseSnapshotIdentifier, !Ref AWS::NoValue]
+      DBName: !If [HasDatabaseSnapshotIdentifier, !Ref AWS::NoValue, !Ref DatabaseName]
       DBSubnetGroupName: !Ref DatabaseSubnetGroup
       Engine: postgres
-      EngineVersion: "16.13"
-      MasterUsername: !Ref DatabaseUsername
-      MasterUserPassword: !Ref DatabasePassword
+      EngineVersion: !If [HasDatabaseSnapshotIdentifier, !Ref AWS::NoValue, "16.13"]
+      MasterUsername: !If [HasDatabaseSnapshotIdentifier, !Ref AWS::NoValue, !Ref DatabaseUsername]
+      MasterUserPassword: !If [HasDatabaseSnapshotIdentifier, !Ref AWS::NoValue, !Ref DatabasePassword]
       MultiAZ: false
       PubliclyAccessible: false
-      StorageEncrypted: true
+      StorageEncrypted: !If [HasDatabaseSnapshotIdentifier, !Ref AWS::NoValue, true]
       VPCSecurityGroups:
         - !Ref DatabaseSecurityGroup
 
