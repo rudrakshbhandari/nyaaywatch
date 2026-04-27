@@ -41,7 +41,7 @@ PUBLIC_BASE_URL=https://nyaaywatch.in \
 npm run infra:production-preflight -- nyaaywatch-staging nyaaywatch-production
 ```
 
-If `nyaaywatch-production` already exists, the preflight exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review. That prevents an accidental cutover against an old or partial target stack.
+If `nyaaywatch-production` already exists, the preflight requires a stable terminal stack status and the same required output interface before it exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review. That prevents an accidental cutover against an old or partial target stack.
 
 ## Resources
 

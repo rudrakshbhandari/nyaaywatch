@@ -291,7 +291,7 @@ npm run infra:production-preflight
 
 The preflight checks the current production backing stack is in a stable terminal CloudFormation status, checks its required outputs, confirms whether `nyaaywatch-production` already exists, and verifies `https://nyaaywatch.in/health`. It is intentionally non-mutating: it does not deploy CloudFormation, roll ECS, change DNS, rename resources, or reconcile schedules.
 
-If a target `nyaaywatch-production` stack already exists, the preflight exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review.
+If a target `nyaaywatch-production` stack already exists, the preflight requires a stable terminal stack status and the same required output interface before it exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review.
 
 ## Minimum Live Verification
 

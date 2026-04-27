@@ -192,10 +192,27 @@ if [[ "$target_stack_exists" == "true" && -n "$target_status" && "$target_status
   fi
 
   echo "Review this stack before proceeding; preflight will not assume it is safe to cut over."
-  echo "Target-stack outputs:"
-  for output_key in ServiceUrl ArtifactsBucketName DatabaseEndpoint CertificateArn AlarmTopicArn ClusterName; do
-    print_output "$target_stack" "$output_key" || true
+  echo "Required target-stack outputs:"
+  missing_target_output=false
+  for output_key in \
+    ServiceUrl \
+    ArtifactsBucketName \
+    DatabaseEndpoint \
+    DatabaseUrlSecretArn \
+    OperatorApiTokenSecretArn \
+    CertificateArn \
+    AlarmTopicArn \
+    ClusterName
+  do
+    if ! print_output "$target_stack" "$output_key"; then
+      missing_target_output=true
+    fi
   done
+
+  if [[ "$missing_target_output" == "true" ]]; then
+    echo "Target production stack is missing required outputs." >&2
+    exit 1
+  fi
 
   if [[ "$allow_existing_target_stack" != "true" ]]; then
     echo "Set ALLOW_EXISTING_TARGET_STACK=true only after reviewing that existing target stack." >&2
