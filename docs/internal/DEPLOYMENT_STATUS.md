@@ -293,6 +293,14 @@ The preflight checks the current production backing stack is in a stable termina
 
 If a target `nyaaywatch-production` stack already exists, the preflight requires a stable terminal stack status and the same required output interface before it exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review.
 
+Before any mutating `nyaaywatch-production` work, also run:
+
+```bash
+npm run infra:production-cutover-inventory
+```
+
+Use that output with `docs/PRODUCTION_CUTOVER_RUNBOOK.md` to record the current ECS image, runtime bucket/secret bindings, schedule targets, and target-stack status before choosing a data bootstrap path.
+
 ## Minimum Live Verification
 
 Run these checks against the current public production URL. Once dedicated staging exists, run the same shape against staging before production release work:

@@ -83,11 +83,14 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court=gujarat
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal SC fetch"
 npm run operator:production -- --state=UP fetch "Internal Uttar Pradesh fetch"
 npm run infra:production-preflight
+npm run infra:production-cutover-inventory
 ```
 
 Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It currently targets the legacy production backing stack named `nyaaywatch-staging`; use it only for recorded release or internal-proof work until a reality-named `nyaaywatch-production` stack replaces that legacy name. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
+
+Use `npm run infra:production-cutover-inventory` before any mutating `nyaaywatch-production` work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, schedule targets, and the target-stack status needed by the production cutover runbook.
 
 Release helpers (run before, after, and to record a publication):
 
@@ -179,6 +182,7 @@ Operations and release:
 - [Public data exposure policy](docs/PUBLIC_DATA_EXPOSURE_POLICY.md)
 - [Public alpha launch comms](docs/PUBLIC_ALPHA_LAUNCH_COMMS.md)
 - [Domain cutover checklist](docs/DOMAIN_CUTOVER_CHECKLIST.md)
+- [Production cutover runbook](docs/PRODUCTION_CUTOVER_RUNBOOK.md)
 - [Deployment status and environment map](docs/internal/DEPLOYMENT_STATUS.md)
 - [Release history](docs/internal/RELEASE_HISTORY.md)
 

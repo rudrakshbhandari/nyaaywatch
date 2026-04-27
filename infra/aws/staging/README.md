@@ -43,6 +43,14 @@ npm run infra:production-preflight -- nyaaywatch-staging nyaaywatch-production
 
 If `nyaaywatch-production` already exists, the preflight requires a stable terminal stack status and the same required output interface before it exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review. That prevents an accidental cutover against an old or partial target stack.
 
+After preflight, collect the read-only cutover inventory:
+
+```bash
+npm run infra:production-cutover-inventory
+```
+
+Use that output with `docs/PRODUCTION_CUTOVER_RUNBOOK.md` before running any mutating CloudFormation command for `nyaaywatch-production`.
+
 ## Resources
 
 The staging stack template provisions:
@@ -410,4 +418,4 @@ Temporary proof stacks from earlier failed attempts can be deleted after validat
 
 ## Next Operational Step
 
-Run the read-only production cutover preflight, provision `nyaaywatch-production` as a replacement production stack, verify it in parallel, cut the public domain over, and only then reclaim `nyaaywatch-staging` for a dedicated staging stack. The existing `nyaaywatch-staging` stack should remain treated as production until that split is complete.
+Run the read-only production cutover preflight and inventory, make the data bootstrap decision in `docs/PRODUCTION_CUTOVER_RUNBOOK.md`, provision `nyaaywatch-production` as a replacement production stack, verify it in parallel, cut the public domain over, and only then reclaim `nyaaywatch-staging` for a dedicated staging stack. The existing `nyaaywatch-staging` stack should remain treated as production until that split is complete.

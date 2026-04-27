@@ -38,6 +38,7 @@
     "operator:production": "tsx src/dev/staging-operator.ts --stack nyaaywatch-staging",
     "operator:staging": "tsx src/dev/staging-operator.ts",
     "infra:production-preflight": "bash infra/aws/staging/production-cutover-preflight.sh",
+    "infra:production-cutover-inventory": "bash infra/aws/staging/production-cutover-inventory.sh",
     "operator:reconcile-fetch-schedule": "bash infra/aws/staging/reconcile-internal-fetch-schedule.sh",
     "release:prepublish": "tsx src/dev/release-prepublish.ts",
     "release:postpublish": "tsx src/dev/release-postpublish.ts",
