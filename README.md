@@ -90,7 +90,7 @@ Use `npm run operator:production` for production heavy-state lanes that should r
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
-Use `npm run infra:production-cutover-inventory` before any mutating `nyaaywatch-production` work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, schedule targets, and the target-stack status needed by the production cutover runbook.
+Use `npm run infra:production-cutover-inventory` before any mutating `nyaaywatch-production` work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and the target-stack status needed by the production cutover runbook. The preferred cutover path is an isolated `nyaaywatch-production` stack restored from a manual RDS snapshot through `DATABASE_SNAPSHOT_IDENTIFIER`, followed by an S3 artifact sync before DNS changes.
 
 Release helpers (run before, after, and to record a publication):
 

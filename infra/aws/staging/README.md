@@ -110,6 +110,10 @@ Optional:
 - `PUBLIC_BASE_URL` if the runtime should emit stable public URLs for release verification and cache invalidation
 - `CLOUDFLARE_ZONE_NAME` if the runtime should resolve the Cloudflare zone by name
 - `CLOUDFLARE_API_TOKEN_SECRET_ARN` if publish / rollback should purge Cloudflare cache without storing the token in plaintext task-definition environment variables
+- `DATABASE_SNAPSHOT_IDENTIFIER` if the target managed RDS instance should be restored from an existing manual DB snapshot instead of starting empty
+- `SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true` with `DATABASE_SNAPSHOT_IDENTIFIER` after verifying the deploy password argument matches the restored database password
+- `STACK_DATABASE_NAME` and `STACK_DATABASE_USERNAME` only if they need to match a non-default snapshot identity; defaults are `nyaaywatch`
+- `STACK_DATABASE_ALLOCATED_STORAGE` if the target RDS instance needs more than the default `20` GiB, and always for snapshot restores when the source snapshot is larger than `20` GiB
 - `EXISTING_DATABASE_URL_SECRET_ARN` if an existing stack should reference a pre-created `DATABASE_URL` secret instead of creating a new one
 - `EXISTING_OPERATOR_API_TOKEN_SECRET_ARN` if an existing stack should reference a pre-created operator-token secret instead of creating a new one
 - `MANAGE_CANONICAL_REDIRECT_RULES=false` only as a temporary reconciliation escape hatch if an older stack already has unmanaged `.com -> .in` listener rules; the intended steady state is to import those rules so CloudFormation owns them too
@@ -182,15 +186,20 @@ export PUBLIC_BASE_URL=https://nyaaywatch.in
 export CANONICAL_HOST=nyaaywatch.in
 export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
 export MANAGE_CANONICAL_REDIRECT_RULES=true
+export DATABASE_SNAPSHOT_IDENTIFIER=nyaaywatch-prod-cutover-YYYYMMDD-HHMM
+export STACK_DATABASE_ALLOCATED_STORAGE=20
+export SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true
 
 ./infra/aws/staging/deploy-stack.sh \
   nyaaywatch-production \
   723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
   '<operator-token>' \
-  '<database-password>' \
+  '<source-database-password-until-post-cutover-rotation>' \
   '<certificate-arn>' \
   '[alarm-email]'
 ```
+
+For the preferred production cutover path, create a manual snapshot from the current production backing database first, deploy the target with `DATABASE_SNAPSHOT_IDENTIFIER`, then copy the current artifacts bucket into the target bucket before DNS cutover. AWS RDS snapshot restore inherits the database name, master username, password, and engine version from the snapshot; the password argument above is still used for the generated `DATABASE_URL` secret and must match the restored database password until a deliberate post-cutover rotation. `SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true` is required so that secret cannot drift silently. The deploy helper also verifies the snapshot DB name, master username, and allocated storage before it creates the generated secret. Do not combine `DATABASE_SNAPSHOT_IDENTIFIER` with `EXISTING_DATABASE_URL_SECRET_ARN`. After a stack is created from a snapshot, later deploys must keep the same snapshot parameter; the deploy helper preserves the existing snapshot ID, DB identity, and allocated-storage parameters, refuses to add snapshot restore to an already-existing non-snapshot stack, refuses a different snapshot unless `ALLOW_DATABASE_SNAPSHOT_REPLACEMENT=true` is set, and refuses DB name or username changes unless `ALLOW_SNAPSHOT_DATABASE_IDENTITY_CHANGE=true` is set for an intentional matching-database change. The helper only calls `describe-db-snapshots` when `DATABASE_SNAPSHOT_IDENTIFIER` is explicitly supplied, so normal post-cutover deploys do not depend on keeping the original manual snapshot record forever.
 
 For an isolated staging rehearsal stack, do not use the production host, production Cloudflare purge path, or production resource prefix:
 

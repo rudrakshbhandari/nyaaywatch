@@ -36,8 +36,9 @@ This phase is read-only.
 Choose one data path before provisioning or cutover:
 
 1. **Preferred: clone production data into isolated production resources.**
-   - Restore or copy the current production RDS data into the `nyaaywatch-production` database.
-   - Sync the current production artifacts bucket into the `nyaaywatch-production` artifacts bucket.
+   - Create a manual RDS snapshot from the current production backing database.
+   - Deploy `nyaaywatch-production` with `DATABASE_SNAPSHOT_IDENTIFIER` set to that snapshot ID so the target RDS instance starts from the same published snapshot and run history.
+   - Sync the current production artifacts bucket into the `nyaaywatch-production` artifacts bucket after the target stack exists.
    - Verify public pages and operator replay/rollback against the target ALB before DNS.
    - This is the cleanest environment split and avoids future replay failures from missing S3 artifacts.
 
@@ -48,6 +49,23 @@ Choose one data path before provisioning or cutover:
    - Treat this as a bridge only if a database clone is too slow for the cutover window.
 
 Do not proceed without recording which path is being used.
+
+For the preferred path, treat the RDS snapshot as a maintenance-window boundary. Do not run new production publishes, replay, rollback, or publish-pending work between the final snapshot and DNS cutover unless you intentionally abandon that snapshot and take a fresh one. Scheduled internal fetches do not publish public data by themselves, but they can create new run artifacts; keep the cutover window tight so the target database and copied artifacts remain aligned.
+
+Create and wait for the manual snapshot:
+
+```bash
+aws rds create-db-snapshot \
+  --region ap-south-1 \
+  --db-instance-identifier '<current-production-database-instance-identifier>' \
+  --db-snapshot-identifier '<nyaaywatch-prod-cutover-YYYYMMDD-HHMM>'
+
+aws rds wait db-snapshot-available \
+  --region ap-south-1 \
+  --db-snapshot-identifier '<nyaaywatch-prod-cutover-YYYYMMDD-HHMM>'
+```
+
+The current database instance identifier is printed by `npm run infra:production-cutover-inventory`.
 
 ## Phase 2: Parallel Stack Provision
 
@@ -62,15 +80,26 @@ export PUBLIC_BASE_URL=https://nyaaywatch.in
 export CANONICAL_HOST=nyaaywatch.in
 export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
 export MANAGE_CANONICAL_REDIRECT_RULES=true
+export DATABASE_SNAPSHOT_IDENTIFIER='<nyaaywatch-prod-cutover-YYYYMMDD-HHMM>'
+export STACK_DATABASE_ALLOCATED_STORAGE='<snapshot-allocated-storage-gib-or-larger>'
+export SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true
 
 ./infra/aws/staging/deploy-stack.sh \
   nyaaywatch-production \
   '<current-production-image-uri>' \
   '<target-operator-token>' \
-  '<target-database-password>' \
+  '<source-database-password-until-post-cutover-rotation>' \
   '<certificate-arn>' \
   '[alarm-email]'
 ```
+
+When restoring from an RDS snapshot, AWS inherits the database name and master username from the snapshot. The `deploy-stack.sh` database-password argument is still used for the generated `DATABASE_URL` secret, so it must match the restored database password until a deliberate post-cutover password rotation updates both RDS and Secrets Manager together.
+
+`SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true` is required because AWS does not apply the `deploy-stack.sh` password argument to an RDS instance restored from a snapshot. The flag means the password argument already matches the restored database and is safe to write into the generated `DATABASE_URL` secret.
+
+The deploy helper verifies the snapshot `DBName`, `MasterUsername`, and allocated storage through `aws rds describe-db-snapshots` before it generates the target `DATABASE_URL` secret. The normal NyaayWatch values are `STACK_DATABASE_NAME=nyaaywatch` and `STACK_DATABASE_USERNAME=nyaaywatch`; set those stack-specific environment variables only if you intentionally restore a snapshot with different values and want the generated secret to match it. Set `STACK_DATABASE_ALLOCATED_STORAGE` to at least the snapshot's allocated storage size when restoring. The template omits `EngineVersion` during snapshot restore so RDS can use the snapshot's own PostgreSQL version.
+
+CloudFormation requires the same `DatabaseSnapshotIdentifier` to remain on later updates to a DB instance that was created from a snapshot. The deploy helper preserves the existing stack parameters for snapshot ID, database name, database username, and allocated storage during later deploys, refuses to add snapshot restore to an already-existing non-snapshot stack, and refuses a different snapshot ID unless `ALLOW_DATABASE_SNAPSHOT_REPLACEMENT=true` is set for a deliberate database replacement. It also refuses explicit DB name or username changes on snapshot-backed stack updates unless `ALLOW_SNAPSHOT_DATABASE_IDENTITY_CHANGE=true` is set. It only calls `describe-db-snapshots` when `DATABASE_SNAPSHOT_IDENTIFIER` is explicitly supplied, so normal post-cutover deploys do not depend on retaining the original manual snapshot record forever.
 
 If using the temporary shared-database bridge, add:
 
@@ -78,7 +107,20 @@ If using the temporary shared-database bridge, add:
 export EXISTING_DATABASE_URL_SECRET_ARN='<current-production-database-url-secret-arn>'
 ```
 
+Do not set both `DATABASE_SNAPSHOT_IDENTIFIER` and `EXISTING_DATABASE_URL_SECRET_ARN`; the deploy helper refuses that mixed path.
+
 Use a separate target operator token unless there is a deliberate reason to share the current one.
+
+After the target stack exists, copy the artifacts bucket:
+
+```bash
+aws s3 sync \
+  s3://<current-production-artifacts-bucket> \
+  s3://<target-production-artifacts-bucket> \
+  --exact-timestamps
+```
+
+The target artifacts bucket is available from the `ArtifactsBucketName` CloudFormation output on `nyaaywatch-production`.
 
 ## Phase 3: Target Verification Before DNS
 
