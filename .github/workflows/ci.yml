@@ -130,7 +130,7 @@ jobs:
       AWS_REGION: ap-south-1
       AWS_ACCOUNT_ID: "723951822728"
       ECR_REPOSITORY: nyaaywatch-staging
-      STAGING_STACK_NAME: nyaaywatch-staging
+      PRODUCTION_STACK_NAME: nyaaywatch-staging
       STATE_INTERNAL_FETCH_SCHEDULE_EXPRESSION: "cron(0 8 * * ? *)"
       STATE_INTERNAL_FETCH_SCHEDULE_TIMEZONE: Asia/Kolkata
       STATE_INTERNAL_FETCH_SCHEDULE_STATE: ENABLED
@@ -172,12 +172,12 @@ jobs:
           IMAGE_SHA: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         run: |
           chmod +x infra/aws/staging/redeploy-service.sh
-          ./infra/aws/staging/redeploy-service.sh "$STAGING_STACK_NAME" "$IMAGE_SHA"
+          ./infra/aws/staging/redeploy-service.sh "$PRODUCTION_STACK_NAME" "$IMAGE_SHA"
 
       - name: Reconcile daily internal fetch schedule
         run: |
           chmod +x infra/aws/staging/reconcile-internal-fetch-schedule.sh
-          ./infra/aws/staging/reconcile-internal-fetch-schedule.sh "$STAGING_STACK_NAME"
+          ./infra/aws/staging/reconcile-internal-fetch-schedule.sh "$PRODUCTION_STACK_NAME"
 
   preview:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository

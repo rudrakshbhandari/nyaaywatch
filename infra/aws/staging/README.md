@@ -23,6 +23,26 @@ The target environment split is:
 
 Do not run sandbox experiments against the production backing stack just because the AWS names contain `staging`.
 
+## Production Cutover Preflight
+
+Run the read-only preflight before provisioning or reviewing a parallel `nyaaywatch-production` stack:
+
+```bash
+npm run infra:production-preflight
+```
+
+The helper checks the current production backing stack is in a stable terminal CloudFormation status, checks its required outputs, confirms whether the target production stack already exists, and verifies `https://nyaaywatch.in/health`. It does not deploy CloudFormation, update ECS, change DNS, rename resources, or modify schedules.
+
+Useful overrides:
+
+```bash
+AWS_REGION=ap-south-1 \
+PUBLIC_BASE_URL=https://nyaaywatch.in \
+npm run infra:production-preflight -- nyaaywatch-staging nyaaywatch-production
+```
+
+If `nyaaywatch-production` already exists, the preflight requires a stable terminal stack status and the same required output interface before it exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review. That prevents an accidental cutover against an old or partial target stack.
+
 ## Resources
 
 The staging stack template provisions:
@@ -225,7 +245,7 @@ The deploy job:
 
 - assumes `arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role` via GitHub OIDC
 - builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`
-- discovers the live ECS service from the `nyaaywatch-staging` CloudFormation stack
+- discovers the live ECS service from `PRODUCTION_STACK_NAME`; the value is currently `nyaaywatch-staging` until `nyaaywatch-production` is cut over
 - registers a fresh task definition revision pinned to the commit-SHA image
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
@@ -390,4 +410,4 @@ Temporary proof stacks from earlier failed attempts can be deleted after validat
 
 ## Next Operational Step
 
-Provision `nyaaywatch-production` as a replacement production stack, verify it in parallel, cut the public domain over, and only then reclaim `nyaaywatch-staging` for a dedicated staging stack. The existing `nyaaywatch-staging` stack should remain treated as production until that split is complete.
+Run the read-only production cutover preflight, provision `nyaaywatch-production` as a replacement production stack, verify it in parallel, cut the public domain over, and only then reclaim `nyaaywatch-staging` for a dedicated staging stack. The existing `nyaaywatch-staging` stack should remain treated as production until that split is complete.
