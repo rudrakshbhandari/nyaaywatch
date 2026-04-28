@@ -2,14 +2,14 @@
 
 Recorded cutover state for pointing the real NyaayWatch domain at the validated AWS deployment.
 
-This assumes the app continues to run on the existing AWS staging or public-alpha stack with an Application Load Balancer.
+This assumes the app continues to run on the AWS production or public-alpha stack with an Application Load Balancer.
 
 ## Current Status
 
 - Chosen public hostname: `https://nyaaywatch.in`
-- Cutover status: completed on `2026-04-15`
-- Backing stack: `nyaaywatch-staging` in `ap-south-1`
-- Evidence source: `docs/DEPLOYMENT_STATUS.md` and `docs/ALPHA_RELEASE_CHECKLIST.md`
+- Cutover status: completed on `2026-04-15`; production backing-stack cutover completed on `2026-04-28`
+- Backing stack: `nyaaywatch-production` in `ap-south-1`
+- Evidence source: `docs/internal/DEPLOYMENT_STATUS.md` and `docs/ALPHA_RELEASE_CHECKLIST.md`
 
 Treat the checked items below as the completed `nyaaywatch.in` cutover record. Reuse this document only if the hostname, certificate coverage, or DNS target changes again. Treat the legacy `.com` hostnames as a separate optional follow-up unless they are actively routed in DNS with matching ACM coverage.
 
@@ -37,7 +37,7 @@ Recommendation:
 
 ## Recorded Load Balancer State
 
-- [x] Confirm the target ALB is the one serving `nyaaywatch-staging`
+- [x] Confirm the target ALB is the one serving `nyaaywatch-production`
 - [x] Add or verify an HTTPS listener on port `443`
 - [x] Attach the ACM certificate to the HTTPS listener
 - [x] Forward HTTPS traffic to the existing application target group
@@ -77,9 +77,9 @@ If a future DNS or certificate change causes regressions:
 ## Recorded Cutover Evidence
 
 - Public hostname serving traffic: `https://nyaaywatch.in`
-- ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
+- ALB DNS name: `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/c55eb076-1c4c-4d94-a29b-454100e3ebc7`
-- Latest confirmed public verification date: `2026-04-15`
+- Latest confirmed public verification date: `2026-04-28`
 - Latest confirmed operator rejection check: unauthenticated `GET /operator/publications` returned `401`
 
 ## Detailed Rollback Procedure

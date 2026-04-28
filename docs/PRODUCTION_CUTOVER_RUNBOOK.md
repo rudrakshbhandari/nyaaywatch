@@ -2,7 +2,7 @@
 
 Runbook for replacing the legacy production-serving `nyaaywatch-staging` AWS stack with a reality-named `nyaaywatch-production` stack.
 
-The current production site is `https://nyaaywatch.in`. The current backing stack is still named `nyaaywatch-staging`; treat it as production until this runbook is complete and verified.
+The current production site is `https://nyaaywatch.in`. As of April 28, 2026, the current backing stack is `nyaaywatch-production`; treat the old `nyaaywatch-staging` stack as rollback infrastructure until the observation window ends.
 
 ## Non-Negotiables
 
@@ -196,17 +196,20 @@ Do not delete the legacy production stack during the cutover window.
 
 After the production stack has survived the agreed observation window:
 
-1. Update `docs/internal/DEPLOYMENT_STATUS.md` so production points at `nyaaywatch-production`.
-2. Update `.github/workflows/ci.yml` and `.github/workflows/ops-watchdog.yml` so `PRODUCTION_STACK_NAME=nyaaywatch-production`.
+1. Confirm `docs/internal/DEPLOYMENT_STATUS.md` still points production at `nyaaywatch-production`.
+2. Confirm `.github/workflows/ci.yml` and `.github/workflows/ops-watchdog.yml` still use `PRODUCTION_STACK_NAME=nyaaywatch-production`.
 3. Retire or snapshot the legacy `nyaaywatch-staging` production resources.
 4. Provision a dedicated staging stack named `nyaaywatch-staging` with isolated RDS, S3, Secrets Manager values, schedules, dashboard, and alarm topic.
-5. Update `TODOS.md` and release history with the cutover evidence.
+5. Update `TODOS.md` and release history with the retirement/reclaim evidence.
 
-## Current Open Decision
+## Current Cutover State
 
-The next live-action blocker is the data bootstrap choice:
+The April 28, 2026 cutover used the preferred isolated data path:
 
-- isolated database plus S3 sync, preferred
-- temporary shared-database bridge, faster but not a final clean split
+- manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`
+- restored `nyaaywatch-production` database and synced production artifacts bucket
+- Cloudflare DNS for `nyaaywatch.in` points at `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
+- `npm run release:verify -- --base-url=https://nyaaywatch.in` passed through normal DNS
+- production schedules exist under `nyaaywatch-production-*` and target task definition `nyaaywatch-production:2`
 
-Make that choice before running any mutating CloudFormation command for `nyaaywatch-production`.
+The remaining work is observation, rollback readiness, and reclaiming `nyaaywatch-staging` for dedicated staging after the rollback window ends.

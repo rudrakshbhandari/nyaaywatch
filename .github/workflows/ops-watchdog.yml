@@ -20,7 +20,7 @@ jobs:
     env:
       AWS_REGION: ap-south-1
       PUBLIC_BASE_URL: https://nyaaywatch.in
-      PRODUCTION_STACK_NAME: nyaaywatch-staging
+      PRODUCTION_STACK_NAME: nyaaywatch-production
 
     steps:
       - name: Checkout repository
