@@ -210,7 +210,7 @@ The April 28, 2026 cutover used the preferred isolated data path:
 - restored `nyaaywatch-production` database and synced production artifacts bucket
 - Cloudflare DNS for `nyaaywatch.in` points at `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
 - `npm run release:verify -- --base-url=https://nyaaywatch.in` passed through normal DNS
-- production schedules exist under `nyaaywatch-production-*` and target task definition `nyaaywatch-production:5`
-- post-deploy observation at `2026-04-28T04:28:09.745Z` confirmed production health, public release verification, alarm state, and schedule alignment remained green
+- production schedules exist under `nyaaywatch-production-*` and target the live deploy-managed `nyaaywatch-production:<revision>` task definition
+- post-deploy observation at `2026-04-28T04:44:43.046Z` confirmed production health, public release verification, alarm state, and schedule alignment remained green; the schedules targeted `nyaaywatch-production:6` at that check
 
 The remaining work is observation, rollback readiness, and reclaiming `nyaaywatch-staging` for dedicated staging after the rollback window ends.
