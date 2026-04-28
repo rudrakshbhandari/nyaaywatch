@@ -35,7 +35,7 @@
     "operator:replay": "tsx src/dev/operator.ts replay",
     "operator:rollback": "tsx src/dev/operator.ts rollback",
     "operator:remote": "tsx src/dev/operator-remote.ts",
-    "operator:production": "tsx src/dev/staging-operator.ts --stack nyaaywatch-staging",
+    "operator:production": "tsx src/dev/staging-operator.ts --stack nyaaywatch-production",
     "operator:staging": "tsx src/dev/staging-operator.ts",
     "infra:production-preflight": "bash infra/aws/staging/production-cutover-preflight.sh",
     "infra:production-cutover-inventory": "bash infra/aws/staging/production-cutover-inventory.sh",

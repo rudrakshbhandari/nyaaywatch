@@ -2,13 +2,13 @@
 
 Runbook for replacing the legacy production-serving `nyaaywatch-staging` AWS stack with a reality-named `nyaaywatch-production` stack.
 
-The current production site is `https://nyaaywatch.in`. The current backing stack is still named `nyaaywatch-staging`; treat it as production until this runbook is complete and verified.
+Current status: `https://nyaaywatch.in` now points at `nyaaywatch-production`. Keep this runbook for cutover evidence, rollback context, and the remaining cleanup work to retire or snapshot the legacy `nyaaywatch-staging` production resources.
 
 ## Non-Negotiables
 
 - Do not rename or mutate the legacy production stack in place.
-- Do not point DNS at a target stack until public read parity, operator auth, alarms, and rollback are verified.
-- Do not run target production schedules before cutover.
+- Do not point DNS at a future target stack until public read parity, operator auth, alarms, and rollback are verified.
+- Do not run future target production schedules before cutover.
 - Do not expose raw upstream artifacts publicly.
 - Record the final evidence in `docs/internal/DEPLOYMENT_STATUS.md` and `docs/internal/RELEASE_HISTORY.md`.
 
@@ -196,8 +196,8 @@ Do not delete the legacy production stack during the cutover window.
 
 After the production stack has survived the agreed observation window:
 
-1. Update `docs/internal/DEPLOYMENT_STATUS.md` so production points at `nyaaywatch-production`.
-2. Update `.github/workflows/ci.yml` and `.github/workflows/ops-watchdog.yml` so `PRODUCTION_STACK_NAME=nyaaywatch-production`.
+1. Keep `docs/internal/DEPLOYMENT_STATUS.md` current so production points at `nyaaywatch-production`.
+2. Keep `.github/workflows/ci.yml` and `.github/workflows/ops-watchdog.yml` on `PRODUCTION_STACK_NAME=nyaaywatch-production`.
 3. Retire or snapshot the legacy `nyaaywatch-staging` production resources.
 4. Provision a dedicated staging stack named `nyaaywatch-staging` with isolated RDS, S3, Secrets Manager values, schedules, dashboard, and alarm topic.
 5. Update `TODOS.md` and release history with the cutover evidence.
