@@ -1,7 +1,7 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const TRUST_ROUTES = ["/", "/supreme-court", "/high-courts", "/districts", "/districts/kangra", "/data", "/methodology"];
+const TRUST_ROUTES = ["/", "/supreme-court", "/high-courts", "/districts", "/districts/kangra", "/data", "/methodology", "/learn"];
 const RESPONSIVE_ROUTES = [
   "/",
   "/supreme-court",
@@ -21,6 +21,7 @@ const RESPONSIVE_ROUTES = [
   "/data",
   "/methodology",
   "/api",
+  "/learn",
 ];
 
 test.describe("responsive trust surfaces", () => {

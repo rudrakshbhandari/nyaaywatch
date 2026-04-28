@@ -4,7 +4,7 @@
 
 NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, all 25 High Courts, and the lower courts in every state and Union Territory — drawn from public NJDG data with full methodology disclosure. Every number links to a dated source.
 
-→ [Live site](https://nyaaywatch.in) · [Press & embed kit](https://nyaaywatch.in/press) · [Methodology](https://nyaaywatch.in/methodology) · [API reference](https://nyaaywatch.in/api) · [Data downloads](https://nyaaywatch.in/data)
+→ [Live site](https://nyaaywatch.in) · [Learn](https://nyaaywatch.in/learn) · [Press & embed kit](https://nyaaywatch.in/press) · [Methodology](https://nyaaywatch.in/methodology) · [API reference](https://nyaaywatch.in/api) · [Data downloads](https://nyaaywatch.in/data)
 
 Open-source project links: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [License](LICENSE)
 
@@ -21,6 +21,7 @@ The public alpha covers the full Indian court hierarchy:
 - **All 25 High Courts** at `/high-courts/:slug` — canonical list in [src/high-courts.ts](src/high-courts.ts)
 - **All 36 lower-court geographies** (28 states + 8 Union Territories) at `/states/:slug` — canonical list in [src/geographies.ts](src/geographies.ts)
 - **Himachal Pradesh** remains the unscoped lower-court default at `/`, `/districts`, `/data`, `/methodology`, `/api`
+- **Plain-language court-system guide** at `/learn`
 
 Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Cross-jurisdiction surfaces include `/movers`, `/compare/:slug`, and embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`.
 

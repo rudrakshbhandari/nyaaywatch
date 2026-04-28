@@ -87,6 +87,10 @@ describe("public copy guardrails", () => {
         path: "/api",
         requiredText: "currently on the public site",
       },
+      {
+        path: "/learn",
+        requiredText: "Understand India&#39;s courts before reading the numbers.",
+      },
     ] as const;
 
     for (const route of routes) {
