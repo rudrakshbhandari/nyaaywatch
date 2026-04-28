@@ -73,6 +73,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain('rel="icon"');
     expect(homepage.text).toContain("data:image/svg+xml,");
     expect(homepage.text).toContain("How long is India waiting for justice?");
+    expect(homepage.text).toContain('href="/learn"');
     expect(homepage.text).toContain("Track the Supreme Court");
     expect(homepage.text).toContain("This month&#39;s clearance pace is shown separately.");
     expect(homepage.text).not.toContain("Pending trend");
@@ -132,6 +133,19 @@ describe("HTTP routes", () => {
     expect(methodologyPage.text).toContain("Current public scope");
     expect(methodologyPage.text).toContain("How the public metrics are derived");
     expect(methodologyPage.text).toContain("Published methodology and snapshot lineage");
+
+    const learnPage = await request(app).get("/learn");
+    expect(learnPage.status).toBe(200);
+    expect(learnPage.text).toContain("Understand India&#39;s courts before reading the numbers.");
+    expect(learnPage.text).toContain("The basic structure");
+    expect(learnPage.text).toContain("Supreme Court");
+    expect(learnPage.text).toContain("High Courts");
+    expect(learnPage.text).toContain("District and subordinate courts");
+    expect(learnPage.text).toContain("Is this legal advice?");
+
+    const sitemap = await request(app).get("/sitemap.xml");
+    expect(sitemap.status).toBe(200);
+    expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/learn</loc>");
   });
 
   it("redirects legacy .com hosts to the canonical .in hostname", async () => {

@@ -26,6 +26,7 @@ import { renderHighCourtDataPage } from "./pages/high-court-data.js";
 import { renderHighCourtMethodologyPage } from "./pages/high-court-methodology.js";
 import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
+import { renderLearnPage } from "./pages/learn.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
 import { renderPressPage } from "./pages/press.js";
 import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
@@ -140,6 +141,7 @@ export function createApp(
         origin + "/data",
         origin + "/methodology",
         origin + "/api",
+        origin + "/learn",
         origin + "/press",
         origin + "/high-courts",
         origin + "/supreme-court",
@@ -599,6 +601,10 @@ export function createApp(
 
   app.get("/press", (_request, response) => {
     response.send(renderPressPage());
+  });
+
+  app.get("/learn", (_request, response) => {
+    response.send(renderLearnPage());
   });
 
   app.get("/press/logo-light.svg", (_request, response) => {
