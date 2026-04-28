@@ -325,6 +325,12 @@ if [[ -n "$database_snapshot_identifier" ]]; then
     fi
 
     if [[ -z "$snapshot_database_name" && -n "$snapshot_source_db_instance_identifier" ]]; then
+      if [[ -z "$snapshot_source_dbi_resource_id" ]]; then
+        echo "Snapshot '$database_snapshot_identifier' did not expose DBName or source DbiResourceId." >&2
+        echo "Refusing to use mutable DB instance identifier fallback for DBName without immutable lineage." >&2
+        exit 1
+      fi
+
       if snapshot_source_database_identity="$(
         aws rds describe-db-instances \
           --region "$region" \
