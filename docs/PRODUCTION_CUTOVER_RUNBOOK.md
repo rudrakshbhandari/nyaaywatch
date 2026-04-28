@@ -2,13 +2,13 @@
 
 Runbook for replacing the legacy production-serving `nyaaywatch-staging` AWS stack with a reality-named `nyaaywatch-production` stack.
 
-The current production site is `https://nyaaywatch.in`. As of April 28, 2026, the current backing stack is `nyaaywatch-production`; treat the old `nyaaywatch-staging` stack as rollback infrastructure until the observation window ends.
+Current status: `https://nyaaywatch.in` now points at `nyaaywatch-production`. Keep this runbook for cutover evidence, rollback context, and the remaining cleanup work to retire or snapshot the legacy `nyaaywatch-staging` production resources. Treat the old `nyaaywatch-staging` stack as rollback infrastructure until the observation window ends.
 
 ## Non-Negotiables
 
 - Do not rename or mutate the legacy production stack in place.
-- Do not point DNS at a target stack until public read parity, operator auth, alarms, and rollback are verified.
-- Do not run target production schedules before cutover.
+- Do not point DNS at a future target stack until public read parity, operator auth, alarms, and rollback are verified.
+- Do not run future target production schedules before cutover.
 - Do not expose raw upstream artifacts publicly.
 - Record the final evidence in `docs/internal/DEPLOYMENT_STATUS.md` and `docs/internal/RELEASE_HISTORY.md`.
 

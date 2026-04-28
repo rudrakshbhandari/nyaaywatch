@@ -261,7 +261,7 @@ Merges to `main` now auto-deploy the current production public-alpha stack throu
 The deploy job:
 
 - assumes `arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role` via GitHub OIDC
-- builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`
+- builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`; the repository name is historical and will be renamed separately
 - discovers the live ECS service from `PRODUCTION_STACK_NAME`; the value is `nyaaywatch-production`
 - registers a fresh task definition revision pinned to the commit-SHA image
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
