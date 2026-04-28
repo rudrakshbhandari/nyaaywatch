@@ -48,7 +48,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Public URL: `http://nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-production-Service-09u122KrBSOg`
-- ECS task definition: `nyaaywatch-production:2`
+- ECS task definition: `nyaaywatch-production:3`
 - Internal raw fetch schedules:
   - lower-court states: `nyaaywatch-production-weekday-internal-fetch` at `8:00 AM Asia/Kolkata`
   - Supreme Court: `nyaaywatch-production-supreme-court-internal-fetch` at `8:10 AM Asia/Kolkata`

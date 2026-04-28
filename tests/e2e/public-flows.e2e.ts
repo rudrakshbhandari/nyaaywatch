@@ -7,6 +7,7 @@ test("citizen flow loads the homepage, district workspace, and district permalin
   await expect(page.locator(".national-hero__accountability")).toContainText(/Captured|Source snapshot/);
   await expect(page.getByRole("link", { name: /Track the Supreme Court/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /Browse lower-court pages/i })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Learn" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Open top geography/i })).toBeVisible();
 
   await page.getByRole("link", { name: /Open top geography/i }).click();
@@ -38,6 +39,18 @@ test("reporter flow reaches methodology and public download surfaces from distri
   await expect(page.getByRole("heading", { name: "Every public number comes from one stored published snapshot." })).toBeVisible();
   await expect(page.getByText("How the public metrics are derived")).toBeVisible();
   await expect(page.getByText("Published methodology and snapshot lineage")).toBeVisible();
+});
+
+test("education flow explains the court system without requiring data context", async ({ page }) => {
+  await page.goto("/learn");
+
+  await expect(page.getByRole("heading", { name: "Understand India's courts before reading the numbers." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The basic structure" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Words you will see on NyaayWatch" })).toBeVisible();
+  await expect(page.getByText("NyaayWatch pages are reviewed snapshots, not a running ticker.")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open Supreme Court data" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Browse High Courts" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Browse district courts" })).toBeVisible();
 });
 
 test("developer parity flow matches homepage toplines to the published stats API", async ({ page, request }) => {
