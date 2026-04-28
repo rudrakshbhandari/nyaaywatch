@@ -299,10 +299,10 @@ if [[ -n "$database_snapshot_identifier" ]]; then
       aws rds describe-db-snapshots \
         --region "$region" \
         --db-snapshot-identifier "$database_snapshot_identifier" \
-        --query "DBSnapshots[0].[DBName,MasterUsername,AllocatedStorage,DBInstanceIdentifier]" \
+        --query "DBSnapshots[0].[DBName,MasterUsername,AllocatedStorage,DBInstanceIdentifier,DbiResourceId]" \
         --output text
     )"
-    read -r snapshot_database_name snapshot_database_username snapshot_allocated_storage snapshot_source_db_instance_identifier <<< "$snapshot_identity"
+    read -r snapshot_database_name snapshot_database_username snapshot_allocated_storage snapshot_source_db_instance_identifier snapshot_source_dbi_resource_id <<< "$snapshot_identity"
 
     if [[ "$snapshot_database_name" == "None" ]]; then
       snapshot_database_name=""
@@ -310,6 +310,10 @@ if [[ -n "$database_snapshot_identifier" ]]; then
 
     if [[ "$snapshot_source_db_instance_identifier" == "None" ]]; then
       snapshot_source_db_instance_identifier=""
+    fi
+
+    if [[ "$snapshot_source_dbi_resource_id" == "None" ]]; then
+      snapshot_source_dbi_resource_id=""
     fi
 
     if [[ "$snapshot_database_username" == "None" ]]; then
@@ -321,15 +325,31 @@ if [[ -n "$database_snapshot_identifier" ]]; then
     fi
 
     if [[ -z "$snapshot_database_name" && -n "$snapshot_source_db_instance_identifier" ]]; then
-      if snapshot_source_database_name="$(
+      if snapshot_source_database_identity="$(
         aws rds describe-db-instances \
           --region "$region" \
           --db-instance-identifier "$snapshot_source_db_instance_identifier" \
-          --query "DBInstances[0].DBName" \
+          --query "DBInstances[0].[DBName,DbiResourceId]" \
           --output text \
           2>/dev/null
       )"; then
-        if [[ "$snapshot_source_database_name" != "None" ]]; then
+        read -r snapshot_source_database_name snapshot_current_dbi_resource_id <<< "$snapshot_source_database_identity"
+
+        if [[ "$snapshot_source_database_name" == "None" ]]; then
+          snapshot_source_database_name=""
+        fi
+
+        if [[ "$snapshot_current_dbi_resource_id" == "None" ]]; then
+          snapshot_current_dbi_resource_id=""
+        fi
+
+        if [[ -n "$snapshot_source_dbi_resource_id" && "$snapshot_source_dbi_resource_id" != "$snapshot_current_dbi_resource_id" ]]; then
+          echo "Snapshot source DB instance identifier '$snapshot_source_db_instance_identifier' now points to DbiResourceId '$snapshot_current_dbi_resource_id', but snapshot '$database_snapshot_identifier' came from DbiResourceId '$snapshot_source_dbi_resource_id'." >&2
+          echo "Refusing to use mutable DB instance identifier fallback for DBName." >&2
+          exit 1
+        fi
+
+        if [[ -n "$snapshot_source_database_name" ]]; then
           snapshot_database_name="$snapshot_source_database_name"
         fi
       fi
