@@ -336,6 +336,7 @@ export function renderNationalHome(input: {
       { id: "supreme-court", href: "/supreme-court", label: "Supreme Court" },
       { id: "high-courts", href: "/high-courts", label: "High Courts" },
       { id: "districts", href: input.lowerCourtContext.routes.districts, label: "Districts" },
+      { id: "learn", href: "/learn", label: "Learn" },
     ],
     footer: {
       sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(input.lowerCourtSnapshot.snapshot.sourceSnapshotAt),
