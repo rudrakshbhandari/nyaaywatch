@@ -73,7 +73,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Database endpoint: `nyaaywatch-production-stagingdatabase-g3twsdpyvdw2.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: production public-alpha serving, scheduled internal fetches, public-alpha ops monitoring, release verification, and release-scoped operator actions
 - Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha monitor schedules against the live task definition while reusing the production scheduler role
-- Last observation check: `2026-04-28T04:44:43.046Z`; production health, public release verification, production CloudWatch alarms, and internal-fetch schedule verification were all green, and all production schedules targeted the then-live `nyaaywatch-production:6` task definition
+- Last observation check: `2026-04-28T22:20:00Z`; production health and the production public-alpha ops alarm were green, all production schedules were still enabled, and all legacy rollback-stack schedules were disabled after a false-positive staging alarm.
 
 Operational notes:
 
@@ -96,6 +96,7 @@ Operational notes:
 - Stack name: `nyaaywatch-staging`
 - Status: retained for rollback during the post-cutover observation window
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
+- Schedules: disabled on `2026-04-28` because the legacy rollback-stack monitor was still calling `https://nyaaywatch.in` with the old staging operator token and generating false `401` public-alpha ops alarms. Leave these disabled unless the stack is intentionally reactivated for rollback.
 - Primary rollback action: point Cloudflare DNS for `nyaaywatch.in` back to this ALB, then re-run `curl -fsS https://nyaaywatch.in/health` and `npm run release:verify -- --base-url=https://nyaaywatch.in`
 - Retirement rule: do not delete or repurpose this stack until the observation window is complete and the rollback decision is recorded.
 
