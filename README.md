@@ -89,11 +89,11 @@ npm run infra:production-preflight
 npm run infra:production-cutover-inventory
 ```
 
-Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
+Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. The legacy `nyaaywatch-staging` stack is retained only as rollback infrastructure until the post-cutover observation window ends. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
-Use `npm run infra:production-cutover-inventory` before any mutating production-stack work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, and schedule targets needed by the production cutover runbook. The `nyaaywatch-production` stack was bootstrapped from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced from the legacy artifacts bucket, and is now the public backing stack for `https://nyaaywatch.in`.
+Use `npm run infra:production-cutover-inventory` before any mutating production-stack cutover work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and target-stack status needed by the production cutover runbook. The April 28, 2026 cutover restored `nyaaywatch-production` from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced the artifacts bucket, moved DNS to the production ALB, and reconciled production-named schedules. Remaining cutover work is the observation window, rollback readiness, and reclaiming `nyaaywatch-staging` as a dedicated staging environment.
 
 Release helpers (run before, after, and to record a publication):
 

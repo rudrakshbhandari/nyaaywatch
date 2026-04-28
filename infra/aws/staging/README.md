@@ -12,7 +12,7 @@ This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for N
 
 ## Current Naming Caveat
 
-The current production public alpha at `https://nyaaywatch.in` is served by `nyaaywatch-production`. Older `nyaaywatch-staging` resources may still exist from the legacy production period; treat them as historical production resources until they are explicitly retired, snapshotted, or replaced by a dedicated staging stack.
+The production public alpha at `https://nyaaywatch.in` now runs on the reality-named `nyaaywatch-production` stack. Treat the old `nyaaywatch-staging` stack as rollback infrastructure until the observation window ends and the staging name can be reclaimed.
 
 The target environment split is:
 
@@ -21,17 +21,17 @@ The target environment split is:
 - `staging`: future isolated AWS stack named `nyaaywatch-staging` for release and operator-flow rehearsal
 - `production`: `https://nyaaywatch.in`, stack name `nyaaywatch-production`
 
-Do not run sandbox experiments against the production backing stack just because the AWS names contain `staging`.
+Do not run sandbox experiments against either the live production stack or the legacy rollback stack.
 
 ## Production Cutover Preflight
 
-Run the read-only preflight before provisioning or reviewing a parallel `nyaaywatch-production` stack:
+Run the read-only preflight only when auditing or repeating the completed parallel production cutover:
 
 ```bash
 npm run infra:production-preflight
 ```
 
-The helper checks the current production backing stack is in a stable terminal CloudFormation status, checks its required outputs, confirms whether the target production stack already exists, and verifies `https://nyaaywatch.in/health`. It does not deploy CloudFormation, update ECS, change DNS, rename resources, or modify schedules.
+The helper checks a source/legacy stack is in a stable terminal CloudFormation status, checks its required outputs, confirms whether the target production stack already exists, and verifies `https://nyaaywatch.in/health`. It does not deploy CloudFormation, update ECS, change DNS, rename resources, or modify schedules.
 
 Useful overrides:
 
@@ -49,7 +49,7 @@ After preflight, collect the read-only cutover inventory:
 npm run infra:production-cutover-inventory
 ```
 
-Use that output with `docs/PRODUCTION_CUTOVER_RUNBOOK.md` before running any mutating CloudFormation command for `nyaaywatch-production`.
+Use that output with `docs/PRODUCTION_CUTOVER_RUNBOOK.md` only for cutover audits, rollback review, or a future replacement-stack migration.
 
 ## Resources
 
@@ -266,7 +266,7 @@ The deploy job:
 - registers a fresh task definition revision pinned to the commit-SHA image
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
-- reconciles the lower-court, Supreme Court, reviewed-High-Court, and public-alpha-ops schedules against the new live task definition
+- reconciles the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha-ops schedules against the new live task definition
 - confirms the raw ALB `ServiceUrl` still answers `/health`
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
@@ -300,17 +300,17 @@ Bootstrap note:
 
 - the GitHub Actions deploy role can update the schedule target, but it cannot create or rewrite IAM roles
 - the GitHub Actions deploy role must allow `scheduler:GetSchedule`, `scheduler:UpdateSchedule`, and `scheduler:CreateSchedule` for all five schedule ARNs:
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-supreme-court-internal-fetch`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-high-courts-internal-fetch`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-publish-pending-sweep`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-public-alpha-ops-monitor`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-weekday-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-supreme-court-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-high-courts-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-publish-pending-sweep`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-public-alpha-ops-monitor`
 - first-time schedule bootstrap or scheduler-role policy changes still require an IAM-capable operator run
 - once the role exists, CI reconciles the schedule against the latest ECS task definition on every `main` deploy
 
 Alerting note:
 
-- the staging stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
+- the production stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
 - CloudWatch alarm `${ProjectName}-${EnvironmentName}-public-alpha-ops` fans that signal out through the existing SNS alert topic
 
 ## Heavy-State Operator Lane
@@ -325,7 +325,7 @@ npm run operator:production -- --state UP fetch "Internal Uttar Pradesh fetch"
 
 What it does:
 
-- discovers the live `nyaaywatch-staging` ECS service from CloudFormation
+- discovers the live `nyaaywatch-production` ECS service from CloudFormation
 - reuses the current service task definition and network configuration
 - starts a one-off ECS task that runs the ECS operator entrypoint inside the live runtime
 - waits for the task to stop
