@@ -12,14 +12,14 @@ This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for N
 
 ## Current Naming Caveat
 
-The current `nyaaywatch-staging` AWS stack serves the production public alpha at `https://nyaaywatch.in`. Treat that stack, its RDS database, its S3 bucket, its schedules, and its operator token as production until a reality-named production stack is cut over and the staging name can be reclaimed.
+The current production public alpha at `https://nyaaywatch.in` is served by `nyaaywatch-production`. Older `nyaaywatch-staging` resources may still exist from the legacy production period; treat them as historical production resources until they are explicitly retired, snapshotted, or replaced by a dedicated staging stack.
 
 The target environment split is:
 
 - `local`: local Node, PostgreSQL, and LocalStack S3
 - `preview`: fixture-backed App Runner PR previews with `APP_MODE=preview`
 - `staging`: future isolated AWS stack named `nyaaywatch-staging` for release and operator-flow rehearsal
-- `production`: `https://nyaaywatch.in`, target stack name `nyaaywatch-production`, currently backed by historically staging-named resources
+- `production`: `https://nyaaywatch.in`, stack name `nyaaywatch-production`
 
 Do not run sandbox experiments against the production backing stack just because the AWS names contain `staging`.
 
@@ -261,8 +261,8 @@ Merges to `main` now auto-deploy the current production public-alpha stack throu
 The deploy job:
 
 - assumes `arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role` via GitHub OIDC
-- builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`
-- discovers the live ECS service from `PRODUCTION_STACK_NAME`; the value is currently `nyaaywatch-staging` until `nyaaywatch-production` is cut over
+- builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`; the repository name is historical and will be renamed separately
+- discovers the live ECS service from `PRODUCTION_STACK_NAME`; the value is `nyaaywatch-production`
 - registers a fresh task definition revision pinned to the commit-SHA image
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
