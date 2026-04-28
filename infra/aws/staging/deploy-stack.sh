@@ -299,13 +299,17 @@ if [[ -n "$database_snapshot_identifier" ]]; then
       aws rds describe-db-snapshots \
         --region "$region" \
         --db-snapshot-identifier "$database_snapshot_identifier" \
-        --query "DBSnapshots[0].[DBName,MasterUsername,AllocatedStorage]" \
+        --query "DBSnapshots[0].[DBName,MasterUsername,AllocatedStorage,DBInstanceIdentifier]" \
         --output text
     )"
-    read -r snapshot_database_name snapshot_database_username snapshot_allocated_storage <<< "$snapshot_identity"
+    read -r snapshot_database_name snapshot_database_username snapshot_allocated_storage snapshot_source_db_instance_identifier <<< "$snapshot_identity"
 
     if [[ "$snapshot_database_name" == "None" ]]; then
       snapshot_database_name=""
+    fi
+
+    if [[ "$snapshot_source_db_instance_identifier" == "None" ]]; then
+      snapshot_source_db_instance_identifier=""
     fi
 
     if [[ "$snapshot_database_username" == "None" ]]; then
@@ -316,8 +320,26 @@ if [[ -n "$database_snapshot_identifier" ]]; then
       snapshot_allocated_storage=""
     fi
 
+    if [[ -z "$snapshot_database_name" && -n "$snapshot_source_db_instance_identifier" ]]; then
+      if snapshot_source_database_name="$(
+        aws rds describe-db-instances \
+          --region "$region" \
+          --db-instance-identifier "$snapshot_source_db_instance_identifier" \
+          --query "DBInstances[0].DBName" \
+          --output text \
+          2>/dev/null
+      )"; then
+        if [[ "$snapshot_source_database_name" != "None" ]]; then
+          snapshot_database_name="$snapshot_source_database_name"
+        fi
+      fi
+    fi
+
     if [[ -z "$snapshot_database_name" || -z "$snapshot_database_username" ]]; then
       echo "Could not verify DB name and master username for snapshot '$database_snapshot_identifier'." >&2
+      if [[ -z "$snapshot_database_name" && -n "$snapshot_source_db_instance_identifier" ]]; then
+        echo "The snapshot did not expose DBName, and source DB instance '$snapshot_source_db_instance_identifier' could not be used as a fallback." >&2
+      fi
       echo "Refusing to generate a DATABASE_URL secret for an unverified snapshot identity." >&2
       exit 1
     fi
