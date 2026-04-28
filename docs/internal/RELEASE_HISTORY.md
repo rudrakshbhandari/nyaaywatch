@@ -18,7 +18,7 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Production stack: `nyaaywatch-production`
 - Legacy rollback stack: `nyaaywatch-staging`
 - Production ALB: `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
-- Production task definition: `nyaaywatch-production:5`
+- Production task definition: deploy-managed `nyaaywatch-production:<revision>`; last observed as `nyaaywatch-production:6` at `2026-04-28T04:44:43.046Z`
 - Production schedules: `nyaaywatch-production-weekday-internal-fetch`, `nyaaywatch-production-supreme-court-internal-fetch`, `nyaaywatch-production-high-courts-internal-fetch`, `nyaaywatch-production-publish-pending-sweep`, `nyaaywatch-production-public-alpha-ops-monitor`
 - Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/DOMAIN_CUTOVER_CHECKLIST.md`, `docs/PRODUCTION_CUTOVER_RUNBOOK.md`
 - JSON evidence: `npm run release:verify -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in`
