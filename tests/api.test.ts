@@ -141,6 +141,11 @@ describe("HTTP routes", () => {
     expect(learnPage.text).toContain("Supreme Court");
     expect(learnPage.text).toContain("High Courts");
     expect(learnPage.text).toContain("District and subordinate courts");
+    expect(learnPage.text).toContain("How the levels connect");
+    expect(learnPage.text).toContain("How a case usually moves");
+    expect(learnPage.text).toContain("How to read delay data");
+    expect(learnPage.text).toContain("Common mistakes to avoid");
+    expect(learnPage.text).toContain("A simple way to cite a number");
     expect(learnPage.text).toContain("Is this legal advice?");
 
     const sitemap = await request(app).get("/sitemap.xml");
