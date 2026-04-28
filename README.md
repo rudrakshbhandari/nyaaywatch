@@ -6,6 +6,8 @@ NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearan
 
 → [Live site](https://nyaaywatch.in) · [Press & embed kit](https://nyaaywatch.in/press) · [Methodology](https://nyaaywatch.in/methodology) · [API reference](https://nyaaywatch.in/api) · [Data downloads](https://nyaaywatch.in/data)
 
+Open-source project links: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [License](LICENSE)
+
 ```bash
 curl https://nyaaywatch.in/v1/stats/himachal | jq
 curl https://nyaaywatch.in/v1/districts | jq '.districts[0]'
