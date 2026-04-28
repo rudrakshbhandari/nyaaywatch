@@ -48,7 +48,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Public URL: `http://nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
 - Public hostname for browser checks: `https://nyaaywatch.in`
 - ECS service: `nyaaywatch-production-Service-09u122KrBSOg`
-- ECS task definition: `nyaaywatch-production:4`
+- ECS task definition: `nyaaywatch-production:5`
 - Internal raw fetch schedules:
   - lower-court states: `nyaaywatch-production-weekday-internal-fetch` at `8:00 AM Asia/Kolkata`
   - Supreme Court: `nyaaywatch-production-supreme-court-internal-fetch` at `8:10 AM Asia/Kolkata`
@@ -73,6 +73,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Database endpoint: `nyaaywatch-production-stagingdatabase-g3twsdpyvdw2.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: production public-alpha serving, scheduled internal fetches, public-alpha ops monitoring, release verification, and release-scoped operator actions
 - Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha monitor schedules against the live task definition while reusing the production scheduler role
+- Last observation check: `2026-04-28T04:28:09.745Z`; production health, public release verification, production CloudWatch alarms, and internal-fetch schedule verification were all green, and all production schedules targeted `nyaaywatch-production:5`
 
 Operational notes:
 
