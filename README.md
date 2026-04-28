@@ -86,11 +86,11 @@ npm run infra:production-preflight
 npm run infra:production-cutover-inventory
 ```
 
-Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It currently targets the legacy production backing stack named `nyaaywatch-staging`; use it only for recorded release or internal-proof work until a reality-named `nyaaywatch-production` stack replaces that legacy name. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
+Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It still targets the legacy production backing stack named `nyaaywatch-staging`; the reality-named `nyaaywatch-production` stack exists as a pre-DNS cutover target, but it should not receive production operator or scheduler traffic until the DNS and schedule cutover is completed. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
-Use `npm run infra:production-cutover-inventory` before any mutating `nyaaywatch-production` work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and the target-stack status needed by the production cutover runbook. The preferred cutover path is an isolated `nyaaywatch-production` stack restored from a manual RDS snapshot through `DATABASE_SNAPSHOT_IDENTIFIER`, followed by an S3 artifact sync before DNS changes.
+Use `npm run infra:production-cutover-inventory` before any mutating `nyaaywatch-production` work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and the target-stack status needed by the production cutover runbook. The current pre-DNS target was bootstrapped from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019` and synced from the current artifacts bucket; the remaining cutover work is DNS, scheduler reconciliation, and post-cutover retirement of the legacy backing stack.
 
 Release helpers (run before, after, and to record a publication):
 
