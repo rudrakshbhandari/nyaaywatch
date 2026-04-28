@@ -18,11 +18,11 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Production stack: `nyaaywatch-production`
 - Legacy rollback stack: `nyaaywatch-staging`
 - Production ALB: `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
-- Production task definition: `nyaaywatch-production:4`
+- Production task definition: `nyaaywatch-production:5`
 - Production schedules: `nyaaywatch-production-weekday-internal-fetch`, `nyaaywatch-production-supreme-court-internal-fetch`, `nyaaywatch-production-high-courts-internal-fetch`, `nyaaywatch-production-publish-pending-sweep`, `nyaaywatch-production-public-alpha-ops-monitor`
 - Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/DOMAIN_CUTOVER_CHECKLIST.md`, `docs/PRODUCTION_CUTOVER_RUNBOOK.md`
 - JSON evidence: `npm run release:verify -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in`
-- Note: Cloudflare now points `nyaaywatch.in` at the reality-named production ALB. Public release verification passed through normal DNS, unauthenticated operator access still returns `401`, and the schedule watchdog verified all production schedules target the live production ECS task definition.
+- Note: Cloudflare now points `nyaaywatch.in` at the reality-named production ALB. Public release verification passed through normal DNS, unauthenticated operator access still returns `401`, the temporary AWS Cloudflare DNS cutover secret is no longer listed in Secrets Manager, and the schedule watchdog verified all production schedules target the live production ECS task definition.
 
 <!-- release:production-stack-cutover-2026-04-28:end -->
 
