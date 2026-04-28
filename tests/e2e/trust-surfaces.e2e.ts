@@ -140,7 +140,7 @@ test.describe("accessibility smoke", () => {
     await expect(page.getByRole("link", { name: "Download district history CSV" })).toBeVisible();
 
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "NyaayWatch", exact: true })).toBeFocused();
+    await expect(page.locator("a.masthead__brand")).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.getByRole("navigation").getByRole("link", { name: "Districts" })).toBeFocused();
     await page.keyboard.press("Tab");
