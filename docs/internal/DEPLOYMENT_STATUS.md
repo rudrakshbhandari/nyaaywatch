@@ -40,7 +40,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, EventBridge schedules, CloudWatch dashboard, SNS alarm topic, and operator token
 - Intended use: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
 - Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
-- Current blocker: no ACM certificate for a staging hostname exists in `ap-south-1` as of `2026-04-29`; the issued certificates cover `nyaaywatch.in`, `www.nyaaywatch.in`, and the legacy `.com` hostnames only. Provision or validate a staging certificate before creating a browser-usable staging ALB.
+- Current blocker: ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870` was requested for `staging.nyaaywatch.in` on `2026-04-29`, but it is still `PENDING_VALIDATION`. The required DNS record is CNAME `_b4abab057857a0342d4553f922f29c5d.staging.nyaaywatch.in` -> `_c1add49c9a68fbf56bdbbd26190ede9f.jkddzztszm.acm-validations.aws`; the stored Cloudflare token can resolve the zone but receives `Authentication error` on `/dns_records`, so DNS validation needs a DNS-capable Cloudflare token or manual record creation.
 
 ### Production Backing Stack
 

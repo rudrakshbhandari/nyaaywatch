@@ -198,7 +198,7 @@ After the production stack has survived the agreed observation window:
 
 1. Confirm `docs/internal/DEPLOYMENT_STATUS.md` still points production at `nyaaywatch-production`.
 2. Confirm `.github/workflows/ci.yml` and `.github/workflows/ops-watchdog.yml` still use `PRODUCTION_STACK_NAME=nyaaywatch-production`.
-3. Confirm the staging certificate path. As of `2026-04-29`, the issued ACM certificates in `ap-south-1` cover `nyaaywatch.in`, `www.nyaaywatch.in`, and the legacy `.com` hostnames only; there is no issued `staging.nyaaywatch.in` certificate.
+3. Confirm the staging certificate path. As of `2026-04-29`, ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870` has been requested for `staging.nyaaywatch.in`, but it is still `PENDING_VALIDATION` until DNS CNAME `_b4abab057857a0342d4553f922f29c5d.staging.nyaaywatch.in` -> `_c1add49c9a68fbf56bdbbd26190ede9f.jkddzztszm.acm-validations.aws` is created.
 4. Retire, snapshot, or rename the legacy `nyaaywatch-staging` production resources after accepting that rollback would no longer be DNS-first to the old stack.
 5. Provision a dedicated staging stack named `nyaaywatch-staging` with isolated RDS, S3, Secrets Manager values, schedules, dashboard, and alarm topic.
 6. Update `TODOS.md` and release history with the retirement/reclaim evidence.
