@@ -220,7 +220,7 @@ export MANAGE_CANONICAL_REDIRECT_RULES=false
   '[alarm-email]'
 ```
 
-As of `2026-04-29`, the temporary isolated staging bridge is provisioned as `nyaaywatch-staging-v2` with `PROJECT_NAME=nyaaywatch-stage`, `ENVIRONMENT_NAME=staging`, `PUBLIC_BASE_URL=https://staging.nyaaywatch.in`, and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. Its ALB is `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com`; normal DNS still needs Cloudflare CNAME `staging` -> that ALB, DNS-only.
+As of `2026-04-29`, the temporary isolated staging bridge is provisioned as `nyaaywatch-staging-v2` with `PROJECT_NAME=nyaaywatch-stage`, `ENVIRONMENT_NAME=staging`, `PUBLIC_BASE_URL=https://staging.nyaaywatch.in`, and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. Its ALB is `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com`; Cloudflare DNS has CNAME `staging` -> that ALB as DNS-only.
 
 `deploy-stack.sh` refuses the dangerous combinations that would reuse the legacy production `nyaaywatch-staging` resource names for a second stack, deploy non-production with production hostnames, or let non-production manage production canonical redirect rules. The old production-serving stack now requires `LEGACY_PRODUCTION_STACK=true`; a future reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true` only after production has been cut over to `nyaaywatch-production`.
 
@@ -429,4 +429,4 @@ Temporary proof stacks from earlier failed attempts can be deleted after validat
 
 ## Next Operational Step
 
-Point `staging.nyaaywatch.in` at `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com` with a DNS-only Cloudflare CNAME, then verify the temporary staging bridge through normal DNS. Reclaiming the final `nyaaywatch-staging` stack name remains blocked on an explicit retirement or rename decision for the legacy rollback stack.
+`staging.nyaaywatch.in` points at `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com` with a DNS-only Cloudflare CNAME, and the temporary staging bridge has been verified through normal DNS. Reclaiming the final `nyaaywatch-staging` stack name remains blocked on an explicit retirement or rename decision for the legacy rollback stack.
