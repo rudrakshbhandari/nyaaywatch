@@ -12,7 +12,7 @@ This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for N
 
 ## Current Naming Caveat
 
-The production public alpha at `https://nyaaywatch.in` now runs on the reality-named `nyaaywatch-production` stack. Treat the old `nyaaywatch-staging` stack as rollback infrastructure until the observation window ends and the staging name can be reclaimed.
+The production public alpha at `https://nyaaywatch.in` now runs on the reality-named `nyaaywatch-production` stack. The old `nyaaywatch-staging` stack passed the first post-cutover observation checks as rollback infrastructure, but still owns the staging name until it is intentionally retired or renamed.
 
 The target environment split is:
 

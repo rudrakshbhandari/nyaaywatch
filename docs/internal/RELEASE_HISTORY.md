@@ -6,6 +6,24 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:production-stack-observation-2026-04-29:start -->
+## production-stack-observation-2026-04-29
+
+- Reviewed at: `2026-04-29T00:51:30Z`
+- Reviewer: `Codex production observation`
+- Public URL: `https://nyaaywatch.in`
+- Action: `post-cutover observation`
+- Scope: `production backing stack`
+- Production stack: `nyaaywatch-production`
+- Legacy rollback stack: `nyaaywatch-staging`
+- Production task definition: `nyaaywatch-production:11`
+- Production schedules: `nyaaywatch-production-weekday-internal-fetch`, `nyaaywatch-production-supreme-court-internal-fetch`, `nyaaywatch-production-high-courts-internal-fetch`, `nyaaywatch-production-publish-pending-sweep`, `nyaaywatch-production-public-alpha-ops-monitor`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/PRODUCTION_CUTOVER_RUNBOOK.md`, `TODOS.md`
+- JSON evidence: `ALLOW_EXISTING_TARGET_STACK=true npm run infra:production-preflight`; `npm run release:verify -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in --stack-name=nyaaywatch-production`; `aws cloudwatch describe-alarms --alarm-names nyaaywatch-production-health-endpoint nyaaywatch-production-alb-target-5xx nyaaywatch-production-app-errors nyaaywatch-production-public-alpha-ops`
+- Note: Production observation was green. The public-alpha sweep reported `62/62` healthy targets with no stale snapshots, no daily-fetch lag, and no failures; the schedule verifier showed all production schedules targeting `nyaaywatch-production:11`; all four production CloudWatch alarms were `OK`. Dedicated staging was not provisioned in this pass because the legacy rollback stack still owns the `nyaaywatch-staging` name and there is no issued ACM certificate for `staging.nyaaywatch.in` in `ap-south-1`.
+
+<!-- release:production-stack-observation-2026-04-29:end -->
+
 <!-- release:production-stack-cutover-2026-04-28:start -->
 ## production-stack-cutover-2026-04-28
 
