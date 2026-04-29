@@ -34,8 +34,8 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 - [ ] Retire or rename the legacy rollback stack `nyaaywatch-staging` only after explicitly accepting the rollback tradeoff. Do not reuse the name while the legacy stack still exists.
 - [x] Provision a temporary dedicated AWS staging bridge stack with isolated RDS, S3, Secrets Manager values, operator token, CloudWatch dashboard, and SNS alarm topic.
   - 2026-04-29: ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870` is issued, `nyaaywatch-staging-v2` is provisioned with `PROJECT_NAME=nyaaywatch-stage`, ECS is stable at `1/1`, target health is healthy, and a Himachal staging seed snapshot is published from `run_77350daa-3176-47fb-ad56-f8602f019a8d`. The temporary stack is a bridge because the legacy rollback stack still owns the final `nyaaywatch-staging` name.
-- [ ] Point public DNS for `staging.nyaaywatch.in` at the temporary staging bridge ALB.
-  - Add Cloudflare CNAME `staging` -> `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com` as DNS-only. Direct ALB verification is already green via `curl --connect-to`; normal DNS currently does not resolve.
+- [x] Point public DNS for `staging.nyaaywatch.in` at the temporary staging bridge ALB.
+  - 2026-04-29: Added Cloudflare CNAME `staging` -> `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com` as DNS-only. Normal DNS verification is green for `/health`, `/`, `/v1/stats/himachal`, and `npm run release:verify -- --base-url=https://staging.nyaaywatch.in`.
 - [ ] Reclaim the final `nyaaywatch-staging` stack name after explicitly retiring or renaming the legacy rollback stack and accepting the rollback tradeoff.
 - [ ] Keep the operator review loop boring and enforced: release windows should always produce aligned evidence in `docs/internal/RELEASE_HISTORY.md`, `docs/internal/DEPLOYMENT_STATUS.md`, and the generated release-evidence artifacts.
 
