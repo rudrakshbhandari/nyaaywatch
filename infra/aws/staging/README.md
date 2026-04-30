@@ -12,7 +12,7 @@ This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for N
 
 ## Current Naming Caveat
 
-The production public alpha at `https://nyaaywatch.in` now runs on the reality-named `nyaaywatch-production` stack. The old `nyaaywatch-staging` stack passed the first post-cutover observation checks as rollback infrastructure, but still owns the staging name until it is intentionally retired or renamed.
+The production public alpha at `https://nyaaywatch.in` now runs on the reality-named `nyaaywatch-production` stack. The rollback tradeoff has been accepted, and `nyaaywatch-staging` is again the dedicated staging stack at `https://staging.nyaaywatch.in`.
 
 The target environment split is:
 
@@ -21,7 +21,7 @@ The target environment split is:
 - `staging`: future isolated AWS stack named `nyaaywatch-staging` for release and operator-flow rehearsal
 - `production`: `https://nyaaywatch.in`, stack name `nyaaywatch-production`
 
-Do not run sandbox experiments against either the live production stack or the legacy rollback stack.
+Do not run sandbox experiments against either the live production stack or the dedicated staging stack.
 
 ## Production Cutover Preflight
 
@@ -137,7 +137,7 @@ Recommended naming:
 
 - current production-serving stack name: `nyaaywatch-staging` (legacy; do not create another stack with the same effective resource names)
 - target production stack name: `nyaaywatch-production`
-- target staging stack name: `nyaaywatch-staging` after the legacy production stack is retired, or a clearly temporary staging bridge name recorded in `docs/internal/DEPLOYMENT_STATUS.md`
+- target staging stack name: `nyaaywatch-staging`
 - current production-serving ECR repo: `nyaaywatch-staging`
 - current production-serving alarm dashboard: `nyaaywatch-staging`
 - future dedicated staging stack: use distinct RDS, S3, Secrets Manager, schedules, and alert resources even if the template is reused
@@ -201,18 +201,19 @@ export SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true
 
 For the preferred production cutover path, create a manual snapshot from the current production backing database first, deploy the target with `DATABASE_SNAPSHOT_IDENTIFIER`, then copy the current artifacts bucket into the target bucket before DNS cutover. AWS RDS snapshot restore inherits the database name, master username, password, and engine version from the source database; the password argument above is still used for the generated `DATABASE_URL` secret and must match the restored database password until a deliberate post-cutover rotation. `SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true` is required so that secret cannot drift silently. The deploy helper verifies the snapshot master username and allocated storage, and verifies the DB name from snapshot metadata or, for PostgreSQL snapshots where AWS omits `DBName`, from the source DB instance only when the snapshot exposes an immutable `DbiResourceId` and the current source instance still matches that snapshot lineage before it creates the generated secret. Do not combine `DATABASE_SNAPSHOT_IDENTIFIER` with `EXISTING_DATABASE_URL_SECRET_ARN`. After a stack is created from a snapshot, later deploys must keep the same snapshot parameter; the deploy helper preserves the existing snapshot ID, DB identity, and allocated-storage parameters, refuses to add snapshot restore to an already-existing non-snapshot stack, refuses a different snapshot unless `ALLOW_DATABASE_SNAPSHOT_REPLACEMENT=true` is set, and refuses DB name or username changes unless `ALLOW_SNAPSHOT_DATABASE_IDENTITY_CHANGE=true` is set for an intentional matching-database change. The helper only calls `describe-db-snapshots` when `DATABASE_SNAPSHOT_IDENTIFIER` is explicitly supplied, so normal post-cutover deploys do not depend on keeping the original manual snapshot record forever.
 
-For an isolated staging rehearsal stack, do not use the production host, production Cloudflare purge path, or production resource prefix:
+For the reclaimed isolated staging stack, do not use the production host, production Cloudflare purge path, or production resource prefix:
 
 ```bash
-export PROJECT_NAME=nyaaywatch-stage
+export PROJECT_NAME=nyaaywatch
 export ENVIRONMENT_NAME=staging
 export PUBLIC_BASE_URL=https://staging.nyaaywatch.in
 export CANONICAL_HOST=staging.nyaaywatch.in
 export LEGACY_HOSTS=
 export MANAGE_CANONICAL_REDIRECT_RULES=false
+export RECLAIMED_STAGING_NAME=true
 
 ./infra/aws/staging/deploy-stack.sh \
-  nyaaywatch-staging-v2 \
+  nyaaywatch-staging \
   723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
   '<operator-token>' \
   '<database-password>' \
@@ -220,9 +221,9 @@ export MANAGE_CANONICAL_REDIRECT_RULES=false
   '[alarm-email]'
 ```
 
-As of `2026-04-29`, the temporary isolated staging bridge is provisioned as `nyaaywatch-staging-v2` with `PROJECT_NAME=nyaaywatch-stage`, `ENVIRONMENT_NAME=staging`, `PUBLIC_BASE_URL=https://staging.nyaaywatch.in`, and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. Its ALB is `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com`; Cloudflare DNS has CNAME `staging` -> that ALB as DNS-only.
+As of `2026-04-29`, the final dedicated staging stack is `nyaaywatch-staging` with `PUBLIC_BASE_URL=https://staging.nyaaywatch.in` and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. Its ALB is `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; Cloudflare DNS has CNAME `staging` -> that ALB as DNS-only. The temporary `nyaaywatch-staging-v2` bridge was retired after the reclaim.
 
-`deploy-stack.sh` refuses the dangerous combinations that would reuse the legacy production `nyaaywatch-staging` resource names for a second stack, deploy non-production with production hostnames, or let non-production manage production canonical redirect rules. The old production-serving stack now requires `LEGACY_PRODUCTION_STACK=true`; a future reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true` only after production has been cut over to `nyaaywatch-production`.
+`deploy-stack.sh` refuses the dangerous combinations that would deploy non-production with production hostnames or let non-production manage production canonical redirect rules. The reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true`.
 
 3. Wait for the stack to finish and note the outputs:
    - `ServiceUrl`
@@ -405,7 +406,7 @@ aws cloudwatch get-dashboard --dashboard-name nyaaywatch-staging --region ap-sou
 
 `P4.5` was completed on 2026-04-15 against the live `nyaaywatch-staging` stack in `ap-south-1`.
 
-That same stack used to back `https://nyaaywatch.in`, but production traffic now runs on `nyaaywatch-production`. The old `nyaaywatch-staging` stack remains rollback infrastructure, and temporary dedicated staging is currently `nyaaywatch-staging-v2` until the rollback stack is intentionally retired or renamed.
+That same stack used to back `https://nyaaywatch.in`, but production traffic now runs on `nyaaywatch-production`. The rollback tradeoff has been accepted, and `nyaaywatch-staging` is the dedicated staging lane.
 
 Validated successfully:
 
@@ -429,4 +430,4 @@ Temporary proof stacks from earlier failed attempts can be deleted after validat
 
 ## Next Operational Step
 
-`staging.nyaaywatch.in` points at `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com` with a DNS-only Cloudflare CNAME, and the temporary staging bridge has been verified through normal DNS. Reclaiming the final `nyaaywatch-staging` stack name remains blocked on an explicit retirement or rename decision for the legacy rollback stack.
+`staging.nyaaywatch.in` points at `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` with a DNS-only Cloudflare CNAME, and the reclaimed staging stack has been verified through normal DNS.

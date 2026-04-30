@@ -2,11 +2,11 @@
 
 Runbook for replacing the legacy production-serving `nyaaywatch-staging` AWS stack with a reality-named `nyaaywatch-production` stack.
 
-Current status: `https://nyaaywatch.in` now points at `nyaaywatch-production`. Keep this runbook for cutover evidence, rollback context, and the remaining cleanup work to retire or snapshot the legacy `nyaaywatch-staging` production resources. The old `nyaaywatch-staging` stack has passed the first post-cutover observation check as rollback infrastructure; retire or rename it only through an explicit destructive cleanup decision.
+Current status: `https://nyaaywatch.in` now points at `nyaaywatch-production`. The rollback tradeoff has been accepted, and `nyaaywatch-staging` has been reclaimed as the dedicated staging stack at `https://staging.nyaaywatch.in`. Keep this runbook for cutover evidence and rollback context.
 
 ## Non-Negotiables
 
-- Do not rename or mutate the legacy production stack in place.
+- Do not reuse old production rollback assumptions for `nyaaywatch-staging`; it is now the dedicated staging lane.
 - Do not point DNS at a future target stack until public read parity, operator auth, alarms, and rollback are verified.
 - Do not run future target production schedules before cutover.
 - Do not expose raw upstream artifacts publicly.
@@ -177,9 +177,9 @@ npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in -
 
 ## Phase 5: Rollback
 
-Until the retirement window ends, rollback is DNS-first:
+The old DNS-first rollback to `nyaaywatch-staging` is no longer available because `nyaaywatch-staging` is now dedicated staging. Production rollback should use the normal recovery paths:
 
-1. Point `nyaaywatch.in` back to the legacy `nyaaywatch-staging` ALB.
+1. Roll `nyaaywatch-production` back to the last known-good ECS task definition, restore from the recorded production RDS snapshot if data recovery is needed, or redeploy the last known-good commit.
 2. Confirm:
 
 ```bash
@@ -187,7 +187,7 @@ curl -fsSL https://nyaaywatch.in/health
 npm run release:verify -- --base-url=https://nyaaywatch.in
 ```
 
-3. Disable any target `nyaaywatch-production` schedules if they were enabled.
+3. Verify `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in --stack-name=nyaaywatch-production` after any scheduler or task-definition rollback.
 4. Preserve target logs and CloudFormation outputs for investigation.
 
 Do not delete the legacy production stack during the cutover window.
@@ -198,10 +198,9 @@ After the production stack has survived the agreed observation window:
 
 1. Confirm `docs/internal/DEPLOYMENT_STATUS.md` still points production at `nyaaywatch-production`.
 2. Confirm `.github/workflows/ci.yml` and `.github/workflows/ops-watchdog.yml` still use `PRODUCTION_STACK_NAME=nyaaywatch-production`.
-3. Confirm the staging certificate path. As of `2026-04-29`, ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870` has been requested for `staging.nyaaywatch.in`, but it is still `PENDING_VALIDATION` until DNS CNAME `_b4abab057857a0342d4553f922f29c5d.staging.nyaaywatch.in` -> `_c1add49c9a68fbf56bdbbd26190ede9f.jkddzztszm.acm-validations.aws` is created.
-4. Retire, snapshot, or rename the legacy `nyaaywatch-staging` production resources after accepting that rollback would no longer be DNS-first to the old stack.
-5. Provision a dedicated staging stack named `nyaaywatch-staging` with isolated RDS, S3, Secrets Manager values, schedules, dashboard, and alarm topic.
-6. Update `TODOS.md` and release history with the retirement/reclaim evidence.
+3. Confirm the staging certificate path. As of `2026-04-29`, ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870` is issued and attached to the reclaimed `nyaaywatch-staging` stack.
+4. Keep `nyaaywatch-staging` as the dedicated staging stack with staging schedules disabled unless a rehearsal explicitly enables them.
+5. Update `TODOS.md` and release history after any future staging or rollback-resource changes.
 
 ## Current Cutover State
 
@@ -222,4 +221,4 @@ Post-cutover observation on `2026-04-29T00:51:30Z` was green:
 - `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in --stack-name=nyaaywatch-production` showed every production schedule targeting `nyaaywatch-production:11`
 - production CloudWatch alarms `nyaaywatch-production-health-endpoint`, `nyaaywatch-production-alb-target-5xx`, `nyaaywatch-production-app-errors`, and `nyaaywatch-production-public-alpha-ops` were `OK`
 
-The remaining work is destructive rollback-stack retirement or rename, staging certificate readiness, and reclaiming `nyaaywatch-staging` for dedicated staging.
+The remaining work is routine staging/prod evidence hygiene, not the original production cutover.

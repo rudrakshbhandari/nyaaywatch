@@ -12,10 +12,10 @@ NyaayWatch should operate with four distinct lanes:
 
 - **Local development**: local Node, PostgreSQL, and LocalStack S3 for implementation and fixture-backed operator checks.
 - **Pull request previews**: fixture-backed public web previews for copy, UI, and responsive review. Previews do not expose operator routes or touch live evidence.
-- **Dedicated AWS staging**: temporary bridge environment for rehearsal against isolated RDS, S3, operator token, alarms, and release checks before public release work. The current bridge stack is `nyaaywatch-staging-v2` and is reachable at `https://staging.nyaaywatch.in`; the eventual steady-state stack name should be `nyaaywatch-staging` after the legacy rollback stack is intentionally retired or renamed out of the way.
+- **Dedicated AWS staging**: isolated rehearsal environment for release checks, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing before public release work. The current stack is `nyaaywatch-staging` and is reachable at `https://staging.nyaaywatch.in`.
 - **Production / public alpha**: `https://nyaaywatch.in`, serving public snapshots and live operator schedules from the reality-named production stack `nyaaywatch-production`.
 
-Important current-state note: production traffic now runs through `nyaaywatch-production`. The old `nyaaywatch-staging` stack passed the post-cutover observation checks as rollback infrastructure, but it is still retained until an operator intentionally retires or renames it. It is not a sandbox or dedicated staging environment.
+Important current-state note: production traffic now runs through `nyaaywatch-production`. The rollback tradeoff was accepted on `2026-04-29`, and `nyaaywatch-staging` has been reclaimed as the dedicated staging stack. It is no longer production rollback infrastructure.
 
 ## Current Environments
 
@@ -34,29 +34,27 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 
 ### Dedicated AWS Staging
 
-- Status: `live as temporary bridge`
-- Temporary stack name: `nyaaywatch-staging-v2`
-- Eventual target stack name: `nyaaywatch-staging` after the legacy rollback stack is retired or renamed
+- Status: `live`
+- Stack name: `nyaaywatch-staging`
 - Target URL: `https://staging.nyaaywatch.in`
-- Temporary ALB DNS name: `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com`
+- ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, CloudWatch dashboard, SNS alarm topic, and operator token. No staging EventBridge fetch schedules are enabled yet.
 - Intended use: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
 - Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`; issued on `2026-04-29`
-- ECS cluster: `nyaaywatch-stage-staging`
-- ECS service: `nyaaywatch-staging-v2-Service-vFsV0c0dXNoh`
-- ECS task definition: `nyaaywatch-stage-staging:1`
-- CloudWatch log group: `/ecs/nyaaywatch-stage-staging`
-- CloudWatch dashboard: `nyaaywatch-stage-staging`
-- Alarm topic ARN: `arn:aws:sns:ap-south-1:723951822728:nyaaywatch-stage-staging-alerts`
-- Artifacts bucket: `nyaaywatch-stage-staging-artifacts-723951822728`
-- Canary artifacts bucket: `nyaaywatch-stage-staging-canary-723951822728`
-- Database endpoint: `nyaaywatch-staging-v2-stagingdatabase-722jvbmjcqxd.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
-- Database secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-stage-staging/database-url-XFsgI7`
-- Operator token secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-stage-staging/operator-api-token-SX79Nu`
-- Seed publication: Himachal Pradesh staging run `run_77350daa-3176-47fb-ad56-f8602f019a8d` published as `publication_ae24f755-8709-432a-a312-789f9ce7c2fe` / `snapshot_74c91542-c734-4ff5-97ff-91ed42a43287`
-- Verification on `2026-04-29`: CloudFormation stack `CREATE_COMPLETE`; ECS service `ACTIVE` with `1/1` running and rollout `COMPLETED`; target group `healthy`; CloudWatch staging alarms were `OK`; Cloudflare DNS resolves `staging.nyaaywatch.in` to `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com`; `curl -fsS https://staging.nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`; homepage returned `200`; `/v1/stats/himachal` returned the seeded staging snapshot; `npm run release:verify -- --base-url=https://staging.nyaaywatch.in` passed with `districtCount=12`, `trendCount=1`, `csvMetadataParity=true`, `publicDataCacheProtected=true`, and `operatorAuthProtected=true`.
-- Current blocker: none for public staging DNS. Reclaiming the final `nyaaywatch-staging` stack name still requires an explicit retirement or rename decision for the legacy rollback stack.
+- ECS cluster: `nyaaywatch-staging`
+- ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
+- ECS task definition: `nyaaywatch-staging:239`
+- CloudWatch log group: `/ecs/nyaaywatch-staging`
+- CloudWatch dashboard: `nyaaywatch-staging`
+- Alarm topic ARN: `arn:aws:sns:ap-south-1:723951822728:nyaaywatch-staging-alerts`
+- Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
+- Canary artifacts bucket: `nyaaywatch-staging-canary-723951822728`
+- Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
+- Database secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-staging/database-url-k5nXo9`
+- Operator token secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-staging/operator-api-token-QKhZz0`
+- Verification on `2026-04-30T01:21Z`: CloudFormation stack `UPDATE_COMPLETE`; ECS service `ACTIVE` with `1/1` running and rollout `COMPLETED`; Cloudflare DNS resolves `staging.nyaaywatch.in` to `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; `curl -fsS https://staging.nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`; `npm run release:verify -- --base-url=https://staging.nyaaywatch.in` passed with `districtCount=12`, `trendCount=5`, `csvMetadataParity=true`, `publicDataCacheProtected=true`, and `operatorAuthProtected=true`.
+- Current blocker: none for public staging DNS. Staging schedules remain disabled until an operator explicitly enables them for rehearsal.
 
 ### Production Backing Stack
 
@@ -95,7 +93,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 Operational notes:
 
 - This stack serves production. Do not use it as a general staging sandbox.
-- The April 28, 2026 cutover restored this stack from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced artifacts from the legacy production bucket, moved Cloudflare DNS to the production ALB, and created production-named schedules. Keep the legacy stack available for rollback until an explicit destructive retirement or rename decision is recorded.
+- The April 28, 2026 cutover restored this stack from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced artifacts from the legacy production bucket, moved Cloudflare DNS to the production ALB, and created production-named schedules. Rollback is now through normal production recovery paths rather than DNS-first rollback to the old staging stack.
 - Port `80` on the ALB redirects to `443`.
 - The app itself redirects legacy `.com` host headers to the canonical `.in` hostname.
 - Public browser-visible `.com -> .in` routing should be re-verified only if `nyaaywatch.com` or `www.nyaaywatch.com` are pointed at the ALB with matching ACM coverage.
@@ -108,14 +106,13 @@ Operational notes:
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
 
-### Legacy Production Rollback Stack
+### Retired Temporary Staging Bridge
 
-- Stack name: `nyaaywatch-staging`
-- Status: retained for rollback after a green post-cutover observation check
-- ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
-- Schedules: disabled on `2026-04-28` because the legacy rollback-stack monitor was still calling `https://nyaaywatch.in` with the old staging operator token and generating false `401` public-alpha ops alarms. Leave these disabled unless the stack is intentionally reactivated for rollback.
-- Primary rollback action: point Cloudflare DNS for `nyaaywatch.in` back to this ALB, then re-run `curl -fsS https://nyaaywatch.in/health` and `npm run release:verify -- --base-url=https://nyaaywatch.in`
-- Retirement rule: do not delete or repurpose this stack until the destructive retirement or rename decision is explicit, the rollback tradeoff is accepted, and the dedicated staging certificate/input values are ready.
+- Stack name: `nyaaywatch-staging-v2`
+- Status: CloudFormation stack deleted after `staging.nyaaywatch.in` was repointed to the reclaimed `nyaaywatch-staging` stack.
+- Former ALB DNS name: `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com`
+- Former purpose: temporary isolated bridge while the `nyaaywatch-staging` name was still held for rollback.
+- Retained artifacts: `nyaaywatch-stage-staging-artifacts-723951822728`, `nyaaywatch-stage-staging-canary-723951822728`, and final RDS snapshot `nyaaywatch-staging-v2-snapshot-stagingdatabase-s1hxakakdlnj`
 
 ### Public Alpha
 
