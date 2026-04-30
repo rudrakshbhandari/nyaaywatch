@@ -55,6 +55,25 @@ export function renderHighCourtMethodologyPage(
       </div>
     </section>
 
+    <section class="method" id="source-caveats">
+      ${renderSectionHead({
+        headline: "Source caveats",
+        lede: "High Court caveats are separate because a High Court page is one court publication, not a lower-court state page.",
+      })}
+      <div class="card-grid card-grid--2">
+        <article class="card" id="source-caveat-coverage">
+          ${renderAnchorLink("source-caveat-coverage", "Court-first coverage")}
+          <h3>Court-first coverage</h3>
+          <p>Some High Courts cover more than one state or Union Territory. The page names the court first and carries the coverage boundary through <code>coveredGeographies[]</code>.</p>
+        </article>
+        <article class="card" id="source-caveat-reference-date">
+          ${renderAnchorLink("source-caveat-reference-date", "Reference date fallback")}
+          <h3>Reference date fallback</h3>
+          <p>When HC NJDG does not expose a trustworthy source snapshot date, NyaayWatch uses the captured page timestamp and labels it as <code>captured_at</code>.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="method" id="metric-contract">
       ${renderSectionHead({ headline: "Metric contract" })}
       <div class="card-grid card-grid--2">

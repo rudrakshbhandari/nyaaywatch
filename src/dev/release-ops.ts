@@ -113,7 +113,7 @@ export async function recordReleaseHistory(
   },
 ): Promise<ReleaseRecordSummary> {
   const summary = await buildPostpublishSummary(service, input.baseUrl, input.publicationId, input.outputPath);
-  const historyPath = resolve(input.historyPath ?? join(process.cwd(), "docs", "RELEASE_HISTORY.md"));
+  const historyPath = resolve(input.historyPath ?? join(process.cwd(), "docs", "internal", "RELEASE_HISTORY.md"));
   const reviewer = input.reviewer.trim();
 
   if (reviewer.length === 0) {

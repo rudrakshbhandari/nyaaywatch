@@ -76,16 +76,28 @@ describe("public copy guardrails", () => {
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
       },
       {
+        path: "/compare/kangra-vs-shimla",
+        requiredText: "Use this comparison as a starting point.",
+      },
+      {
         path: "/data",
         requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
       },
       {
         path: "/methodology",
-        requiredText: "Current public scope",
+        requiredText: "The April 2026 source review did not find a lower-court geography",
       },
       {
         path: "/api",
         requiredText: "currently on the public site",
+      },
+      {
+        path: "/learn",
+        requiredText: "Understand India&#39;s courts before reading the numbers.",
+      },
+      {
+        path: "/press",
+        requiredText: "currently published numbers",
       },
     ] as const;
 
@@ -139,12 +151,16 @@ describe("public copy guardrails", () => {
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
       },
       {
+        path: "/states/punjab/compare/ludhiana-vs-amritsar",
+        requiredText: "Use this comparison as a starting point.",
+      },
+      {
         path: "/states/punjab/data",
         requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
       },
       {
         path: "/states/punjab/methodology",
-        requiredText: "publishes dated aggregates after operator review",
+        requiredText: "If a source page changes district coverage, date labels, or geography names",
       },
       {
         path: "/states/punjab/api",

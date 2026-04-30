@@ -130,7 +130,7 @@ jobs:
       AWS_REGION: ap-south-1
       AWS_ACCOUNT_ID: "723951822728"
       ECR_REPOSITORY: nyaaywatch-staging
-      STAGING_STACK_NAME: nyaaywatch-staging
+      PRODUCTION_STACK_NAME: nyaaywatch-production
       STATE_INTERNAL_FETCH_SCHEDULE_EXPRESSION: "cron(0 8 * * ? *)"
       STATE_INTERNAL_FETCH_SCHEDULE_TIMEZONE: Asia/Kolkata
       STATE_INTERNAL_FETCH_SCHEDULE_STATE: ENABLED
@@ -141,7 +141,7 @@ jobs:
       HIGH_COURT_INTERNAL_FETCH_SCHEDULE_TIMEZONE: Asia/Kolkata
       HIGH_COURT_INTERNAL_FETCH_SCHEDULE_STATE: ENABLED
       INTERNAL_FETCH_MANAGE_IAM: never
-      INTERNAL_FETCH_SCHEDULER_ROLE_ARN: arn:aws:iam::723951822728:role/nyaaywatch-staging-internal-fetch-scheduler
+      INTERNAL_FETCH_SCHEDULER_ROLE_ARN: arn:aws:iam::723951822728:role/nyaaywatch-production-internal-fetch-scheduler
       PUBLIC_BASE_URL: https://nyaaywatch.in
       CLOUDFLARE_ZONE_NAME: nyaaywatch.in
       CLOUDFLARE_API_TOKEN_SECRET_ARN: ${{ secrets.CLOUDFLARE_API_TOKEN_SECRET_ARN }}
@@ -151,10 +151,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
@@ -172,12 +172,12 @@ jobs:
           IMAGE_SHA: ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
         run: |
           chmod +x infra/aws/staging/redeploy-service.sh
-          ./infra/aws/staging/redeploy-service.sh "$STAGING_STACK_NAME" "$IMAGE_SHA"
+          ./infra/aws/staging/redeploy-service.sh "$PRODUCTION_STACK_NAME" "$IMAGE_SHA"
 
       - name: Reconcile daily internal fetch schedule
         run: |
           chmod +x infra/aws/staging/reconcile-internal-fetch-schedule.sh
-          ./infra/aws/staging/reconcile-internal-fetch-schedule.sh "$STAGING_STACK_NAME"
+          ./infra/aws/staging/reconcile-internal-fetch-schedule.sh "$PRODUCTION_STACK_NAME"
 
   preview:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
@@ -203,10 +203,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@ff717079ee2060e4bcee96c4779b553acc87447c
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-preview-role

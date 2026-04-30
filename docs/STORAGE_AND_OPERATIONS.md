@@ -170,7 +170,7 @@ The `--state` override targets the operator flow only. A state becomes publicly 
 For heavier internal-only states on the live stack, do not rely on `https://nyaaywatch.in/operator/...` as the default fetch lane. Use the ECS-backed helper instead:
 
 ```bash
-npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:production -- --state UP fetch "Internal Uttar Pradesh fetch"
 ```
 
 Why this is the default heavy-state lane:
@@ -183,15 +183,15 @@ Why this is the default heavy-state lane:
 Additional examples:
 
 ```bash
-npm run operator:staging -- --state UP inspect <run-id>
-npm run operator:staging -- --state UP publish <run-id> "Publish Uttar Pradesh proof cycle"
-npm run operator:staging -- --state UP replay <run-id> "Replay Uttar Pradesh proof cycle"
-npm run operator:staging -- --state UP rollback <publication-id> "Rollback Uttar Pradesh proof cycle"
+npm run operator:production -- --state UP inspect <run-id>
+npm run operator:production -- --state UP publish <run-id> "Publish Uttar Pradesh proof cycle"
+npm run operator:production -- --state UP replay <run-id> "Replay Uttar Pradesh proof cycle"
+npm run operator:production -- --state UP rollback <publication-id> "Rollback Uttar Pradesh proof cycle"
 ```
 
 Requirements:
 
-- AWS CLI configured with access to the staging stack
+- AWS CLI configured with access to the production backing stack currently named `nyaaywatch-staging`
 - access to run ECS and CloudWatch Logs commands in `ap-south-1`
 - the local machine does not need direct database or operator-token access because the command runs inside ECS
 

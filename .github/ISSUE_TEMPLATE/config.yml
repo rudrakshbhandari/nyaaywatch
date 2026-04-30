@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/rudrakshbhandari/nyaaywatch/security/advisories/new
+    about: Report vulnerabilities privately instead of opening a public issue.
+  - name: Public site and data
+    url: https://nyaaywatch.in
+    about: Check the current public site, methodology, API, and data downloads.

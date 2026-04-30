@@ -12,9 +12,9 @@ Use this file for:
 
 Do not use this file as a second release ledger. The detailed rollout evidence already lives in:
 
-- `docs/DEPLOYMENT_STATUS.md`
-- `docs/RELEASE_HISTORY.md`
-- `docs/EXPANSION_REVIEW_LOG.md`
+- `docs/internal/DEPLOYMENT_STATUS.md`
+- `docs/internal/RELEASE_HISTORY.md`
+- `docs/internal/EXPANSION_REVIEW_LOG.md`
 
 ## Next Up
 
@@ -23,19 +23,40 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 - [x] Wired `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` into a scheduled monitor with a real alert path. The staging reconcile helper now keeps `nyaaywatch-staging-public-alpha-ops-monitor` pointed at the live ECS task definition every deploy, the runtime emits `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` on failures, and CloudWatch alarm `nyaaywatch-staging-public-alpha-ops` fans out through the existing SNS topic.
 - [x] Wired `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` into the scheduled `.github/workflows/ops-watchdog.yml` monitor, which now assumes the GitHub deploy role, loads `OPERATOR_API_TOKEN` from Secrets Manager, opens or updates a durable GitHub issue, and publishes a first-incident SNS alert through the staging alarm topic when the public-alpha sweep fails.
 - [x] Added a repo-native scheduler-execution watchdog via `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in`, covering the current three live schedules together instead of the old single lower-court schedule: lower courts, Supreme Court, and reviewed High Courts all now verify task-definition alignment, scheduled entrypoint wiring, and recent successful tier-specific scheduled operator runs.
-- [ ] Keep the operator review loop boring and enforced: release windows should always produce aligned evidence in `docs/RELEASE_HISTORY.md`, `docs/DEPLOYMENT_STATUS.md`, and the generated release-evidence artifacts.
+- [x] Added a read-only `npm run infra:production-preflight` guard for the future `nyaaywatch-production` cutover and renamed CI/watchdog stack variables to `PRODUCTION_STACK_NAME` while keeping the current value `nyaaywatch-staging`.
+- [x] Added `docs/PRODUCTION_CUTOVER_RUNBOOK.md` plus read-only `npm run infra:production-cutover-inventory` so the `nyaaywatch-production` cutover has an explicit inventory, data bootstrap, DNS, verification, rollback, and staging-reclaim sequence before any live mutation.
+- [x] Added the preferred isolated data-bootstrap path for `nyaaywatch-production`: the stack now accepts `DATABASE_SNAPSHOT_IDENTIFIER` and parameterized RDS storage for snapshot restore, the deploy helper verifies snapshot/source DB identity, immutable source lineage, storage, and password confirmation, refuses mixed snapshot/shared-database cutovers and accidental snapshot-parameter replacement, and the inventory prints the current database instance identifier needed to create the snapshot.
+- [x] Replace the legacy production-serving `nyaaywatch-staging` stack with a reality-named `nyaaywatch-production` stack through a parallel deploy, verification, DNS cutover, and rollback-ready retirement plan. Do not rename or mutate the live stack in place.
+  - 2026-04-28: Completed the pre-DNS parallel bootstrap: manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, isolated `nyaaywatch-production` stack, synced artifacts bucket, target HTTPS route checks, no target schedules, and live `nyaaywatch.in` verification. Remaining work is DNS cutover, production schedule reconciliation, and retirement/reclaim of the legacy `nyaaywatch-staging` stack after a successful cutover window.
+  - 2026-04-28: Completed DNS and schedule cutover: Cloudflare now points `nyaaywatch.in` at `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`, public `release:verify` passes through normal DNS, unauthenticated operator access still returns `401`, and all five `nyaaywatch-production-*` schedules target task definition `nyaaywatch-production:3`.
+- [x] Complete the first post-cutover production observation check for `nyaaywatch-production`.
+  - 2026-04-29: `ALLOW_EXISTING_TARGET_STACK=true npm run infra:production-preflight`, `npm run release:verify -- --base-url=https://nyaaywatch.in`, `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`, `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in --stack-name=nyaaywatch-production`, and production CloudWatch alarm checks were green. The public-alpha sweep reported `62/62` healthy targets, no stale snapshots, no daily-fetch lag, no failures, and the scheduler verifier showed all production schedules targeting `nyaaywatch-production:11`.
+- [x] Reclaim the final `nyaaywatch-staging` stack name after accepting the rollback tradeoff.
+  - 2026-04-29: `staging.nyaaywatch.in` now resolves to `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; CloudFormation stack `nyaaywatch-staging` is `UPDATE_COMPLETE` with the staging ACM certificate, ECS is stable on task definition `nyaaywatch-staging:239`, all staging schedules remain disabled, and `npm run release:verify -- --base-url=https://staging.nyaaywatch.in` passed.
+- [x] Provision a temporary dedicated AWS staging bridge stack with isolated RDS, S3, Secrets Manager values, operator token, CloudWatch dashboard, and SNS alarm topic.
+  - 2026-04-29: ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870` is issued, `nyaaywatch-staging-v2` is provisioned with `PROJECT_NAME=nyaaywatch-stage`, ECS is stable at `1/1`, target health is healthy, and a Himachal staging seed snapshot is published from `run_77350daa-3176-47fb-ad56-f8602f019a8d`. The temporary stack is a bridge because the legacy rollback stack still owns the final `nyaaywatch-staging` name.
+- [x] Point public DNS for `staging.nyaaywatch.in` at the final dedicated staging ALB.
+  - 2026-04-29: Cloudflare CNAME `staging` -> `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` as DNS-only. Normal DNS verification is green for `/health` and `npm run release:verify -- --base-url=https://staging.nyaaywatch.in`.
+- [x] Retire the temporary `nyaaywatch-staging-v2` bridge stack after the final staging reclaim.
+  - 2026-04-29: `nyaaywatch-staging-v2` no longer receives DNS traffic; CloudFormation stack deletion completed after verifying `staging.nyaaywatch.in` and the reclaimed `nyaaywatch-staging` stack. The template retained the two temporary bridge S3 buckets, and RDS final snapshot `nyaaywatch-staging-v2-snapshot-stagingdatabase-s1hxakakdlnj` is available.
+- [ ] Keep the operator review loop boring and enforced: release windows should always produce aligned evidence in `docs/internal/RELEASE_HISTORY.md`, `docs/internal/DEPLOYMENT_STATUS.md`, and the generated release-evidence artifacts.
 
 ### 2. Freshness And Trust-Surface Hardening
 
 - [ ] Decide whether any public state needs a stronger freshness banner or methodology note once the ops sweep has run across multiple real release windows.
 - [x] Added an explicit operator runbook in `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md` covering the four daily-fetch-lag and stale-snapshot decision paths, anchored in the existing `DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS` and `STALE_SNAPSHOT_THRESHOLD_DAYS` values.
-- [ ] Review whether any public state has source-shape quirks that deserve state-specific caveats instead of silently relying on the common methodology text.
+- [x] Review whether any public state has source-shape quirks that deserve state-specific caveats instead of silently relying on the common methodology text.
+  - 2026-04-29: Added `docs/SOURCE_CAVEAT_REVIEW.md` and public methodology copy for source caveats. Current outcome: no lower-court state or Union Territory needs an extra local caveat beyond state/Union Territory labelling, source date, and freshness/quality banners; High Court and Supreme Court caveats remain tier-specific.
 - [x] Wrote the first on-call policy in `docs/ON_CALL_POLICY.md` defining primary/backup roles, Sev-1/Sev-2/Sev-3 response targets, and escalation rules for the public-alpha ops alerts, and captured the business-hours Asia/Kolkata coverage assumption explicitly.
 - [x] Wrote the first external communications policy in `docs/PUBLIC_ALPHA_LAUNCH_COMMS.md` covering audience priority, messaging rules, and channel pre-requisites; added a `/robots.txt` route that permits public crawl and disallows `/operator/`, with test coverage in `tests/api.test.ts`.
 
 ### 3. Deliberate Post-Rollout Scope Decisions
 
 - [x] Use `docs/METRIC_STRATEGY.md` as the source of truth for the next metric slice: preserve lower-court filed/cleared counts plus age buckets first, then add old-case burden share, scale-aware backlog movement, break-even clearances, watchlist persistence, backlog concentration, and civil-criminal imbalance.
+- [x] Added the first medium-term investigation-flow pass across the national homepage, Supreme Court, High Courts, state pages, district workspace, district evidence, movers, compare, and `/press` so readers can move from national context to reusable evidence without fake cross-tier rankings.
+- [x] Added lower-court Evidence Packs v1 as safe state and district JSON bundles under `/data/evidence/...`, carrying public metrics, source date, methodology version, citation text, CSV/API links, caveats, and an explicit boundary that raw capture and operator-only artifacts stay private.
+- [x] Added citation/download entry points for Evidence Packs from lower-court movers, district comparisons, and district evidence pages so investigation surfaces can hand readers directly to reusable JSON/CSV evidence without exposing raw capture or operator-only artifacts.
+- [x] Added copyable citation snippets to the lower-court movers and district-comparison evidence entry points so readers can cite the movement window or side-by-side route without opening the JSON first.
 - [x] Reconciled the legacy `.com -> .in` ALB redirect rules back under CloudFormation ownership. The repo now includes `infra/aws/staging/import-canonical-redirect-rules.sh`, the live `nyaaywatch-staging` stack imported both priority-10 listener rules on `2026-04-20T05:44Z`, and `ManageCanonicalRedirectRules=false` is now only a temporary recovery lever for older-stack reconciliation.
 - [x] Turned the initial multi-jurisdiction High Court design into a concrete phase-1 implementation plan in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`, with a court-first identity migration, schema widening, and Punjab and Haryana High Court as the first internal pilot boundary.
 - [x] Added the common High Court of Jammu & Kashmir and Ladakh as an internal-only High Court profile using the current official court name, one HC NJDG selector (`1~12`), and explicit union-territory coverage for Jammu and Kashmir plus Ladakh; source-review and internal-readiness docs now record the upstream legacy-label mismatch without splitting the court into fake separate High Courts.
