@@ -2,6 +2,7 @@ import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import { renderSectionHead } from "../design/ui.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderPressPage(): string {
   const curlExample = `curl ${SITE_ORIGIN}/v1/stats/himachal | jq`;
@@ -13,6 +14,42 @@ export function renderPressPage(): string {
       <h1 class="press-hero__hed">For journalists,<br>researchers,<br>and civic groups.</h1>
       <p class="press-hero__lede">Everything you need to cite, embed, or republish NyaayWatch data — logos, embed codes, suggested captions, and methodology links. All numbers come from public NJDG data with full methodology disclosure.</p>
     </section>
+
+    ${renderInvestigationWorkflow({
+      headline: "Start a reporting trail from the right layer.",
+      lede:
+        "NyaayWatch has separate public surfaces for Supreme Court, High Courts, lower-court geographies, district evidence, and snapshot movement. Choose the surface that matches the claim you want to make.",
+      steps: [
+        {
+          eyebrow: "01",
+          title: "National entry point",
+          body: "Use the homepage or Supreme Court page for top-level court-system context without flattening every tier into one league table.",
+          href: "/",
+          cta: "Open homepage",
+        },
+        {
+          eyebrow: "02",
+          title: "High Court layer",
+          body: "Use High Court pages for court-specific aggregates and source caveats.",
+          href: "/high-courts",
+          cta: "Browse High Courts",
+        },
+        {
+          eyebrow: "03",
+          title: "District evidence",
+          body: "Use district pages, CSVs, movers, and comparisons for local reporting from published lower-court snapshots.",
+          href: "/districts",
+          cta: "Open districts",
+        },
+        {
+          eyebrow: "04",
+          title: "Reusable data",
+          body: "Use CSV and API outputs where safe; raw scrape artifacts are not public evidence packs.",
+          href: "/data",
+          cta: "Open data",
+        },
+      ],
+    })}
 
     <section class="press-section">
       ${renderSectionHead({ headline: "One-paragraph description.", lede: "Paste this into bylines, story intros, or grant applications." })}
@@ -50,7 +87,7 @@ export function renderPressPage(): string {
     </section>
 
     <section class="press-section">
-      ${renderSectionHead({ headline: "Embed a district or state widget.", lede: "Drop an iframe into Substack, WordPress, Ghost, or any CMS. The widget shows live numbers and links back to the full evidence page." })}
+      ${renderSectionHead({ headline: "Embed a district or state widget.", lede: "Drop an iframe into Substack, WordPress, Ghost, or any CMS. The widget shows the currently published numbers and links back to the full evidence page." })}
       <div class="card">
         <p class="press-embed__intro">Replace <code>kangra</code> with any district ID from the <a href="/districts">districts page</a>. Replace <code>himachal</code> with any state slug.</p>
         <div class="press-embed__variants">
@@ -71,6 +108,27 @@ export function renderPressPage(): string {
             <button class="btn btn--ghost btn--small press-copy-btn" data-copy='<iframe src="${SITE_ORIGIN}/embed/state/himachal" width="420" height="220" frameborder="0" style="border:none;" title="NyaayWatch — Himachal Pradesh courts"></iframe>'>Copy embed</button>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="press-section">
+      ${renderSectionHead({ headline: "Citation-ready starting points.", lede: "Use these links when you need a page, file, or API response that carries a source date and methodology path." })}
+      <div class="card-grid card-grid--3">
+        <article class="card">
+          <h3>Evidence pages</h3>
+          <p>District and court pages are the safest citation targets because they keep the visible metric, source date, and methodology link together.</p>
+          <p><a class="btn btn--ghost btn--small" href="/districts">Open districts</a></p>
+        </article>
+        <article class="card">
+          <h3>Downloadable packs</h3>
+          <p>Use published CSVs and API JSON as reusable evidence packs. Raw capture files stay out of the press kit unless a release explicitly clears them.</p>
+          <p><a class="btn btn--ghost btn--small" href="/data">Open downloads</a></p>
+        </article>
+        <article class="card">
+          <h3>Movement and contrast</h3>
+          <p>Use movers for snapshot-to-snapshot changes and compare pages for two-district contrasts inside the same geography.</p>
+          <p><a class="btn btn--ghost btn--small" href="/movers">Open movers</a></p>
+        </article>
       </div>
     </section>
 
@@ -118,7 +176,7 @@ export function renderPressPage(): string {
         <article class="card">
           <h3>What it isn't</h3>
           <ul class="press-list">
-            <li>A live or real-time data feed — numbers are published after review</li>
+            <li>A continuously updating feed — numbers are published after review</li>
             <li>A ranking or performance assessment of judicial work</li>
             <li>A predictor of when any specific case will be decided</li>
             <li>Affiliated with any government body, court, or judicial authority</li>
@@ -169,7 +227,7 @@ export function renderPressPage(): string {
       methodologyVersion: null,
       sourceAttribution: null,
     },
-    pageCss: PRESS_PAGE_CSS,
+    pageCss: PRESS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     og: {
       title: "Press & Embed Kit — NyaayWatch",
       description: "Logos, embed codes, suggested captions, API quickstart, and methodology links for journalists and researchers using NyaayWatch court data.",

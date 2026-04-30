@@ -13,6 +13,7 @@ import {
   describeWatchlistPersistence,
   formatShare,
 } from "./metric-insights.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 /**
  * /districts/:id — district evidence page. Pairs the headline stats with the
@@ -156,6 +157,42 @@ export function renderDistrictPage(
       })}
     </section>
 
+    ${renderInvestigationWorkflow({
+      headline: "What to check next.",
+      lede:
+        `Use ${district.districtName} as the evidence page, then move outward to the district list, snapshot movement, and citation material.`,
+      steps: [
+        {
+          eyebrow: "01",
+          title: "Go back to the workspace",
+          body: "Return to the district table when you need to see whether this pressure signal is unusual inside the same published snapshot.",
+          href: context.routes.districts,
+          cta: "Open all districts",
+        },
+        {
+          eyebrow: "02",
+          title: "Check movement",
+          body: "Use movers to see whether the district changed since the previous published snapshot, when enough history is available.",
+          href: context.routes.movers,
+          cta: "Open movers",
+        },
+        {
+          eyebrow: "03",
+          title: "Export evidence",
+          body: "Download this district's history CSV or copy the citation text before quoting any number.",
+          href: context.routes.districtCsv(district.districtId),
+          cta: "Download CSV",
+        },
+        {
+          eyebrow: "04",
+          title: "Reuse safely",
+          body: "Use the press kit for captions, embed examples, and careful wording that keeps snapshots separate from continuously changing feeds.",
+          href: "/press",
+          cta: "Open press kit",
+        },
+      ],
+    })}
+
     <section class="district-grid">
       <div class="district-col">
         <article class="card" id="district-flag">
@@ -279,7 +316,7 @@ export function renderDistrictPage(
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
     ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · SNAPSHOT ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.methodologyVersion)}`,
-    pageCss: DISTRICT_PAGE_CSS,
+    pageCss: DISTRICT_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
       methodologyVersion: snapshot.methodologyVersion,

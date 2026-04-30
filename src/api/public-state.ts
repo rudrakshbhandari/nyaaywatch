@@ -8,6 +8,8 @@ export interface PublicStateRoutes {
   home: string;
   districts: string;
   district: (districtId: string) => string;
+  compare: (leftDistrictId: string, rightDistrictId: string) => string;
+  movers: string;
   data: string;
   districtsCsv: string;
   districtCsv: (districtId: string) => string;
@@ -100,6 +102,9 @@ export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRo
     home,
     districts: htmlBase ? `${htmlBase}/districts` : "/districts",
     district: (districtId) => `${htmlBase ? `${htmlBase}/districts` : "/districts"}/${districtId}`,
+    compare: (leftDistrictId, rightDistrictId) =>
+      `${htmlBase ? `${htmlBase}/compare` : "/compare"}/${leftDistrictId}-vs-${rightDistrictId}`,
+    movers: htmlBase ? `${htmlBase}/movers` : "/movers",
     data: htmlBase ? `${htmlBase}/data` : "/data",
     districtsCsv: htmlBase ? `${htmlBase}/data/districts.csv` : "/data/districts.csv",
     districtCsv: (districtId) =>

@@ -5,6 +5,7 @@ import type { PublicPageContext } from "../public-state.js";
 import { renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderComparePage(
   snapshot: PublishedSnapshot,
@@ -15,6 +16,8 @@ export function renderComparePage(
   const waitA = Math.round(a.medianAgeDays / 30);
   const waitB = Math.round(b.medianAgeDays / 30);
   const snapshotDate = formatDate(snapshot.snapshot.sourceSnapshotAt);
+  const comparePath = context.routes.compare(a.districtId, b.districtId);
+  const compareUrl = `${SITE_ORIGIN}${comparePath}`;
 
   const ogTitle = `${a.districtName} vs. ${b.districtName} — NyaayWatch`;
   const ogDesc = `${a.districtName}: ${a.backlogCases.toLocaleString("en-IN")} cases waiting, ~${waitA} mo typical wait. ${b.districtName}: ${b.backlogCases.toLocaleString("en-IN")} cases waiting, ~${waitB} mo typical wait. Source: NyaayWatch ${snapshotDate}.`;
@@ -65,12 +68,48 @@ export function renderComparePage(
 
     <section class="compare-share-section">
       <h2 class="compare-share__hed">Share this comparison</h2>
-      <p class="compare-share__lede">This URL is permanent — it always reflects the same two districts.</p>
+      <p class="compare-share__lede">This route keeps the same two districts and reflects the current published snapshot for this geography.</p>
       <div class="compare-share__actions">
-        <code class="compare-share__url">${escapeHtml(SITE_ORIGIN)}/compare/${escapeHtml(a.districtId)}-vs-${escapeHtml(b.districtId)}</code>
-        <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${a.districtName} vs ${b.districtName} — backlog, wait times, and clearance rates compared. ${SITE_ORIGIN}/compare/${a.districtId}-vs-${b.districtId}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
+        <code class="compare-share__url">${escapeHtml(compareUrl)}</code>
+        <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${a.districtName} vs ${b.districtName} — backlog, wait times, and clearance rates compared. ${compareUrl}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
       </div>
     </section>
+
+    ${renderInvestigationWorkflow({
+      headline: "Use this comparison as a starting point.",
+      lede:
+        "The comparison shows differences inside one lower-court geography. Open the evidence pages and methodology before turning the contrast into a public claim.",
+      steps: [
+        {
+          eyebrow: "01",
+          title: `${a.districtName} evidence`,
+          body: "Open the full district page for history, caveats, citation text, and CSV export.",
+          href: context.routes.district(a.districtId),
+          cta: "Open evidence",
+        },
+        {
+          eyebrow: "02",
+          title: `${b.districtName} evidence`,
+          body: "Check the same fields for the second district before quoting the side-by-side gap.",
+          href: context.routes.district(b.districtId),
+          cta: "Open evidence",
+        },
+        {
+          eyebrow: "03",
+          title: "Check movement",
+          body: "Use movers to see whether either district changed between the two most recent published snapshots.",
+          href: context.routes.movers,
+          cta: "Open movers",
+        },
+        {
+          eyebrow: "04",
+          title: "Cite the method",
+          body: "Use the methodology and data pages to explain which snapshot and metric definition support the comparison.",
+          href: context.routes.methodology,
+          cta: "Open methodology",
+        },
+      ],
+    })}
 
     <section class="compare-more-section">
       <a class="btn btn--ghost" href="${context.routes.districts}">← All districts</a>
@@ -92,11 +131,11 @@ export function renderComparePage(
       methodologyVersion: snapshot.snapshot.methodologyVersion,
       sourceAttribution: snapshot.snapshot.sourceAttribution,
     },
-    pageCss: COMPARE_PAGE_CSS,
+    pageCss: COMPARE_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     og: {
       title: ogTitle,
       description: ogDesc,
-      url: `${SITE_ORIGIN}/compare/${a.districtId}-vs-${b.districtId}`,
+      url: compareUrl,
     },
   });
 }
