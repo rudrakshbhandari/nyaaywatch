@@ -174,6 +174,77 @@ describe("HTTP routes", () => {
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/learn</loc>");
   });
 
+  it("serves the national homepage when an older lower-court snapshot is missing embedded state metadata", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+
+    const legacyPunjabPayload = JSON.parse(JSON.stringify(buildPunjabTestSnapshot())) as Omit<ReturnType<typeof buildPunjabTestSnapshot>, "snapshot"> & {
+      snapshot: Partial<ReturnType<typeof buildPunjabTestSnapshot>["snapshot"]>;
+    };
+    delete legacyPunjabPayload.snapshot.stateCode;
+    delete legacyPunjabPayload.snapshot.stateName;
+
+    await context.pool.query(
+      `INSERT INTO runs (
+        id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note, completed_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
+      [
+        "run_pb_legacy_payload",
+        "lower_court_state",
+        "PB",
+        "PB",
+        legacyPunjabPayload.snapshot.sourceName,
+        legacyPunjabPayload.snapshot.sourceSnapshotAt,
+        legacyPunjabPayload.snapshot.methodologyVersion,
+        "published",
+        legacyPunjabPayload.snapshot.qualityState,
+        "Legacy payload without duplicated state metadata",
+      ],
+    );
+    await context.pool.query(
+      `INSERT INTO published_snapshots (
+        id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)`,
+      [
+        "snapshot_pb_legacy_payload",
+        "run_pb_legacy_payload",
+        "lower_court_state",
+        "PB",
+        "PB",
+        1,
+        JSON.stringify(legacyPunjabPayload),
+        "checksum-snapshot_pb_legacy_payload",
+      ],
+    );
+    await context.pool.query(
+      `INSERT INTO publication_history (
+        id, scope_type, scope_code, state_code, published_snapshot_id, action, note
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [
+        "publication_pb_legacy_payload",
+        "lower_court_state",
+        "PB",
+        "PB",
+        "snapshot_pb_legacy_payload",
+        "publish",
+        "Legacy publication for national homepage compatibility",
+      ],
+    );
+
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+
+    const homepage = await request(app).get("/");
+    expect(homepage.status).toBe(200);
+    expect(homepage.text).toContain("How long is India waiting for justice?");
+    expect(homepage.text).toContain("/states/punjab");
+
+    const punjabStats = await request(app).get("/v1/states/punjab/stats");
+    expect(punjabStats.status).toBe(200);
+    expect(punjabStats.body.snapshot.stateCode).toBe("PB");
+    expect(punjabStats.body.snapshot.stateName).toBe("Punjab");
+  });
+
   it("redirects legacy .com hosts to the canonical .in hostname", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
