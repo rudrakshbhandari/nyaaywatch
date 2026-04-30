@@ -96,7 +96,7 @@ Treat a release as blocked if any one of these is true:
    - structured app errors are `0` or understood
 2. Review the last 30 minutes of app logs:
    ```bash
-   aws logs tail /ecs/nyaaywatch-staging --since 30m --region ap-south-1
+   aws logs tail /ecs/nyaaywatch-production --since 30m --region ap-south-1
    ```
 3. If any `level=error` log line appears, either fix it first or explicitly record why it is safe to ignore for this release.
 4. Run the public verification script against the target hostname:
@@ -110,7 +110,7 @@ Treat a release as blocked if any one of these is true:
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
    ```
    This must stay green before treating the release window as operationally quiet. It fails if any public lower-court state, public High Court, or the Supreme Court surface has route/parity drift, a stale public snapshot, or a latest successful internal fetch run old enough to suggest the daily internal fetch cadence is slipping.
-   Outside the release window, the live stack now reruns the same sweep every `30` minutes through the `nyaaywatch-staging-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-staging-public-alpha-ops` CloudWatch alarm if the sweep fails.
+   Outside the release window, the live stack now reruns the same sweep every `30` minutes through the `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm if the sweep fails.
 6. Run prepublish verification for the candidate run and note the rollback target:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -151,7 +151,7 @@ At least once each week, even without a publish:
 - review app errors for recurring patterns
 - confirm the dashboard still reflects the real stack resources
 - run `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`
-- confirm `nyaaywatch-staging-public-alpha-ops` has not entered `ALARM` and that any previous all-public-target alarm has a reviewed root cause
+- confirm `nyaaywatch-production-public-alpha-ops` has not entered `ALARM` and that any previous all-public-target alarm has a reviewed root cause
 - if the repo-level ops watchdog is being audited or repaired, also run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` so the three live scheduler tiers are checked directly against EventBridge and recent operator history
 - treat any reported daily-fetch lag as an operator issue even if the public snapshot is not yet old enough to count as stale by the product trust model, because the sweep now checks internal run history rather than published snapshot age
 

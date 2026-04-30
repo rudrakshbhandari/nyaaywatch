@@ -5,6 +5,7 @@ import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { formatShare } from "./metric-insights.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 type DistrictSort = "rank" | "backlog" | "disposal" | "age" | "gap";
 type DistrictView = "all" | "flagged";
@@ -52,6 +53,10 @@ export function renderDistrictsPage(
   );
   const highestBacklog = sortedByBacklog[0];
   const slowestClearance = sortedByDisposal[0];
+  const comparisonHref =
+    highestBacklog && slowestClearance && highestBacklog.districtId !== slowestClearance.districtId
+      ? context.routes.compare(highestBacklog.districtId, slowestClearance.districtId)
+      : context.routes.districts;
   const districtSuggestions = safeJsonForHtmlScript(
     snapshot.districts.map((d) => ({
       id: d.districtId,
@@ -117,6 +122,42 @@ export function renderDistrictsPage(
 
     ${renderControls(options, context)}
 
+    ${renderInvestigationWorkflow({
+      headline: "Turn a district list into a trail.",
+      lede:
+        "Use the table to find a pressure signal, then open evidence, compare districts inside this geography, or check what moved between published snapshots.",
+      steps: [
+        {
+          eyebrow: "01",
+          title: "Sort for pressure",
+          body: "Switch between backlog, clearance pace, typical wait, and file-clear gap instead of relying on one headline rank.",
+          href: context.routes.districts,
+          cta: "Reset workspace",
+        },
+        {
+          eyebrow: "02",
+          title: "Open a district",
+          body: "Every district row links to a standalone evidence page with history, caveats, citation text, and CSV downloads.",
+          href: highestBacklog ? context.routes.district(highestBacklog.districtId) : context.routes.districts,
+          cta: "Inspect biggest backlog",
+        },
+        {
+          eyebrow: "03",
+          title: "Compare two signals",
+          body: "Put two districts side by side when you need a cleaner local contrast, without turning it into a statewide finding.",
+          href: comparisonHref,
+          cta: "Open comparison",
+        },
+        {
+          eyebrow: "04",
+          title: "Check movement",
+          body: "Use movers when there are at least two published snapshots, so you can separate scale from recent change.",
+          href: context.routes.movers,
+          cta: "Open movers",
+        },
+      ],
+    })}
+
     ${districts.length > 0 ? renderTable(districts, context) : renderNoResults(options, context)}
 
     <script>
@@ -164,7 +205,7 @@ export function renderDistrictsPage(
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
     ticker: `${escapeHtml(snapshot.snapshot.stateName.toUpperCase())} · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.snapshot.methodologyVersion)}`,
-    pageCss: DISTRICTS_PAGE_CSS,
+    pageCss: DISTRICTS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.snapshot.sourceSnapshotAt),
       methodologyVersion: snapshot.snapshot.methodologyVersion,
@@ -209,6 +250,7 @@ function renderControls(options: DistrictsPageOptions, context: PublicPageContex
       <div class="controls__links">
         <a href="${context.routes.districts}">Reset filters</a>
         <a href="${context.routes.districts}${escapeHtml(buildDistrictsHref({ ...options, view: "flagged" }))}">Only districts to watch</a>
+        <a href="${context.routes.movers}">Snapshot movers</a>
         <a href="${context.routes.districtsCsv}">Download ${escapeHtml(context.lowerCourtCopy.aggregateAdjective)} CSV</a>
       </div>
     </section>

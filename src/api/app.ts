@@ -32,6 +32,7 @@ import { renderPressPage } from "./pages/press.js";
 import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
 import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
 import { renderDistrictEmbedWidget, renderStateEmbedWidget } from "./pages/embed.js";
+import { buildDistrictEvidencePack, buildStateEvidencePack } from "./evidence-packs.js";
 import { buildViewModel } from "./home/view-model.js";
 import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
 import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
@@ -378,6 +379,41 @@ export function createApp(
   );
 
   app.get(
+    "/data/evidence/state.json",
+    asyncRoute(async (_request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      response.json(buildStateEvidencePack(snapshot.payload, context));
+    }),
+  );
+
+  app.get(
+    "/data/evidence/districts/:districtId.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const districtId = readRouteParam(request.params.districtId);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const payload = await currentService.getDistrictDetail(districtId);
+      if (!payload) {
+        response.status(404).json({ error: "District evidence pack not available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      response.json(buildDistrictEvidencePack(payload.snapshot, payload.district, payload.history, context));
+    }),
+  );
+
+  app.get(
     "/",
     asyncRoute(async (_request, response) => {
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
@@ -476,6 +512,42 @@ export function createApp(
         response.status(404).send(renderCompareNotFound(context));
         return;
       }
+      response.send(renderComparePage(snapshot.payload, districtA, districtB, context));
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/compare/:slug",
+    asyncRoute(async (request, response) => {
+      const slug = readRouteParam(request.params.slug);
+      const vsIndex = slug.indexOf("-vs-");
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      if (vsIndex === -1) {
+        response.status(404).send(renderEmptyState("Comparison Not Found", `Use ${context.routes.compare("district-a", "district-b")}`));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderCompareNotFound(context));
+        return;
+      }
+
+      const idA = slug.slice(0, vsIndex);
+      const idB = slug.slice(vsIndex + 4);
+      const districtA = snapshot.payload.districts.find((d) => d.districtId === idA);
+      const districtB = snapshot.payload.districts.find((d) => d.districtId === idB);
+      if (!districtA || !districtB) {
+        response.status(404).send(renderCompareNotFound(context));
+        return;
+      }
+
       response.send(renderComparePage(snapshot.payload, districtA, districtB, context));
     }),
   );
@@ -756,6 +828,48 @@ export function createApp(
       }
 
       response.type("text/csv").send(csv);
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/evidence/state.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      response.json(buildStateEvidencePack(snapshot.payload, context));
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/evidence/districts/:districtId.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
+        return;
+      }
+
+      const payload = await resolved.service.getDistrictDetail(readRouteParam(request.params.districtId));
+      if (!payload) {
+        response.status(404).json({ error: "District evidence pack not available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      response.json(buildDistrictEvidencePack(payload.snapshot, payload.district, payload.history, context));
     }),
   );
 

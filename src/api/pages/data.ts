@@ -53,7 +53,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
         lede:
           "District-specific history CSVs are linked from each district's permalink page so every download is one click from its narrative context.",
       })}
-      <div class="card-grid card-grid--2">
+      <div class="card-grid card-grid--3">
         <article class="card download">
           <div class="download__meta">
             <span class="download__kind">CSV</span>
@@ -72,6 +72,15 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
           <p>Three endpoints cover ${aggregateAdjective} stats, district rows, and the ${aggregateAdjective} trend series. Same fields as the CSV, fetched as machine-readable JSON for dashboards, notebooks, or downstream tooling.</p>
           <p class="download__cta"><a class="btn btn--ghost btn--small" href="${context.routes.api}">See API reference</a></p>
         </article>
+        <article class="card download">
+          <div class="download__meta">
+            <span class="download__kind">PACK</span>
+            <code class="download__path">${escapeHtml(context.routes.stateEvidencePack)}</code>
+          </div>
+          <h3>Evidence packs</h3>
+          <p>State and district JSON packs keep the visible metrics, source date, methodology version, citation text, CSV/API links, and caveats together. District packs are also linked from each district evidence page.</p>
+          <p class="download__cta"><a class="btn btn--ghost btn--small" href="${context.routes.stateEvidencePack}">Open state pack</a></p>
+        </article>
       </div>
     </section>
 
@@ -80,7 +89,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>What is in the CSV</h3>
-          <p>Normalized snapshot fields only: the same numbers, labels, derived pressure signals, and flag reasons that appear on the public pages.</p>
+          <p>Normalized fields only: the same numbers, labels, derived pressure signals, and flag reasons that appear on the public pages.</p>
           <p>Each row references the source snapshot date and methodology version so a published number is always citeable.</p>
         </article>
         <article class="card">
