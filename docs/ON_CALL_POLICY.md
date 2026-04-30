@@ -10,10 +10,10 @@ The signals below are what "on-call" is responsible for. Everything else is norm
 
 | Signal | Source | How it surfaces |
 | --- | --- | --- |
-| Public-alpha ops sweep failure | `nyaaywatch-staging-public-alpha-ops-monitor` (every 30 min) and `.github/workflows/ops-watchdog.yml` (daily 05:00 UTC) | CloudWatch alarm `nyaaywatch-staging-public-alpha-ops`, SNS topic `nyaaywatch-staging-alerts`, and durable GitHub issue `Ops watchdog failure` |
+| Public-alpha ops sweep failure | `nyaaywatch-production-public-alpha-ops-monitor` (every 30 min) and `.github/workflows/ops-watchdog.yml` (daily 05:00 UTC) | CloudWatch alarm `nyaaywatch-production-public-alpha-ops`, SNS topic `nyaaywatch-production-alerts`, and durable GitHub issue `Ops watchdog failure` |
 | Internal fetch schedule failure | `npm run ops:verify-internal-fetch-schedule` inside the watchdog | Same GitHub issue, `failingTiers` section |
-| Public hostname health | `nyaaywatch-staging-health-endpoint`, `nyaaywatch-staging-alb-target-5xx` | SNS topic `nyaaywatch-staging-alerts` |
-| Structured app errors | `nyaaywatch-staging-app-errors` | SNS topic `nyaaywatch-staging-alerts` |
+| Public hostname health | `nyaaywatch-production-health-endpoint`, `nyaaywatch-production-alb-target-5xx` | SNS topic `nyaaywatch-production-alerts` |
+| Structured app errors | `nyaaywatch-production-app-errors` | SNS topic `nyaaywatch-production-alerts` |
 | Missed daily internal fetch at 08:00, 08:10, or 08:20 Asia/Kolkata | `ops:verify-internal-fetch-schedule` tier outcome | Same GitHub issue, per-tier block |
 
 ## Roles

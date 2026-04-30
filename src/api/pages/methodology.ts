@@ -123,6 +123,30 @@ export function renderMethodologyPage(
       </div>
     </section>
 
+    <section class="method" id="source-caveats">
+      ${renderSectionHead({
+        headline: "Source caveats",
+        lede: "A page-level caveat is added only when the source page changes how a reader should understand the numbers.",
+      })}
+      <div class="card-grid card-grid--3">
+        <article class="card" id="source-caveat-geography-labels">
+          ${renderAnchorLink("source-caveat-geography-labels", "State and Union Territory labels")}
+          <h3>State and Union Territory labels</h3>
+          <p>The lower-court route family keeps the compatibility path <code>/states/:slug</code>, but public copy says whether the page covers a state or a Union Territory.</p>
+        </article>
+        <article class="card" id="source-caveat-review-status">
+          ${renderAnchorLink("source-caveat-review-status", "Current review status")}
+          <h3>Current review status</h3>
+          <p>The April 2026 source review did not find a lower-court geography that needs an extra public caveat beyond the state or Union Territory label, source date, and freshness or quality banner.</p>
+        </article>
+        <article class="card" id="source-caveat-future-changes">
+          ${renderAnchorLink("source-caveat-future-changes", "Future source changes")}
+          <h3>Future source changes</h3>
+          <p>If a source page changes district coverage, date labels, or geography names in a way that affects interpretation, NyaayWatch will add a page-level caveat for that geography.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published methodology and snapshot lineage",

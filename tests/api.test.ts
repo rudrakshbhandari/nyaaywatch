@@ -78,6 +78,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("This month&#39;s clearance pace is shown separately.");
     expect(homepage.text).not.toContain("Pending trend");
     expect(homepage.text).toContain("Backlog growing");
+    expect(homepage.text).toContain("Follow the court system without flattening it.");
     expect(homepage.text).toContain("Lower courts show the broadest pressure.");
     expect(homepage.text).toContain("Where is delay piling up across India?");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
@@ -93,11 +94,14 @@ describe("HTTP routes", () => {
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
+    expect(himachalOverview.text).toContain("Follow the state trail.");
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
     expect(districtsPage.text).toContain("Scan the districts under the most pressure.");
     expect(districtsPage.text).toContain("Only districts to watch");
+    expect(districtsPage.text).toContain("Snapshot movers");
+    expect(districtsPage.text).toContain("Turn a district list into a trail.");
     expect(districtsPage.text).toContain("Kangra");
     expect(districtsPage.text.indexOf("Haryana")).toBeLessThan(districtsPage.text.indexOf("Himachal Pradesh"));
     expect(districtsPage.text.indexOf("Himachal Pradesh")).toBeLessThan(districtsPage.text.indexOf("Punjab"));
@@ -105,7 +109,60 @@ describe("HTTP routes", () => {
     const districtPage = await request(app).get("/districts/kangra");
     expect(districtPage.status).toBe(200);
     expect(districtPage.text).toContain("Published district history");
+    expect(districtPage.text).toContain("What to check next.");
+    expect(districtPage.text).toContain("Download and cite this district.");
+    expect(districtPage.text).toContain("Raw captures and operator notes stay private.");
     expect(districtPage.text).toContain("/data/districts/kangra.csv");
+    expect(districtPage.text).toContain("/data/evidence/districts/kangra.json");
+    expect(districtPage.text).toContain("/data/evidence/state.json");
+
+    const districtPack = await request(app).get("/data/evidence/districts/kangra.json");
+    expect(districtPack.status).toBe(200);
+    expect(districtPack.headers["cache-control"]).toContain("no-store");
+    expect(districtPack.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
+    expect(districtPack.body.packType).toBe("district_evidence_pack");
+    expect(districtPack.body.version).toBe("lower-court-evidence-pack.v1");
+    expect(districtPack.body.geography.stateName).toBe("Himachal Pradesh");
+    expect(districtPack.body.district.name).toBe("Kangra");
+    expect(districtPack.body.links.districtHistoryCsv).toBe("/data/districts/kangra.csv");
+    expect(districtPack.body.links.stateEvidencePack).toBe("/data/evidence/state.json");
+    expect(districtPack.body.citation.plain).toContain("Kangra District Court Backlog");
+    expect(districtPack.body.recentHistory.length).toBeGreaterThan(0);
+    expect(districtPack.body.safety.containsRawCaptureArtifacts).toBe(false);
+    expect(districtPack.body.safety.containsOperatorOnlyEvidence).toBe(false);
+
+    const statePack = await request(app).get("/data/evidence/state.json");
+    expect(statePack.status).toBe(200);
+    expect(statePack.headers["cache-control"]).toContain("no-store");
+    expect(statePack.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
+    expect(statePack.body.packType).toBe("state_evidence_pack");
+    expect(statePack.body.geography.stateName).toBe("Himachal Pradesh");
+    expect(statePack.body.links.allDistrictsCsv).toBe("/data/districts.csv");
+    expect(statePack.body.topDistricts.length).toBeGreaterThan(0);
+    expect(statePack.body.safety.containsRawCaptureArtifacts).toBe(false);
+    expect(statePack.body.safety.containsOperatorOnlyEvidence).toBe(false);
+
+    const comparePage = await request(app).get("/compare/kangra-vs-shimla");
+    expect(comparePage.status).toBe(200);
+    expect(comparePage.text).toContain("Use this comparison as a starting point.");
+    expect(comparePage.text).toContain("Download both evidence packs.");
+    expect(comparePage.text).toContain("Comparison citation");
+    expect(comparePage.text).toContain("Kangra vs. Shimla District Comparison");
+    expect(comparePage.text).toContain("Copy citation");
+    expect(comparePage.text).toContain("/data/evidence/districts/kangra.json");
+    expect(comparePage.text).toContain("/data/evidence/districts/shimla.json");
+    expect(comparePage.text).toContain("/data/evidence/state.json");
+    expect(comparePage.text).toContain("https://nyaaywatch.in/compare/kangra-vs-shimla");
+
+    const moversPage = await request(app).get("/movers");
+    expect(moversPage.status).toBe(200);
+    expect(moversPage.text).toContain("Read movement before making a claim.");
+    expect(moversPage.text).toContain("Download the evidence behind these movers.");
+    expect(moversPage.text).toContain("Movers citation");
+    expect(moversPage.text).toContain("Snapshot Movers for Himachal Pradesh");
+    expect(moversPage.text).toContain("Copy citation");
+    expect(moversPage.text).toContain("/data/evidence/state.json");
+    expect(moversPage.text).toContain("Evidence JSON");
 
     const dataPage = await request(app).get("/data");
     expect(dataPage.status).toBe(200);
@@ -113,6 +170,13 @@ describe("HTTP routes", () => {
     expect(dataPage.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(dataPage.text).toContain("Download exactly what the public site is showing.");
     expect(dataPage.text).toContain("CSV/API parity");
+    expect(dataPage.text).toContain("Evidence packs");
+    expect(dataPage.text).toContain("/data/evidence/state.json");
+
+    const apiPage = await request(app).get("/api");
+    expect(apiPage.status).toBe(200);
+    expect(apiPage.text).toContain("/data/evidence/state.json");
+    expect(apiPage.text).toContain("/data/evidence/districts/:districtId.json");
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);
@@ -132,6 +196,7 @@ describe("HTTP routes", () => {
     expect(methodologyPage.status).toBe(200);
     expect(methodologyPage.text).toContain("Current public scope");
     expect(methodologyPage.text).toContain("How the public metrics are derived");
+    expect(methodologyPage.text).toContain("Source caveats");
     expect(methodologyPage.text).toContain("Published methodology and snapshot lineage");
 
     const learnPage = await request(app).get("/learn");
@@ -148,9 +213,87 @@ describe("HTTP routes", () => {
     expect(learnPage.text).toContain("A simple way to cite a number");
     expect(learnPage.text).toContain("Is this legal advice?");
 
+    const pressPage = await request(app).get("/press");
+    expect(pressPage.status).toBe(200);
+    expect(pressPage.text).toContain("Citation-ready starting points.");
+    expect(pressPage.text).toContain("currently published numbers");
+    expect(pressPage.text).toContain("/data/evidence/districts/kangra.json");
+    expect(pressPage.text).not.toContain("live numbers");
+
     const sitemap = await request(app).get("/sitemap.xml");
     expect(sitemap.status).toBe(200);
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/learn</loc>");
+  });
+
+  it("serves the national homepage when an older lower-court snapshot is missing embedded state metadata", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+
+    const legacyPunjabPayload = JSON.parse(JSON.stringify(buildPunjabTestSnapshot())) as Omit<ReturnType<typeof buildPunjabTestSnapshot>, "snapshot"> & {
+      snapshot: Partial<ReturnType<typeof buildPunjabTestSnapshot>["snapshot"]>;
+    };
+    delete legacyPunjabPayload.snapshot.stateCode;
+    delete legacyPunjabPayload.snapshot.stateName;
+
+    await context.pool.query(
+      `INSERT INTO runs (
+        id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, note, completed_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
+      [
+        "run_pb_legacy_payload",
+        "lower_court_state",
+        "PB",
+        "PB",
+        legacyPunjabPayload.snapshot.sourceName,
+        legacyPunjabPayload.snapshot.sourceSnapshotAt,
+        legacyPunjabPayload.snapshot.methodologyVersion,
+        "published",
+        legacyPunjabPayload.snapshot.qualityState,
+        "Legacy payload without duplicated state metadata",
+      ],
+    );
+    await context.pool.query(
+      `INSERT INTO published_snapshots (
+        id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)`,
+      [
+        "snapshot_pb_legacy_payload",
+        "run_pb_legacy_payload",
+        "lower_court_state",
+        "PB",
+        "PB",
+        1,
+        JSON.stringify(legacyPunjabPayload),
+        "checksum-snapshot_pb_legacy_payload",
+      ],
+    );
+    await context.pool.query(
+      `INSERT INTO publication_history (
+        id, scope_type, scope_code, state_code, published_snapshot_id, action, note
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [
+        "publication_pb_legacy_payload",
+        "lower_court_state",
+        "PB",
+        "PB",
+        "snapshot_pb_legacy_payload",
+        "publish",
+        "Legacy publication for national homepage compatibility",
+      ],
+    );
+
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+
+    const homepage = await request(app).get("/");
+    expect(homepage.status).toBe(200);
+    expect(homepage.text).toContain("How long is India waiting for justice?");
+    expect(homepage.text).toContain("/states/punjab");
+
+    const punjabStats = await request(app).get("/v1/states/punjab/stats");
+    expect(punjabStats.status).toBe(200);
+    expect(punjabStats.body.snapshot.stateCode).toBe("PB");
+    expect(punjabStats.body.snapshot.stateName).toBe("Punjab");
   });
 
   it("redirects legacy .com hosts to the canonical .in hostname", async () => {
@@ -592,6 +735,7 @@ describe("HTTP routes", () => {
     expect(overview.text).toContain("HC NJDG did not expose a trustworthy source snapshot timestamp");
     expect(overview.text).toContain("Cleared / 100 filed");
     expect(overview.text).toContain("Last-month backlog change");
+    expect(overview.text).toContain("Read this High Court in context.");
 
     const data = await request(app).get("/high-courts/himachal/data");
     expect(data.status).toBe(200);
@@ -602,6 +746,7 @@ describe("HTTP routes", () => {
     const methodology = await request(app).get("/high-courts/himachal/methodology");
     expect(methodology.status).toBe(200);
     expect(methodology.text).toContain("Every public High Court number comes from one published aggregate snapshot.");
+    expect(methodology.text).toContain("High Court caveats are separate");
     expect(methodology.text).toContain("coveredGeographies[]");
     expect(methodology.text).toContain("Current coverage on this page: Himachal Pradesh.");
     expect(methodology.text).toContain("captured_at");
@@ -788,6 +933,7 @@ describe("HTTP routes", () => {
     expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
     expect(overview.text).toContain("Cleared / 100 filed");
     expect(overview.text).toContain("Last-month backlog change");
+    expect(overview.text).toContain("Move down the court system carefully.");
 
     const data = await request(app).get("/supreme-court/data");
     expect(data.status).toBe(200);
@@ -819,6 +965,24 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
+    const previousPunjabSnapshot = JSON.parse(JSON.stringify(buildPunjabTestSnapshot())) as ReturnType<typeof buildPunjabTestSnapshot>;
+    previousPunjabSnapshot.snapshot.sourceSnapshotAt = "2026-03-31T00:00:00.000Z";
+    previousPunjabSnapshot.snapshot.publishedAt = "2026-04-01T09:00:00.000Z";
+    previousPunjabSnapshot.stats.pendingCases = 952000;
+    previousPunjabSnapshot.districts = previousPunjabSnapshot.districts.map((district) =>
+      district.districtId === "ludhiana"
+        ? { ...district, backlogCases: 232000, rank: 2 }
+        : district.districtId === "amritsar"
+          ? { ...district, backlogCases: 82000, rank: 1 }
+          : district,
+    );
+    await insertPublishedSnapshot(context.pool, {
+      runId: "run_pb_public_previous",
+      snapshotId: "snapshot_pb_public_previous",
+      publicationId: "publication_pb_public_previous",
+      stateCode: "PB",
+      payload: previousPunjabSnapshot,
+    });
     await insertPublishedSnapshot(context.pool, {
       runId: "run_pb_public",
       snapshotId: "snapshot_pb_public",
@@ -846,14 +1010,53 @@ describe("HTTP routes", () => {
 
     const punjabDistrictPage = await request(app).get("/states/punjab/districts/ludhiana");
     expect(punjabDistrictPage.status).toBe(200);
+    expect(punjabDistrictPage.text).toContain("Download and cite this district.");
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/districts/ludhiana.csv");
+    expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
+    expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/state.json");
     expect(punjabDistrictPage.text).toContain("Punjab");
+
+    const punjabDistrictPack = await request(app).get("/states/punjab/data/evidence/districts/ludhiana.json");
+    expect(punjabDistrictPack.status).toBe(200);
+    expect(punjabDistrictPack.body.packType).toBe("district_evidence_pack");
+    expect(punjabDistrictPack.body.geography.stateName).toBe("Punjab");
+    expect(punjabDistrictPack.body.district.name).toBe("Ludhiana");
+    expect(punjabDistrictPack.body.links.districtHistoryCsv).toBe("/states/punjab/data/districts/ludhiana.csv");
+    expect(punjabDistrictPack.body.links.stateEvidencePack).toBe("/states/punjab/data/evidence/state.json");
+    expect(punjabDistrictPack.body.safety.containsRawCaptureArtifacts).toBe(false);
+    expect(punjabDistrictPack.body.safety.containsOperatorOnlyEvidence).toBe(false);
+
+    const punjabStatePack = await request(app).get("/states/punjab/data/evidence/state.json");
+    expect(punjabStatePack.status).toBe(200);
+    expect(punjabStatePack.body.packType).toBe("state_evidence_pack");
+    expect(punjabStatePack.body.geography.stateName).toBe("Punjab");
+    expect(punjabStatePack.body.links.allDistrictsCsv).toBe("/states/punjab/data/districts.csv");
+
+    const punjabCompare = await request(app).get("/states/punjab/compare/ludhiana-vs-amritsar");
+    expect(punjabCompare.status).toBe(200);
+    expect(punjabCompare.text).toContain("Use this comparison as a starting point.");
+    expect(punjabCompare.text).toContain("Download both evidence packs.");
+    expect(punjabCompare.text).toContain("Ludhiana vs. Amritsar District Comparison");
+    expect(punjabCompare.text).toContain("Copy citation");
+    expect(punjabCompare.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
+    expect(punjabCompare.text).toContain("/states/punjab/data/evidence/districts/amritsar.json");
+    expect(punjabCompare.text).toContain("/states/punjab/data/evidence/state.json");
+    expect(punjabCompare.text).toContain("https://nyaaywatch.in/states/punjab/compare/ludhiana-vs-amritsar");
+
+    const punjabMovers = await request(app).get("/states/punjab/movers");
+    expect(punjabMovers.status).toBe(200);
+    expect(punjabMovers.text).toContain("Download the evidence behind these movers.");
+    expect(punjabMovers.text).toContain("Snapshot Movers for Punjab");
+    expect(punjabMovers.text).toContain("Copy citation");
+    expect(punjabMovers.text).toContain("/states/punjab/data/evidence/state.json");
+    expect(punjabMovers.text).toContain("Evidence JSON");
 
     const punjabData = await request(app).get("/states/punjab/data");
     expect(punjabData.status).toBe(200);
     expect(punjabData.headers["cache-control"]).toContain("no-store");
     expect(punjabData.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(punjabData.text).toContain("/v1/states/punjab/stats");
+    expect(punjabData.text).toContain("/states/punjab/data/evidence/state.json");
 
     const punjabCsv = await request(app).get("/states/punjab/data/districts.csv");
     expect(punjabCsv.status).toBe(200);
@@ -865,10 +1068,12 @@ describe("HTTP routes", () => {
     const punjabMethodology = await request(app).get("/states/punjab/methodology");
     expect(punjabMethodology.status).toBe(200);
     expect(punjabMethodology.text).toContain("This state page covers Punjab.");
+    expect(punjabMethodology.text).toContain("Source caveats");
 
     const punjabApiPage = await request(app).get("/states/punjab/api");
     expect(punjabApiPage.status).toBe(200);
     expect(punjabApiPage.text).toContain("/v1/states/punjab/districts");
+    expect(punjabApiPage.text).toContain("/states/punjab/data/evidence/districts/:districtId.json");
   });
 
   it("serves Ladakh through the same public route family with Union Territory copy", async () => {
@@ -908,6 +1113,7 @@ describe("HTTP routes", () => {
     const ladakhMethodology = await request(app).get("/states/ladakh/methodology");
     expect(ladakhMethodology.status).toBe(200);
     expect(ladakhMethodology.text).toContain("All expected districts for this union territory");
+    expect(ladakhMethodology.text).toContain("state or Union Territory label");
 
     const ladakhApiPage = await request(app).get("/states/ladakh/api");
     expect(ladakhApiPage.status).toBe(200);

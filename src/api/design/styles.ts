@@ -431,7 +431,7 @@ export const BASE_CSS = `
      a big gap to the badge. */
   .endpoint {
     display: grid;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: max-content minmax(0, 1fr);
     column-gap: 12px;
     row-gap: 12px;
     align-items: baseline;
@@ -452,7 +452,17 @@ export const BASE_CSS = `
     color: var(--ink);
     background: transparent;
     padding: 0;
-    word-break: break-all;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .endpoint__routes {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+  .endpoint__routes code.endpoint__path {
+    display: block;
   }
   .endpoints { margin-bottom: 72px; }
 
