@@ -76,6 +76,10 @@ describe("public copy guardrails", () => {
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
       },
       {
+        path: "/compare/kangra-vs-shimla",
+        requiredText: "Use this comparison as a starting point.",
+      },
+      {
         path: "/data",
         requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
       },
@@ -90,6 +94,10 @@ describe("public copy guardrails", () => {
       {
         path: "/learn",
         requiredText: "Understand India&#39;s courts before reading the numbers.",
+      },
+      {
+        path: "/press",
+        requiredText: "currently published numbers",
       },
     ] as const;
 
@@ -141,6 +149,10 @@ describe("public copy guardrails", () => {
       {
         path: "/states/punjab/districts/ludhiana",
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+      },
+      {
+        path: "/states/punjab/compare/ludhiana-vs-amritsar",
+        requiredText: "Use this comparison as a starting point.",
       },
       {
         path: "/states/punjab/data",

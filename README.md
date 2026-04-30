@@ -23,7 +23,7 @@ The public alpha covers the full Indian court hierarchy:
 - **Himachal Pradesh** remains the unscoped lower-court default at `/`, `/districts`, `/data`, `/methodology`, `/api`
 - **Plain-language court-system guide** at `/learn`
 
-Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Cross-jurisdiction surfaces include `/movers`, `/compare/:slug`, and embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`.
+Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Investigation surfaces include `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, and embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`.
 
 ## Product Guardrails
 

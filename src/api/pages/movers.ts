@@ -5,6 +5,7 @@ import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { describeWatchlistPersistence } from "./metric-insights.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderMoversPage(result: DistrictMoversResult, context: PublicPageContext): string {
   const currentDate = formatDate(result.currentSnapshot.sourceSnapshotAt);
@@ -23,6 +24,10 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     .filter((m) => m.rankDelta > 0)
     .sort((a, b) => b.rankDelta - a.rankDelta)
     .slice(0, 10);
+  const comparisonHref =
+    biggestJumps.length >= 2
+      ? context.routes.compare(biggestJumps[0].districtId, biggestJumps[1].districtId)
+      : context.routes.districts;
 
   const body = `
     <section class="movers-hero">
@@ -32,7 +37,43 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
       <p class="movers-hero__meta">${escapeHtml(result.currentSnapshot.stateName)} · Source: ${escapeHtml(result.currentSnapshot.sourceAttribution)}</p>
     </section>
 
-    <section class="movers-section">
+    ${renderInvestigationWorkflow({
+      headline: "Read movement before making a claim.",
+      lede:
+        "Movers compare two published snapshots. Use them to choose what deserves closer inspection, then open the district evidence pages before citing the change.",
+      steps: [
+        {
+          eyebrow: "01",
+          title: "Start with increases",
+          body: "Look for districts where the pending load grew most since the previous published snapshot.",
+          href: "#biggest-backlog-increases",
+          cta: "See increases",
+        },
+        {
+          eyebrow: "02",
+          title: "Compare two movers",
+          body: "Put two high-movement districts side by side to separate scale, wait, clearance pace, and rank change.",
+          href: comparisonHref,
+          cta: "Open comparison",
+        },
+        {
+          eyebrow: "03",
+          title: "Inspect evidence",
+          body: "Open the district page to see whether the signal persists across history or appears only in one snapshot window.",
+          href: biggestJumps[0] ? context.routes.district(biggestJumps[0].districtId) : context.routes.districts,
+          cta: "Open top mover",
+        },
+        {
+          eyebrow: "04",
+          title: "Cite the snapshot",
+          body: "Use CSV and methodology links so the movement window and source date remain visible beside the number.",
+          href: context.routes.data,
+          cta: "Open data",
+        },
+      ],
+    })}
+
+    <section class="movers-section" id="biggest-backlog-increases">
       ${renderSectionHead({
         headline: "Biggest backlog increases.",
         lede: "Districts where the backlog grew most since the previous published snapshot.",
@@ -77,7 +118,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
       methodologyVersion: result.currentSnapshot.methodologyVersion,
       sourceAttribution: result.currentSnapshot.sourceAttribution,
     },
-    pageCss: MOVERS_PAGE_CSS,
+    pageCss: MOVERS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     og: {
       title: `Snapshot Movers — ${result.currentSnapshot.stateName} — NyaayWatch`,
       description: `Which districts moved most between the ${previousDate} and ${currentDate} published snapshots? Biggest backlog increases, fastest-improving, and biggest rank changes.`,

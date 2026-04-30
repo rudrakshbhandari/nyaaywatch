@@ -480,6 +480,42 @@ export function createApp(
     }),
   );
 
+  app.get(
+    "/states/:stateSlug/compare/:slug",
+    asyncRoute(async (request, response) => {
+      const slug = readRouteParam(request.params.slug);
+      const vsIndex = slug.indexOf("-vs-");
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      if (vsIndex === -1) {
+        response.status(404).send(renderEmptyState("Comparison Not Found", `Use ${context.routes.compare("district-a", "district-b")}`));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderCompareNotFound(context));
+        return;
+      }
+
+      const idA = slug.slice(0, vsIndex);
+      const idB = slug.slice(vsIndex + 4);
+      const districtA = snapshot.payload.districts.find((d) => d.districtId === idA);
+      const districtB = snapshot.payload.districts.find((d) => d.districtId === idB);
+      if (!districtA || !districtB) {
+        response.status(404).send(renderCompareNotFound(context));
+        return;
+      }
+
+      response.send(renderComparePage(snapshot.payload, districtA, districtB, context));
+    }),
+  );
+
   // ── Movers (/movers) ──────────────────────────────────────────────────────
   app.get(
     "/movers",
