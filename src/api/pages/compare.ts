@@ -5,6 +5,7 @@ import type { PublicPageContext } from "../public-state.js";
 import { renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
+import { EVIDENCE_ENTRY_POINTS_CSS, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderComparePage(
@@ -75,6 +76,35 @@ export function renderComparePage(
       </div>
     </section>
 
+    ${renderEvidenceEntryPoints({
+      headline: "Download both evidence packs.",
+      lede:
+        "Use these packs when the comparison needs to travel with source dates, methodology version, CSV links, citation text, and caveats for each district.",
+      entries: [
+        {
+          title: `${a.districtName} pack`,
+          body: "Use this for the first district's metrics, history, citation text, and public-data links.",
+          href: context.routes.districtEvidencePack(a.districtId),
+          cta: "Download JSON",
+          codeLabel: context.routes.districtEvidencePack(a.districtId),
+        },
+        {
+          title: `${b.districtName} pack`,
+          body: "Use this for the second district's metrics, history, citation text, and public-data links.",
+          href: context.routes.districtEvidencePack(b.districtId),
+          cta: "Download JSON",
+          codeLabel: context.routes.districtEvidencePack(b.districtId),
+        },
+        {
+          title: "State pack",
+          body: "Use this to place the two districts inside the full lower-court geography.",
+          href: context.routes.stateEvidencePack,
+          cta: "Download state JSON",
+          codeLabel: context.routes.stateEvidencePack,
+        },
+      ],
+    })}
+
     ${renderInvestigationWorkflow({
       headline: "Use this comparison as a starting point.",
       lede:
@@ -131,7 +161,7 @@ export function renderComparePage(
       methodologyVersion: snapshot.snapshot.methodologyVersion,
       sourceAttribution: snapshot.snapshot.sourceAttribution,
     },
-    pageCss: COMPARE_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
+    pageCss: COMPARE_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS + EVIDENCE_ENTRY_POINTS_CSS,
     og: {
       title: ogTitle,
       description: ogDesc,
