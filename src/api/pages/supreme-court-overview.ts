@@ -14,6 +14,7 @@ import {
   describeCatchUp,
   summarizeSupremeCourtCivilCriminalImbalance,
 } from "./metric-insights.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderSupremeCourtOverviewPage(
   profile: SupremeCourtProfile,
@@ -87,6 +88,42 @@ export function renderSupremeCourtOverviewPage(
         })}
       </section>
     </div>
+
+    ${renderInvestigationWorkflow({
+      headline: "Move down the court system carefully.",
+      lede:
+        "Use the Supreme Court aggregate as the national entry point, then move to High Courts and lower-court geographies while keeping each tier's method separate.",
+      steps: [
+        {
+          eyebrow: "01",
+          title: "Read the aggregate",
+          body: "Start with Supreme Court backlog pressure, clearance pace, and registered or unregistered pending totals.",
+          href: context.routes.methodology,
+          cta: "Read methodology",
+        },
+        {
+          eyebrow: "02",
+          title: "Move to High Courts",
+          body: "Open the High Court index for court-by-court pages with their own source boundaries and coverage labels.",
+          href: "/high-courts",
+          cta: "Browse High Courts",
+        },
+        {
+          eyebrow: "03",
+          title: "Open lower courts",
+          body: "Use the national map to reach state and district pages, movers, comparisons, and district evidence.",
+          href: "/#map",
+          cta: "Open map",
+        },
+        {
+          eyebrow: "04",
+          title: "Cite carefully",
+          body: "Use data, API, and press materials so the published snapshot and caveats travel with the number.",
+          href: context.routes.data,
+          cta: "Open data",
+        },
+      ],
+    })}
 
     <section class="sc-section">
       ${renderSectionHead({
@@ -209,7 +246,7 @@ export function renderSupremeCourtOverviewPage(
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     ticker: `SUPREME COURT · ${referenceLabel.toUpperCase()} · ${snapshot.snapshot.methodologyVersion}`,
-    pageCss: SUPREME_COURT_OVERVIEW_CSS,
+    pageCss: SUPREME_COURT_OVERVIEW_CSS + INVESTIGATION_WORKFLOW_CSS,
     footer: {
       sourceDateLabel: referenceLabel,
       methodologyVersion: snapshot.snapshot.methodologyVersion,
