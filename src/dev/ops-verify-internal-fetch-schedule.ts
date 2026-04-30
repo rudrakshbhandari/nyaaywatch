@@ -10,7 +10,7 @@ async function main() {
 
   if (!options.baseUrl) {
     throw new Error(
-      "Usage: tsx src/dev/ops-verify-internal-fetch-schedule.ts --base-url <https://nyaaywatch.in> [--stack-name <nyaaywatch-staging>] [--schedule-execution-lag-days <2>]",
+      "Usage: tsx src/dev/ops-verify-internal-fetch-schedule.ts --base-url <https://nyaaywatch.in> [--stack-name <nyaaywatch-production>] [--schedule-execution-lag-days <2>]",
     );
   }
 

@@ -17,6 +17,7 @@ import {
   summarizeHighCourtCaseTypeConcentration,
   summarizeHighCourtCivilCriminalImbalance,
 } from "./metric-insights.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderHighCourtOverviewPage(
   profile: HighCourtProfile,
@@ -93,6 +94,42 @@ export function renderHighCourtOverviewPage(
         })}
       </section>
     </div>
+
+    ${renderInvestigationWorkflow({
+      headline: "Read this High Court in context.",
+      lede:
+        "Stay court-first, then move to the High Court index or lower-court geography pages without treating separate tiers as one ranking.",
+      steps: [
+        {
+          eyebrow: "01",
+          title: "Start with this court",
+          body: "Use pending load, clearance pace, backlog change, and age-bucket burden inside this High Court's own source boundary.",
+          href: context.routes.methodology,
+          cta: "Read methodology",
+        },
+        {
+          eyebrow: "02",
+          title: "Scan High Courts",
+          body: "Return to the index when you need to compare High Court pages with their coverage labels and source caveats visible.",
+          href: "/high-courts",
+          cta: "Open High Courts",
+        },
+        {
+          eyebrow: "03",
+          title: "Move to lower courts",
+          body: "Use the national map to enter lower-court geographies as a separate drilldown, not a direct High Court ranking.",
+          href: "/#map",
+          cta: "Open map",
+        },
+        {
+          eyebrow: "04",
+          title: "Cite or reuse",
+          body: "Use the data and API pages for published fields, and the press kit for careful public wording.",
+          href: context.routes.data,
+          cta: "Open data",
+        },
+      ],
+    })}
 
     <section class="hc-section">
       ${renderSectionHead({
@@ -243,7 +280,7 @@ export function renderHighCourtOverviewPage(
     navLinks: context.navLinks,
     stateLinks: context.highCourtLinks,
     ticker: `${profile.courtName.toUpperCase()} · ${referenceLabel.toUpperCase()} · ${snapshot.snapshot.methodologyVersion}`,
-    pageCss: HIGH_COURT_OVERVIEW_CSS,
+    pageCss: HIGH_COURT_OVERVIEW_CSS + INVESTIGATION_WORKFLOW_CSS,
     footer: {
       sourceDateLabel: referenceLabel,
       methodologyVersion: snapshot.snapshot.methodologyVersion,

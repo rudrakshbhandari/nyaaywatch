@@ -4,7 +4,9 @@
 
 NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, all 25 High Courts, and the lower courts in every state and Union Territory — drawn from public NJDG data with full methodology disclosure. Every number links to a dated source.
 
-→ [Live site](https://nyaaywatch.in) · [Press & embed kit](https://nyaaywatch.in/press) · [Methodology](https://nyaaywatch.in/methodology) · [API reference](https://nyaaywatch.in/api) · [Data downloads](https://nyaaywatch.in/data)
+→ [Live site](https://nyaaywatch.in) · [Learn](https://nyaaywatch.in/learn) · [Press & embed kit](https://nyaaywatch.in/press) · [Methodology](https://nyaaywatch.in/methodology) · [API reference](https://nyaaywatch.in/api) · [Data downloads](https://nyaaywatch.in/data)
+
+Open-source project links: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [License](LICENSE)
 
 ```bash
 curl https://nyaaywatch.in/v1/stats/himachal | jq
@@ -19,8 +21,9 @@ The public alpha covers the full Indian court hierarchy:
 - **All 25 High Courts** at `/high-courts/:slug` — canonical list in [src/high-courts.ts](src/high-courts.ts)
 - **All 36 lower-court geographies** (28 states + 8 Union Territories) at `/states/:slug` — canonical list in [src/geographies.ts](src/geographies.ts)
 - **Himachal Pradesh** remains the unscoped lower-court default at `/`, `/districts`, `/data`, `/methodology`, `/api`
+- **Plain-language court-system guide** at `/learn`
 
-Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Cross-jurisdiction surfaces include `/movers`, `/compare/:slug`, and embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`.
+Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Investigation surfaces include `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`, and lower-court evidence packs under `/data/evidence/...`.
 
 ## Product Guardrails
 
@@ -86,11 +89,11 @@ npm run infra:production-preflight
 npm run infra:production-cutover-inventory
 ```
 
-Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It still targets the legacy production backing stack named `nyaaywatch-staging`; the reality-named `nyaaywatch-production` stack exists as a pre-DNS cutover target, but it should not receive production operator or scheduler traffic until the DNS and schedule cutover is completed. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping `nyaaywatch.in` as the HTTP and TLS host.
+Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated staging now runs as `nyaaywatch-staging` at `https://staging.nyaaywatch.in`; staging schedules remain disabled unless an operator intentionally enables them for rehearsal. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping the public hostname as the HTTP and TLS host.
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
-Use `npm run infra:production-cutover-inventory` before any mutating `nyaaywatch-production` work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and the target-stack status needed by the production cutover runbook. The current pre-DNS target was bootstrapped from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019` and synced from the current artifacts bucket; the remaining cutover work is DNS, scheduler reconciliation, and post-cutover retirement of the legacy backing stack.
+Use `npm run infra:production-cutover-inventory` before any mutating production-stack cutover work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and target-stack status needed by the production cutover runbook. The April 28, 2026 cutover restored `nyaaywatch-production` from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced the artifacts bucket, moved DNS to the production ALB, and reconciled production-named schedules. The later staging reclaim pointed `staging.nyaaywatch.in` at the `nyaaywatch-staging` ALB with the staging ACM certificate; `nyaaywatch-staging-v2` was retired after the reclaim.
 
 Release helpers (run before, after, and to record a publication):
 
@@ -126,6 +129,10 @@ GET /v1/trends
 GET /v1/states/:stateSlug/{stats,districts,trends}
 GET /v1/high-courts/:courtSlug/{stats,trends}
 GET /v1/supreme-court/{stats,trends}
+GET /data/evidence/state.json
+GET /data/evidence/districts/:districtId.json
+GET /states/:stateSlug/data/evidence/state.json
+GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
 Full contract is enforced by API contract tests under `src/api/__tests__/`.
