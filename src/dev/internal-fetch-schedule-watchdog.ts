@@ -14,7 +14,7 @@ const FETCH_TIMEOUT_MS = 30_000;
 const SUCCESSFUL_RUN_STATUSES = new Set(["completed", "published", "replayed"]);
 
 export const DEFAULT_FETCH_SCHEDULE_WATCHDOG_REGION = "ap-south-1";
-export const DEFAULT_FETCH_SCHEDULE_WATCHDOG_STACK = "nyaaywatch-staging";
+export const DEFAULT_FETCH_SCHEDULE_WATCHDOG_STACK = "nyaaywatch-production";
 export const DEFAULT_FETCH_SCHEDULE_EXECUTION_LAG_THRESHOLD_DAYS = 2;
 
 export const DEFAULT_STATE_SCHEDULE_NAME_SUFFIX = "weekday-internal-fetch";

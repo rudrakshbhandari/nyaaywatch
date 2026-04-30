@@ -114,7 +114,7 @@ npm run operator:remote -- \
 
 Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` even locally so the code path matches the AWS deployment target.
 
-Use `npm run operator:remote` for live remote operator access. Use `npm run operator:production` for live AWS heavy-state work when the operator command should run inside one-off ECS tasks instead of through the public HTTP path. It currently targets the legacy production backing stack named `nyaaywatch-staging`; use it only for recorded release or internal-proof work until a reality-named `nyaaywatch-production` stack replaces that legacy name.
+Use `npm run operator:remote` for live remote operator access. Use `npm run operator:production` for live AWS heavy-state work when the operator command should run inside one-off ECS tasks instead of through the public HTTP path. It targets the reality-named production backing stack `nyaaywatch-production`; use it only for recorded release or internal-proof work.
 
 ## Commit Examples
 

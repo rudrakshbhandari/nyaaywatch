@@ -73,9 +73,12 @@ export class PublicCacheInvalidationService {
     const routes = buildPublicStateRoutes(profile);
     const baseUrl = this.requirePublicBaseUrl();
 
-    return [routes.data, routes.districtsCsv, ...districtIds.map((districtId) => routes.districtCsv(districtId))].map((path) =>
-      new URL(path, baseUrl).toString(),
-    );
+    return [
+      routes.data,
+      routes.districtsCsv,
+      routes.stateEvidencePack,
+      ...districtIds.flatMap((districtId) => [routes.districtCsv(districtId), routes.districtEvidencePack(districtId)]),
+    ].map((path) => new URL(path, baseUrl).toString());
   }
 
   private buildHighCourtUrls(profile: HighCourtProfile) {

@@ -45,6 +45,87 @@ export function renderLearnPage(): string {
       </ol>
     </section>
 
+    <section class="learn-section learn-hierarchy">
+      <div>
+        ${renderSectionHead({
+          headline: "How the levels connect",
+          lede:
+            "A lower court, a High Court, and the Supreme Court do not do the same job. Read each level on its own terms first.",
+        })}
+      </div>
+      <div class="learn-hierarchy__diagram" aria-label="How the levels connect">
+        <div class="learn-node learn-node--supreme">
+          <span>01</span>
+          <strong>Supreme Court</strong>
+          <p>National constitutional and appellate role.</p>
+        </div>
+        <div class="learn-connector" aria-hidden="true"></div>
+        <div class="learn-node learn-node--high">
+          <span>02</span>
+          <strong>High Courts</strong>
+          <p>State or territory-level constitutional courts.</p>
+        </div>
+        <div class="learn-connector" aria-hidden="true"></div>
+        <div class="learn-node learn-node--district">
+          <span>03</span>
+          <strong>District and subordinate courts</strong>
+          <p>Many civil and criminal cases begin here.</p>
+        </div>
+      </div>
+      <div class="learn-scope-table" role="table" aria-label="What NyaayWatch tracks by court level">
+        <div role="row" class="learn-scope-table__head">
+          <span role="columnheader">Level</span>
+          <span role="columnheader">Tracked here</span>
+          <span role="columnheader">Read with care</span>
+        </div>
+        <div role="row">
+          <span role="cell">Supreme Court</span>
+          <span role="cell">Pending cases, filed cases, cleared cases, and age buckets.</span>
+          <span role="cell">Its role is different from trial courts, so do not rank it against districts.</span>
+        </div>
+        <div role="row">
+          <span role="cell">High Courts</span>
+          <span role="cell">Court-level pressure signals for all 25 High Courts.</span>
+          <span role="cell">Some High Courts cover more than one state or Union Territory.</span>
+        </div>
+        <div role="row">
+          <span role="cell">Lower courts</span>
+          <span role="cell">State, Union Territory, and district-level public aggregates.</span>
+          <span role="cell">Districts vary by size, case mix, and local court structure.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="learn-section learn-journey">
+      ${renderSectionHead({
+        headline: "How a case usually moves",
+        lede:
+          "This is a simple reading map, not legal advice. A real case can move differently depending on the law, court, case type, and orders passed.",
+      })}
+      <ol class="learn-timeline">
+        <li>
+          <span class="learn-timeline__number">01</span>
+          <h3>Filed</h3>
+          <p>A case is brought to a court or registry. NyaayWatch counts filings only when they appear in the public aggregate source for that period.</p>
+        </li>
+        <li>
+          <span class="learn-timeline__number">02</span>
+          <h3>Listed and heard</h3>
+          <p>The case may be listed for hearings, procedural steps, replies, evidence, arguments, or orders. This can take one hearing or many.</p>
+        </li>
+        <li>
+          <span class="learn-timeline__number">03</span>
+          <h3>Still pending</h3>
+          <p>If the case has not moved out of the pending count by the date shown, it remains part of the backlog pressure you see on the page.</p>
+        </li>
+        <li>
+          <span class="learn-timeline__number">04</span>
+          <h3>Cleared</h3>
+          <p>A cleared case has moved out of the pending count in the public aggregate. That does not tell you whether someone won, lost, settled, withdrew, or used another legal route.</p>
+        </li>
+      </ol>
+    </section>
+
     <section class="learn-section">
       ${renderSectionHead({
         headline: "Words you will see on NyaayWatch",
@@ -75,6 +156,18 @@ export function renderLearnPage(): string {
           <h3>Flagged signal</h3>
           <p>A signal that asks for attention, such as high backlog pressure or weak clearance pace. It is not a finding about a court, judge, lawyer, or litigant.</p>
         </article>
+        <article class="card">
+          <h3>Old-case burden</h3>
+          <p>The share of pending cases that have been waiting for several years. It helps show where long waits are concentrated.</p>
+        </article>
+        <article class="card">
+          <h3>File-clear gap</h3>
+          <p>The difference between cases filed and cases cleared in the same period. A positive gap usually adds pressure.</p>
+        </article>
+        <article class="card">
+          <h3>Source date</h3>
+          <p>The date attached to the public source used for the number. Check it before quoting or comparing a page.</p>
+        </article>
       </div>
     </section>
 
@@ -97,6 +190,65 @@ export function renderLearnPage(): string {
       </div>
     </section>
 
+    <section class="learn-section learn-data-rules">
+      ${renderSectionHead({
+        headline: "How to read delay data",
+        lede:
+          "Court numbers are useful only when the limits are visible. These rules stop a rough signal from becoming a false claim.",
+      })}
+      <div class="learn-rule-grid">
+        <article class="learn-rule">
+          <strong>Pending is not blame</strong>
+          <p>A pending case count shows pressure. It does not explain why a case is pending or who caused the delay.</p>
+        </article>
+        <article class="learn-rule">
+          <strong>Clearance rate needs context</strong>
+          <p>A high clearance rate can still sit beside a large backlog. A low rate can be temporary. Read it with filed and pending cases.</p>
+        </article>
+        <article class="learn-rule">
+          <strong>Old cases matter</strong>
+          <p>Two courts can have similar pending counts but very different wait profiles if one has more older cases.</p>
+        </article>
+        <article class="learn-rule">
+          <strong>One month is not a trend</strong>
+          <p>A monthly gap is a signal for attention. A longer trend is stronger than one unusual month.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="learn-section learn-mistakes">
+      ${renderSectionHead({
+        headline: "Common mistakes to avoid",
+        lede:
+          "These are the traps that make court-data numbers sound stronger than they are.",
+      })}
+      <div class="card learn-mistakes__card">
+        <ul>
+          <li><strong>Do not turn flags into accusations.</strong> A flag says the number needs attention, not that a person or court acted wrongly.</li>
+          <li><strong>Do not rank every court together.</strong> Supreme Court, High Court, and district court numbers describe different work.</li>
+          <li><strong>Do not quote a number without its date.</strong> A court page is easier to check when the source date travels with the number.</li>
+          <li><strong>Do not assume missing movement means nothing changed.</strong> The public source may refresh after the period shown on NyaayWatch.</li>
+          <li><strong>Do not use this as case advice.</strong> Aggregate data can explain public pressure, not what to do in one case.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="learn-section learn-citation">
+      <div>
+        ${renderSectionHead({
+          headline: "A simple way to cite a number",
+          lede:
+            "A good citation includes the court, the number, the date, and the method link. That makes the claim checkable later.",
+        })}
+      </div>
+      <div class="learn-citation__example" aria-label="Example citation">
+        <p>Example:</p>
+        <blockquote>
+          NyaayWatch reported <strong>cases pending in the High Court of Delhi</strong> on the page dated <strong>31 March 2026</strong>, using public NJDG aggregate data and the method linked on that court page.
+        </blockquote>
+      </div>
+    </section>
+
     <section class="learn-section">
       ${renderSectionHead({
         headline: "Quick questions",
@@ -114,6 +266,14 @@ export function renderLearnPage(): string {
         <article class="card">
           <h3>Can I compare one High Court with one district court?</h3>
           <p>You can read both, but be careful. Court levels handle different work, and the metrics are not a single national ranking.</p>
+        </article>
+        <article class="card">
+          <h3>Why do some High Courts cover more than one place?</h3>
+          <p>India's High Court map does not match the state map one-to-one. Some High Courts serve more than one state or Union Territory.</p>
+        </article>
+        <article class="card">
+          <h3>Why are some numbers rounded or simplified?</h3>
+          <p>NyaayWatch uses public aggregate data. The page explains pressure clearly, while the method page carries formula details and caveats.</p>
         </article>
         <article class="card">
           <h3>Where can I check the official sources?</h3>
@@ -197,6 +357,110 @@ const LEARN_PAGE_CSS = `
   .learn-section {
     margin: 0 0 80px;
   }
+  .learn-hierarchy {
+    display: grid;
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+    gap: 32px;
+    align-items: start;
+    padding: 34px 0 0;
+    border-top: 2px solid var(--ink);
+  }
+  .learn-hierarchy .section-head {
+    margin-bottom: 0;
+  }
+  .learn-hierarchy__diagram {
+    display: grid;
+    grid-template-columns: 1fr 28px 1fr 28px 1fr;
+    align-items: stretch;
+  }
+  .learn-node {
+    min-height: 190px;
+    padding: 18px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .learn-node span,
+  .learn-timeline__number {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  .learn-node strong {
+    display: block;
+    margin-top: 28px;
+    font-size: 21px;
+    line-height: 1.08;
+  }
+  .learn-node p {
+    margin: 12px 0 0;
+    color: var(--ink-soft);
+  }
+  .learn-connector {
+    align-self: center;
+    height: 1px;
+    background: var(--ink);
+  }
+  .learn-scope-table {
+    grid-column: 1 / -1;
+    margin-top: 24px;
+    border-top: 1px solid var(--ink);
+  }
+  .learn-scope-table [role="row"] {
+    display: grid;
+    grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1.25fr) minmax(0, 1.1fr);
+    gap: 18px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .learn-scope-table [role="columnheader"] {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .learn-scope-table [role="cell"] {
+    color: var(--ink-soft);
+  }
+  .learn-scope-table [role="cell"]:first-child {
+    color: var(--ink);
+    font-weight: 800;
+  }
+  .learn-journey {
+    padding: 36px 0 0;
+    border-top: 2px solid var(--ink);
+  }
+  .learn-timeline {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .learn-timeline li {
+    min-height: 236px;
+    padding: 18px;
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    background: var(--paper);
+  }
+  .learn-timeline h3 {
+    margin: 34px 0 12px;
+    font-size: 24px;
+    line-height: 1.05;
+  }
+  .learn-timeline p {
+    margin: 0;
+    color: var(--ink-soft);
+  }
   .learn-glossary {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -220,14 +484,91 @@ const LEARN_PAGE_CSS = `
   .learn-reading__card li + li {
     margin-top: 10px;
   }
+  .learn-data-rules,
+  .learn-mistakes,
+  .learn-citation {
+    padding: 34px 0 0;
+    border-top: 2px solid var(--ink);
+  }
+  .learn-rule-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .learn-rule {
+    min-height: 190px;
+    padding: 18px;
+    border: 1px solid var(--rule);
+    background: color-mix(in srgb, var(--paper) 84%, var(--accent) 16%);
+  }
+  .learn-rule strong {
+    display: block;
+    font-size: 19px;
+    line-height: 1.08;
+  }
+  .learn-rule p {
+    margin: 14px 0 0;
+    color: var(--ink-soft);
+  }
+  .learn-mistakes__card ul {
+    margin: 0;
+    padding-left: 20px;
+  }
+  .learn-mistakes__card li + li {
+    margin-top: 12px;
+  }
+  .learn-citation {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .learn-citation .section-head {
+    margin-bottom: 0;
+  }
+  .learn-citation__example {
+    padding: 22px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+  }
+  .learn-citation__example p {
+    margin: 0 0 10px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .learn-citation__example blockquote {
+    margin: 0;
+    padding: 0 0 0 18px;
+    border-left: 3px solid var(--accent);
+    color: var(--ink-soft);
+    font-size: 20px;
+    line-height: 1.45;
+  }
   .learn-faq {
     align-items: stretch;
   }
   @media (max-width: 960px) {
     .learn-map,
-    .learn-reading {
+    .learn-hierarchy,
+    .learn-reading,
+    .learn-citation {
       grid-template-columns: 1fr;
       gap: 24px;
+    }
+    .learn-hierarchy__diagram {
+      grid-template-columns: 1fr;
+    }
+    .learn-connector {
+      width: 1px;
+      height: 24px;
+      justify-self: center;
+    }
+    .learn-timeline,
+    .learn-rule-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .learn-glossary {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -247,6 +588,19 @@ const LEARN_PAGE_CSS = `
     .learn-glossary {
       grid-template-columns: 1fr;
       gap: 2px;
+    }
+    .learn-scope-table [role="row"] {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .learn-timeline,
+    .learn-rule-grid {
+      grid-template-columns: 1fr;
+    }
+    .learn-timeline li,
+    .learn-rule,
+    .learn-node {
+      min-height: auto;
     }
     .learn-section {
       margin-bottom: 56px;
