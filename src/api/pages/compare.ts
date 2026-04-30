@@ -5,7 +5,7 @@ import type { PublicPageContext } from "../public-state.js";
 import { renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
-import { EVIDENCE_ENTRY_POINTS_CSS, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
+import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderComparePage(
@@ -19,6 +19,9 @@ export function renderComparePage(
   const snapshotDate = formatDate(snapshot.snapshot.sourceSnapshotAt);
   const comparePath = context.routes.compare(a.districtId, b.districtId);
   const compareUrl = `${SITE_ORIGIN}${comparePath}`;
+  const compareCitation = `NyaayWatch. "${a.districtName} vs. ${b.districtName} District Comparison." ${snapshotDate}. ${snapshot.snapshot.sourceAttribution}. ${compareUrl}`;
+  const aCitation = buildDistrictCitation(a.districtName, snapshotDate, snapshot.snapshot.sourceAttribution, `${SITE_ORIGIN}${context.routes.district(a.districtId)}`);
+  const bCitation = buildDistrictCitation(b.districtName, snapshotDate, snapshot.snapshot.sourceAttribution, `${SITE_ORIGIN}${context.routes.district(b.districtId)}`);
 
   const ogTitle = `${a.districtName} vs. ${b.districtName} — NyaayWatch`;
   const ogDesc = `${a.districtName}: ${a.backlogCases.toLocaleString("en-IN")} cases waiting, ~${waitA} mo typical wait. ${b.districtName}: ${b.backlogCases.toLocaleString("en-IN")} cases waiting, ~${waitB} mo typical wait. Source: NyaayWatch ${snapshotDate}.`;
@@ -82,11 +85,20 @@ export function renderComparePage(
         "Use these packs when the comparison needs to travel with source dates, methodology version, CSV links, citation text, and caveats for each district.",
       entries: [
         {
+          title: "Comparison citation",
+          body: "Use this when citing the side-by-side comparison route.",
+          href: comparePath,
+          cta: "Open comparison",
+          codeLabel: comparePath,
+          citationText: compareCitation,
+        },
+        {
           title: `${a.districtName} pack`,
           body: "Use this for the first district's metrics, history, citation text, and public-data links.",
           href: context.routes.districtEvidencePack(a.districtId),
           cta: "Download JSON",
           codeLabel: context.routes.districtEvidencePack(a.districtId),
+          citationText: aCitation,
         },
         {
           title: `${b.districtName} pack`,
@@ -94,6 +106,7 @@ export function renderComparePage(
           href: context.routes.districtEvidencePack(b.districtId),
           cta: "Download JSON",
           codeLabel: context.routes.districtEvidencePack(b.districtId),
+          citationText: bCitation,
         },
         {
           title: "State pack",
@@ -146,6 +159,7 @@ export function renderComparePage(
       <a class="btn btn--ghost" href="${context.routes.district(a.districtId)}">${escapeHtml(a.districtName)} full evidence</a>
       <a class="btn btn--ghost" href="${context.routes.district(b.districtId)}">${escapeHtml(b.districtName)} full evidence</a>
     </section>
+    ${EVIDENCE_ENTRY_POINTS_SCRIPT}
   `;
 
   return renderPageShell({
@@ -168,6 +182,10 @@ export function renderComparePage(
       url: compareUrl,
     },
   });
+}
+
+function buildDistrictCitation(districtName: string, snapshotDate: string, sourceAttribution: string, url: string): string {
+  return `NyaayWatch. "${districtName} District Court Backlog." ${snapshotDate}. ${sourceAttribution}. ${url}`;
 }
 
 function renderDistrictPanel(d: DistrictSnapshot, waitMonths: number, context: PublicPageContext): string {

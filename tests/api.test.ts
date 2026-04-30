@@ -146,6 +146,9 @@ describe("HTTP routes", () => {
     expect(comparePage.status).toBe(200);
     expect(comparePage.text).toContain("Use this comparison as a starting point.");
     expect(comparePage.text).toContain("Download both evidence packs.");
+    expect(comparePage.text).toContain("Comparison citation");
+    expect(comparePage.text).toContain("Kangra vs. Shimla District Comparison");
+    expect(comparePage.text).toContain("Copy citation");
     expect(comparePage.text).toContain("/data/evidence/districts/kangra.json");
     expect(comparePage.text).toContain("/data/evidence/districts/shimla.json");
     expect(comparePage.text).toContain("/data/evidence/state.json");
@@ -155,6 +158,9 @@ describe("HTTP routes", () => {
     expect(moversPage.status).toBe(200);
     expect(moversPage.text).toContain("Read movement before making a claim.");
     expect(moversPage.text).toContain("Download the evidence behind these movers.");
+    expect(moversPage.text).toContain("Movers citation");
+    expect(moversPage.text).toContain("Snapshot Movers for Himachal Pradesh");
+    expect(moversPage.text).toContain("Copy citation");
     expect(moversPage.text).toContain("/data/evidence/state.json");
     expect(moversPage.text).toContain("Evidence JSON");
 
@@ -1030,6 +1036,8 @@ describe("HTTP routes", () => {
     expect(punjabCompare.status).toBe(200);
     expect(punjabCompare.text).toContain("Use this comparison as a starting point.");
     expect(punjabCompare.text).toContain("Download both evidence packs.");
+    expect(punjabCompare.text).toContain("Ludhiana vs. Amritsar District Comparison");
+    expect(punjabCompare.text).toContain("Copy citation");
     expect(punjabCompare.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
     expect(punjabCompare.text).toContain("/states/punjab/data/evidence/districts/amritsar.json");
     expect(punjabCompare.text).toContain("/states/punjab/data/evidence/state.json");
@@ -1038,6 +1046,8 @@ describe("HTTP routes", () => {
     const punjabMovers = await request(app).get("/states/punjab/movers");
     expect(punjabMovers.status).toBe(200);
     expect(punjabMovers.text).toContain("Download the evidence behind these movers.");
+    expect(punjabMovers.text).toContain("Snapshot Movers for Punjab");
+    expect(punjabMovers.text).toContain("Copy citation");
     expect(punjabMovers.text).toContain("/states/punjab/data/evidence/state.json");
     expect(punjabMovers.text).toContain("Evidence JSON");
 
