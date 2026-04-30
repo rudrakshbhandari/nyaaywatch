@@ -210,6 +210,7 @@ Track those in `TODOS.md`, not here.
 
 ## Update Log
 
+- 2026-04-30: Added copyable citation snippets on lower-court movers and district-comparison pages, tied to the same public snapshot dates, source attribution, and scoped routes as the Evidence Pack entry points.
 - 2026-04-30: Added lower-court Evidence Pack entry points on movers, district comparisons, and district evidence pages so the post-MVP investigation workflow now points directly to reusable JSON/CSV evidence while preserving the raw-capture and operator-only boundary.
 - 2026-04-29: Completed the first post-cutover production observation pass for the reality-named `nyaaywatch-production` stack. Production preflight, public release verification, public-alpha sweep, schedule watchdog, and CloudWatch alarm checks were green; the remaining post-MVP operations work is the explicit destructive retirement or rename of the legacy rollback stack, DNS validation for the requested `staging.nyaaywatch.in` ACM certificate, and provisioning a dedicated isolated staging stack.
 - 2026-04-29: Provisioned the temporary isolated staging bridge stack `nyaaywatch-staging-v2` after `staging.nyaaywatch.in` ACM validation completed. The stack uses separate `nyaaywatch-stage` ECS/RDS/S3/Secrets Manager resources, has healthy ALB targets, serves a seeded Himachal snapshot through normal `https://staging.nyaaywatch.in` DNS, and passed public release verification. Remaining work is the later destructive decision to retire or rename the legacy rollback stack before reclaiming the final `nyaaywatch-staging` name.

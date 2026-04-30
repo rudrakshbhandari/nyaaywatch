@@ -4,8 +4,9 @@ import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
+import { SITE_ORIGIN } from "../share/site-origin.js";
 import { describeWatchlistPersistence } from "./metric-insights.js";
-import { EVIDENCE_ENTRY_POINTS_CSS, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
+import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderMoversPage(result: DistrictMoversResult, context: PublicPageContext): string {
@@ -29,6 +30,10 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     biggestJumps.length >= 2
       ? context.routes.compare(biggestJumps[0].districtId, biggestJumps[1].districtId)
       : context.routes.districts;
+  const moversCitation = `NyaayWatch. "Snapshot Movers for ${result.currentSnapshot.stateName}." ${currentDate} compared with ${previousDate}. ${result.currentSnapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.movers}`;
+  const topMoverCitation = biggestJumps[0]
+    ? buildDistrictCitation(biggestJumps[0].districtName, currentDate, result.currentSnapshot.sourceAttribution, `${SITE_ORIGIN}${context.routes.district(biggestJumps[0].districtId)}`)
+    : moversCitation;
 
   const body = `
     <section class="movers-hero">
@@ -80,6 +85,14 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
         "Use the state pack for the full movers list, then open district packs when you need a specific source date, method, CSV link, citation text, and caveats together.",
       entries: [
         {
+          title: "Movers citation",
+          body: "Use this when citing the movement window itself.",
+          href: context.routes.movers,
+          cta: "Open movers",
+          codeLabel: context.routes.movers,
+          citationText: moversCitation,
+        },
+        {
           title: "State evidence pack",
           body: "Best for checking the overall geography, top districts, and links to reusable exports.",
           href: context.routes.stateEvidencePack,
@@ -94,6 +107,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
           href: biggestJumps[0] ? context.routes.districtEvidencePack(biggestJumps[0].districtId) : context.routes.stateEvidencePack,
           cta: biggestJumps[0] ? "Download top mover JSON" : "Download JSON",
           codeLabel: biggestJumps[0] ? context.routes.districtEvidencePack(biggestJumps[0].districtId) : context.routes.stateEvidencePack,
+          citationText: topMoverCitation,
         },
         {
           title: "Data download page",
@@ -134,6 +148,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
         : `<p class="movers-empty">No significant rank changes in this snapshot window.</p>`
       }
     </section>
+    ${EVIDENCE_ENTRY_POINTS_SCRIPT}
   `;
 
   return renderPageShell({
@@ -156,6 +171,10 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
       description: `Which districts moved most between the ${previousDate} and ${currentDate} published snapshots? Biggest backlog increases, fastest-improving, and biggest rank changes.`,
     },
   });
+}
+
+function buildDistrictCitation(districtName: string, snapshotDate: string, sourceAttribution: string, url: string): string {
+  return `NyaayWatch. "${districtName} District Court Backlog." ${snapshotDate}. ${sourceAttribution}. ${url}`;
 }
 
 function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "backlog-decrease", context: PublicPageContext): string {
