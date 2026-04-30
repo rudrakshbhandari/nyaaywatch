@@ -9,6 +9,7 @@ import {
   SupremeCourtPublishedSnapshotSchema,
   type SupremeCourtPublishedSnapshot,
 } from "../domain/supreme-court-snapshot-schema.js";
+import { getStateProfileByCode } from "../geographies.js";
 import { toIsoString } from "../lib/time.js";
 
 type Queryable = Pick<Pool, "query"> | PoolClient;
@@ -513,7 +514,7 @@ function mapArtifact(row: QueryResultRow): ArtifactRecord {
 }
 
 function mapPublishedSnapshot(row: QueryResultRow): PublishedSnapshotRecord {
-  const payload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  const payload = materializeLowerCourtPayload(row);
   const scopeType = parseScopeType(row.scope_type, row.state_code);
   const scopeCode = row.scope_code ?? row.state_code;
   return {
@@ -523,10 +524,35 @@ function mapPublishedSnapshot(row: QueryResultRow): PublishedSnapshotRecord {
     scopeCode,
     stateCode: row.state_code,
     payloadVersion: Number(row.payload_version),
-    payload: PublishedSnapshotSchema.parse(payload),
+    payload,
     checksumSha256: row.checksum_sha256,
     createdAt: toIsoString(row.created_at),
   };
+}
+
+function materializeLowerCourtPayload(row: QueryResultRow): PublishedSnapshot {
+  const rawPayload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  if (!rawPayload || typeof rawPayload !== "object" || Array.isArray(rawPayload)) {
+    return PublishedSnapshotSchema.parse(rawPayload);
+  }
+
+  const payload = rawPayload as Record<string, unknown>;
+  const rawSnapshot = payload.snapshot;
+  if (!rawSnapshot || typeof rawSnapshot !== "object" || Array.isArray(rawSnapshot)) {
+    return PublishedSnapshotSchema.parse(rawPayload);
+  }
+
+  const snapshot = rawSnapshot as Record<string, unknown>;
+  const rowStateCode = typeof row.state_code === "string" ? row.state_code : "";
+  const profile = getStateProfileByCode(rowStateCode);
+  return PublishedSnapshotSchema.parse({
+    ...payload,
+    snapshot: {
+      ...snapshot,
+      stateCode: snapshot.stateCode ?? profile?.stateCode ?? rowStateCode,
+      stateName: snapshot.stateName ?? profile?.stateName,
+    },
+  });
 }
 
 function mapHighCourtPublishedSnapshot(row: QueryResultRow): HighCourtPublishedSnapshotRecord {

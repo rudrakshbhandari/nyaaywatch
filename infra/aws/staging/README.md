@@ -1,6 +1,6 @@
 # AWS Staging Stack
 
-This directory defines the isolated AWS staging shape for NyaayWatch's Himachal alpha:
+This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for NyaayWatch staging:
 
 - one ECS Fargate service running the application container
 - one PostgreSQL RDS instance as the canonical store
@@ -8,7 +8,48 @@ This directory defines the isolated AWS staging shape for NyaayWatch's Himachal 
 - CloudWatch Logs for structured application logging
 - CloudWatch alarms for health-check failure, ALB target 5xx responses, and structured app errors
 - one CloudWatch dashboard for release-time operational review
-- an operator validation flow that exercises fetch, inspect, publish, replay, and rollback against staging
+- an operator validation flow that exercises fetch, inspect, publish, replay, and rollback against the target environment
+
+## Current Naming Caveat
+
+The production public alpha at `https://nyaaywatch.in` now runs on the reality-named `nyaaywatch-production` stack. The rollback tradeoff has been accepted, and `nyaaywatch-staging` is again the dedicated staging stack at `https://staging.nyaaywatch.in`.
+
+The target environment split is:
+
+- `local`: local Node, PostgreSQL, and LocalStack S3
+- `preview`: fixture-backed App Runner PR previews with `APP_MODE=preview`
+- `staging`: future isolated AWS stack named `nyaaywatch-staging` for release and operator-flow rehearsal
+- `production`: `https://nyaaywatch.in`, stack name `nyaaywatch-production`
+
+Do not run sandbox experiments against either the live production stack or the dedicated staging stack.
+
+## Production Cutover Preflight
+
+Run the read-only preflight only when auditing or repeating the completed parallel production cutover:
+
+```bash
+npm run infra:production-preflight
+```
+
+The helper checks a source/legacy stack is in a stable terminal CloudFormation status, checks its required outputs, confirms whether the target production stack already exists, and verifies `https://nyaaywatch.in/health`. It does not deploy CloudFormation, update ECS, change DNS, rename resources, or modify schedules.
+
+Useful overrides:
+
+```bash
+AWS_REGION=ap-south-1 \
+PUBLIC_BASE_URL=https://nyaaywatch.in \
+npm run infra:production-preflight -- nyaaywatch-staging nyaaywatch-production
+```
+
+If `nyaaywatch-production` already exists, the preflight requires a stable terminal stack status and the same required output interface before it exits non-zero unless `ALLOW_EXISTING_TARGET_STACK=true` is set after manual review. That prevents an accidental cutover against an old or partial target stack.
+
+After preflight, collect the read-only cutover inventory:
+
+```bash
+npm run infra:production-cutover-inventory
+```
+
+Use that output with `docs/PRODUCTION_CUTOVER_RUNBOOK.md` only for cutover audits, rollback review, or a future replacement-stack migration.
 
 ## Resources
 
@@ -60,7 +101,7 @@ You need:
 
 - an ECR image URI for the app container
 - a strong database password
-- an operator API token for staging
+- an operator API token for the target environment
 - an ACM certificate ARN for every public hostname the ALB must terminate, including `nyaaywatch.in`, `www.nyaaywatch.in`, `nyaaywatch.com`, and `www.nyaaywatch.com` if `.com -> .in` canonical redirects are enabled
 
 Optional:
@@ -69,6 +110,10 @@ Optional:
 - `PUBLIC_BASE_URL` if the runtime should emit stable public URLs for release verification and cache invalidation
 - `CLOUDFLARE_ZONE_NAME` if the runtime should resolve the Cloudflare zone by name
 - `CLOUDFLARE_API_TOKEN_SECRET_ARN` if publish / rollback should purge Cloudflare cache without storing the token in plaintext task-definition environment variables
+- `DATABASE_SNAPSHOT_IDENTIFIER` if the target managed RDS instance should be restored from an existing manual DB snapshot instead of starting empty
+- `SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true` with `DATABASE_SNAPSHOT_IDENTIFIER` after verifying the deploy password argument matches the restored database password
+- `STACK_DATABASE_NAME` and `STACK_DATABASE_USERNAME` only if they need to match a non-default snapshot identity; defaults are `nyaaywatch`
+- `STACK_DATABASE_ALLOCATED_STORAGE` if the target RDS instance needs more than the default `20` GiB, and always for snapshot restores when the source snapshot is larger than `20` GiB
 - `EXISTING_DATABASE_URL_SECRET_ARN` if an existing stack should reference a pre-created `DATABASE_URL` secret instead of creating a new one
 - `EXISTING_OPERATOR_API_TOKEN_SECRET_ARN` if an existing stack should reference a pre-created operator-token secret instead of creating a new one
 - `MANAGE_CANONICAL_REDIRECT_RULES=false` only as a temporary reconciliation escape hatch if an older stack already has unmanaged `.com -> .in` listener rules; the intended steady state is to import those rules so CloudFormation owns them too
@@ -81,7 +126,7 @@ The stack creates its own isolated VPC with:
 
 Application config constraints to preserve during staging validation:
 
-- `EnvironmentName` must remain `staging` so `DEPLOY_ENV` satisfies the app env schema.
+- `EnvironmentName` should reflect the target environment: `production` for the reality-named production stack and `staging` for the isolated staging stack.
 - `ProjectName` must stay `nyaaywatch`-prefixed so the derived `S3_BUCKET` passes env validation.
 - The generated `DATABASE_URL` now uses `uselibpqcompat=true&sslmode=require` because the app container must connect to RDS over TLS without assuming a bundled CA chain.
 - The stack now stores the generated `DATABASE_URL` and operator token in AWS Secrets Manager and injects them through ECS `secrets`, not plain environment variables. Existing stacks can instead point at already-created secret ARNs so CloudFormation can be reconciled without recreating those secrets.
@@ -90,9 +135,12 @@ Application config constraints to preserve during staging validation:
 
 Recommended naming:
 
-- stack name: `nyaaywatch-staging`
-- ECR repo: `nyaaywatch-staging`
-- alarm dashboard: `nyaaywatch-staging`
+- current production-serving stack name: `nyaaywatch-staging` (legacy; do not create another stack with the same effective resource names)
+- target production stack name: `nyaaywatch-production`
+- target staging stack name: `nyaaywatch-staging`
+- current production-serving ECR repo: `nyaaywatch-staging`
+- current production-serving alarm dashboard: `nyaaywatch-staging`
+- future dedicated staging stack: use distinct RDS, S3, Secrets Manager, schedules, and alert resources even if the template is reused
 
 ## Deploy
 
@@ -113,6 +161,8 @@ Why the explicit platform:
 
 ```bash
 export PUBLIC_BASE_URL=https://nyaaywatch.in
+export CANONICAL_HOST=nyaaywatch.in
+export LEGACY_PRODUCTION_STACK=true
 export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
 export CLOUDFLARE_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/cloudflare-api-token
 export EXISTING_DATABASE_URL_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:123456789012:secret:nyaaywatch-staging/database-url
@@ -126,6 +176,54 @@ export EXISTING_OPERATOR_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:
   '<certificate-arn>' \
   '[alarm-email]'
 ```
+
+For a future reality-named production replacement, use a separate stack name and explicit environment values rather than mutating the legacy stack in place:
+
+```bash
+export PROJECT_NAME=nyaaywatch
+export ENVIRONMENT_NAME=production
+export PUBLIC_BASE_URL=https://nyaaywatch.in
+export CANONICAL_HOST=nyaaywatch.in
+export CLOUDFLARE_ZONE_NAME=nyaaywatch.in
+export MANAGE_CANONICAL_REDIRECT_RULES=true
+export DATABASE_SNAPSHOT_IDENTIFIER=nyaaywatch-prod-cutover-YYYYMMDD-HHMM
+export STACK_DATABASE_ALLOCATED_STORAGE=20
+export SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true
+
+./infra/aws/staging/deploy-stack.sh \
+  nyaaywatch-production \
+  723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
+  '<operator-token>' \
+  '<source-database-password-until-post-cutover-rotation>' \
+  '<certificate-arn>' \
+  '[alarm-email]'
+```
+
+For the preferred production cutover path, create a manual snapshot from the current production backing database first, deploy the target with `DATABASE_SNAPSHOT_IDENTIFIER`, then copy the current artifacts bucket into the target bucket before DNS cutover. AWS RDS snapshot restore inherits the database name, master username, password, and engine version from the source database; the password argument above is still used for the generated `DATABASE_URL` secret and must match the restored database password until a deliberate post-cutover rotation. `SNAPSHOT_DATABASE_PASSWORD_CONFIRMED=true` is required so that secret cannot drift silently. The deploy helper verifies the snapshot master username and allocated storage, and verifies the DB name from snapshot metadata or, for PostgreSQL snapshots where AWS omits `DBName`, from the source DB instance only when the snapshot exposes an immutable `DbiResourceId` and the current source instance still matches that snapshot lineage before it creates the generated secret. Do not combine `DATABASE_SNAPSHOT_IDENTIFIER` with `EXISTING_DATABASE_URL_SECRET_ARN`. After a stack is created from a snapshot, later deploys must keep the same snapshot parameter; the deploy helper preserves the existing snapshot ID, DB identity, and allocated-storage parameters, refuses to add snapshot restore to an already-existing non-snapshot stack, refuses a different snapshot unless `ALLOW_DATABASE_SNAPSHOT_REPLACEMENT=true` is set, and refuses DB name or username changes unless `ALLOW_SNAPSHOT_DATABASE_IDENTITY_CHANGE=true` is set for an intentional matching-database change. The helper only calls `describe-db-snapshots` when `DATABASE_SNAPSHOT_IDENTIFIER` is explicitly supplied, so normal post-cutover deploys do not depend on keeping the original manual snapshot record forever.
+
+For the reclaimed isolated staging stack, do not use the production host, production Cloudflare purge path, or production resource prefix:
+
+```bash
+export PROJECT_NAME=nyaaywatch
+export ENVIRONMENT_NAME=staging
+export PUBLIC_BASE_URL=https://staging.nyaaywatch.in
+export CANONICAL_HOST=staging.nyaaywatch.in
+export LEGACY_HOSTS=
+export MANAGE_CANONICAL_REDIRECT_RULES=false
+export RECLAIMED_STAGING_NAME=true
+
+./infra/aws/staging/deploy-stack.sh \
+  nyaaywatch-staging \
+  723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging:latest \
+  '<operator-token>' \
+  '<database-password>' \
+  '<staging-certificate-arn>' \
+  '[alarm-email]'
+```
+
+As of `2026-04-29`, the final dedicated staging stack is `nyaaywatch-staging` with `PUBLIC_BASE_URL=https://staging.nyaaywatch.in` and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. Its ALB is `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; Cloudflare DNS has CNAME `staging` -> that ALB as DNS-only. The temporary `nyaaywatch-staging-v2` bridge was retired after the reclaim.
+
+`deploy-stack.sh` refuses the dangerous combinations that would deploy non-production with production hostnames or let non-production manage production canonical redirect rules. The reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true`.
 
 3. Wait for the stack to finish and note the outputs:
    - `ServiceUrl`
@@ -142,7 +240,7 @@ export EXISTING_OPERATOR_API_TOKEN_SECRET_ARN=arn:aws:secretsmanager:ap-south-1:
    - `CertificateArn`
    - `OperatorApiTokenSecretArn`
 
-4. Copy the live values into `docs/DEPLOYMENT_STATUS.md` so the current staging URL and resource names are discoverable without re-querying AWS.
+4. Copy the live values into `docs/internal/DEPLOYMENT_STATUS.md` so the current environment URL and resource names are discoverable without re-querying AWS.
 
 If an older stack already had the priority-10 `.com -> .in` listener rules outside CloudFormation and the first reconciliation had to use `MANAGE_CANONICAL_REDIRECT_RULES=false`, import those live rules immediately after the stack is otherwise healthy:
 
@@ -161,17 +259,17 @@ Note:
 
 ## Automatic Deploy From `main`
 
-Merges to `main` now auto-deploy through GitHub Actions after the verify job passes.
+Merges to `main` now auto-deploy the current production public-alpha stack through GitHub Actions after the verify job passes.
 
 The deploy job:
 
 - assumes `arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role` via GitHub OIDC
-- builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`
-- discovers the live ECS service from the `nyaaywatch-staging` CloudFormation stack
+- builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`; the repository name is historical and will be renamed separately
+- discovers the live ECS service from `PRODUCTION_STACK_NAME`; the value is `nyaaywatch-production`
 - registers a fresh task definition revision pinned to the commit-SHA image
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
-- reconciles the lower-court, Supreme Court, reviewed-High-Court, and public-alpha-ops schedules against the new live task definition
+- reconciles the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha-ops schedules against the new live task definition
 - confirms the raw ALB `ServiceUrl` still answers `/health`
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
@@ -205,17 +303,17 @@ Bootstrap note:
 
 - the GitHub Actions deploy role can update the schedule target, but it cannot create or rewrite IAM roles
 - the GitHub Actions deploy role must allow `scheduler:GetSchedule`, `scheduler:UpdateSchedule`, and `scheduler:CreateSchedule` for all five schedule ARNs:
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-supreme-court-internal-fetch`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-high-courts-internal-fetch`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-publish-pending-sweep`
-  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-public-alpha-ops-monitor`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-weekday-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-supreme-court-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-high-courts-internal-fetch`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-publish-pending-sweep`
+  - `arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-public-alpha-ops-monitor`
 - first-time schedule bootstrap or scheduler-role policy changes still require an IAM-capable operator run
 - once the role exists, CI reconciles the schedule against the latest ECS task definition on every `main` deploy
 
 Alerting note:
 
-- the staging stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
+- the production stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
 - CloudWatch alarm `${ProjectName}-${EnvironmentName}-public-alpha-ops` fans that signal out through the existing SNS alert topic
 
 ## Heavy-State Operator Lane
@@ -225,12 +323,12 @@ Long-running internal-state fetches should use the ECS-backed operator lane inst
 Default command:
 
 ```bash
-npm run operator:staging -- --state UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:production -- --state UP fetch "Internal Uttar Pradesh fetch"
 ```
 
 What it does:
 
-- discovers the live `nyaaywatch-staging` ECS service from CloudFormation
+- discovers the live `nyaaywatch-production` ECS service from CloudFormation
 - reuses the current service task definition and network configuration
 - starts a one-off ECS task that runs the ECS operator entrypoint inside the live runtime
 - waits for the task to stop
@@ -308,6 +406,8 @@ aws cloudwatch get-dashboard --dashboard-name nyaaywatch-staging --region ap-sou
 
 `P4.5` was completed on 2026-04-15 against the live `nyaaywatch-staging` stack in `ap-south-1`.
 
+That same stack used to back `https://nyaaywatch.in`, but production traffic now runs on `nyaaywatch-production`. The rollback tradeoff has been accepted, and `nyaaywatch-staging` is the dedicated staging lane.
+
 Validated successfully:
 
 - `/health`
@@ -330,4 +430,4 @@ Temporary proof stacks from earlier failed attempts can be deleted after validat
 
 ## Next Operational Step
 
-After staging is healthy and documented, use `docs/DOMAIN_CUTOVER_CHECKLIST.md` to attach the real public domain to the ALB if you want this stack to serve the public alpha.
+`staging.nyaaywatch.in` points at `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` with a DNS-only Cloudflare CNAME, and the reclaimed staging stack has been verified through normal DNS.

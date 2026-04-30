@@ -105,11 +105,19 @@ export type DistrictOgCardData = {
   sourceDateLabel: string;
 };
 
+export type NationalOgCardStat = {
+  value: string;
+  unit: string;
+  label: string;
+};
+
 export type NationalOgCardData = {
+  eyebrow: string;
   headline: string;
-  totalPendingLakh: string;
-  statesCount: number;
+  lede: string;
+  accountability: string;
   sourceDateLabel: string;
+  stats: NationalOgCardStat[];
 };
 
 export type HighCourtOgCardData = {
@@ -314,9 +322,6 @@ export async function renderDistrictOgCard(data: DistrictOgCardData, cacheKey: s
 }
 
 export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: string): Promise<Buffer> {
-  const pendingNum = data.totalPendingLakh.replace(/\s*(lakh|crore).*/i, "").trim();
-  const pendingUnit = data.totalPendingLakh.match(/(lakh|crore)/i)?.[1]?.toLowerCase() ?? "";
-
   const vnode = col(
     { background: PAPER, padding: "52px 64px", width: "100%", height: "100%", gap: 0 },
     [
@@ -333,20 +338,48 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
           letterSpacing: "0.18em",
           marginBottom: 16,
         },
-        "THE WAIT",
+        data.eyebrow,
       ),
 
       text(
         {
           fontFamily: "Inter Tight",
           fontWeight: 800,
-          fontSize: 52,
+          fontSize: 68,
           color: INK,
-          lineHeight: 1.0,
-          letterSpacing: "-0.035em",
-          flex: 1,
+          lineHeight: 1.02,
+          letterSpacing: "-0.04em",
+          maxWidth: 1050,
+          marginBottom: 22,
         },
         data.headline,
+      ),
+
+      text(
+        {
+          fontFamily: "Inter Tight",
+          fontWeight: 600,
+          fontSize: 27,
+          color: INK_SOFT,
+          lineHeight: 1.4,
+          letterSpacing: "-0.005em",
+          maxWidth: 1050,
+          marginBottom: 18,
+        },
+        data.lede,
+      ),
+
+      text(
+        {
+          fontFamily: "IBM Plex Mono",
+          fontWeight: 500,
+          fontSize: 13,
+          color: INK_MUTED,
+          textTransform: "uppercase",
+          letterSpacing: "0.14em",
+          flex: 1,
+        },
+        data.accountability,
       ),
 
       {
@@ -359,10 +392,7 @@ export async function renderNationalOgCard(data: NationalOgCardData, cacheKey: s
             paddingTop: 24,
             gap: 0,
           },
-          children: [
-            numberCell(pendingNum, pendingUnit, "PENDING CASES"),
-            numberCell(data.statesCount.toLocaleString("en-IN"), "", "STATES COVERED"),
-          ],
+          children: data.stats.map((stat) => numberCell(stat.value, stat.unit, stat.label)),
         },
       },
     ],

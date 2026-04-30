@@ -43,9 +43,9 @@ describe("internal fetch schedule watchdog", () => {
     ]);
 
     mockAwsSequence({
-      clusterName: "nyaaywatch-staging",
-      serviceName: "nyaaywatch-staging-Service-zXxqGRuc7amS",
-      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:141",
+      clusterName: "nyaaywatch-production",
+      serviceName: "nyaaywatch-production-Service-zXxqGRuc7amS",
+      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-production:141",
     });
 
     fetchMock
@@ -131,10 +131,10 @@ describe("internal fetch schedule watchdog", () => {
     ]);
 
     mockAwsSequence({
-      clusterName: "nyaaywatch-staging",
-      serviceName: "nyaaywatch-staging-Service-zXxqGRuc7amS",
-      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:141",
-      supremeCourtTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:140",
+      clusterName: "nyaaywatch-production",
+      serviceName: "nyaaywatch-production-Service-zXxqGRuc7amS",
+      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-production:141",
+      supremeCourtTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-production:140",
       scheduleLastModificationDate: "2026-04-15T00:00:00.000Z",
     });
 
@@ -222,9 +222,9 @@ describe("internal fetch schedule watchdog", () => {
     // for the per-scope tiers that would trigger an execution-lag fail, but the
     // sweep tier opts out of run-lag detection so it should stay green.
     mockAwsSequence({
-      clusterName: "nyaaywatch-staging",
-      serviceName: "nyaaywatch-staging-Service-zXxqGRuc7amS",
-      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:141",
+      clusterName: "nyaaywatch-production",
+      serviceName: "nyaaywatch-production-Service-zXxqGRuc7amS",
+      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-production:141",
       scheduleLastModificationDate: "2026-04-10T00:00:00.000Z",
     });
 
@@ -266,10 +266,10 @@ describe("internal fetch schedule watchdog", () => {
     ]);
 
     mockAwsSequence({
-      clusterName: "nyaaywatch-staging",
-      serviceName: "nyaaywatch-staging-Service-zXxqGRuc7amS",
-      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:141",
-      publishPendingSweepTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-staging:138",
+      clusterName: "nyaaywatch-production",
+      serviceName: "nyaaywatch-production-Service-zXxqGRuc7amS",
+      liveTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-production:141",
+      publishPendingSweepTaskDefinitionArn: "arn:aws:ecs:ap-south-1:723951822728:task-definition/nyaaywatch-production:138",
     });
 
     fetchMock
@@ -356,7 +356,7 @@ function mockAwsSequence(input: {
     callback(null, {
       stdout: JSON.stringify(
         scheduleJson(
-          "nyaaywatch-staging-weekday-internal-fetch",
+          "nyaaywatch-production-weekday-internal-fetch",
           liveTaskDefinitionArn,
           "dist/src/dev/ecs-scheduled-fetch-entrypoint.js",
           "Scheduled daily lower-court internal raw fetch",
@@ -371,7 +371,7 @@ function mockAwsSequence(input: {
     callback(null, {
       stdout: JSON.stringify(
         scheduleJson(
-          "nyaaywatch-staging-supreme-court-internal-fetch",
+          "nyaaywatch-production-supreme-court-internal-fetch",
           supremeCourtTaskDefinitionArn,
           "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js",
           "Scheduled daily Supreme Court internal raw fetch",
@@ -386,7 +386,7 @@ function mockAwsSequence(input: {
     callback(null, {
       stdout: JSON.stringify(
         scheduleJson(
-          "nyaaywatch-staging-high-courts-internal-fetch",
+          "nyaaywatch-production-high-courts-internal-fetch",
           liveTaskDefinitionArn,
           "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js",
           "Scheduled daily High Court internal raw fetch",
@@ -401,7 +401,7 @@ function mockAwsSequence(input: {
     callback(null, {
       stdout: JSON.stringify(
         scheduleJson(
-          "nyaaywatch-staging-publish-pending-sweep",
+          "nyaaywatch-production-publish-pending-sweep",
           input.publishPendingSweepTaskDefinitionArn ?? liveTaskDefinitionArn,
           "dist/src/dev/ecs-publish-pending-entrypoint.js",
           "Scheduled daily publish-pending sweep",
@@ -424,14 +424,14 @@ function scheduleJson(name: string, taskDefinitionArn: string, entrypointPath: s
     CreationDate: lastModificationDate,
     LastModificationDate: lastModificationDate,
     Target: {
-      RoleArn: "arn:aws:iam::723951822728:role/nyaaywatch-staging-internal-fetch-scheduler",
+      RoleArn: "arn:aws:iam::723951822728:role/nyaaywatch-production-internal-fetch-scheduler",
       EcsParameters: {
         TaskDefinitionArn: taskDefinitionArn,
       },
       Input: JSON.stringify({
         containerOverrides: [
           {
-            name: "nyaaywatch-staging",
+            name: "nyaaywatch-production",
             command: ["node", entrypointPath, `${notePrefix} (<aws.scheduler.scheduled-time>)`],
           },
         ],

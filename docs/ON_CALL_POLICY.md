@@ -10,17 +10,17 @@ The signals below are what "on-call" is responsible for. Everything else is norm
 
 | Signal | Source | How it surfaces |
 | --- | --- | --- |
-| Public-alpha ops sweep failure | `nyaaywatch-staging-public-alpha-ops-monitor` (every 30 min) and `.github/workflows/ops-watchdog.yml` (daily 05:00 UTC) | CloudWatch alarm `nyaaywatch-staging-public-alpha-ops`, SNS topic `nyaaywatch-staging-alerts`, and durable GitHub issue `Ops watchdog failure` |
+| Public-alpha ops sweep failure | `nyaaywatch-production-public-alpha-ops-monitor` (every 30 min) and `.github/workflows/ops-watchdog.yml` (daily 05:00 UTC) | CloudWatch alarm `nyaaywatch-production-public-alpha-ops`, SNS topic `nyaaywatch-production-alerts`, and durable GitHub issue `Ops watchdog failure` |
 | Internal fetch schedule failure | `npm run ops:verify-internal-fetch-schedule` inside the watchdog | Same GitHub issue, `failingTiers` section |
-| Public hostname health | `nyaaywatch-staging-health-endpoint`, `nyaaywatch-staging-alb-target-5xx` | SNS topic `nyaaywatch-staging-alerts` |
-| Structured app errors | `nyaaywatch-staging-app-errors` | SNS topic `nyaaywatch-staging-alerts` |
+| Public hostname health | `nyaaywatch-production-health-endpoint`, `nyaaywatch-production-alb-target-5xx` | SNS topic `nyaaywatch-production-alerts` |
+| Structured app errors | `nyaaywatch-production-app-errors` | SNS topic `nyaaywatch-production-alerts` |
 | Missed daily internal fetch at 08:00, 08:10, or 08:20 Asia/Kolkata | `ops:verify-internal-fetch-schedule` tier outcome | Same GitHub issue, per-tier block |
 
 ## Roles
 
 Only two named roles. Both names are explicit in the watchdog issue when an incident opens.
 
-- **Primary operator** — the release owner listed in the most recent `docs/RELEASE_HISTORY.md` entry
+- **Primary operator** — the release owner listed in the most recent `docs/internal/RELEASE_HISTORY.md` entry
 - **Backup operator** — the delegated maintainer named in `docs/RELEASE_POLICY.md`'s Publish Authority section
 
 The primary operator owns every alert by default. The backup operator takes over only when explicitly paged (see Escalation).
@@ -76,7 +76,7 @@ For every incident, in order:
 4. Decide whether the alert maps to a runbook:
    - public trust / freshness / lag: `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md`
    - publish or rollback decisions: `docs/RELEASE_POLICY.md` and `docs/OPERATING_EVIDENCE.md`
-   - stack or environment anomalies: `docs/DEPLOYMENT_STATUS.md`
+   - stack or environment anomalies: `docs/internal/DEPLOYMENT_STATUS.md`
 5. Take the action or explicitly record why no action is being taken. Every incident closes with either a publication id, a PR link, or a one-line "held, reason recorded" note.
 6. If any assumption in this document was wrong in practice, propose an edit to this file in the same PR that closes the incident.
 
@@ -92,5 +92,5 @@ For every incident, in order:
 - `docs/RELEASE_POLICY.md` — cadence, publish authority, blocked release criteria, weekly review
 - `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md` — freshness and daily-fetch lag decisions
 - `docs/OPERATING_EVIDENCE.md` — required evidence per release
-- `docs/DEPLOYMENT_STATUS.md` — live environment map, alarm names, topic ARNs
+- `docs/internal/DEPLOYMENT_STATUS.md` — live environment map, alarm names, topic ARNs
 - `.github/workflows/ops-watchdog.yml` — scheduled watchdog and issue wiring

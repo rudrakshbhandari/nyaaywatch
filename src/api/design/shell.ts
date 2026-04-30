@@ -121,6 +121,7 @@ function renderNav(
     { id: "data", href: "/data", label: "Data" },
     { id: "methodology", href: "/methodology", label: "Method" },
     { id: "api", href: "/api", label: "API" },
+    { id: "learn", href: "/learn", label: "Learn" },
   ];
   return `<nav class="masthead__nav" aria-label="Primary">${links
     .map(
@@ -182,16 +183,17 @@ function renderColophon(
   const methodLine = footer.methodologyVersion
     ? `<p>Method ${escapeHtml(footer.methodologyVersion)} ${infoIcon("methodology")}</p>`
     : "";
-  const links = [
+  const links = dedupeFooterLinks([
     ...(navLinks ?? [
       { href: "/districts", label: "Districts" },
       { href: "/data", label: "Data downloads" },
       { href: "/methodology", label: "Methodology" },
       { href: "/api", label: "API" },
     ]),
+    { href: "/learn", label: "Learn" },
     { href: "/press", label: "Press" },
     { href: "https://github.com/rudrakshbhandari/nyaaywatch", label: "Source code" },
-  ];
+  ]);
 
   return `<footer class="colophon">
     <div class="colophon__col">
@@ -207,6 +209,18 @@ function renderColophon(
       ${links
         .map((link) => `<a href="${link.href}">${escapeHtml(link.label === "Data" ? "Data downloads" : link.label)}</a>`)
         .join("")}
+      <a href="mailto:contact@nyaaywatch.in">contact@nyaaywatch.in</a>
     </div>
   </footer>`;
+}
+
+function dedupeFooterLinks(links: Array<{ href: string; label: string }>) {
+  const seen = new Set<string>();
+  return links.filter((link) => {
+    if (seen.has(link.href)) {
+      return false;
+    }
+    seen.add(link.href);
+    return true;
+  });
 }

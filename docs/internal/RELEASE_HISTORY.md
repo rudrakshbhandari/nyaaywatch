@@ -6,6 +6,46 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:production-stack-observation-2026-04-29:start -->
+## production-stack-observation-2026-04-29
+
+- Reviewed at: `2026-04-29T00:51:30Z`
+- Reviewer: `Codex production observation`
+- Public URL: `https://nyaaywatch.in`
+- Action: `post-cutover observation`
+- Scope: `production backing stack`
+- Production stack: `nyaaywatch-production`
+- Legacy rollback stack: `nyaaywatch-staging`
+- Production task definition: `nyaaywatch-production:11`
+- Production schedules: `nyaaywatch-production-weekday-internal-fetch`, `nyaaywatch-production-supreme-court-internal-fetch`, `nyaaywatch-production-high-courts-internal-fetch`, `nyaaywatch-production-publish-pending-sweep`, `nyaaywatch-production-public-alpha-ops-monitor`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/PRODUCTION_CUTOVER_RUNBOOK.md`, `TODOS.md`
+- JSON evidence: `ALLOW_EXISTING_TARGET_STACK=true npm run infra:production-preflight`; `npm run release:verify -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in --stack-name=nyaaywatch-production`; `aws cloudwatch describe-alarms --region ap-south-1 --alarm-names nyaaywatch-production-health-endpoint nyaaywatch-production-alb-target-5xx nyaaywatch-production-app-errors nyaaywatch-production-public-alpha-ops`
+- Note: Production observation was green. The public-alpha sweep reported `62/62` healthy targets with no stale snapshots, no daily-fetch lag, and no failures; the schedule verifier showed all production schedules targeting `nyaaywatch-production:11`; all four production CloudWatch alarms were `OK`. Dedicated staging was not provisioned during the observation pass because the legacy rollback stack still owned the `nyaaywatch-staging` name and the requested `staging.nyaaywatch.in` ACM certificate was waiting on DNS validation; the stored Cloudflare token could not access DNS record APIs.
+- Follow-up: Later on `2026-04-29`, the staging ACM certificate was issued and temporary bridge stack `nyaaywatch-staging-v2` was provisioned with isolated `nyaaywatch-stage` resources. Direct ALB verification with `staging.nyaaywatch.in` as the TLS/HTTP host passed for `/health`, `/`, and `/v1/stats/himachal` after publishing seed run `run_77350daa-3176-47fb-ad56-f8602f019a8d`. Cloudflare DNS CNAME `staging` -> `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com` is live as DNS-only, and normal-DNS verification passed for `/health`, `/`, `/v1/stats/himachal`, and `npm run release:verify -- --base-url=https://staging.nyaaywatch.in`.
+- Follow-up: Later on `2026-04-29`, after accepting the rollback tradeoff, `nyaaywatch-staging` was reclaimed as the dedicated staging stack with the issued staging ACM certificate and `PublicBaseUrl=https://staging.nyaaywatch.in`. Cloudflare DNS CNAME `staging` now points to `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` as DNS-only. `curl -fsS https://staging.nyaaywatch.in/health` and `npm run release:verify -- --base-url=https://staging.nyaaywatch.in` passed through normal DNS. The temporary `nyaaywatch-staging-v2` bridge CloudFormation stack was deleted; its retained S3 buckets and final RDS snapshot remain as cleanup/audit artifacts.
+
+<!-- release:production-stack-observation-2026-04-29:end -->
+
+<!-- release:production-stack-cutover-2026-04-28:start -->
+## production-stack-cutover-2026-04-28
+
+- Reviewed at: `2026-04-28T02:45:51.295Z`
+- Reviewer: `Codex production stack cutover`
+- Public URL: `https://nyaaywatch.in`
+- Action: `infrastructure cutover`
+- Scope: `production backing stack`
+- Source database snapshot: `nyaaywatch-prod-cutover-20260428-0019`
+- Production stack: `nyaaywatch-production`
+- Legacy rollback stack: `nyaaywatch-staging`
+- Production ALB: `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
+- Production task definition: deploy-managed `nyaaywatch-production:<revision>`; last observed as `nyaaywatch-production:6` at `2026-04-28T04:44:43.046Z`
+- Production schedules: `nyaaywatch-production-weekday-internal-fetch`, `nyaaywatch-production-supreme-court-internal-fetch`, `nyaaywatch-production-high-courts-internal-fetch`, `nyaaywatch-production-publish-pending-sweep`, `nyaaywatch-production-public-alpha-ops-monitor`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/DOMAIN_CUTOVER_CHECKLIST.md`, `docs/PRODUCTION_CUTOVER_RUNBOOK.md`
+- JSON evidence: `npm run release:verify -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in`
+- Note: Cloudflare now points `nyaaywatch.in` at the reality-named production ALB. Public release verification passed through normal DNS, unauthenticated operator access still returns `401`, the temporary AWS Cloudflare DNS cutover secret is no longer listed in Secrets Manager, and the schedule watchdog verified all production schedules target the live production ECS task definition.
+
+<!-- release:production-stack-cutover-2026-04-28:end -->
+
 <!-- release:lower-court-ut-public-alpha-2026-04-23:start -->
 ## lower-court-ut-public-alpha-2026-04-23
 

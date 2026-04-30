@@ -7,7 +7,7 @@ if [[ $# -gt 1 ]]; then
   exit 1
 fi
 
-stack_name="${1:-nyaaywatch-staging}"
+stack_name="${1:-nyaaywatch-production}"
 region="${AWS_REGION:-ap-south-1}"
 state_schedule_expression="${STATE_INTERNAL_FETCH_SCHEDULE_EXPRESSION:-${INTERNAL_FETCH_SCHEDULE_EXPRESSION:-cron(0 8 * * ? *)}}"
 state_schedule_timezone="${STATE_INTERNAL_FETCH_SCHEDULE_TIMEZONE:-${INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asia/Kolkata}}"

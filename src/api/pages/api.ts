@@ -156,6 +156,41 @@ export function renderApiPage(context: PublicPageContext): string {
 }</pre>
           </details>
         </article>
+        <article class="card endpoint">
+          <code class="endpoint__verb">GET</code>
+          <div class="endpoint__routes">
+            <code class="endpoint__path">${context.routes.stateEvidencePack}</code>
+            <code class="endpoint__path">${context.routes.districtEvidencePack(":districtId")}</code>
+          </div>
+          <p>Evidence packs for citation and reuse. They bundle public metrics with source date, methodology version, CSV/API links, plain citation text, caveats, and the public-data safety boundary.</p>
+          <details class="code-sample-reveal">
+            <summary>Sample response</summary>
+            <pre class="code-sample">{
+  "packType": "district_evidence_pack",
+  "version": "lower-court-evidence-pack.v1",
+  "district": {
+    "id": "kangra",
+    "name": "Kangra",
+    "pageUrl": "https://nyaaywatch.in/districts/kangra",
+    "evidencePackUrl": "https://nyaaywatch.in/data/evidence/districts/kangra.json"
+  },
+  "snapshot": {
+    "sourceSnapshotAt": "2025-03-15T00:00:00.000Z",
+    "methodologyVersion": "v1.3.0",
+    "sourceAttribution": "NJDG \u2014 March 2025"
+  },
+  "metrics": {
+    "backlogCases": 12453,
+    "clearedPer100Filed": 68.2,
+    "typicalWaitMonths": 30
+  },
+  "safety": {
+    "containsRawCaptureArtifacts": false,
+    "containsOperatorOnlyEvidence": false
+  }
+}</pre>
+          </details>
+        </article>
       </div>
     </section>
 

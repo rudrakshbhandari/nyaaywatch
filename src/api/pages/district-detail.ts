@@ -13,6 +13,8 @@ import {
   describeWatchlistPersistence,
   formatShare,
 } from "./metric-insights.js";
+import { EVIDENCE_ENTRY_POINTS_CSS, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 /**
  * /districts/:id — district evidence page. Pairs the headline stats with the
@@ -156,6 +158,71 @@ export function renderDistrictPage(
       })}
     </section>
 
+    ${renderInvestigationWorkflow({
+      headline: "What to check next.",
+      lede:
+        `Use ${district.districtName} as the evidence page, then move outward to the district list, snapshot movement, and citation material.`,
+      steps: [
+        {
+          eyebrow: "01",
+          title: "Go back to the workspace",
+          body: "Return to the district table when you need to see whether this pressure signal is unusual inside the same published snapshot.",
+          href: context.routes.districts,
+          cta: "Open all districts",
+        },
+        {
+          eyebrow: "02",
+          title: "Check movement",
+          body: "Use movers to see whether the district changed since the previous published snapshot, when enough history is available.",
+          href: context.routes.movers,
+          cta: "Open movers",
+        },
+        {
+          eyebrow: "03",
+          title: "Export evidence",
+          body: "Download this district's history CSV or copy the citation text before quoting any number.",
+          href: context.routes.districtCsv(district.districtId),
+          cta: "Download CSV",
+        },
+        {
+          eyebrow: "04",
+          title: "Reuse safely",
+          body: "Use the press kit for captions, embed examples, and careful wording that keeps snapshots separate from continuously changing feeds.",
+          href: "/press",
+          cta: "Open press kit",
+        },
+      ],
+    })}
+
+    ${renderEvidenceEntryPoints({
+      headline: "Download and cite this district.",
+      lede:
+        "The JSON pack keeps the public metrics, source date, method, CSV links, citation text, and caveats together. Raw captures and operator notes stay private.",
+      entries: [
+        {
+          title: "District evidence pack",
+          body: "Best for reuse when this district is the claim you need to support.",
+          href: context.routes.districtEvidencePack(district.districtId),
+          cta: "Download JSON",
+          codeLabel: context.routes.districtEvidencePack(district.districtId),
+        },
+        {
+          title: "District history CSV",
+          body: "Best for checking how this district changed across published snapshots.",
+          href: context.routes.districtCsv(district.districtId),
+          cta: "Download CSV",
+          codeLabel: context.routes.districtCsv(district.districtId),
+        },
+        {
+          title: "State evidence pack",
+          body: "Best for reading this district beside the rest of the lower-court geography.",
+          href: context.routes.stateEvidencePack,
+          cta: "Download state JSON",
+          codeLabel: context.routes.stateEvidencePack,
+        },
+      ],
+    })}
+
     <section class="district-grid">
       <div class="district-col">
         <article class="card" id="district-flag">
@@ -187,6 +254,7 @@ export function renderDistrictPage(
           </header>
           <dl class="citation-list">
             <div><dt>Permalink</dt><dd><code>${escapeHtml(context.routes.district(district.districtId))}</code></dd></div>
+            <div><dt>Evidence pack</dt><dd><code>${escapeHtml(context.routes.districtEvidencePack(district.districtId))}</code></dd></div>
             <div><dt>Source snapshot</dt><dd>${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}</dd></div>
             <div><dt>Methodology</dt><dd><code>${escapeHtml(snapshot.methodologyVersion)}</code></dd></div>
             <div><dt>Source</dt><dd>${escapeHtml(snapshot.sourceAttribution)}</dd></div>
@@ -205,6 +273,7 @@ export function renderDistrictPage(
             <button class="btn btn--ghost btn--small cite-block__copy" onclick="copyCite()">Copy</button>
           </div>
           <div class="district-col__cta">
+            <a class="btn btn--primary btn--small" href="${context.routes.districtEvidencePack(district.districtId)}">Download evidence pack JSON</a>
             <a class="btn btn--primary btn--small" href="${context.routes.districtCsv(district.districtId)}">Download district history CSV</a>
             <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">${escapeHtml(context.lowerCourtCopy.aggregateAdjectiveTitle)} CSV</a>
             <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. Typical wait: ~${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
@@ -279,7 +348,7 @@ export function renderDistrictPage(
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
     ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · SNAPSHOT ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.methodologyVersion)}`,
-    pageCss: DISTRICT_PAGE_CSS,
+    pageCss: DISTRICT_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS + EVIDENCE_ENTRY_POINTS_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
       methodologyVersion: snapshot.methodologyVersion,
@@ -288,7 +357,7 @@ export function renderDistrictPage(
     og: {
       title: `${district.districtName} — District Evidence`,
       description: ogDescription,
-      image: `${SITE_ORIGIN}/og/district/${district.districtId}.png`,
+      image: `${SITE_ORIGIN}/og/district/${district.districtId}.png?v=2026-04-5`,
       imageAlt: `NyaayWatch district evidence for ${district.districtName}`,
     },
   });
