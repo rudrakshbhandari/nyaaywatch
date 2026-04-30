@@ -64,8 +64,11 @@ describe("PublicCacheInvalidationService", () => {
       files: [
         "https://nyaaywatch.in/states/punjab/data",
         "https://nyaaywatch.in/states/punjab/data/districts.csv",
+        "https://nyaaywatch.in/states/punjab/data/evidence/state.json",
         "https://nyaaywatch.in/states/punjab/data/districts/ludhiana.csv",
+        "https://nyaaywatch.in/states/punjab/data/evidence/districts/ludhiana.json",
         "https://nyaaywatch.in/states/punjab/data/districts/amritsar.csv",
+        "https://nyaaywatch.in/states/punjab/data/evidence/districts/amritsar.json",
       ],
     });
   });

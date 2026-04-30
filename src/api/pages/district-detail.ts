@@ -224,6 +224,7 @@ export function renderDistrictPage(
           </header>
           <dl class="citation-list">
             <div><dt>Permalink</dt><dd><code>${escapeHtml(context.routes.district(district.districtId))}</code></dd></div>
+            <div><dt>Evidence pack</dt><dd><code>${escapeHtml(context.routes.districtEvidencePack(district.districtId))}</code></dd></div>
             <div><dt>Source snapshot</dt><dd>${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}</dd></div>
             <div><dt>Methodology</dt><dd><code>${escapeHtml(snapshot.methodologyVersion)}</code></dd></div>
             <div><dt>Source</dt><dd>${escapeHtml(snapshot.sourceAttribution)}</dd></div>
@@ -242,6 +243,7 @@ export function renderDistrictPage(
             <button class="btn btn--ghost btn--small cite-block__copy" onclick="copyCite()">Copy</button>
           </div>
           <div class="district-col__cta">
+            <a class="btn btn--primary btn--small" href="${context.routes.districtEvidencePack(district.districtId)}">Download evidence pack JSON</a>
             <a class="btn btn--primary btn--small" href="${context.routes.districtCsv(district.districtId)}">Download district history CSV</a>
             <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">${escapeHtml(context.lowerCourtCopy.aggregateAdjectiveTitle)} CSV</a>
             <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. Typical wait: ~${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>

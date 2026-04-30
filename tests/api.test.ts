@@ -111,6 +111,33 @@ describe("HTTP routes", () => {
     expect(districtPage.text).toContain("Published district history");
     expect(districtPage.text).toContain("What to check next.");
     expect(districtPage.text).toContain("/data/districts/kangra.csv");
+    expect(districtPage.text).toContain("/data/evidence/districts/kangra.json");
+
+    const districtPack = await request(app).get("/data/evidence/districts/kangra.json");
+    expect(districtPack.status).toBe(200);
+    expect(districtPack.headers["cache-control"]).toContain("no-store");
+    expect(districtPack.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
+    expect(districtPack.body.packType).toBe("district_evidence_pack");
+    expect(districtPack.body.version).toBe("lower-court-evidence-pack.v1");
+    expect(districtPack.body.geography.stateName).toBe("Himachal Pradesh");
+    expect(districtPack.body.district.name).toBe("Kangra");
+    expect(districtPack.body.links.districtHistoryCsv).toBe("/data/districts/kangra.csv");
+    expect(districtPack.body.links.stateEvidencePack).toBe("/data/evidence/state.json");
+    expect(districtPack.body.citation.plain).toContain("Kangra District Court Backlog");
+    expect(districtPack.body.recentHistory.length).toBeGreaterThan(0);
+    expect(districtPack.body.safety.containsRawCaptureArtifacts).toBe(false);
+    expect(districtPack.body.safety.containsOperatorOnlyEvidence).toBe(false);
+
+    const statePack = await request(app).get("/data/evidence/state.json");
+    expect(statePack.status).toBe(200);
+    expect(statePack.headers["cache-control"]).toContain("no-store");
+    expect(statePack.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
+    expect(statePack.body.packType).toBe("state_evidence_pack");
+    expect(statePack.body.geography.stateName).toBe("Himachal Pradesh");
+    expect(statePack.body.links.allDistrictsCsv).toBe("/data/districts.csv");
+    expect(statePack.body.topDistricts.length).toBeGreaterThan(0);
+    expect(statePack.body.safety.containsRawCaptureArtifacts).toBe(false);
+    expect(statePack.body.safety.containsOperatorOnlyEvidence).toBe(false);
 
     const comparePage = await request(app).get("/compare/kangra-vs-shimla");
     expect(comparePage.status).toBe(200);
@@ -127,6 +154,13 @@ describe("HTTP routes", () => {
     expect(dataPage.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(dataPage.text).toContain("Download exactly what the public site is showing.");
     expect(dataPage.text).toContain("CSV/API parity");
+    expect(dataPage.text).toContain("Evidence packs");
+    expect(dataPage.text).toContain("/data/evidence/state.json");
+
+    const apiPage = await request(app).get("/api");
+    expect(apiPage.status).toBe(200);
+    expect(apiPage.text).toContain("/data/evidence/state.json");
+    expect(apiPage.text).toContain("/data/evidence/districts/:districtId.json");
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);
@@ -167,6 +201,7 @@ describe("HTTP routes", () => {
     expect(pressPage.status).toBe(200);
     expect(pressPage.text).toContain("Citation-ready starting points.");
     expect(pressPage.text).toContain("currently published numbers");
+    expect(pressPage.text).toContain("/data/evidence/districts/kangra.json");
     expect(pressPage.text).not.toContain("live numbers");
 
     const sitemap = await request(app).get("/sitemap.xml");
@@ -942,7 +977,24 @@ describe("HTTP routes", () => {
     const punjabDistrictPage = await request(app).get("/states/punjab/districts/ludhiana");
     expect(punjabDistrictPage.status).toBe(200);
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/districts/ludhiana.csv");
+    expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
     expect(punjabDistrictPage.text).toContain("Punjab");
+
+    const punjabDistrictPack = await request(app).get("/states/punjab/data/evidence/districts/ludhiana.json");
+    expect(punjabDistrictPack.status).toBe(200);
+    expect(punjabDistrictPack.body.packType).toBe("district_evidence_pack");
+    expect(punjabDistrictPack.body.geography.stateName).toBe("Punjab");
+    expect(punjabDistrictPack.body.district.name).toBe("Ludhiana");
+    expect(punjabDistrictPack.body.links.districtHistoryCsv).toBe("/states/punjab/data/districts/ludhiana.csv");
+    expect(punjabDistrictPack.body.links.stateEvidencePack).toBe("/states/punjab/data/evidence/state.json");
+    expect(punjabDistrictPack.body.safety.containsRawCaptureArtifacts).toBe(false);
+    expect(punjabDistrictPack.body.safety.containsOperatorOnlyEvidence).toBe(false);
+
+    const punjabStatePack = await request(app).get("/states/punjab/data/evidence/state.json");
+    expect(punjabStatePack.status).toBe(200);
+    expect(punjabStatePack.body.packType).toBe("state_evidence_pack");
+    expect(punjabStatePack.body.geography.stateName).toBe("Punjab");
+    expect(punjabStatePack.body.links.allDistrictsCsv).toBe("/states/punjab/data/districts.csv");
 
     const punjabCompare = await request(app).get("/states/punjab/compare/ludhiana-vs-amritsar");
     expect(punjabCompare.status).toBe(200);
@@ -954,6 +1006,7 @@ describe("HTTP routes", () => {
     expect(punjabData.headers["cache-control"]).toContain("no-store");
     expect(punjabData.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
     expect(punjabData.text).toContain("/v1/states/punjab/stats");
+    expect(punjabData.text).toContain("/states/punjab/data/evidence/state.json");
 
     const punjabCsv = await request(app).get("/states/punjab/data/districts.csv");
     expect(punjabCsv.status).toBe(200);
@@ -970,6 +1023,7 @@ describe("HTTP routes", () => {
     const punjabApiPage = await request(app).get("/states/punjab/api");
     expect(punjabApiPage.status).toBe(200);
     expect(punjabApiPage.text).toContain("/v1/states/punjab/districts");
+    expect(punjabApiPage.text).toContain("/states/punjab/data/evidence/districts/:districtId.json");
   });
 
   it("serves Ladakh through the same public route family with Union Territory copy", async () => {
