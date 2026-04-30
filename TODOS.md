@@ -45,7 +45,8 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 - [ ] Decide whether any public state needs a stronger freshness banner or methodology note once the ops sweep has run across multiple real release windows.
 - [x] Added an explicit operator runbook in `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md` covering the four daily-fetch-lag and stale-snapshot decision paths, anchored in the existing `DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS` and `STALE_SNAPSHOT_THRESHOLD_DAYS` values.
-- [ ] Review whether any public state has source-shape quirks that deserve state-specific caveats instead of silently relying on the common methodology text.
+- [x] Review whether any public state has source-shape quirks that deserve state-specific caveats instead of silently relying on the common methodology text.
+  - 2026-04-29: Added `docs/SOURCE_CAVEAT_REVIEW.md` and public methodology copy for source caveats. Current outcome: no lower-court state or Union Territory needs an extra local caveat beyond state/Union Territory labelling, source date, and freshness/quality banners; High Court and Supreme Court caveats remain tier-specific.
 - [x] Wrote the first on-call policy in `docs/ON_CALL_POLICY.md` defining primary/backup roles, Sev-1/Sev-2/Sev-3 response targets, and escalation rules for the public-alpha ops alerts, and captured the business-hours Asia/Kolkata coverage assumption explicitly.
 - [x] Wrote the first external communications policy in `docs/PUBLIC_ALPHA_LAUNCH_COMMS.md` covering audience priority, messaging rules, and channel pre-requisites; added a `/robots.txt` route that permits public crawl and disallows `/operator/`, with test coverage in `tests/api.test.ts`.
 
