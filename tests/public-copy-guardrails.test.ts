@@ -81,7 +81,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/methodology",
-        requiredText: "Current public scope",
+        requiredText: "The April 2026 source review did not find a lower-court geography",
       },
       {
         path: "/api",
@@ -148,7 +148,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/methodology",
-        requiredText: "publishes dated aggregates after operator review",
+        requiredText: "If a source page changes district coverage, date labels, or geography names",
       },
       {
         path: "/states/punjab/api",

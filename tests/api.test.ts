@@ -132,6 +132,7 @@ describe("HTTP routes", () => {
     expect(methodologyPage.status).toBe(200);
     expect(methodologyPage.text).toContain("Current public scope");
     expect(methodologyPage.text).toContain("How the public metrics are derived");
+    expect(methodologyPage.text).toContain("Source caveats");
     expect(methodologyPage.text).toContain("Published methodology and snapshot lineage");
 
     const learnPage = await request(app).get("/learn");
@@ -602,6 +603,7 @@ describe("HTTP routes", () => {
     const methodology = await request(app).get("/high-courts/himachal/methodology");
     expect(methodology.status).toBe(200);
     expect(methodology.text).toContain("Every public High Court number comes from one published aggregate snapshot.");
+    expect(methodology.text).toContain("High Court caveats are separate");
     expect(methodology.text).toContain("coveredGeographies[]");
     expect(methodology.text).toContain("Current coverage on this page: Himachal Pradesh.");
     expect(methodology.text).toContain("captured_at");
@@ -865,6 +867,7 @@ describe("HTTP routes", () => {
     const punjabMethodology = await request(app).get("/states/punjab/methodology");
     expect(punjabMethodology.status).toBe(200);
     expect(punjabMethodology.text).toContain("This state page covers Punjab.");
+    expect(punjabMethodology.text).toContain("Source caveats");
 
     const punjabApiPage = await request(app).get("/states/punjab/api");
     expect(punjabApiPage.status).toBe(200);
@@ -908,6 +911,7 @@ describe("HTTP routes", () => {
     const ladakhMethodology = await request(app).get("/states/ladakh/methodology");
     expect(ladakhMethodology.status).toBe(200);
     expect(ladakhMethodology.text).toContain("All expected districts for this union territory");
+    expect(ladakhMethodology.text).toContain("state or Union Territory label");
 
     const ladakhApiPage = await request(app).get("/states/ladakh/api");
     expect(ladakhApiPage.status).toBe(200);
