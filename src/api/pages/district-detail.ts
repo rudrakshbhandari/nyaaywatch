@@ -13,6 +13,7 @@ import {
   describeWatchlistPersistence,
   formatShare,
 } from "./metric-insights.js";
+import { EVIDENCE_ENTRY_POINTS_CSS, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 /**
@@ -193,6 +194,35 @@ export function renderDistrictPage(
       ],
     })}
 
+    ${renderEvidenceEntryPoints({
+      headline: "Download and cite this district.",
+      lede:
+        "The JSON pack keeps the public metrics, source date, method, CSV links, citation text, and caveats together. Raw captures and operator notes stay private.",
+      entries: [
+        {
+          title: "District evidence pack",
+          body: "Best for reuse when this district is the claim you need to support.",
+          href: context.routes.districtEvidencePack(district.districtId),
+          cta: "Download JSON",
+          codeLabel: context.routes.districtEvidencePack(district.districtId),
+        },
+        {
+          title: "District history CSV",
+          body: "Best for checking how this district changed across published snapshots.",
+          href: context.routes.districtCsv(district.districtId),
+          cta: "Download CSV",
+          codeLabel: context.routes.districtCsv(district.districtId),
+        },
+        {
+          title: "State evidence pack",
+          body: "Best for reading this district beside the rest of the lower-court geography.",
+          href: context.routes.stateEvidencePack,
+          cta: "Download state JSON",
+          codeLabel: context.routes.stateEvidencePack,
+        },
+      ],
+    })}
+
     <section class="district-grid">
       <div class="district-col">
         <article class="card" id="district-flag">
@@ -318,7 +348,7 @@ export function renderDistrictPage(
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
     ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · SNAPSHOT ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.methodologyVersion)}`,
-    pageCss: DISTRICT_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
+    pageCss: DISTRICT_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS + EVIDENCE_ENTRY_POINTS_CSS,
     footer: {
       sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
       methodologyVersion: snapshot.methodologyVersion,

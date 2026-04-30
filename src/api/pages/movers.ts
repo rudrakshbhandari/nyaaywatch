@@ -5,6 +5,7 @@ import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { describeWatchlistPersistence } from "./metric-insights.js";
+import { EVIDENCE_ENTRY_POINTS_CSS, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderMoversPage(result: DistrictMoversResult, context: PublicPageContext): string {
@@ -73,6 +74,37 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
       ],
     })}
 
+    ${renderEvidenceEntryPoints({
+      headline: "Download the evidence behind these movers.",
+      lede:
+        "Use the state pack for the full movers list, then open district packs when you need a specific source date, method, CSV link, citation text, and caveats together.",
+      entries: [
+        {
+          title: "State evidence pack",
+          body: "Best for checking the overall geography, top districts, and links to reusable exports.",
+          href: context.routes.stateEvidencePack,
+          cta: "Download state JSON",
+          codeLabel: context.routes.stateEvidencePack,
+        },
+        {
+          title: "Top mover pack",
+          body: biggestJumps[0]
+            ? `Best for quoting ${biggestJumps[0].districtName} with its own evidence page, citation text, and CSV link.`
+            : "Best for quoting a district with its own evidence page, citation text, and CSV link.",
+          href: biggestJumps[0] ? context.routes.districtEvidencePack(biggestJumps[0].districtId) : context.routes.stateEvidencePack,
+          cta: biggestJumps[0] ? "Download top mover JSON" : "Download JSON",
+          codeLabel: biggestJumps[0] ? context.routes.districtEvidencePack(biggestJumps[0].districtId) : context.routes.stateEvidencePack,
+        },
+        {
+          title: "Data download page",
+          body: "Use this when you need CSV files, API paths, and the public-data boundary in one place.",
+          href: context.routes.data,
+          cta: "Open data downloads",
+          codeLabel: context.routes.data,
+        },
+      ],
+    })}
+
     <section class="movers-section" id="biggest-backlog-increases">
       ${renderSectionHead({
         headline: "Biggest backlog increases.",
@@ -118,7 +150,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
       methodologyVersion: result.currentSnapshot.methodologyVersion,
       sourceAttribution: result.currentSnapshot.sourceAttribution,
     },
-    pageCss: MOVERS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
+    pageCss: MOVERS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS + EVIDENCE_ENTRY_POINTS_CSS,
     og: {
       title: `Snapshot Movers — ${result.currentSnapshot.stateName} — NyaayWatch`,
       description: `Which districts moved most between the ${previousDate} and ${currentDate} published snapshots? Biggest backlog increases, fastest-improving, and biggest rank changes.`,
@@ -142,6 +174,7 @@ function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "
       <td class="num movers-delta ${tone}">${deltaStr}</td>
       <td class="num">${m.disposalRate.toFixed(1)}</td>
       <td>${escapeHtml(describeWatchlistPersistence(m.watchlistFlaggedInLastSix, m.watchlistLastSixWindow))}</td>
+      <td><a href="${context.routes.districtEvidencePack(m.districtId)}">Evidence JSON</a></td>
     </tr>`;
   }).join("");
 
@@ -156,6 +189,7 @@ function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "
             <th>Change</th>
             <th>Cleared / 100</th>
             <th>Repeat signal</th>
+            <th>Use</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -174,6 +208,7 @@ function renderRankTable(movers: DistrictMover[], context: PublicPageContext): s
       <td class="num movers-delta movers-delta--worse">Worsened ${places} place${places === 1 ? "" : "s"}</td>
       <td class="num">${m.backlogCases.toLocaleString("en-IN")}</td>
       <td>${escapeHtml(describeWatchlistPersistence(m.watchlistFlaggedInLastSix, m.watchlistLastSixWindow))}</td>
+      <td><a href="${context.routes.districtEvidencePack(m.districtId)}">Evidence JSON</a></td>
     </tr>`;
   }).join("");
 
@@ -187,6 +222,7 @@ function renderRankTable(movers: DistrictMover[], context: PublicPageContext): s
             <th>Rank change</th>
             <th>Cases waiting</th>
             <th>Repeat signal</th>
+            <th>Use</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>

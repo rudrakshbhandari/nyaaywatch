@@ -110,8 +110,11 @@ describe("HTTP routes", () => {
     expect(districtPage.status).toBe(200);
     expect(districtPage.text).toContain("Published district history");
     expect(districtPage.text).toContain("What to check next.");
+    expect(districtPage.text).toContain("Download and cite this district.");
+    expect(districtPage.text).toContain("Raw captures and operator notes stay private.");
     expect(districtPage.text).toContain("/data/districts/kangra.csv");
     expect(districtPage.text).toContain("/data/evidence/districts/kangra.json");
+    expect(districtPage.text).toContain("/data/evidence/state.json");
 
     const districtPack = await request(app).get("/data/evidence/districts/kangra.json");
     expect(districtPack.status).toBe(200);
@@ -142,11 +145,18 @@ describe("HTTP routes", () => {
     const comparePage = await request(app).get("/compare/kangra-vs-shimla");
     expect(comparePage.status).toBe(200);
     expect(comparePage.text).toContain("Use this comparison as a starting point.");
+    expect(comparePage.text).toContain("Download both evidence packs.");
+    expect(comparePage.text).toContain("/data/evidence/districts/kangra.json");
+    expect(comparePage.text).toContain("/data/evidence/districts/shimla.json");
+    expect(comparePage.text).toContain("/data/evidence/state.json");
     expect(comparePage.text).toContain("https://nyaaywatch.in/compare/kangra-vs-shimla");
 
     const moversPage = await request(app).get("/movers");
     expect(moversPage.status).toBe(200);
     expect(moversPage.text).toContain("Read movement before making a claim.");
+    expect(moversPage.text).toContain("Download the evidence behind these movers.");
+    expect(moversPage.text).toContain("/data/evidence/state.json");
+    expect(moversPage.text).toContain("Evidence JSON");
 
     const dataPage = await request(app).get("/data");
     expect(dataPage.status).toBe(200);
@@ -949,6 +959,24 @@ describe("HTTP routes", () => {
     const context = await createTestContext();
     pools.push(context.pool);
     await seedTestSnapshot(context.service);
+    const previousPunjabSnapshot = JSON.parse(JSON.stringify(buildPunjabTestSnapshot())) as ReturnType<typeof buildPunjabTestSnapshot>;
+    previousPunjabSnapshot.snapshot.sourceSnapshotAt = "2026-03-31T00:00:00.000Z";
+    previousPunjabSnapshot.snapshot.publishedAt = "2026-04-01T09:00:00.000Z";
+    previousPunjabSnapshot.stats.pendingCases = 952000;
+    previousPunjabSnapshot.districts = previousPunjabSnapshot.districts.map((district) =>
+      district.districtId === "ludhiana"
+        ? { ...district, backlogCases: 232000, rank: 2 }
+        : district.districtId === "amritsar"
+          ? { ...district, backlogCases: 82000, rank: 1 }
+          : district,
+    );
+    await insertPublishedSnapshot(context.pool, {
+      runId: "run_pb_public_previous",
+      snapshotId: "snapshot_pb_public_previous",
+      publicationId: "publication_pb_public_previous",
+      stateCode: "PB",
+      payload: previousPunjabSnapshot,
+    });
     await insertPublishedSnapshot(context.pool, {
       runId: "run_pb_public",
       snapshotId: "snapshot_pb_public",
@@ -976,8 +1004,10 @@ describe("HTTP routes", () => {
 
     const punjabDistrictPage = await request(app).get("/states/punjab/districts/ludhiana");
     expect(punjabDistrictPage.status).toBe(200);
+    expect(punjabDistrictPage.text).toContain("Download and cite this district.");
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/districts/ludhiana.csv");
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
+    expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/state.json");
     expect(punjabDistrictPage.text).toContain("Punjab");
 
     const punjabDistrictPack = await request(app).get("/states/punjab/data/evidence/districts/ludhiana.json");
@@ -999,7 +1029,17 @@ describe("HTTP routes", () => {
     const punjabCompare = await request(app).get("/states/punjab/compare/ludhiana-vs-amritsar");
     expect(punjabCompare.status).toBe(200);
     expect(punjabCompare.text).toContain("Use this comparison as a starting point.");
+    expect(punjabCompare.text).toContain("Download both evidence packs.");
+    expect(punjabCompare.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
+    expect(punjabCompare.text).toContain("/states/punjab/data/evidence/districts/amritsar.json");
+    expect(punjabCompare.text).toContain("/states/punjab/data/evidence/state.json");
     expect(punjabCompare.text).toContain("https://nyaaywatch.in/states/punjab/compare/ludhiana-vs-amritsar");
+
+    const punjabMovers = await request(app).get("/states/punjab/movers");
+    expect(punjabMovers.status).toBe(200);
+    expect(punjabMovers.text).toContain("Download the evidence behind these movers.");
+    expect(punjabMovers.text).toContain("/states/punjab/data/evidence/state.json");
+    expect(punjabMovers.text).toContain("Evidence JSON");
 
     const punjabData = await request(app).get("/states/punjab/data");
     expect(punjabData.status).toBe(200);
