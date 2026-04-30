@@ -209,6 +209,7 @@ function renderColophon(
       ${links
         .map((link) => `<a href="${link.href}">${escapeHtml(link.label === "Data" ? "Data downloads" : link.label)}</a>`)
         .join("")}
+      <a href="mailto:contact@nyaaywatch.in">contact@nyaaywatch.in</a>
     </div>
   </footer>`;
 }
