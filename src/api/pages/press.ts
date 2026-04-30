@@ -7,6 +7,7 @@ import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./inves
 export function renderPressPage(): string {
   const curlExample = `curl ${SITE_ORIGIN}/v1/stats/himachal | jq`;
   const districtExample = `curl ${SITE_ORIGIN}/v1/districts | jq '.districts[0]'`;
+  const evidencePackExample = `curl ${SITE_ORIGIN}/data/evidence/districts/kangra.json | jq`;
 
   const body = `
     <section class="press-hero">
@@ -121,8 +122,8 @@ export function renderPressPage(): string {
         </article>
         <article class="card">
           <h3>Downloadable packs</h3>
-          <p>Use published CSVs and API JSON as reusable evidence packs. Raw capture files stay out of the press kit unless a release explicitly clears them.</p>
-          <p><a class="btn btn--ghost btn--small" href="/data">Open downloads</a></p>
+          <p>Use evidence pack JSON when you need the metric, source date, methodology, CSV/API links, and caveats in one reusable file. Raw capture files stay outside the public download boundary.</p>
+          <p><a class="btn btn--ghost btn--small" href="/data/evidence/state.json">Open state pack</a></p>
         </article>
         <article class="card">
           <h3>Movement and contrast</h3>
@@ -145,6 +146,11 @@ export function renderPressPage(): string {
           <p class="press-api__label">All districts (example scope)</p>
           <pre class="press-embed__code">${escapeHtml(districtExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(districtExample)}">Copy</button>
+        </div>
+        <div class="press-api-row">
+          <p class="press-api__label">District evidence pack (example: Kangra)</p>
+          <pre class="press-embed__code">${escapeHtml(evidencePackExample)}</pre>
+          <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(evidencePackExample)}">Copy</button>
         </div>
         <p class="card__meta">Full API reference: <a href="/api">/api</a> · <a href="/methodology">Methodology</a> · <a href="/data">Data downloads</a></p>
       </div>

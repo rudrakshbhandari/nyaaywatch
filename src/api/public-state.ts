@@ -11,8 +11,10 @@ export interface PublicStateRoutes {
   compare: (leftDistrictId: string, rightDistrictId: string) => string;
   movers: string;
   data: string;
+  stateEvidencePack: string;
   districtsCsv: string;
   districtCsv: (districtId: string) => string;
+  districtEvidencePack: (districtId: string) => string;
   methodology: string;
   api: string;
   statsApi: string;
@@ -106,9 +108,12 @@ export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRo
       `${htmlBase ? `${htmlBase}/compare` : "/compare"}/${leftDistrictId}-vs-${rightDistrictId}`,
     movers: htmlBase ? `${htmlBase}/movers` : "/movers",
     data: htmlBase ? `${htmlBase}/data` : "/data",
+    stateEvidencePack: htmlBase ? `${htmlBase}/data/evidence/state.json` : "/data/evidence/state.json",
     districtsCsv: htmlBase ? `${htmlBase}/data/districts.csv` : "/data/districts.csv",
     districtCsv: (districtId) =>
       `${htmlBase ? `${htmlBase}/data/districts` : "/data/districts"}/${districtId}.csv`,
+    districtEvidencePack: (districtId) =>
+      `${htmlBase ? `${htmlBase}/data/evidence/districts` : "/data/evidence/districts"}/${districtId}.json`,
     methodology: htmlBase ? `${htmlBase}/methodology` : "/methodology",
     api: htmlBase ? `${htmlBase}/api` : "/api",
     statsApi: apiBase.stats,

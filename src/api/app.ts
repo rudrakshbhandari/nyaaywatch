@@ -32,6 +32,7 @@ import { renderPressPage } from "./pages/press.js";
 import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
 import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
 import { renderDistrictEmbedWidget, renderStateEmbedWidget } from "./pages/embed.js";
+import { buildDistrictEvidencePack, buildStateEvidencePack } from "./evidence-packs.js";
 import { buildViewModel } from "./home/view-model.js";
 import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
 import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
@@ -374,6 +375,41 @@ export function createApp(
       }
 
       response.type("text/csv").send(csv);
+    }),
+  );
+
+  app.get(
+    "/data/evidence/state.json",
+    asyncRoute(async (_request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      response.json(buildStateEvidencePack(snapshot.payload, context));
+    }),
+  );
+
+  app.get(
+    "/data/evidence/districts/:districtId.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const districtId = readRouteParam(request.params.districtId);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const payload = await currentService.getDistrictDetail(districtId);
+      if (!payload) {
+        response.status(404).json({ error: "District evidence pack not available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      response.json(buildDistrictEvidencePack(payload.snapshot, payload.district, payload.history, context));
     }),
   );
 
@@ -792,6 +828,48 @@ export function createApp(
       }
 
       response.type("text/csv").send(csv);
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/evidence/state.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      response.json(buildStateEvidencePack(snapshot.payload, context));
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/evidence/districts/:districtId.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
+        return;
+      }
+
+      const payload = await resolved.service.getDistrictDetail(readRouteParam(request.params.districtId));
+      if (!payload) {
+        response.status(404).json({ error: "District evidence pack not available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      response.json(buildDistrictEvidencePack(payload.snapshot, payload.district, payload.history, context));
     }),
   );
 

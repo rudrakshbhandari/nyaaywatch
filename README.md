@@ -23,7 +23,7 @@ The public alpha covers the full Indian court hierarchy:
 - **Himachal Pradesh** remains the unscoped lower-court default at `/`, `/districts`, `/data`, `/methodology`, `/api`
 - **Plain-language court-system guide** at `/learn`
 
-Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Investigation surfaces include `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, and embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`.
+Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Investigation surfaces include `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`, and lower-court evidence packs under `/data/evidence/...`.
 
 ## Product Guardrails
 
@@ -129,6 +129,10 @@ GET /v1/trends
 GET /v1/states/:stateSlug/{stats,districts,trends}
 GET /v1/high-courts/:courtSlug/{stats,trends}
 GET /v1/supreme-court/{stats,trends}
+GET /data/evidence/state.json
+GET /data/evidence/districts/:districtId.json
+GET /states/:stateSlug/data/evidence/state.json
+GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
 Full contract is enforced by API contract tests under `src/api/__tests__/`.
