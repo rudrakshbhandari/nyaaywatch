@@ -151,6 +151,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           methodologyHref: `${context.routes.methodology}#metric-watchlist-persistence`,
         })}
       </div>
+      <p class="metric-deepening__learn"><a href="/learn#pressure-signals">Read these pressure signals in plain English</a></p>
     </section>
 
     ${renderInvestigationWorkflow({
@@ -422,6 +423,13 @@ const HOME_PAGE_CSS = `
   .watchlist { margin-bottom: 96px; }
   .metric-deepening { margin-bottom: 88px; }
   .metric-deepening__secondary { margin-top: 32px; }
+  .metric-deepening__learn {
+    margin: 20px 0 0;
+    font-weight: 800;
+  }
+  .metric-deepening__learn a {
+    color: var(--accent-dark);
+  }
   .watchlist__grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
     background: var(--ink); border: 1px solid var(--ink);

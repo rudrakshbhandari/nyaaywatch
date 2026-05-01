@@ -190,6 +190,40 @@ export function renderLearnPage(): string {
       </div>
     </section>
 
+    <section class="learn-section learn-pressure" id="pressure-signals">
+      ${renderSectionHead({
+        headline: "How to read pressure signals",
+        lede:
+          "These signals help you move from a big pending count to a better question. They are not predictions, rankings of people, or findings of fault.",
+      })}
+      <div class="learn-pressure-grid">
+        <article class="learn-pressure-card">
+          <span>Age</span>
+          <h3>Old-case burden</h3>
+          <p>Shows how much of the pending pile has already waited for years. A high share means long waits are not just a few isolated cases.</p>
+        </article>
+        <article class="learn-pressure-card">
+          <span>Movement</span>
+          <h3>Backlog movement</h3>
+          <p>Compares cases filed and cleared last month against the pending pile. Positive movement means the queue grew; negative movement means it shrank.</p>
+        </article>
+        <article class="learn-pressure-card">
+          <span>Pace</span>
+          <h3>Break-even clearances</h3>
+          <p>Shows how many more cases would have needed to clear last month to stop the backlog from growing. Zero means filings were matched or exceeded.</p>
+        </article>
+        <article class="learn-pressure-card">
+          <span>Scenario</span>
+          <h3>10% reduction scenario</h3>
+          <p>Estimates the extra monthly clearances needed to cut the pending pile by 10% in a year while covering new filings. It is a workload scenario, not a forecast.</p>
+        </article>
+      </div>
+      <div class="learn-pressure-note">
+        <strong>Zero and N/A mean different things.</strong>
+        <p>A zero can be a real result, such as no extra clearances needed to break even. N/A means the public source did not publish the inputs or the metric does not apply.</p>
+      </div>
+    </section>
+
     <section class="learn-section learn-data-rules">
       ${renderSectionHead({
         headline: "How to read delay data",
@@ -486,9 +520,57 @@ const LEARN_PAGE_CSS = `
   }
   .learn-data-rules,
   .learn-mistakes,
-  .learn-citation {
+  .learn-citation,
+  .learn-pressure {
     padding: 34px 0 0;
     border-top: 2px solid var(--ink);
+  }
+  .learn-pressure-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+  }
+  .learn-pressure-card {
+    min-height: 248px;
+    padding: 20px;
+    background: var(--paper);
+  }
+  .learn-pressure-card span {
+    display: inline-block;
+    margin-bottom: 28px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .learn-pressure-card h3 {
+    margin: 0 0 12px;
+    font-size: 22px;
+    line-height: 1.08;
+  }
+  .learn-pressure-card p {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+  .learn-pressure-note {
+    margin-top: 18px;
+    padding: 20px 22px;
+    border-left: 4px solid var(--accent);
+    background: color-mix(in srgb, var(--paper) 82%, var(--accent) 18%);
+  }
+  .learn-pressure-note strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 19px;
+    line-height: 1.15;
+  }
+  .learn-pressure-note p {
+    margin: 0;
+    color: var(--ink-soft);
   }
   .learn-rule-grid {
     display: grid;
@@ -567,7 +649,8 @@ const LEARN_PAGE_CSS = `
       justify-self: center;
     }
     .learn-timeline,
-    .learn-rule-grid {
+    .learn-rule-grid,
+    .learn-pressure-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .learn-glossary {
@@ -594,12 +677,14 @@ const LEARN_PAGE_CSS = `
       gap: 8px;
     }
     .learn-timeline,
-    .learn-rule-grid {
+    .learn-rule-grid,
+    .learn-pressure-grid {
       grid-template-columns: 1fr;
     }
     .learn-timeline li,
     .learn-rule,
-    .learn-node {
+    .learn-node,
+    .learn-pressure-card {
       min-height: auto;
     }
     .learn-section {

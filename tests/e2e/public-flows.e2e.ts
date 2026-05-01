@@ -53,10 +53,12 @@ test("education flow explains the court system without requiring data context", 
   await expect(page.getByRole("heading", { name: "How the levels connect" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "How a case usually moves" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Words you will see on NyaayWatch" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How to read pressure signals" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "How to read delay data" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Common mistakes to avoid" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "A simple way to cite a number" })).toBeVisible();
   await expect(page.getByText("NyaayWatch pages are reviewed snapshots, not a running ticker.")).toBeVisible();
+  await expect(page.getByText("Zero and N/A mean different things.")).toBeVisible();
   await expect(page.getByText("Pending is not blame")).toBeVisible();
   await expect(page.getByText("Do not turn flags into accusations.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Open Supreme Court data" })).toBeVisible();
