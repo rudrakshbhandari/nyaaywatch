@@ -26,7 +26,7 @@ export function buildSnapshotCandidate(
 ): SnapshotCandidate {
   const stateDisposalRate = percentage(extracted.state.disposedLastMonth, extracted.state.institutedLastMonth);
   const stateMedianAgeDays = inferMedianAgeDays(extracted.state.ageBuckets);
-  const stateOldCaseBurden = buildOldCaseBurdenMetric(extracted.state.ageBuckets);
+  const stateOldCaseBurden = buildOldCaseBurdenMetric(extracted.state.ageBuckets, extracted.state.pendingCases);
   const stateBacklogMovementShare = backlogMovementMetric(
     extracted.state.pendingCases,
     extracted.state.institutedLastMonth,
@@ -265,9 +265,13 @@ function buildOldCaseBurden(ageBuckets: AgeBuckets) {
   };
 }
 
-function buildOldCaseBurdenMetric(ageBuckets: AgeBuckets): OldCaseBurdenMetric {
+function buildOldCaseBurdenMetric(ageBuckets: AgeBuckets, pendingCases: number): OldCaseBurdenMetric {
   const total = Object.values(ageBuckets).reduce((sum, count) => sum + count, 0);
   if (total <= 0) {
+    if (pendingCases <= 0) {
+      return { state: "missing", reason: "not-applicable" };
+    }
+
     return { state: "missing", reason: "source-not-published" };
   }
 
@@ -294,9 +298,7 @@ function backlogMovementMetric(
   if (pendingCases <= 0) {
     return { state: "missing", reason: "not-applicable" };
   }
-  if (institutedLastMonth <= 0 && disposedLastMonth <= 0) {
-    return { state: "missing", reason: "source-not-published" };
-  }
+
   return {
     state: "ok",
     value: round(((institutedLastMonth - disposedLastMonth) / pendingCases) * 100),
@@ -308,10 +310,6 @@ function breakEvenClearancesNeeded(institutedLastMonth: number, disposedLastMont
 }
 
 function breakEvenClearancesMetric(institutedLastMonth: number, disposedLastMonth: number): MetricValue {
-  if (institutedLastMonth <= 0 && disposedLastMonth <= 0) {
-    return { state: "missing", reason: "source-not-published" };
-  }
-
   return { state: "ok", value: breakEvenClearancesNeeded(institutedLastMonth, disposedLastMonth) };
 }
 
@@ -331,9 +329,6 @@ function catchUpClearancesMetric(
 ): MetricValue {
   if (pendingCases <= 0) {
     return { state: "missing", reason: "not-applicable" };
-  }
-  if (institutedLastMonth <= 0 && disposedLastMonth <= 0) {
-    return { state: "missing", reason: "source-not-published" };
   }
 
   return {

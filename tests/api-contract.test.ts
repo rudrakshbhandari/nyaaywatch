@@ -43,8 +43,8 @@ function createStatsContract(stateCode: "HP" | "PB", stateName: string) {
         ageBuckets: createAgeBucketsContract(),
         oldCaseBurden: createOldCaseBurdenMetricContract(),
         backlogMovementShare: createMetricValueContract(),
-        breakEvenClearancesNeeded: createMetricValueContract(),
-        catchUpClearancesPerMonth: createMetricValueContract(),
+        breakEvenClearancesNeeded: createNonNegativeIntegerMetricValueContract(),
+        catchUpClearancesPerMonth: createNonNegativeIntegerMetricValueContract(),
         backlogConcentration: createBacklogConcentrationMetricContract(),
       })
       .strict(),
@@ -94,6 +94,13 @@ function createMissingMetricContract() {
 function createMetricValueContract() {
   return z.discriminatedUnion("state", [
     z.object({ state: z.literal("ok"), value: z.number() }).strict(),
+    createMissingMetricContract(),
+  ]);
+}
+
+function createNonNegativeIntegerMetricValueContract() {
+  return z.discriminatedUnion("state", [
+    z.object({ state: z.literal("ok"), value: z.number().int().nonnegative() }).strict(),
     createMissingMetricContract(),
   ]);
 }
