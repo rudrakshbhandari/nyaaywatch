@@ -20,7 +20,7 @@ Use a calm, predictable cadence for alpha:
 - High Court internal raw fetches: **every day at 8:20 AM Asia/Kolkata across reviewed High Court profiles only**
 - Public snapshot publishes: **twice per week**
 - Recommended publish window: **Tuesday and Friday, 11:00 AM Asia/Kolkata**
-- NJDG missing-monthly-zero outreach: **weekly on Monday at 04:30 UTC while unresolved source-zero rows remain**
+- NJDG missing-monthly-zero outreach: **Monday, Wednesday, and Friday at 04:30 UTC / 10:00 AM Asia/Kolkata while unresolved source-zero rows remain**
 - Allowed exception: a same-day hotfix for broken public copy, methodology wording, or platform issues that do not weaken the trust boundary
 
 Why this cadence:
@@ -39,7 +39,7 @@ Treat the daily fetches as internal evidence collection only:
 - they must not change the public snapshot without an explicit operator publish
 - a failed daily fetch is an operational signal, not a reason to auto-publish or auto-rollback
 
-Treat a lower-court row with pending cases but `0` filed and `0` cleared cases for last month as a source-availability condition. Public surfaces should say NJDG reports those zero monthly movement inputs, show derived clearance and gap metrics as `N/A` where the denominator would be missing, and avoid implying the court actually cleared zero at a measured pace. The automated outreach workflow may email the configured NJDG contact repeatedly at the weekly cadence until the scan no longer finds such public rows.
+Treat a lower-court row with pending cases but `0` filed and `0` cleared cases for last month as a source-availability condition. Public surfaces should say NJDG reports those zero monthly movement inputs, show derived clearance and gap metrics as `N/A` where the denominator would be missing, and avoid implying the court actually cleared zero at a measured pace. The automated outreach workflow may email the official CPC contacts for affected NJDG state or Union Territory rows repeatedly at the Monday/Wednesday/Friday cadence until the scan no longer finds such public rows.
 
 ## Environment Rule
 
