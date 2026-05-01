@@ -171,7 +171,11 @@ function buildHeroLede(
 
 function buildClearanceCaption(model: HomeViewModel): string {
   if (!model.clearancePaceAvailable) {
-    return "NJDG reports 0 filed and 0 cleared cases for last month, so NyaayWatch shows this pace as N/A.";
+    const { pendingCases, filedLastMonthCases, clearedLastMonthCases } = model.snapshot.stats;
+    if (pendingCases > 0 && filedLastMonthCases === 0 && clearedLastMonthCases === 0) {
+      return "NJDG reports 0 filed and 0 cleared cases for last month, so NyaayWatch shows this pace as N/A.";
+    }
+    return "NJDG does not report a positive filed-case count for last month, so NyaayWatch cannot compute this pace.";
   }
   const rate = model.clearanceRate;
   if (rate >= 100) {
