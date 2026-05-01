@@ -85,6 +85,8 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
     expect(homepage.text).toContain("Browse lower-court pages");
+    expect(homepage.text).toContain('href="#lower-court-pages"');
+    expect(homepage.text).toContain('id="lower-court-pages" open');
     expect(homepage.text).toContain("Pending across public geographies");
     expect(homepage.text).toContain("Highest-pressure geography");
     expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
@@ -983,6 +985,10 @@ describe("HTTP routes", () => {
       stateCode: "PB",
       payload: previousPunjabSnapshot,
     });
+    await context.pool.query("UPDATE publication_history SET created_at = $1 WHERE id = $2", [
+      "2026-04-01T09:00:00.000Z",
+      "publication_pb_public_previous",
+    ]);
     await insertPublishedSnapshot(context.pool, {
       runId: "run_pb_public",
       snapshotId: "snapshot_pb_public",
@@ -990,6 +996,10 @@ describe("HTTP routes", () => {
       stateCode: "PB",
       payload: buildPunjabTestSnapshot(),
     });
+    await context.pool.query("UPDATE publication_history SET created_at = $1 WHERE id = $2", [
+      "2026-04-16T09:00:00.000Z",
+      "publication_pb_public",
+    ]);
 
     const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 

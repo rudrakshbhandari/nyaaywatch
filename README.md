@@ -136,6 +136,8 @@ GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
 Full contract is enforced by API contract tests under `src/api/__tests__/`.
+State-level pressure metrics that depend on optional NJDG inputs use tagged values:
+`{ "state": "ok", "value": ... }` when computable, or `{ "state": "missing", "reason": "source-not-published" | "insufficient-history" | "incomplete-breakdown" | "not-applicable" }` when the source inputs are unavailable or the metric does not apply.
 
 ## Operator API
 

@@ -1,0 +1,92 @@
+{
+  "snapshot": {
+    "stateCode": "HP",
+    "stateName": "Himachal Pradesh",
+    "sourceName": "NJDG Himachal district dashboard",
+    "sourceSnapshotAt": "2026-04-10T00:00:00.000Z",
+    "publishedAt": "2026-04-10T12:00:00.000Z",
+    "methodologyVersion": "2026.04-alpha",
+    "qualityState": "complete",
+    "freshnessDays": 0,
+    "sourceAttribution": "National Judicial Data Grid public district dashboard for Himachal Pradesh",
+    "publishedFromRunId": "run_legacy_pressure"
+  },
+  "stats": {
+    "pendingCases": 1000,
+    "filedLastMonthCases": 120,
+    "clearedLastMonthCases": 90,
+    "disposalRate": 75,
+    "medianCaseAgeDays": 365,
+    "flaggedDistricts": 1,
+    "ageBuckets": {
+      "lessThanOneYear": 400,
+      "oneToThreeYears": 300,
+      "threeToFiveYears": 150,
+      "fiveToTenYears": 120,
+      "aboveTenYears": 30
+    },
+    "oldCaseBurden": {
+      "threePlusYearsCases": 300,
+      "fivePlusYearsCases": 150,
+      "tenPlusYearsCases": 30,
+      "threePlusYearsShare": 30,
+      "fivePlusYearsShare": 15,
+      "tenPlusYearsShare": 3
+    },
+    "backlogMovementShare": 3,
+    "breakEvenClearancesNeeded": 30,
+    "catchUpClearancesPerMonth": 39,
+    "backlogConcentration": {
+      "topFiveDistrictsShare": 57.8,
+      "topTenDistrictsShare": 81.4
+    }
+  },
+  "districts": [
+    {
+      "districtId": "shimla",
+      "districtName": "Shimla",
+      "rank": 1,
+      "backlogCases": 400,
+      "filedLastMonthCases": 60,
+      "clearedLastMonthCases": 45,
+      "disposalRate": 75,
+      "medianAgeDays": 365,
+      "filingVsDisposalGap": 25,
+      "ageBuckets": {
+        "lessThanOneYear": 160,
+        "oneToThreeYears": 120,
+        "threeToFiveYears": 60,
+        "fiveToTenYears": 48,
+        "aboveTenYears": 12
+      },
+      "oldCaseBurden": {
+        "threePlusYearsCases": 120,
+        "fivePlusYearsCases": 60,
+        "tenPlusYearsCases": 12,
+        "threePlusYearsShare": 30,
+        "fivePlusYearsShare": 15,
+        "tenPlusYearsShare": 3
+      },
+      "backlogMovementShare": 3.8,
+      "breakEvenClearancesNeeded": 15,
+      "catchUpClearancesPerMonth": 19,
+      "watchlistPersistence": {
+        "flaggedInLastThree": 1,
+        "lastThreeWindow": 1,
+        "flaggedInLastSix": 1,
+        "lastSixWindow": 1
+      },
+      "flagReason": "New cases are coming in faster than this district is clearing them.",
+      "summary": "Shimla has 400 cases waiting."
+    }
+  ],
+  "trends": [
+    {
+      "snapshotDate": "2026-04-10T00:00:00.000Z",
+      "pendingCases": 1000,
+      "filedLastMonthCases": 120,
+      "clearedLastMonthCases": 90,
+      "disposalRate": 75
+    }
+  ]
+}
