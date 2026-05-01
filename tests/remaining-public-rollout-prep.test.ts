@@ -37,6 +37,23 @@ const REMAINING_PUBLIC_PREP_CASES: PublicPrepCase[] = [
   { stateCode: "MZ", stateName: "Mizoram", stateSlug: "mizoram", districtId: "aizawl", districtName: "Aizawl", pendingCases: 9122, disposalRate: 112.5, sourceSnapshotAt: "2026-04-18T00:00:00.000Z" },
 ];
 
+const SYNTHETIC_STATE_PRESSURE_STATS = {
+  filedLastMonthCases: 0,
+  clearedLastMonthCases: 0,
+  ageBuckets: {
+    lessThanOneYear: 0,
+    oneToThreeYears: 0,
+    threeToFiveYears: 0,
+    fiveToTenYears: 0,
+    aboveTenYears: 0,
+  },
+  oldCaseBurden: { state: "missing", reason: "source-not-published" },
+  backlogMovementShare: { state: "missing", reason: "source-not-published" },
+  breakEvenClearancesNeeded: { state: "missing", reason: "source-not-published" },
+  catchUpClearancesPerMonth: { state: "missing", reason: "source-not-published" },
+  backlogConcentration: { state: "missing", reason: "incomplete-breakdown" },
+} as const;
+
 function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
   const districtSlugTwo = `${input.districtId}-east`;
   const districtNameTwo = `${input.districtName} East`;
@@ -61,6 +78,7 @@ function buildPublishedSnapshot(input: PublicPrepCase): PublishedSnapshot {
       disposalRate: input.disposalRate,
       medianCaseAgeDays: 365,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {

@@ -5,6 +5,7 @@ import { dirname, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { HighCourtPublishedSnapshotSchema } from "../src/domain/high-court-snapshot-schema.js";
+import { PublishedSnapshotSchema } from "../src/domain/snapshot-schema.js";
 import { SupremeCourtPublishedSnapshotSchema } from "../src/domain/supreme-court-snapshot-schema.js";
 
 // These fixtures are frozen copies of the *shape* of payloads that have
@@ -46,6 +47,23 @@ describe("High Court published snapshot — shape compatibility", () => {
     const fixture = loadFixture("high-court-without-case-type-breakdown.json");
     const result = HighCourtPublishedSnapshotSchema.safeParse(fixture);
     expect(result.success, formatFailure("high-court-without-case-type-breakdown.json", result)).toBe(true);
+  });
+});
+
+describe("Lower-court published snapshot — shape compatibility", () => {
+  it("normalizes legacy pressure metric fields while keeping district metrics unchanged", () => {
+    const legacy = loadFixture("lower-court-legacy-pressure-metrics.json");
+    const result = PublishedSnapshotSchema.safeParse(legacy);
+
+    expect(result.success, formatFailure("lower-court-legacy-pressure-metrics.json", result)).toBe(true);
+    if (!result.success) {
+      return;
+    }
+
+    expect(result.data.stats.backlogMovementShare).toEqual({ state: "ok", value: 3 });
+    expect(result.data.stats.oldCaseBurden).toMatchObject({ state: "ok" });
+    expect(result.data.stats.backlogConcentration).toMatchObject({ state: "ok" });
+    expect(result.data.districts[0]?.backlogMovementShare).toBe(3.8);
   });
 });
 
