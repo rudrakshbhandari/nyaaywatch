@@ -208,7 +208,7 @@ export function renderIndiaMap(entries: IndiaMapStateEntry[]): string {
         <aside class="india-choropleth__callouts">
           <p class="india-choropleth__callouts-head">Highest pressure geographies</p>
           <ol class="india-choropleth__callouts-list">${topList}</ol>
-          <details class="india-choropleth__list-toggle">
+          <details class="india-choropleth__list-toggle" id="lower-court-pages" open>
             <summary>All published lower-court geographies</summary>
             <ul class="india-choropleth__list">${stateList}</ul>
           </details>

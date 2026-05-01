@@ -6,7 +6,11 @@ test("citizen flow loads the homepage, district workspace, and district permalin
   await expect(page.getByRole("heading", { name: "How long is India waiting for justice?" })).toBeVisible();
   await expect(page.locator(".national-hero__accountability")).toContainText(/Captured|Source snapshot/);
   await expect(page.getByRole("link", { name: /Track the Supreme Court/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Browse lower-court pages/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Browse lower-court pages/i })).toHaveAttribute(
+    "href",
+    "#lower-court-pages",
+  );
+  await expect(page.locator("#lower-court-pages")).toHaveAttribute("open", "");
   await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Learn" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Open top geography/i })).toBeVisible();
 
