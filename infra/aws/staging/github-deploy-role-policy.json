@@ -1,0 +1,136 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EcrAuth",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "EcrPushNyaayWatch",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeRepositories",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+      ],
+      "Resource": "arn:aws:ecr:ap-south-1:723951822728:repository/nyaaywatch-staging"
+    },
+    {
+      "Sid": "EcsRollout",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:DescribeClusters",
+        "ecs:DescribeServices",
+        "ecs:DescribeTaskDefinition",
+        "ecs:RegisterTaskDefinition",
+        "ecs:UpdateService"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "CloudFormationRead",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:DescribeStackResources",
+        "cloudformation:DescribeStacks"
+      ],
+      "Resource": [
+        "arn:aws:cloudformation:ap-south-1:723951822728:stack/nyaaywatch-staging/*",
+        "arn:aws:cloudformation:ap-south-1:723951822728:stack/nyaaywatch-production/*"
+      ]
+    },
+    {
+      "Sid": "PassTaskRoles",
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::723951822728:role/nyaaywatch-staging-task",
+        "arn:aws:iam::723951822728:role/nyaaywatch-staging-task-execution",
+        "arn:aws:iam::723951822728:role/nyaaywatch-production-task",
+        "arn:aws:iam::723951822728:role/nyaaywatch-production-task-execution"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "SchedulerReconcile",
+      "Effect": "Allow",
+      "Action": [
+        "scheduler:CreateSchedule",
+        "scheduler:GetSchedule",
+        "scheduler:UpdateSchedule"
+      ],
+      "Resource": [
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-weekday-internal-fetch",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-supreme-court-internal-fetch",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-high-courts-internal-fetch",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-public-alpha-ops-monitor",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-staging-publish-pending-sweep",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-weekday-internal-fetch",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-supreme-court-internal-fetch",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-high-courts-internal-fetch",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-public-alpha-ops-monitor",
+        "arn:aws:scheduler:ap-south-1:723951822728:schedule/default/nyaaywatch-production-publish-pending-sweep"
+      ]
+    },
+    {
+      "Sid": "PassSchedulerRole",
+      "Effect": "Allow",
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Resource": [
+        "arn:aws:iam::723951822728:role/nyaaywatch-staging-internal-fetch-scheduler",
+        "arn:aws:iam::723951822728:role/nyaaywatch-production-internal-fetch-scheduler"
+      ],
+      "Condition": {
+        "StringLike": {
+          "iam:PassedToService": "scheduler.amazonaws.com"
+        }
+      }
+    },
+    {
+      "Sid": "OperatorTokenSecretRead",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-staging/operator-api-token*",
+        "arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-production/operator-api-token*"
+      ]
+    },
+    {
+      "Sid": "AlarmTopicPublish",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": [
+        "arn:aws:sns:ap-south-1:723951822728:nyaaywatch-staging-alerts",
+        "arn:aws:sns:ap-south-1:723951822728:nyaaywatch-production-alerts"
+      ]
+    },
+    {
+      "Sid": "NjdgOutreachSesSend",
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail"
+      ],
+      "Resource": "arn:aws:ses:ap-south-1:723951822728:identity/rudrakshbhandari99@gmail.com"
+    }
+  ]
+}
