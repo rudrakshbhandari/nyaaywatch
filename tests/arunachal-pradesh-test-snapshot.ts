@@ -1,5 +1,22 @@
 import { PublishedSnapshotSchema, type PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 
+const SYNTHETIC_STATE_PRESSURE_STATS = {
+  filedLastMonthCases: 0,
+  clearedLastMonthCases: 0,
+  ageBuckets: {
+    lessThanOneYear: 0,
+    oneToThreeYears: 0,
+    threeToFiveYears: 0,
+    fiveToTenYears: 0,
+    aboveTenYears: 0,
+  },
+  oldCaseBurden: { state: "missing", reason: "source-not-published" },
+  backlogMovementShare: { state: "missing", reason: "source-not-published" },
+  breakEvenClearancesNeeded: { state: "missing", reason: "source-not-published" },
+  catchUpClearancesPerMonth: { state: "missing", reason: "source-not-published" },
+  backlogConcentration: { state: "missing", reason: "incomplete-breakdown" },
+} as const;
+
 export function buildArunachalPradeshTestSnapshot(): PublishedSnapshot {
   return PublishedSnapshotSchema.parse({
     snapshot: {
@@ -19,6 +36,7 @@ export function buildArunachalPradeshTestSnapshot(): PublishedSnapshot {
       disposalRate: 118.5,
       medianCaseAgeDays: 183,
       flaggedDistricts: 3,
+      ...SYNTHETIC_STATE_PRESSURE_STATS,
     },
     districts: [
       {
