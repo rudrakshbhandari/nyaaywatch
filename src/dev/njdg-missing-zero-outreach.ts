@@ -1,6 +1,8 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { listPublicStateProfiles } from "../geographies.js";
+import { listPublicStateProfiles, type SupportedStateCode } from "../geographies.js";
 import { readFlag } from "./cli-flags.js";
 
 interface PublicStatsPayload {
@@ -26,7 +28,7 @@ interface PublicDistrictsPayload {
   }>;
 }
 
-interface MissingMonthlyMovementIssue {
+export interface MissingMonthlyMovementIssue {
   scope: "state" | "district";
   stateCode: string;
   stateName: string;
@@ -39,19 +41,60 @@ interface MissingMonthlyMovementIssue {
   publicUrl: string;
 }
 
+const OFFICIAL_CPC_EMAIL_BY_STATE_CODE: Record<SupportedStateCode, string> = {
+  AN: "cpc-cal@aij.gov.in",
+  AP: "cpc-aphc@aij.gov.in",
+  AR: "cpc-asm@aij.gov.in",
+  AS: "cpc-asm@aij.gov.in",
+  BR: "cpc-bih@aij.gov.in",
+  CG: "cpc-cgh@aij.gov.in",
+  CHD: "cpc-punj@aij.gov.in",
+  DL: "cpc-del@aij.gov.in",
+  DNHDD: "cpc-bom@aij.gov.in",
+  GA: "cpc-bom@aij.gov.in",
+  GJ: "cpc-guj@aij.gov.in",
+  HP: "cpc-hp@aij.gov.in",
+  HR: "cpc-punj@aij.gov.in",
+  JH: "cpc-jhr@aij.gov.in",
+  JK: "cpc-jk@aij.gov.in",
+  KA: "cpc-kar@aij.gov.in",
+  KL: "cpc-ker@aij.gov.in",
+  LA: "cpc-jk@aij.gov.in",
+  LD: "cpc-ker@aij.gov.in",
+  MH: "cpc-bom@aij.gov.in",
+  ML: "cpc-mgl@aij.gov.in",
+  MN: "cpc-mnp@aij.gov.in",
+  MP: "cpc-mp@aij.gov.in",
+  MZ: "cpc-asm@aij.gov.in",
+  NL: "cpc-asm@aij.gov.in",
+  OD: "cpc-ori@aij.gov.in",
+  PB: "cpc-punj@aij.gov.in",
+  PY: "cpc-mad@aij.gov.in",
+  RJ: "cpc-raj@aij.gov.in",
+  SK: "cpc-sik@aij.gov.in",
+  TN: "cpc-mad@aij.gov.in",
+  TR: "cpc-tri@aij.gov.in",
+  TS: "cpc-tel@aij.gov.in",
+  UK: "cpc-uk@aij.gov.in",
+  UP: "cpc-alb@aij.gov.in",
+  WB: "cpc-cal@aij.gov.in",
+};
+
 async function main() {
   const args = process.argv.slice(2);
   const baseUrl = (readFlag(args, "--base-url") ?? process.env.PUBLIC_BASE_URL ?? "https://nyaaywatch.in").replace(/\/+$/, "");
   const send = args.includes("--send");
   const issues = await findMissingMonthlyMovementIssues(baseUrl);
-  const message = composeNjdgOutreachMessage(baseUrl, issues);
+  const recipients = deriveOutreachRecipients(issues);
+  const message = composeNjdgOutreachMessage(baseUrl, issues, recipients);
   const summary = {
     baseUrl,
     checkedAt: new Date().toISOString(),
     issueCount: issues.length,
+    recipientCount: recipients.length,
+    recipients,
     sendRequested: send,
     sent: false,
-    sendSkipped: false,
     issues,
   };
 
@@ -61,8 +104,8 @@ async function main() {
   }
 
   if (send) {
-    summary.sent = await sendOutreachEmail(message);
-    summary.sendSkipped = !summary.sent;
+    await sendOutreachEmail(message);
+    summary.sent = true;
   } else {
     console.log(message.text);
   }
@@ -117,7 +160,7 @@ async function findMissingMonthlyMovementIssues(baseUrl: string): Promise<Missin
   return issues;
 }
 
-function composeNjdgOutreachMessage(baseUrl: string, issues: MissingMonthlyMovementIssue[]) {
+export function composeNjdgOutreachMessage(baseUrl: string, issues: MissingMonthlyMovementIssue[], to = deriveOutreachRecipients(issues)) {
   const subject = `NyaayWatch source-data check: ${issues.length} NJDG monthly movement zero ${issues.length === 1 ? "case" : "cases"}`;
   const grouped = issues.slice(0, 25).map((issue) => {
     const label = issue.scope === "district" ? `${issue.stateName} / ${issue.districtName}` : issue.stateName;
@@ -134,7 +177,7 @@ function composeNjdgOutreachMessage(baseUrl: string, issues: MissingMonthlyMovem
   const text = [
     "Hello NJDG team,",
     "",
-    "NyaayWatch publishes reviewed public snapshots derived from NJDG aggregate dashboards. In the latest public check, we found rows where NJDG shows a non-zero pending backlog but reports 0 filed and 0 disposed cases for the last-month movement fields.",
+    "NyaayWatch publishes reviewed public snapshots derived from NJDG aggregate dashboards. In the latest public check, we found rows under your High Court CPC coverage where NJDG shows a non-zero pending backlog but reports 0 filed and 0 disposed cases for the last-month movement fields.",
     "",
     "We are marking these derived monthly movement metrics as N/A on NyaayWatch instead of treating them as zero-rate performance. Could you please confirm whether these rows are intentionally zero for the period, or whether the monthly movement fields are missing from the public dashboard output?",
     "",
@@ -147,31 +190,54 @@ function composeNjdgOutreachMessage(baseUrl: string, issues: MissingMonthlyMovem
     "NyaayWatch operators",
   ].join("\n");
 
-  return { subject, text };
+  return { subject, text, to };
 }
 
-async function sendOutreachEmail(message: { subject: string; text: string }): Promise<boolean> {
-  const to = process.env.NJDG_OUTREACH_TO?.trim();
+export function deriveOutreachRecipients(issues: MissingMonthlyMovementIssue[], extraRecipients = process.env.NJDG_OUTREACH_TO): string[] {
+  const recipients = issues.map((issue) => {
+    const cpcEmail = OFFICIAL_CPC_EMAIL_BY_STATE_CODE[issue.stateCode as SupportedStateCode];
+    if (!cpcEmail) {
+      throw new Error(`No official NJDG CPC contact is configured for ${issue.stateCode} (${issue.stateName}).`);
+    }
+    return cpcEmail;
+  });
+  return uniqueEmailList([...recipients, ...parseEmailList(extraRecipients)]);
+}
+
+export function parseEmailList(value: string | undefined): string[] {
+  return (
+    value
+      ?.split(",")
+      .map((email) => email.trim())
+      .filter(Boolean) ?? []
+  );
+}
+
+function uniqueEmailList(values: string[]): string[] {
+  return Array.from(new Set(values));
+}
+
+async function sendOutreachEmail(message: { subject: string; text: string; to: string[] }): Promise<void> {
   const source = process.env.SES_SOURCE_EMAIL?.trim();
   const region = process.env.AWS_REGION?.trim() || "ap-south-1";
-  if (!to || !source) {
-    console.log("NJDG_OUTREACH_TO or SES_SOURCE_EMAIL is not configured. Logging outreach draft instead of sending.");
-    console.log(message.text);
-    return false;
+  if (!source) {
+    throw new Error("SES_SOURCE_EMAIL is required when --send is set.");
+  }
+  if (message.to.length === 0) {
+    throw new Error("At least one NJDG outreach recipient is required when --send is set.");
   }
 
   const client = new SESClient({ region });
   await client.send(
     new SendEmailCommand({
       Source: source,
-      Destination: { ToAddresses: to.split(",").map((value) => value.trim()).filter(Boolean) },
+      Destination: { ToAddresses: message.to },
       Message: {
         Subject: { Data: message.subject },
         Body: { Text: { Data: message.text } },
       },
     }),
   );
-  return true;
 }
 
 function buildStateApiRoutes(stateSlug: string) {
@@ -198,7 +264,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-function sourceReportsMissingMonthlyMovement(pendingCases: number, filedLastMonthCases: number, clearedLastMonthCases: number) {
+export function sourceReportsMissingMonthlyMovement(pendingCases: number, filedLastMonthCases: number, clearedLastMonthCases: number) {
   return pendingCases > 0 && filedLastMonthCases === 0 && clearedLastMonthCases === 0;
 }
 
@@ -210,4 +276,6 @@ function formatDate(iso: string) {
   return parsed.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 }
 
-await main();
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  await main();
+}
