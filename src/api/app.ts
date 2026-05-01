@@ -121,15 +121,40 @@ export function createApp(
   });
 
   app.get("/robots.txt", (_request, response) => {
-    response.type("text/plain").send(
-      [
-        "User-agent: *",
-        "Allow: /",
-        "Disallow: /operator/",
-        "Sitemap: https://nyaaywatch.in/sitemap.xml",
-        "",
-      ].join("\n"),
-    );
+    const trainingOnlyBots = [
+      "GPTBot",
+      "ClaudeBot",
+      "anthropic-ai",
+      "CCBot",
+      "Google-Extended",
+      "Applebot-Extended",
+      "Meta-ExternalAgent",
+      "Meta-ExternalFetcher",
+      "FacebookBot",
+      "Bytespider",
+      "Amazonbot",
+      "Diffbot",
+      "Omgilibot",
+      "Omgili",
+      "ImagesiftBot",
+      "PetalBot",
+      "DataForSeoBot",
+      "AwarioRssBot",
+      "AwarioSmartBot",
+      "magpie-crawler",
+      "peer39_crawler",
+      "TurnitinBot",
+      "cohere-ai",
+    ];
+
+    const lines: string[] = [];
+    for (const bot of trainingOnlyBots) {
+      lines.push(`User-agent: ${bot}`, "Disallow: /", "");
+    }
+    lines.push("User-agent: *", "Allow: /", "Disallow: /operator/", "");
+    lines.push("Sitemap: https://nyaaywatch.in/sitemap.xml", "");
+
+    response.type("text/plain").send(lines.join("\n"));
   });
 
   app.get(
