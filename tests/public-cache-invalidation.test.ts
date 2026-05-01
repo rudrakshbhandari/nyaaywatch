@@ -73,6 +73,52 @@ describe("PublicCacheInvalidationService", () => {
     });
   });
 
+  it("splits large public state purges into Cloudflare-sized batches", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
+      const url = String(input);
+      if (url.includes("/zones?name=")) {
+        return new Response(JSON.stringify({ success: true, result: [{ id: "zone_123" }] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true, result: { id: "purge_123" } }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    });
+    global.fetch = fetchMock as typeof fetch;
+
+    const service = new PublicCacheInvalidationService(
+      loadConfig({
+        NODE_ENV: "test",
+        PORT: "3000",
+        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
+        AWS_REGION: "ap-south-1",
+        AWS_ACCESS_KEY_ID: "test",
+        AWS_SECRET_ACCESS_KEY: "test",
+        S3_BUCKET: "nyaaywatch-test-artifacts",
+        DEPLOY_ENV: "dev",
+        OPERATOR_API_TOKEN: "operator-test-token",
+        STATE_CODE: "HP",
+        CANONICAL_HOST: "nyaaywatch.in",
+        LEGACY_HOSTS: "nyaaywatch.com,www.nyaaywatch.com",
+        CLOUDFLARE_API_TOKEN: "cf-test-token",
+      }),
+    );
+
+    const districtIds = Array.from({ length: 51 }, (_, index) => `district-${index + 1}`);
+    await service.invalidatePublishedData("MP", districtIds);
+
+    const purgeBodies = fetchMock.mock.calls.slice(1).map((call) => JSON.parse(String(call[1]?.body)) as { files: string[] });
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(purgeBodies).toHaveLength(2);
+    expect(purgeBodies[0]?.files).toHaveLength(100);
+    expect(purgeBodies[1]?.files).toHaveLength(5);
+    expect(purgeBodies.every((body) => body.files.length <= 100)).toBe(true);
+  });
+
   it("purges the public High Court route family", async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, _init?: RequestInit) => {
       const url = String(input);
