@@ -985,6 +985,10 @@ describe("HTTP routes", () => {
       stateCode: "PB",
       payload: previousPunjabSnapshot,
     });
+    await context.pool.query("UPDATE publication_history SET created_at = $1 WHERE id = $2", [
+      "2026-04-01T09:00:00.000Z",
+      "publication_pb_public_previous",
+    ]);
     await insertPublishedSnapshot(context.pool, {
       runId: "run_pb_public",
       snapshotId: "snapshot_pb_public",
@@ -992,6 +996,10 @@ describe("HTTP routes", () => {
       stateCode: "PB",
       payload: buildPunjabTestSnapshot(),
     });
+    await context.pool.query("UPDATE publication_history SET created_at = $1 WHERE id = $2", [
+      "2026-04-16T09:00:00.000Z",
+      "publication_pb_public",
+    ]);
 
     const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
 
