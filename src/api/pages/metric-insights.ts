@@ -7,6 +7,106 @@ import type {
 } from "../../domain/snapshot-schema.js";
 import type { SupremeCourtPublishedSnapshot } from "../../domain/supreme-court-snapshot-schema.js";
 
+export interface MonthlyActivityInputs {
+  pendingCases: number;
+  filedLastMonthCases: number;
+  clearedLastMonthCases: number;
+}
+
+export function sourceReportsMissingMonthlyActivity(input: MonthlyActivityInputs): boolean {
+  return input.pendingCases > 0 && input.filedLastMonthCases === 0 && input.clearedLastMonthCases === 0;
+}
+
+export function canComputeClearancePace(input: MonthlyActivityInputs): boolean {
+  return input.filedLastMonthCases > 0 && !sourceReportsMissingMonthlyActivity(input);
+}
+
+export function formatClearancePer100(input: MonthlyActivityInputs, digits = 0): string {
+  if (!canComputeClearancePace(input)) {
+    return "N/A";
+  }
+  const rate = (input.clearedLastMonthCases / input.filedLastMonthCases) * 100;
+  return rate.toFixed(digits);
+}
+
+export function describeClearancePer100(input: MonthlyActivityInputs, sourceLabel = "NJDG"): string {
+  if (sourceReportsMissingMonthlyActivity(input)) {
+    return `${sourceLabel} reports 0 filed and 0 cleared cases for last month, so NyaayWatch marks clearance pace as N/A instead of treating it as a zero rate.`;
+  }
+  if (input.filedLastMonthCases <= 0) {
+    return `${sourceLabel} did not publish a positive filed-case count for last month, so NyaayWatch cannot compute clearance pace.`;
+  }
+  return `${formatClearancePer100(input, 1)} cleared for every 100 filed.`;
+}
+
+export function formatFileClearGap(input: MonthlyActivityInputs): string {
+  if (!canComputeClearancePace(input)) {
+    return "N/A";
+  }
+  const gap = ((input.filedLastMonthCases - input.clearedLastMonthCases) / input.filedLastMonthCases) * 100;
+  const rounded = Math.round(gap * 10) / 10;
+  return `${rounded >= 0 ? "+" : "\u2212"}${Math.abs(rounded).toFixed(1)}`;
+}
+
+export function formatBacklogMovementFromMonthlyActivity(input: MonthlyActivityInputs): string {
+  if (sourceReportsMissingMonthlyActivity(input)) {
+    return "N/A";
+  }
+  const share = calculateBacklogMovementShare(
+    input.pendingCases,
+    input.filedLastMonthCases,
+    input.clearedLastMonthCases,
+  );
+  const sign = share > 0 ? "+" : "";
+  return `${sign}${share.toFixed(1)}%`;
+}
+
+export function describeBacklogMovementFromMonthlyActivity(input: MonthlyActivityInputs): string {
+  if (sourceReportsMissingMonthlyActivity(input)) {
+    return "NJDG reports 0 filed and 0 cleared cases for last month, so monthly backlog movement is not computed from that source row.";
+  }
+  return describeBacklogMovement(
+    calculateBacklogMovementShare(input.pendingCases, input.filedLastMonthCases, input.clearedLastMonthCases),
+  );
+}
+
+export function formatBreakEvenFromMonthlyActivity(input: MonthlyActivityInputs): string {
+  if (sourceReportsMissingMonthlyActivity(input)) {
+    return "N/A";
+  }
+  return calculateBreakEvenClearancesNeeded(
+    input.filedLastMonthCases,
+    input.clearedLastMonthCases,
+  ).toLocaleString("en-IN");
+}
+
+export function describeBreakEvenFromMonthlyActivity(input: MonthlyActivityInputs): string {
+  if (sourceReportsMissingMonthlyActivity(input)) {
+    return "NJDG reports 0 filed and 0 cleared cases for last month, so NyaayWatch does not infer that no extra clearances were needed.";
+  }
+  return describeBreakEven(calculateBreakEvenClearancesNeeded(input.filedLastMonthCases, input.clearedLastMonthCases));
+}
+
+export function formatCatchUpFromMonthlyActivity(input: MonthlyActivityInputs): string {
+  if (sourceReportsMissingMonthlyActivity(input)) {
+    return "N/A";
+  }
+  return calculateCatchUpClearancesPerMonth(
+    input.pendingCases,
+    input.filedLastMonthCases,
+    input.clearedLastMonthCases,
+  ).toLocaleString("en-IN");
+}
+
+export function describeCatchUpFromMonthlyActivity(input: MonthlyActivityInputs): string {
+  if (sourceReportsMissingMonthlyActivity(input)) {
+    return "NJDG reports 0 filed and 0 cleared cases for last month, so NyaayWatch does not infer a 10% reduction burden from that source row.";
+  }
+  return describeCatchUp(
+    calculateCatchUpClearancesPerMonth(input.pendingCases, input.filedLastMonthCases, input.clearedLastMonthCases),
+  );
+}
+
 export function describeBacklogMovement(share: number, windowLabel = "last month"): string {
   if (share > 0) {
     return `Backlog grew by ${share.toFixed(1)}% of the pending pile ${windowLabel}.`;

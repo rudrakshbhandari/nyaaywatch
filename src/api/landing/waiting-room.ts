@@ -9,28 +9,33 @@ export interface WaitingRoomRates {
    * window it rounded to zero ("0 new cases filed"), which read as a bug.
    * Hourly units produce honest, non-zero integers for every state.
    */
-  filedPerHour: number;
-  decidedPerHour: number;
+  filedPerHour: number | null;
+  decidedPerHour: number | null;
   /** filedPerHour − decidedPerHour. May be negative (clearance > filing). */
-  netPerHour: number;
+  netPerHour: number | null;
   stateName: string;
+  sourceReportsMissingMonthlyActivity: boolean;
 }
 
 export function computeWaitingRoomRates(snapshot: PublishedSnapshot): WaitingRoomRates {
   const { pendingCases, disposalRate, medianCaseAgeDays } = snapshot.stats;
+  const sourceReportsMissingMonthlyActivity =
+    pendingCases > 0 &&
+    snapshot.stats.filedLastMonthCases === 0 &&
+    snapshot.stats.clearedLastMonthCases === 0;
+  const hoursPerMonth = 30 * 24;
   const medianWaitMonths = Math.max(medianCaseAgeDays / 30, 1);
   const disposalRateFraction = disposalRate / 100;
-  const hoursPerMonth = 30 * 24;
-
   const decidedPerMonth = pendingCases / medianWaitMonths;
   const filedPerMonth =
     disposalRateFraction > 0 ? decidedPerMonth / disposalRateFraction : decidedPerMonth;
 
   return {
-    filedPerHour: filedPerMonth / hoursPerMonth,
-    decidedPerHour: decidedPerMonth / hoursPerMonth,
-    netPerHour: (filedPerMonth - decidedPerMonth) / hoursPerMonth,
+    filedPerHour: sourceReportsMissingMonthlyActivity ? null : filedPerMonth / hoursPerMonth,
+    decidedPerHour: sourceReportsMissingMonthlyActivity ? null : decidedPerMonth / hoursPerMonth,
+    netPerHour: sourceReportsMissingMonthlyActivity ? null : (filedPerMonth - decidedPerMonth) / hoursPerMonth,
     stateName: snapshot.snapshot.stateName,
+    sourceReportsMissingMonthlyActivity,
   };
 }
 
@@ -42,7 +47,10 @@ export function computeWaitingRoomRates(snapshot: PublishedSnapshot): WaitingRoo
  * Respects prefers-reduced-motion: shows static text, no counter, no fade.
  */
 export function renderWaitingRoom(rates: WaitingRoomRates): string {
-  const { filedPerHour, decidedPerHour, netPerHour, stateName } = rates;
+  const { filedPerHour, decidedPerHour, netPerHour, stateName, sourceReportsMissingMonthlyActivity } = rates;
+  if (sourceReportsMissingMonthlyActivity || filedPerHour === null || decidedPerHour === null || netPerHour === null) {
+    return renderWaitingRoomMissingMonthlyActivity(stateName);
+  }
   const fmt = (n: number) => Math.round(n).toLocaleString("en-IN");
   const filedDisplay = fmt(filedPerHour);
   const decidedDisplay = fmt(decidedPerHour);
@@ -62,6 +70,11 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
     <button class="wr__skip" id="wr-skip" aria-label="Skip intro">Skip →</button>
   </div>
 </div>
+${WAITING_ROOM_STYLE_AND_SCRIPT}
+`;
+}
+
+const WAITING_ROOM_STYLE_AND_SCRIPT = `
 <style>
 .wr {
   position: fixed; inset: 0; z-index: 9999;
@@ -126,8 +139,9 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
   // only handles the dismiss cookie, the line-by-line fade-in, and the Skip
   // button. The earlier version ran a per-second ticker starting at zero —
   // honest math, but for low-volume states the integers stayed at 0 across
-  // the entire intro window, which read as a broken UI. Per-hour is always
-  // non-zero and answers "what does this surface mean" in one glance.
+  // the entire intro window, which read as a broken UI. Per-hour values answer
+  // "what does this surface mean" in one glance, while source-reported zero
+  // monthly inputs use an explicit N/A message instead of inferred rates.
   var COOKIE = "nw_seen_intro";
   function hasCookie() {
     return document.cookie.split(";").some(function(c) { return c.trim().startsWith(COOKIE + "="); });
@@ -173,5 +187,20 @@ export function renderWaitingRoom(rates: WaitingRoomRates): string {
   setTimeout(dismiss, 8000);
 })();
 </script>
+`;
+
+function renderWaitingRoomMissingMonthlyActivity(stateName: string): string {
+  return `
+<div id="wr" class="wr" aria-live="polite" role="dialog" aria-modal="true" aria-label="The Waiting Room">
+  <div class="wr__inner">
+    <p class="wr__eyebrow">THE WAITING ROOM</p>
+    <p class="wr__line wr__line--1" id="wr-l1">In ${escapeHtml(stateName)}, the courts are open.</p>
+    <p class="wr__line wr__line--2" id="wr-l2">NJDG reports <strong>0 filed</strong> and <strong>0 decided</strong> cases for last month.</p>
+    <p class="wr__line wr__line--3" id="wr-l3">NyaayWatch marks the monthly pace as <strong>N/A</strong> instead of guessing from that source row.</p>
+    <p class="wr__line wr__line--4" id="wr-l4">The backlog is still visible. The monthly movement is not.</p>
+    <button class="wr__skip" id="wr-skip" aria-label="Skip intro">Skip →</button>
+  </div>
+</div>
+${WAITING_ROOM_STYLE_AND_SCRIPT}
 `;
 }

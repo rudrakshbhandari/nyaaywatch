@@ -5,7 +5,7 @@ import type { PublicPageContext } from "../public-state.js";
 import { renderSectionHead } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
-import { describeWatchlistPersistence } from "./metric-insights.js";
+import { describeWatchlistPersistence, formatClearancePer100, type MonthlyActivityInputs } from "./metric-insights.js";
 import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
@@ -191,7 +191,7 @@ function renderMoversTable(movers: DistrictMover[], kind: "backlog-increase" | "
       <td class="num">#${m.rank}</td>
       <td class="num">${m.backlogCases.toLocaleString("en-IN")}</td>
       <td class="num movers-delta ${tone}">${deltaStr}</td>
-      <td class="num">${m.disposalRate.toFixed(1)}</td>
+      <td class="num">${formatClearancePer100(monthlyActivityInputs(m), 1)}</td>
       <td>${escapeHtml(describeWatchlistPersistence(m.watchlistFlaggedInLastSix, m.watchlistLastSixWindow))}</td>
       <td><a href="${context.routes.districtEvidencePack(m.districtId)}">Evidence JSON</a></td>
     </tr>`;
@@ -286,3 +286,15 @@ const MOVERS_PAGE_CSS = `
   .movers-delta--better { color: #2a7a3f; }
   .movers-empty { color: var(--ink-muted); font-size: 14px; margin: 0; }
 `;
+
+function monthlyActivityInputs(input: {
+  backlogCases: number;
+  filedLastMonthCases: number;
+  clearedLastMonthCases: number;
+}): MonthlyActivityInputs {
+  return {
+    pendingCases: input.backlogCases,
+    filedLastMonthCases: input.filedLastMonthCases,
+    clearedLastMonthCases: input.clearedLastMonthCases,
+  };
+}

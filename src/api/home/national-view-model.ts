@@ -4,6 +4,7 @@ import type { HighCourtPublishedSnapshot } from "../../domain/high-court-snapsho
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import type { SupremeCourtPublishedSnapshot } from "../../domain/supreme-court-snapshot-schema.js";
 import { buildPublicStateRoutes } from "../public-state.js";
+import { formatClearancePer100 } from "../pages/metric-insights.js";
 import { rankIndiaMapEntriesByPressure, type IndiaMapStateEntry } from "./india-map.js";
 import { formatDate, formatLakh } from "./view-model.js";
 
@@ -177,7 +178,7 @@ export function buildNationalHomeViewModel(input: {
       topStateName: topState?.profile.stateName ?? input.lowerCourtProfile.stateName,
       topStateHref: buildPublicStateRoutes(topState?.profile ?? input.lowerCourtProfile).home,
       topStateSummary: topState
-        ? `${topState.profile.stateName} ranks highest on the current lower-court pressure index across States and Union Territories with published data. ${topState.stats.pendingCases.toLocaleString("en-IN")} pending cases, median age ${topState.stats.medianCaseAgeDays.toLocaleString("en-IN")} days, disposal ${topState.stats.disposalRate.toFixed(1)}% in the latest data. Relative ranking only, not a conclusive claim.`
+        ? `${topState.profile.stateName} ranks highest on the current lower-court pressure index across States and Union Territories with published data. ${topState.stats.pendingCases.toLocaleString("en-IN")} pending cases, median age ${topState.stats.medianCaseAgeDays.toLocaleString("en-IN")} days, cleared per 100 filed ${formatClearancePer100(topState.stats, 1)} in the latest data. Relative ranking only, not a conclusive claim.`
         : "Open any published lower-court page to inspect the latest snapshot and district drilldown.",
     },
   };

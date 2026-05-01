@@ -14,17 +14,19 @@ import { computeWaitingRoomRates, renderWaitingRoom } from "../landing/waiting-r
 import {
   buildWatchlistPersistenceMetric,
   describeBacklogConcentrationMetric,
-  describeBacklogMovementMetric,
-  describeBreakEvenMetric,
-  describeCatchUpMetric,
+  describeBacklogMovementFromMonthlyActivity,
+  describeBreakEvenFromMonthlyActivity,
+  describeCatchUpFromMonthlyActivity,
   describeOldCaseBurdenMetric,
   describeWatchlistPersistenceMetric,
   formatBacklogConcentrationValue,
-  formatBacklogMovementValue,
-  formatBreakEvenValue,
-  formatCatchUpValue,
+  formatBacklogMovementFromMonthlyActivity,
+  formatBreakEvenFromMonthlyActivity,
+  formatCatchUpFromMonthlyActivity,
+  formatClearancePer100,
   formatOldCaseBurdenValue,
   formatWatchlistPersistenceValue,
+  type MonthlyActivityInputs,
 } from "../pages/metric-insights.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "../pages/investigation-workflow.js";
 
@@ -32,6 +34,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
   const model = buildViewModel(snapshot);
   const copy = buildCopy(model, context.publicScopeDescription, context.lowerCourtCopy);
   const n = copy.bigNumbers;
+  const stateMonthlyActivity = monthlyActivityInputs(snapshot.stats);
 
   const trendBars = renderTrendChart(model);
   const topDistrictPersistence = buildWatchlistPersistenceMetric(
@@ -56,7 +59,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           </div>
           <div>
             <dt>Cleared per 100 ${infoIcon("clearance")}</dt>
-            <dd>${district.disposalRate.toFixed(0)}</dd>
+            <dd>${formatClearancePer100(monthlyActivityInputs(district), 0)}</dd>
           </div>
         </dl>
         <p class="watch-card__reason"><span class="watch-card__reason-label">Why it is flagged</span>${escapeHtml(district.flagReason)}</p>
@@ -91,7 +94,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           <p class="numbers__caption">${escapeHtml(n.wait.caption)}</p>
         </article>
         <article class="numbers__cell numbers__cell--reveal" id="stat-clearance">
-          <div class="numbers__value">${model.clearanceRate.toFixed(0)}</div>
+          <div class="numbers__value">${formatClearancePer100(stateMonthlyActivity, 0)}</div>
           <div class="numbers__label"><a href="${context.routes.methodology}#metric-clearance">${escapeHtml(n.clearance.label)}</a> ${infoIcon("clearance")}</div>
           <p class="numbers__caption">${escapeHtml(n.clearance.caption)}</p>
         </article>
@@ -119,20 +122,20 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
         })}
         ${renderStatTile({
           label: "Backlog movement",
-          value: formatBacklogMovementValue(snapshot.stats.backlogMovementShare),
-          note: describeBacklogMovementMetric(snapshot.stats.backlogMovementShare),
+          value: formatBacklogMovementFromMonthlyActivity(stateMonthlyActivity),
+          note: describeBacklogMovementFromMonthlyActivity(stateMonthlyActivity),
           methodologyHref: `${context.routes.methodology}#metric-backlog-movement`,
         })}
         ${renderStatTile({
           label: "Break-even clearances",
-          value: formatBreakEvenValue(snapshot.stats.breakEvenClearancesNeeded),
-          note: describeBreakEvenMetric(snapshot.stats.breakEvenClearancesNeeded),
+          value: formatBreakEvenFromMonthlyActivity(stateMonthlyActivity),
+          note: describeBreakEvenFromMonthlyActivity(stateMonthlyActivity),
           methodologyHref: `${context.routes.methodology}#metric-break-even-clearances`,
         })}
         ${renderStatTile({
           label: "10% reduction scenario",
-          value: formatCatchUpValue(snapshot.stats.catchUpClearancesPerMonth),
-          note: describeCatchUpMetric(snapshot.stats.catchUpClearancesPerMonth),
+          value: formatCatchUpFromMonthlyActivity(stateMonthlyActivity),
+          note: describeCatchUpFromMonthlyActivity(stateMonthlyActivity),
           tone: "flag",
           methodologyHref: `${context.routes.methodology}#metric-catch-up-burden`,
         })}
@@ -271,6 +274,19 @@ function extractLakhUnit(formatted: string): string {
   const match = formatted.match(/^[\d.,]+\s*(lakh|crore)$/i);
   if (match && match[1]) return match[1];
   return "";
+}
+
+function monthlyActivityInputs(input: {
+  pendingCases?: number;
+  backlogCases?: number;
+  filedLastMonthCases: number;
+  clearedLastMonthCases: number;
+}): MonthlyActivityInputs {
+  return {
+    pendingCases: input.pendingCases ?? input.backlogCases ?? 0,
+    filedLastMonthCases: input.filedLastMonthCases,
+    clearedLastMonthCases: input.clearedLastMonthCases,
+  };
 }
 
 function renderTrendChart(model: HomeViewModel): string {

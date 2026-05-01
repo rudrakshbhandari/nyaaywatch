@@ -4,7 +4,14 @@ import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
-import { formatShare } from "./metric-insights.js";
+import {
+  canComputeClearancePace,
+  describeClearancePer100,
+  formatClearancePer100,
+  formatFileClearGap,
+  formatShare,
+  type MonthlyActivityInputs,
+} from "./metric-insights.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 type DistrictSort = "rank" | "backlog" | "disposal" | "age" | "gap";
@@ -95,7 +102,7 @@ export function renderDistrictsPage(
         label: "Slowest clearance",
         value: slowestClearance?.districtName ?? "—",
         note: slowestClearance
-          ? `${slowestClearance.disposalRate.toFixed(1)} cleared for every 100 filed.`
+          ? describeClearancePer100(monthlyActivityInputs(slowestClearance))
           : "No district data.",
       })}
       ${renderStatTile({
@@ -268,11 +275,11 @@ function renderTable(districts: DistrictSnapshot[], context: PublicPageContext):
           </td>
           <td class="num accent">#${district.rank}</td>
           <td class="num">${district.backlogCases.toLocaleString("en-IN")}</td>
-          <td class="num">${district.disposalRate.toFixed(1)}</td>
+          <td class="num">${formatClearancePer100(monthlyActivityInputs(district), 1)}</td>
           <td class="num">${Math.round(district.medianAgeDays / 30)} mo</td>
           <td class="num">${district.oldCaseBurden.fivePlusYearsShare.toFixed(1)}%</td>
           <td class="num">${district.watchlistPersistence.flaggedInLastSix}/${district.watchlistPersistence.lastSixWindow}</td>
-          <td class="num flag">${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</td>
+          <td class="num flag">${formatFileClearGap(monthlyActivityInputs(district))}</td>
           <td class="district-row__reason">${escapeHtml(district.flagReason)}</td>
         </tr>
       `,
@@ -358,12 +365,22 @@ function compareDistricts(
     return right.backlogCases - left.backlogCases || left.rank - right.rank;
   }
   if (sort === "disposal") {
+    const leftAvailable = canComputeClearancePace(monthlyActivityInputs(left));
+    const rightAvailable = canComputeClearancePace(monthlyActivityInputs(right));
+    if (leftAvailable !== rightAvailable) {
+      return leftAvailable ? -1 : 1;
+    }
     return left.disposalRate - right.disposalRate || left.rank - right.rank;
   }
   if (sort === "age") {
     return right.medianAgeDays - left.medianAgeDays || left.rank - right.rank;
   }
   if (sort === "gap") {
+    const leftAvailable = canComputeClearancePace(monthlyActivityInputs(left));
+    const rightAvailable = canComputeClearancePace(monthlyActivityInputs(right));
+    if (leftAvailable !== rightAvailable) {
+      return leftAvailable ? -1 : 1;
+    }
     return right.filingVsDisposalGap - left.filingVsDisposalGap || left.rank - right.rank;
   }
   return left.rank - right.rank;
@@ -382,6 +399,14 @@ function buildDistrictsHref(options: DistrictsPageOptions): string {
   }
   const query = params.toString();
   return query ? `?${query}` : "";
+}
+
+function monthlyActivityInputs(district: DistrictSnapshot): MonthlyActivityInputs {
+  return {
+    pendingCases: district.backlogCases,
+    filedLastMonthCases: district.filedLastMonthCases,
+    clearedLastMonthCases: district.clearedLastMonthCases,
+  };
 }
 
 const DISTRICTS_PAGE_CSS = `

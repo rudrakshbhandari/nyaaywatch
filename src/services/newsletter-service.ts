@@ -5,6 +5,7 @@ import type { Pool } from "pg";
 import type { AppConfig } from "../config/env.js";
 import { logError, logInfo } from "../lib/logger.js";
 import type { PublishedSnapshot } from "../domain/snapshot-schema.js";
+import { formatClearancePer100 } from "../api/pages/metric-insights.js";
 
 export interface Subscriber {
   id: string;
@@ -138,7 +139,7 @@ export class NewsletterService {
       "",
       "HEADLINE NUMBERS",
       `  Cases waiting:    ${stats.pendingCases.toLocaleString("en-IN")}`,
-      `  Cleared per 100:  ${stats.disposalRate.toFixed(1)}`,
+      `  Cleared per 100:  ${formatClearancePer100(stats, 1)}`,
       `  Typical wait:     ~${Math.round(stats.medianCaseAgeDays / 30)} months`,
       `  Flagged districts: ${stats.flaggedDistricts.toLocaleString("en-IN")}`,
       "",
@@ -146,7 +147,7 @@ export class NewsletterService {
         ? [
             "TOP FLAGGED DISTRICT",
             `  ${topDistrict.districtName} — rank #${topDistrict.rank}`,
-            `  ${topDistrict.backlogCases.toLocaleString("en-IN")} cases, ${topDistrict.disposalRate.toFixed(1)} cleared/100 filed`,
+            `  ${topDistrict.backlogCases.toLocaleString("en-IN")} cases, ${formatClearancePer100({ pendingCases: topDistrict.backlogCases, filedLastMonthCases: topDistrict.filedLastMonthCases, clearedLastMonthCases: topDistrict.clearedLastMonthCases }, 1)} cleared/100 filed`,
             `  ${topDistrict.flagReason}`,
           ].join("\n")
         : "",

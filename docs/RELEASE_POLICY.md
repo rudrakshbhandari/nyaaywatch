@@ -20,12 +20,14 @@ Use a calm, predictable cadence for alpha:
 - High Court internal raw fetches: **every day at 8:20 AM Asia/Kolkata across reviewed High Court profiles only**
 - Public snapshot publishes: **twice per week**
 - Recommended publish window: **Tuesday and Friday, 11:00 AM Asia/Kolkata**
+- NJDG missing-monthly-zero outreach: **weekly on Monday at 04:30 UTC while unresolved source-zero rows remain**
 - Allowed exception: a same-day hotfix for broken public copy, methodology wording, or platform issues that do not weaken the trust boundary
 
 Why this cadence:
 
 - it separates collection freshness from public-claim changes
 - it catches upstream breakage every day without making the site feel live
+- it lets NyaayWatch keep source-attribution pressure on unresolved NJDG zero rows without hiding the issue or treating it as our own computed zero
 - it leaves room for operator inspection before public publish
 - it is frequent enough for a public alpha but slow enough to keep every release deliberate
 
@@ -36,6 +38,8 @@ Treat the daily fetches as internal evidence collection only:
 - they may create completed candidate runs across all internally proven lower-court geographies, the Supreme Court tier, and reviewed High Court profiles
 - they must not change the public snapshot without an explicit operator publish
 - a failed daily fetch is an operational signal, not a reason to auto-publish or auto-rollback
+
+Treat a lower-court row with pending cases but `0` filed and `0` cleared cases for last month as a source-availability condition. Public surfaces should say NJDG reports those zero monthly movement inputs, show derived clearance and gap metrics as `N/A` where the denominator would be missing, and avoid implying the court actually cleared zero at a measured pace. The automated outreach workflow may email the configured NJDG contact repeatedly at the weekly cadence until the scan no longer finds such public rows.
 
 ## Environment Rule
 

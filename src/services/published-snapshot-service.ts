@@ -47,6 +47,8 @@ export interface DistrictMover {
   districtName: string;
   rank: number;
   backlogCases: number;
+  filedLastMonthCases: number;
+  clearedLastMonthCases: number;
   backlogDelta: number;
   disposalRate: number;
   disposalDelta: number;
@@ -185,6 +187,8 @@ export class PublishedSnapshotService {
         districtName: d.districtName,
         rank: d.rank,
         backlogCases: d.backlogCases,
+        filedLastMonthCases: d.filedLastMonthCases,
+        clearedLastMonthCases: d.clearedLastMonthCases,
         backlogDelta: d.backlogCases - prev.backlogCases,
         disposalRate: d.disposalRate,
         disposalDelta: Math.round((d.disposalRate - prev.disposalRate) * 10) / 10,

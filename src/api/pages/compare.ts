@@ -7,6 +7,12 @@ import { formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
+import {
+  canComputeClearancePace,
+  formatClearancePer100,
+  formatFileClearGap,
+  type MonthlyActivityInputs,
+} from "./metric-insights.js";
 
 export function renderComparePage(
   snapshot: PublishedSnapshot,
@@ -62,9 +68,9 @@ export function renderComparePage(
           <tbody>
             ${compareRow("Watch rank", `#${a.rank}`, `#${b.rank}`, null)}
             ${compareRow("Cases waiting", a.backlogCases.toLocaleString("en-IN"), b.backlogCases.toLocaleString("en-IN"), a.backlogCases - b.backlogCases, "cases")}
-            ${compareRow("Cleared / 100 filed", a.disposalRate.toFixed(1), b.disposalRate.toFixed(1), roundTo1(a.disposalRate - b.disposalRate), "pp")}
+            ${compareRow("Cleared / 100 filed", formatClearancePer100(monthlyActivityInputs(a), 1), formatClearancePer100(monthlyActivityInputs(b), 1), clearanceDiff(a, b), "pp")}
             ${compareRow("Typical wait", `~${waitA} mo`, `~${waitB} mo`, waitA - waitB, "months")}
-            ${compareRow("File-clear gap", formatGap(a.filingVsDisposalGap), formatGap(b.filingVsDisposalGap), null)}
+            ${compareRow("File-clear gap", formatFileClearGap(monthlyActivityInputs(a)), formatFileClearGap(monthlyActivityInputs(b)), null)}
           </tbody>
         </table>
       </div>
@@ -197,7 +203,7 @@ function renderDistrictPanel(d: DistrictSnapshot, waitMonths: number, context: P
       <div class="compare-panel__stats">
         ${renderStatTile({ label: "Cases waiting", value: d.backlogCases.toLocaleString("en-IN"), tone: "accent" })}
         ${renderStatTile({ label: "Typical wait", value: `~${waitMonths}`, unit: "mo" })}
-        ${renderStatTile({ label: "Cleared / 100", value: d.disposalRate.toFixed(1) })}
+        ${renderStatTile({ label: "Cleared / 100", value: formatClearancePer100(monthlyActivityInputs(d), 1) })}
       </div>
     </div>
   `;
@@ -219,8 +225,20 @@ function compareRow(
   return `<tr><td>${escapeHtml(label)}</td><td class="num">${escapeHtml(valA)}</td><td class="num">${escapeHtml(valB)}</td><td class="num">${diffCell}</td></tr>`;
 }
 
-function formatGap(gap: number): string {
-  return `${gap >= 0 ? "+" : "−"}${Math.abs(gap).toFixed(1)} pp`;
+function monthlyActivityInputs(district: DistrictSnapshot): MonthlyActivityInputs {
+  return {
+    pendingCases: district.backlogCases,
+    filedLastMonthCases: district.filedLastMonthCases,
+    clearedLastMonthCases: district.clearedLastMonthCases,
+  };
+}
+
+function clearanceDiff(a: DistrictSnapshot, b: DistrictSnapshot): number | null {
+  if (!canComputeClearancePace(monthlyActivityInputs(a)) || !canComputeClearancePace(monthlyActivityInputs(b))) {
+    return null;
+  }
+
+  return roundTo1(a.disposalRate - b.disposalRate);
 }
 
 function roundTo1(n: number): number {
