@@ -26,11 +26,13 @@ import { renderHighCourtDataPage } from "./pages/high-court-data.js";
 import { renderHighCourtMethodologyPage } from "./pages/high-court-methodology.js";
 import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
+import { renderLearnPage } from "./pages/learn.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
 import { renderPressPage } from "./pages/press.js";
 import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
 import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
 import { renderDistrictEmbedWidget, renderStateEmbedWidget } from "./pages/embed.js";
+import { buildDistrictEvidencePack, buildStateEvidencePack } from "./evidence-packs.js";
 import { buildViewModel } from "./home/view-model.js";
 import { renderSupremeCourtApiPage } from "./pages/supreme-court-api.js";
 import { renderSupremeCourtDataPage } from "./pages/supreme-court-data.js";
@@ -119,15 +121,40 @@ export function createApp(
   });
 
   app.get("/robots.txt", (_request, response) => {
-    response.type("text/plain").send(
-      [
-        "User-agent: *",
-        "Allow: /",
-        "Disallow: /operator/",
-        "Sitemap: https://nyaaywatch.in/sitemap.xml",
-        "",
-      ].join("\n"),
-    );
+    const trainingOnlyBots = [
+      "GPTBot",
+      "ClaudeBot",
+      "anthropic-ai",
+      "CCBot",
+      "Google-Extended",
+      "Applebot-Extended",
+      "Meta-ExternalAgent",
+      "Meta-ExternalFetcher",
+      "FacebookBot",
+      "Bytespider",
+      "Amazonbot",
+      "Diffbot",
+      "Omgilibot",
+      "Omgili",
+      "ImagesiftBot",
+      "PetalBot",
+      "DataForSeoBot",
+      "AwarioRssBot",
+      "AwarioSmartBot",
+      "magpie-crawler",
+      "peer39_crawler",
+      "TurnitinBot",
+      "cohere-ai",
+    ];
+
+    const lines: string[] = [];
+    for (const bot of trainingOnlyBots) {
+      lines.push(`User-agent: ${bot}`, "Disallow: /", "");
+    }
+    lines.push("User-agent: *", "Allow: /", "Disallow: /operator/", "");
+    lines.push("Sitemap: https://nyaaywatch.in/sitemap.xml", "");
+
+    response.type("text/plain").send(lines.join("\n"));
   });
 
   app.get(
@@ -140,6 +167,7 @@ export function createApp(
         origin + "/data",
         origin + "/methodology",
         origin + "/api",
+        origin + "/learn",
         origin + "/press",
         origin + "/high-courts",
         origin + "/supreme-court",
@@ -376,6 +404,41 @@ export function createApp(
   );
 
   app.get(
+    "/data/evidence/state.json",
+    asyncRoute(async (_request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      response.json(buildStateEvidencePack(snapshot.payload, context));
+    }),
+  );
+
+  app.get(
+    "/data/evidence/districts/:districtId.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const districtId = readRouteParam(request.params.districtId);
+      const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const payload = await currentService.getDistrictDetail(districtId);
+      if (!payload) {
+        response.status(404).json({ error: "District evidence pack not available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
+      response.json(buildDistrictEvidencePack(payload.snapshot, payload.district, payload.history, context));
+    }),
+  );
+
+  app.get(
     "/",
     asyncRoute(async (_request, response) => {
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
@@ -474,6 +537,42 @@ export function createApp(
         response.status(404).send(renderCompareNotFound(context));
         return;
       }
+      response.send(renderComparePage(snapshot.payload, districtA, districtB, context));
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/compare/:slug",
+    asyncRoute(async (request, response) => {
+      const slug = readRouteParam(request.params.slug);
+      const vsIndex = slug.indexOf("-vs-");
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      if (vsIndex === -1) {
+        response.status(404).send(renderEmptyState("Comparison Not Found", `Use ${context.routes.compare("district-a", "district-b")}`));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderCompareNotFound(context));
+        return;
+      }
+
+      const idA = slug.slice(0, vsIndex);
+      const idB = slug.slice(vsIndex + 4);
+      const districtA = snapshot.payload.districts.find((d) => d.districtId === idA);
+      const districtB = snapshot.payload.districts.find((d) => d.districtId === idB);
+      if (!districtA || !districtB) {
+        response.status(404).send(renderCompareNotFound(context));
+        return;
+      }
+
       response.send(renderComparePage(snapshot.payload, districtA, districtB, context));
     }),
   );
@@ -599,6 +698,10 @@ export function createApp(
 
   app.get("/press", (_request, response) => {
     response.send(renderPressPage());
+  });
+
+  app.get("/learn", (_request, response) => {
+    response.send(renderLearnPage());
   });
 
   app.get("/press/logo-light.svg", (_request, response) => {
@@ -750,6 +853,48 @@ export function createApp(
       }
 
       response.type("text/csv").send(csv);
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/evidence/state.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(404).json({ error: "No published snapshot available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      response.json(buildStateEvidencePack(snapshot.payload, context));
+    }),
+  );
+
+  app.get(
+    "/states/:stateSlug/data/evidence/districts/:districtId.json",
+    asyncRoute(async (request, response) => {
+      applyPublishedDataCacheHeaders(response);
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
+        return;
+      }
+
+      const payload = await resolved.service.getDistrictDetail(readRouteParam(request.params.districtId));
+      if (!payload) {
+        response.status(404).json({ error: "District evidence pack not available." });
+        return;
+      }
+
+      const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      response.json(buildDistrictEvidencePack(payload.snapshot, payload.district, payload.history, context));
     }),
   );
 

@@ -1,4 +1,10 @@
 import type { HighCourtPublishedSnapshot } from "../../domain/high-court-snapshot-schema.js";
+import type {
+  BacklogConcentrationMetric,
+  MetricValue,
+  MissingMetricReason,
+  OldCaseBurdenMetric,
+} from "../../domain/snapshot-schema.js";
 import type { SupremeCourtPublishedSnapshot } from "../../domain/supreme-court-snapshot-schema.js";
 
 export function describeBacklogMovement(share: number, windowLabel = "last month"): string {
@@ -9,6 +15,51 @@ export function describeBacklogMovement(share: number, windowLabel = "last month
     return `Backlog shrank by ${Math.abs(share).toFixed(1)}% of the pending pile ${windowLabel}.`;
   }
   return `Filings and clearances did not move the pending pile ${windowLabel}.`;
+}
+
+export function formatBacklogMovementValue(metric: MetricValue): string {
+  if (metric.state === "missing") {
+    return "N/A";
+  }
+  const sign = metric.value > 0 ? "+" : "";
+  return `${sign}${metric.value.toFixed(1)}%`;
+}
+
+export function describeBacklogMovementMetric(metric: MetricValue, windowLabel = "last month"): string {
+  if (metric.state === "missing") {
+    if (metric.reason === "not-applicable") {
+      return "No pending cases on file, so backlog movement can't be computed.";
+    }
+    return "NJDG hasn't published last month's filings and clearances.";
+  }
+  return describeBacklogMovement(metric.value, windowLabel);
+}
+
+export function describeMissingMetric(reason: MissingMetricReason, inputLabel: string): string {
+  switch (reason) {
+    case "source-not-published":
+      return `NJDG hasn't published ${inputLabel}.`;
+    case "insufficient-history":
+      return `Need data from another month to start tracking ${inputLabel}.`;
+    case "incomplete-breakdown":
+      return `NJDG hasn't published a full ${inputLabel} breakdown.`;
+    case "not-applicable":
+      return `No pending cases on file, so ${inputLabel} can't be computed.`;
+  }
+}
+
+export function formatOldCaseBurdenValue(metric: OldCaseBurdenMetric): string {
+  if (metric.state === "missing") {
+    return "N/A";
+  }
+  return formatShare(metric.value.fivePlusYearsShare);
+}
+
+export function describeOldCaseBurdenMetric(metric: OldCaseBurdenMetric): string {
+  if (metric.state === "missing") {
+    return "NJDG hasn't published the case-age breakdown.";
+  }
+  return `${metric.value.fivePlusYearsCases.toLocaleString("en-IN")} pending cases are already older than 5 years.`;
 }
 
 export function calculateBacklogMovementShare(
@@ -33,6 +84,20 @@ export function describeBreakEven(clearancesNeeded: number, windowLabel = "last 
   return `Needed ${clearancesNeeded.toLocaleString("en-IN")} more clearances ${windowLabel} to break even.`;
 }
 
+export function formatBreakEvenValue(metric: MetricValue): string {
+  if (metric.state === "missing") {
+    return "N/A";
+  }
+  return metric.value.toLocaleString("en-IN");
+}
+
+export function describeBreakEvenMetric(metric: MetricValue, windowLabel = "last month"): string {
+  if (metric.state === "missing") {
+    return "NJDG hasn't published last month's filings and clearances.";
+  }
+  return describeBreakEven(metric.value, windowLabel);
+}
+
 export function calculateCatchUpClearancesPerMonth(
   pendingCases: number,
   filedCases: number,
@@ -49,15 +114,71 @@ export function describeCatchUp(clearancesPerMonth: number): string {
   return `A 10% backlog cut in a year would need about ${clearancesPerMonth.toLocaleString("en-IN")} extra clearances per month.`;
 }
 
+export function formatCatchUpValue(metric: MetricValue): string {
+  if (metric.state === "missing") {
+    return "N/A";
+  }
+  return metric.value.toLocaleString("en-IN");
+}
+
+export function describeCatchUpMetric(metric: MetricValue): string {
+  if (metric.state === "missing") {
+    if (metric.reason === "not-applicable") {
+      return "No pending cases on file, so the 10% reduction scenario can't be computed.";
+    }
+    return "NJDG hasn't published last month's filings and clearances.";
+  }
+  return describeCatchUp(metric.value);
+}
+
 export function formatShare(value: number): string {
   return `${value.toFixed(1)}%`;
 }
 
-export function describeWatchlistPersistence(flagged: number, window: number): string {
-  if (window <= 1) {
-    return "Persistence needs more published snapshots.";
+export function formatBacklogConcentrationValue(metric: BacklogConcentrationMetric): string {
+  if (metric.state === "missing") {
+    return "N/A";
   }
-  return `Flagged in ${flagged} of the last ${window} published snapshots.`;
+  return formatShare(metric.value.topFiveDistrictsShare);
+}
+
+export function describeBacklogConcentrationMetric(metric: BacklogConcentrationMetric): string {
+  if (metric.state === "missing") {
+    if (metric.reason === "not-applicable") {
+      return "No pending cases on file, so the top-five district share can't be computed.";
+    }
+    return "NJDG hasn't published district-level pending-case counts.";
+  }
+  return "Share of the pending load held by the five largest district backlogs.";
+}
+
+type WatchlistPersistenceMetric =
+  | { state: "ok"; value: { flagged: number; window: number } }
+  | { state: "missing"; reason: "insufficient-history" };
+
+export function buildWatchlistPersistenceMetric(flagged: number, window: number): WatchlistPersistenceMetric {
+  if (window <= 1) {
+    return { state: "missing", reason: "insufficient-history" };
+  }
+  return { state: "ok", value: { flagged, window } };
+}
+
+export function formatWatchlistPersistenceValue(metric: WatchlistPersistenceMetric): string {
+  if (metric.state === "missing") {
+    return "N/A";
+  }
+  return `${metric.value.flagged}/${metric.value.window}`;
+}
+
+export function describeWatchlistPersistenceMetric(metric: WatchlistPersistenceMetric): string {
+  if (metric.state === "missing") {
+    return "Need data from another month to start tracking persistence.";
+  }
+  return `Flagged in ${metric.value.flagged} of the last ${metric.value.window} published snapshots.`;
+}
+
+export function describeWatchlistPersistence(flagged: number, window: number): string {
+  return describeWatchlistPersistenceMetric(buildWatchlistPersistenceMetric(flagged, window));
 }
 
 export function calculateHighCourtOldCaseShare(snapshot: HighCourtPublishedSnapshot): number {

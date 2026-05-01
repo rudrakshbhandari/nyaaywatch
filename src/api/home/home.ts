@@ -12,12 +12,21 @@ import {
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import { computeWaitingRoomRates, renderWaitingRoom } from "../landing/waiting-room.js";
 import {
-  describeBacklogMovement,
-  describeBreakEven,
-  describeCatchUp,
-  describeWatchlistPersistence,
-  formatShare,
+  buildWatchlistPersistenceMetric,
+  describeBacklogConcentrationMetric,
+  describeBacklogMovementMetric,
+  describeBreakEvenMetric,
+  describeCatchUpMetric,
+  describeOldCaseBurdenMetric,
+  describeWatchlistPersistenceMetric,
+  formatBacklogConcentrationValue,
+  formatBacklogMovementValue,
+  formatBreakEvenValue,
+  formatCatchUpValue,
+  formatOldCaseBurdenValue,
+  formatWatchlistPersistenceValue,
 } from "../pages/metric-insights.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "../pages/investigation-workflow.js";
 
 export function renderHome(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const model = buildViewModel(snapshot);
@@ -25,6 +34,10 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
   const n = copy.bigNumbers;
 
   const trendBars = renderTrendChart(model);
+  const topDistrictPersistence = buildWatchlistPersistenceMetric(
+    model.topDistrict.watchlistPersistence.flaggedInLastSix,
+    model.topDistrict.watchlistPersistence.lastSixWindow,
+  );
   const watchlistCards = model.topThree
     .map((district, index) => {
       const waitMonths = Math.round(district.medianAgeDays / 30);
@@ -99,27 +112,27 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
       <div class="stat-grid">
         ${renderStatTile({
           label: "Older than 5 years",
-          value: formatShare(snapshot.stats.oldCaseBurden.fivePlusYearsShare),
-          note: `${snapshot.stats.oldCaseBurden.fivePlusYearsCases.toLocaleString("en-IN")} pending cases are already older than 5 years.`,
+          value: formatOldCaseBurdenValue(snapshot.stats.oldCaseBurden),
+          note: describeOldCaseBurdenMetric(snapshot.stats.oldCaseBurden),
           tone: "accent",
           methodologyHref: `${context.routes.methodology}#metric-old-case-burden`,
         })}
         ${renderStatTile({
           label: "Backlog movement",
-          value: `${snapshot.stats.backlogMovementShare > 0 ? "+" : ""}${snapshot.stats.backlogMovementShare.toFixed(1)}%`,
-          note: describeBacklogMovement(snapshot.stats.backlogMovementShare),
+          value: formatBacklogMovementValue(snapshot.stats.backlogMovementShare),
+          note: describeBacklogMovementMetric(snapshot.stats.backlogMovementShare),
           methodologyHref: `${context.routes.methodology}#metric-backlog-movement`,
         })}
         ${renderStatTile({
           label: "Break-even clearances",
-          value: snapshot.stats.breakEvenClearancesNeeded.toLocaleString("en-IN"),
-          note: describeBreakEven(snapshot.stats.breakEvenClearancesNeeded),
+          value: formatBreakEvenValue(snapshot.stats.breakEvenClearancesNeeded),
+          note: describeBreakEvenMetric(snapshot.stats.breakEvenClearancesNeeded),
           methodologyHref: `${context.routes.methodology}#metric-break-even-clearances`,
         })}
         ${renderStatTile({
           label: "10% reduction scenario",
-          value: snapshot.stats.catchUpClearancesPerMonth.toLocaleString("en-IN"),
-          note: describeCatchUp(snapshot.stats.catchUpClearancesPerMonth),
+          value: formatCatchUpValue(snapshot.stats.catchUpClearancesPerMonth),
+          note: describeCatchUpMetric(snapshot.stats.catchUpClearancesPerMonth),
           tone: "flag",
           methodologyHref: `${context.routes.methodology}#metric-catch-up-burden`,
         })}
@@ -127,21 +140,54 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
       <div class="stat-grid metric-deepening__secondary">
         ${renderStatTile({
           label: "Top 5 district share",
-          value: formatShare(snapshot.stats.backlogConcentration.topFiveDistrictsShare),
-          note: "Share of the pending load held by the five largest district backlogs.",
+          value: formatBacklogConcentrationValue(snapshot.stats.backlogConcentration),
+          note: describeBacklogConcentrationMetric(snapshot.stats.backlogConcentration),
           methodologyHref: `${context.routes.methodology}#metric-backlog-concentration`,
         })}
         ${renderStatTile({
           label: "Top district persistence",
-          value: `${model.topDistrict.watchlistPersistence.flaggedInLastSix}/${model.topDistrict.watchlistPersistence.lastSixWindow}`,
-          note: describeWatchlistPersistence(
-            model.topDistrict.watchlistPersistence.flaggedInLastSix,
-            model.topDistrict.watchlistPersistence.lastSixWindow,
-          ),
+          value: formatWatchlistPersistenceValue(topDistrictPersistence),
+          note: describeWatchlistPersistenceMetric(topDistrictPersistence),
           methodologyHref: `${context.routes.methodology}#metric-watchlist-persistence`,
         })}
       </div>
     </section>
+
+    ${renderInvestigationWorkflow({
+      headline: `Follow the ${context.lowerCourtCopy.geographyLabelLower} trail.`,
+      lede:
+        `Start with the headline pressure, then inspect districts, snapshot movement, comparisons, and citation-ready exports for ${snapshot.snapshot.stateName}.`,
+      steps: [
+        {
+          eyebrow: "01",
+          title: "Scan districts",
+          body: "Sort by backlog, clearance pace, typical wait, or file-clear gap to find the first pressure signal worth inspecting.",
+          href: context.routes.districts,
+          cta: "Open district workspace",
+        },
+        {
+          eyebrow: "02",
+          title: "Check movers",
+          body: "Compare the two most recent published snapshots when history is available, so a one-month change does not get lost in the table.",
+          href: context.routes.movers,
+          cta: "Open movers",
+        },
+        {
+          eyebrow: "03",
+          title: "Open evidence",
+          body: "Use the district page for history, caveats, citations, downloadable CSVs, and the metric definitions behind each number.",
+          href: context.routes.district(model.topDistrict.districtId),
+          cta: "Inspect top district",
+        },
+        {
+          eyebrow: "04",
+          title: "Reuse safely",
+          body: "Use the public data, API, and press kit instead of raw capture files or unpublished runs.",
+          href: "/press",
+          cta: "Open press kit",
+        },
+      ],
+    })}
 
     <script>
     (function() {
@@ -199,7 +245,7 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
     ticker: copy.ticker,
-    pageCss: HOME_PAGE_CSS,
+    pageCss: HOME_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     footer: {
       sourceDateLabel: model.sourceDateLabel,
       methodologyVersion: model.methodologyVersion,

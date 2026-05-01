@@ -8,6 +8,7 @@ import { escapeHtml, formatDate } from "./view-model.js";
 import { buildNationalHomeViewModel, type NationalHighCourtEntry } from "./national-view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import { renderIndiaMap, type IndiaMapStateEntry } from "./india-map.js";
+import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "../pages/investigation-workflow.js";
 
 export function renderNationalHome(input: {
   supremeCourtSnapshot: import("../../domain/supreme-court-snapshot-schema.js").SupremeCourtPublishedSnapshot | null;
@@ -130,10 +131,11 @@ export function renderNationalHome(input: {
 
   const tocItems = [
     { id: "hero", index: "01", label: "At a glance" },
-    { id: "high-courts", index: "02", label: "High Courts" },
-    { id: "lower-courts", index: "03", label: "Lower courts" },
-    { id: "map", index: "04", label: "Pressure map" },
-    { id: "accountability", index: "05", label: "Methodology" },
+    { id: "investigation", index: "02", label: "Investigation path" },
+    { id: "high-courts", index: "03", label: "High Courts" },
+    { id: "lower-courts", index: "04", label: "Lower courts" },
+    { id: "map", index: "05", label: "Pressure map" },
+    { id: "accountability", index: "06", label: "Methodology" },
   ]
     .map(
       (item) => `<li>
@@ -163,7 +165,7 @@ export function renderNationalHome(input: {
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
             ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly backlog change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
-            : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers are live or predictive."
+            : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers update continuously or forecast outcomes."
         }</p>
         <div class="national-hero__cta">
           <a class="btn btn--primary" href="${model.supremeCourt.snapshot ? supremeRoutes.home : input.lowerCourtContext.routes.home}">${
@@ -245,6 +247,44 @@ export function renderNationalHome(input: {
         }
       </div>
     </section>
+
+    <div id="investigation" data-section="investigation">
+      ${renderInvestigationWorkflow({
+        headline: "Follow the court system without flattening it.",
+        lede:
+          "Start at the Supreme Court, move into High Courts, then open lower-court geographies and districts. Each layer keeps its own method, source caveats, and evidence boundary.",
+        steps: [
+          {
+            eyebrow: "01",
+            title: "Start with the Supreme Court",
+            body: "Use the top-level aggregate to read current backlog pressure and monthly movement without treating it as comparable to district rows.",
+            href: supremeRoutes.home,
+            cta: "Open Supreme Court",
+          },
+          {
+            eyebrow: "02",
+            title: "Move to High Courts",
+            body: "Scan High Court pages court by court, with coverage labels and source-specific caveats kept beside the numbers.",
+            href: "/high-courts",
+            cta: "Browse High Courts",
+          },
+          {
+            eyebrow: "03",
+            title: "Drill into lower courts",
+            body: "Use the map to open a State or Union Territory page, then inspect districts, movers, comparisons, and exports inside that snapshot.",
+            href: "#map",
+            cta: "Use pressure map",
+          },
+          {
+            eyebrow: "04",
+            title: "Cite or reuse",
+            body: "Use press notes, CSVs, API routes, and methodology pages instead of copying raw capture files or treating snapshots as continuous feeds.",
+            href: "/press",
+            cta: "Open press kit",
+          },
+        ],
+      })}
+    </div>
 
     <section class="national-section" id="high-courts" data-section="high-courts">
       ${renderSectionHead({
@@ -336,6 +376,7 @@ export function renderNationalHome(input: {
       { id: "supreme-court", href: "/supreme-court", label: "Supreme Court" },
       { id: "high-courts", href: "/high-courts", label: "High Courts" },
       { id: "districts", href: input.lowerCourtContext.routes.districts, label: "Districts" },
+      { id: "learn", href: "/learn", label: "Learn" },
     ],
     footer: {
       sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(input.lowerCourtSnapshot.snapshot.sourceSnapshotAt),
@@ -344,7 +385,7 @@ export function renderNationalHome(input: {
       sourceAttribution:
         model.supremeCourt.snapshot?.snapshot.sourceAttribution ?? input.lowerCourtSnapshot.snapshot.sourceAttribution,
     },
-    pageCss: NATIONAL_HOME_CSS,
+    pageCss: NATIONAL_HOME_CSS + INVESTIGATION_WORKFLOW_CSS,
     og: {
       title: "How long is India waiting for justice?",
       description: "NyaayWatch tracks court backlogs and wait times across India's judiciary — Supreme Court, High Courts, and district courts — from public NJDG data.",

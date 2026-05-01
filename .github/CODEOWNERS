@@ -1,0 +1,14 @@
+# Default repository ownership.
+* @rudrakshbhandari
+
+# Data provenance, methodology, and public claims need explicit maintainer review.
+docs/** @rudrakshbhandari
+src/ingest/** @rudrakshbhandari
+src/extract/** @rudrakshbhandari
+src/normalize/** @rudrakshbhandari
+src/api/pages/** @rudrakshbhandari
+src/api/home/** @rudrakshbhandari
+
+# Automation and deployment changes affect public availability and contributor trust.
+.github/** @rudrakshbhandari
+infra/** @rudrakshbhandari

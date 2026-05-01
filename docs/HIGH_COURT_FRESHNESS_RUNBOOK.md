@@ -17,16 +17,16 @@ These two signals are intentionally separated because upstream NJDG breakage is 
 
 The ops watchdog is where these signals surface first:
 
-- scheduled run: `.github/workflows/ops-watchdog.yml` (every day at `05:00` UTC) and the in-stack `nyaaywatch-staging-public-alpha-ops-monitor` ECS schedule every `30` minutes
+- scheduled run: `.github/workflows/ops-watchdog.yml` (every day at `05:00` UTC) and the in-stack `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule every `30` minutes
 - failure artifact: the durable GitHub issue titled `Ops watchdog failure`, which lists `dailyFetchLagStates`, `staleStates`, and `failingTiers`
-- first-incident alert: SNS topic `nyaaywatch-staging-alerts`
+- first-incident alert: SNS topic `nyaaywatch-production-alerts`
 - command for an ad-hoc check:
   ```bash
   export OPERATOR_API_TOKEN=...
   npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
   ```
 
-The public-alpha sweep currently covers lower-court state profiles. For High Court-specific internal history, use the wave-readiness and readiness commands:
+The public-alpha sweep covers every public lower-court state, public High Court, and the Supreme Court. For deeper High Court-specific internal history, use the wave-readiness and readiness commands:
 
 ```bash
 npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=<slug>
@@ -43,7 +43,7 @@ npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-sl
 
 1. Check the ops watchdog issue body for which tier is lagging (`lower`, `supreme`, `high`) and which scope.
 2. Inspect the latest scheduled run and freshness in the same issue body.
-3. Look at `/ecs/nyaaywatch-staging` logs for the affected tier around the expected `8:00`, `8:10`, or `8:20` AM Asia/Kolkata window.
+3. Look at `/ecs/nyaaywatch-production` logs for the affected tier around the expected `8:00`, `8:10`, or `8:20` AM Asia/Kolkata window.
 4. If the upstream source is returning a predictable error, record it in `docs/EXPANSION_REVIEW_LOG.md` and wait for the next window — do not hand-run a recovery fetch unless the next scheduled window is more than 24 hours away.
 5. If the upstream source is returning something novel (HTML shape change, new challenge page, different selector payload), open a source-shape task and link it from the watchdog issue before closing.
 

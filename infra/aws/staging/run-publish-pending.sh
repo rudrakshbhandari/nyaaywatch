@@ -6,7 +6,7 @@ if [[ $# -gt 1 ]]; then
   exit 1
 fi
 
-stack_name="${1:-nyaaywatch-staging}"
+stack_name="${1:-nyaaywatch-production}"
 region="${AWS_REGION:-ap-south-1}"
 
 tmpdir="$(mktemp -d)"

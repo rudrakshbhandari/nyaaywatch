@@ -39,7 +39,7 @@ The following must be in place before the first message in the Audience Priority
 - [ ] Homepage methodology link reachable in one click for every currently live scope (Supreme Court, each High Court beta, Himachal lower-court).
 - [ ] `docs/ALPHA_RELEASE_CHECKLIST.md` up to date for the latest publication, so external readers who inspect the repo see a checklist that matches what is actually live.
 - [ ] On-call primary and backup named in `docs/ON_CALL_POLICY.md` with the expected working-hours window explicitly recorded.
-- [ ] Ops watchdog green: `nyaaywatch-staging-public-alpha-ops` alarm not in `ALARM`, no open `Ops watchdog failure` GitHub issue.
+- [ ] Ops watchdog green: `nyaaywatch-production-public-alpha-ops` alarm not in `ALARM`, no open `Ops watchdog failure` GitHub issue.
 - [ ] A way to receive incoming feedback that is not an operator's personal DMs. For alpha, a single shared mailbox or a GitHub Discussions thread is enough; whichever it is, it must be linked from the homepage footer or the methodology page before announcing.
 
 Analytics, paid distribution, and SEO-for-scale are deliberately out of scope for this pass. The point of alpha is to be read carefully by a small number of people, not to be discovered at scale.

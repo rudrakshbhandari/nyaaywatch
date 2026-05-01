@@ -2,6 +2,55 @@ import { z } from "zod";
 
 export const QualityStateSchema = z.enum(["complete", "partial", "stale"]);
 
+export const MissingMetricReasonSchema = z.enum([
+  "source-not-published",
+  "insufficient-history",
+  "incomplete-breakdown",
+  "not-applicable",
+]);
+
+const MissingMetricSchema = z.object({
+  state: z.literal("missing"),
+  reason: MissingMetricReasonSchema,
+});
+
+export const MetricValueSchema = z.discriminatedUnion("state", [
+  z.object({ state: z.literal("ok"), value: z.number() }),
+  MissingMetricSchema,
+]);
+
+export type MissingMetricReason = z.infer<typeof MissingMetricReasonSchema>;
+export type MetricValue = z.infer<typeof MetricValueSchema>;
+
+const MISSING_SOURCE_NOT_PUBLISHED = {
+  state: "missing",
+  reason: "source-not-published",
+} as const;
+
+const MISSING_INCOMPLETE_BREAKDOWN = {
+  state: "missing",
+  reason: "incomplete-breakdown",
+} as const;
+
+const MetricValueOrLegacyNumberSchema = z
+  .union([
+    z.number().transform((value) => ({ state: "ok" as const, value })),
+    MetricValueSchema,
+  ])
+  .default(MISSING_SOURCE_NOT_PUBLISHED);
+
+const NonNegativeIntegerMetricValueSchema = z.discriminatedUnion("state", [
+  z.object({ state: z.literal("ok"), value: z.number().int().nonnegative() }),
+  MissingMetricSchema,
+]);
+
+const NonNegativeIntegerMetricValueOrLegacyNumberSchema = z
+  .union([
+    z.number().int().nonnegative().transform((value) => ({ state: "ok" as const, value })),
+    NonNegativeIntegerMetricValueSchema,
+  ])
+  .default(MISSING_SOURCE_NOT_PUBLISHED);
+
 const EMPTY_AGE_BUCKETS = {
   lessThanOneYear: 0,
   oneToThreeYears: 0,
@@ -17,11 +66,6 @@ const EMPTY_OLD_CASE_BURDEN = {
   threePlusYearsShare: 0,
   fivePlusYearsShare: 0,
   tenPlusYearsShare: 0,
-};
-
-const EMPTY_BACKLOG_CONCENTRATION = {
-  topFiveDistrictsShare: 0,
-  topTenDistrictsShare: 0,
 };
 
 const EMPTY_WATCHLIST_PERSISTENCE = {
@@ -48,10 +92,30 @@ export const OldCaseBurdenSchema = z.object({
   tenPlusYearsShare: z.number().nonnegative().default(0),
 });
 
+export const OldCaseBurdenMetricSchema = z
+  .union([
+    z.discriminatedUnion("state", [
+      z.object({ state: z.literal("ok"), value: OldCaseBurdenSchema }),
+      MissingMetricSchema,
+    ]),
+    OldCaseBurdenSchema.transform((value) => ({ state: "ok" as const, value })),
+  ])
+  .default(MISSING_SOURCE_NOT_PUBLISHED);
+
 export const BacklogConcentrationSchema = z.object({
   topFiveDistrictsShare: z.number().nonnegative().default(0),
   topTenDistrictsShare: z.number().nonnegative().default(0),
 });
+
+export const BacklogConcentrationMetricSchema = z
+  .union([
+    z.discriminatedUnion("state", [
+      z.object({ state: z.literal("ok"), value: BacklogConcentrationSchema }),
+      MissingMetricSchema,
+    ]),
+    BacklogConcentrationSchema.transform((value) => ({ state: "ok" as const, value })),
+  ])
+  .default(MISSING_INCOMPLETE_BREAKDOWN);
 
 export const WatchlistPersistenceSchema = z.object({
   flaggedInLastThree: z.number().int().nonnegative().default(0),
@@ -82,11 +146,11 @@ export const StateStatsSchema = z.object({
   medianCaseAgeDays: z.number().int().nonnegative(),
   flaggedDistricts: z.number().int().nonnegative(),
   ageBuckets: AgeBucketsSchema.default(EMPTY_AGE_BUCKETS),
-  oldCaseBurden: OldCaseBurdenSchema.default(EMPTY_OLD_CASE_BURDEN),
-  backlogMovementShare: z.number().default(0),
-  breakEvenClearancesNeeded: z.number().int().nonnegative().default(0),
-  catchUpClearancesPerMonth: z.number().int().nonnegative().default(0),
-  backlogConcentration: BacklogConcentrationSchema.default(EMPTY_BACKLOG_CONCENTRATION),
+  oldCaseBurden: OldCaseBurdenMetricSchema,
+  backlogMovementShare: MetricValueOrLegacyNumberSchema,
+  breakEvenClearancesNeeded: NonNegativeIntegerMetricValueOrLegacyNumberSchema,
+  catchUpClearancesPerMonth: NonNegativeIntegerMetricValueOrLegacyNumberSchema,
+  backlogConcentration: BacklogConcentrationMetricSchema,
 });
 
 export const DistrictSnapshotSchema = z.object({
@@ -126,5 +190,9 @@ export const PublishedSnapshotSchema = z.object({
 
 export type QualityState = z.infer<typeof QualityStateSchema>;
 export type AgeBuckets = z.infer<typeof AgeBucketsSchema>;
+export type OldCaseBurden = z.infer<typeof OldCaseBurdenSchema>;
+export type OldCaseBurdenMetric = z.infer<typeof OldCaseBurdenMetricSchema>;
+export type BacklogConcentration = z.infer<typeof BacklogConcentrationSchema>;
+export type BacklogConcentrationMetric = z.infer<typeof BacklogConcentrationMetricSchema>;
 export type PublishedSnapshot = z.infer<typeof PublishedSnapshotSchema>;
 export type DistrictSnapshot = z.infer<typeof DistrictSnapshotSchema>;

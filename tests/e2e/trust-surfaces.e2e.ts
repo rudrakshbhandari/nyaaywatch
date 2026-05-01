@@ -1,7 +1,7 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const TRUST_ROUTES = ["/", "/supreme-court", "/high-courts", "/districts", "/districts/kangra", "/data", "/methodology"];
+const TRUST_ROUTES = ["/", "/supreme-court", "/high-courts", "/districts", "/districts/kangra", "/data", "/methodology", "/learn"];
 const RESPONSIVE_ROUTES = [
   "/",
   "/supreme-court",
@@ -21,6 +21,7 @@ const RESPONSIVE_ROUTES = [
   "/data",
   "/methodology",
   "/api",
+  "/learn",
 ];
 
 test.describe("responsive trust surfaces", () => {
@@ -139,7 +140,7 @@ test.describe("accessibility smoke", () => {
     await expect(page.getByRole("link", { name: "Download district history CSV" })).toBeVisible();
 
     await page.keyboard.press("Tab");
-    await expect(page.getByRole("link", { name: "NyaayWatch" })).toBeFocused();
+    await expect(page.locator("a.masthead__brand")).toBeFocused();
     await page.keyboard.press("Tab");
     await expect(page.getByRole("navigation").getByRole("link", { name: "Districts" })).toBeFocused();
     await page.keyboard.press("Tab");
