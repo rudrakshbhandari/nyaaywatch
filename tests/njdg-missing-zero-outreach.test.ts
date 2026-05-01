@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildOutreachArchiveKey,
   composeNjdgOutreachMessage,
+  deriveOutreachBcc,
   deriveOutreachRecipients,
   parseEmailList,
   sourceReportsMissingMonthlyMovement,
@@ -62,6 +64,20 @@ describe("NJDG missing zero outreach", () => {
       "cpc-asm@aij.gov.in",
       "ecommittee@aij.gov.in",
     ]);
+  });
+
+  it("BCCs the verified sender as the default archive copy", () => {
+    expect(deriveOutreachBcc("rudrakshbhandari99@gmail.com")).toEqual(["rudrakshbhandari99@gmail.com"]);
+    expect(deriveOutreachBcc("rudrakshbhandari99@gmail.com", "ops@example.com, rudrakshbhandari99@gmail.com")).toEqual([
+      "ops@example.com",
+      "rudrakshbhandari99@gmail.com",
+    ]);
+  });
+
+  it("builds stable S3 archive keys for outbound email records", () => {
+    expect(buildOutreachArchiveKey("2026-05-01T06:02:51.350Z")).toBe(
+      "ops/njdg-missing-zero-outreach/2026/05/01/2026-05-01T06-02-51-350Z.json",
+    );
   });
 
   it("keeps the email wording source-aware and includes recipients", () => {
