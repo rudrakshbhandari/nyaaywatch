@@ -131,6 +131,14 @@
         "ses:SendEmail"
       ],
       "Resource": "arn:aws:ses:ap-south-1:723951822728:identity/rudrakshbhandari99@gmail.com"
+    },
+    {
+      "Sid": "NjdgOutreachArchiveWrite",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::nyaaywatch-production-artifacts-723951822728/ops/njdg-missing-zero-outreach/*"
     }
   ]
 }

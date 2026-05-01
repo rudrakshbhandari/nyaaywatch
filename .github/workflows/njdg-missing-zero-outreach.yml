@@ -20,6 +20,7 @@ jobs:
     env:
       AWS_REGION: ap-south-1
       PUBLIC_BASE_URL: https://nyaaywatch.in
+      NJDG_OUTREACH_ARCHIVE_BUCKET: nyaaywatch-production-artifacts-723951822728
       NJDG_OUTREACH_TO: ${{ secrets.NJDG_OUTREACH_TO }}
       SES_SOURCE_EMAIL: ${{ secrets.SES_SOURCE_EMAIL }}
 

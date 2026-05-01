@@ -1,4 +1,5 @@
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -39,6 +40,19 @@ export interface MissingMonthlyMovementIssue {
   filedLastMonthCases: number;
   clearedLastMonthCases: number;
   publicUrl: string;
+}
+
+interface NjdgOutreachMessage {
+  subject: string;
+  text: string;
+  to: string[];
+}
+
+interface SendOutreachResult {
+  archiveBucket: string;
+  archiveKey: string;
+  bcc: string[];
+  messageId: string | null;
 }
 
 const OFFICIAL_CPC_EMAIL_BY_STATE_CODE: Record<SupportedStateCode, string> = {
@@ -87,14 +101,20 @@ async function main() {
   const issues = await findMissingMonthlyMovementIssues(baseUrl);
   const recipients = deriveOutreachRecipients(issues);
   const message = composeNjdgOutreachMessage(baseUrl, issues, recipients);
+  const checkedAt = new Date().toISOString();
   const summary = {
     baseUrl,
-    checkedAt: new Date().toISOString(),
+    checkedAt,
     issueCount: issues.length,
     recipientCount: recipients.length,
     recipients,
+    bccRecipientCount: 0,
+    bccRecipients: [] as string[],
     sendRequested: send,
     sent: false,
+    sesMessageId: null as string | null,
+    archiveBucket: null as string | null,
+    archiveKey: null as string | null,
     issues,
   };
 
@@ -104,8 +124,13 @@ async function main() {
   }
 
   if (send) {
-    await sendOutreachEmail(message);
+    const result = await sendOutreachEmail(message, { baseUrl, checkedAt, issues });
     summary.sent = true;
+    summary.bccRecipientCount = result.bcc.length;
+    summary.bccRecipients = result.bcc;
+    summary.sesMessageId = result.messageId;
+    summary.archiveBucket = result.archiveBucket;
+    summary.archiveKey = result.archiveKey;
   } else {
     console.log(message.text);
   }
@@ -213,29 +238,122 @@ export function parseEmailList(value: string | undefined): string[] {
   );
 }
 
+export function deriveOutreachBcc(sourceEmail: string, extraBcc = process.env.NJDG_OUTREACH_BCC): string[] {
+  return uniqueEmailList([...parseEmailList(extraBcc), sourceEmail.trim()].filter(Boolean));
+}
+
+export function buildOutreachArchiveKey(checkedAtIso: string): string {
+  const date = checkedAtIso.slice(0, 10);
+  const [year, month, day] = date.split("-");
+  const safeTimestamp = checkedAtIso.replace(/[:.]/g, "-");
+  return `ops/njdg-missing-zero-outreach/${year}/${month}/${day}/${safeTimestamp}.json`;
+}
+
 function uniqueEmailList(values: string[]): string[] {
   return Array.from(new Set(values));
 }
 
-async function sendOutreachEmail(message: { subject: string; text: string; to: string[] }): Promise<void> {
+async function sendOutreachEmail(
+  message: NjdgOutreachMessage,
+  context: { baseUrl: string; checkedAt: string; issues: MissingMonthlyMovementIssue[] },
+): Promise<SendOutreachResult> {
   const source = process.env.SES_SOURCE_EMAIL?.trim();
   const region = process.env.AWS_REGION?.trim() || "ap-south-1";
+  const archiveBucket = process.env.NJDG_OUTREACH_ARCHIVE_BUCKET?.trim();
   if (!source) {
     throw new Error("SES_SOURCE_EMAIL is required when --send is set.");
   }
   if (message.to.length === 0) {
     throw new Error("At least one NJDG outreach recipient is required when --send is set.");
   }
+  if (!archiveBucket) {
+    throw new Error("NJDG_OUTREACH_ARCHIVE_BUCKET is required when --send is set.");
+  }
+
+  const bcc = deriveOutreachBcc(source);
+  const archiveKey = buildOutreachArchiveKey(context.checkedAt);
+  await archiveOutreachEmail({
+    bucket: archiveBucket,
+    key: archiveKey,
+    region,
+    record: buildOutreachArchiveRecord({
+      ...context,
+      bcc,
+      message,
+      source,
+      status: "prepared",
+      messageId: null,
+      sentAt: null,
+    }),
+  });
 
   const client = new SESClient({ region });
-  await client.send(
+  const response = await client.send(
     new SendEmailCommand({
       Source: source,
-      Destination: { ToAddresses: message.to },
+      Destination: { ToAddresses: message.to, BccAddresses: bcc },
       Message: {
         Subject: { Data: message.subject },
         Body: { Text: { Data: message.text } },
       },
+    }),
+  );
+  const sentAt = new Date().toISOString();
+  await archiveOutreachEmail({
+    bucket: archiveBucket,
+    key: archiveKey,
+    region,
+    record: buildOutreachArchiveRecord({
+      ...context,
+      bcc,
+      message,
+      source,
+      status: "sent",
+      messageId: response.MessageId ?? null,
+      sentAt,
+    }),
+  });
+
+  return { archiveBucket, archiveKey, bcc, messageId: response.MessageId ?? null };
+}
+
+function buildOutreachArchiveRecord(input: {
+  baseUrl: string;
+  bcc: string[];
+  checkedAt: string;
+  issues: MissingMonthlyMovementIssue[];
+  message: NjdgOutreachMessage;
+  messageId: string | null;
+  sentAt: string | null;
+  source: string;
+  status: "prepared" | "sent";
+}) {
+  return {
+    kind: "njdg_missing_zero_outreach_email",
+    version: 1,
+    status: input.status,
+    baseUrl: input.baseUrl,
+    checkedAt: input.checkedAt,
+    sentAt: input.sentAt,
+    sesMessageId: input.messageId,
+    source: input.source,
+    to: input.message.to,
+    bcc: input.bcc,
+    subject: input.message.subject,
+    text: input.message.text,
+    issueCount: input.issues.length,
+    issues: input.issues,
+  };
+}
+
+async function archiveOutreachEmail(input: { bucket: string; key: string; region: string; record: unknown }): Promise<void> {
+  const client = new S3Client({ region: input.region });
+  await client.send(
+    new PutObjectCommand({
+      Bucket: input.bucket,
+      Key: input.key,
+      Body: JSON.stringify(input.record, null, 2),
+      ContentType: "application/json",
     }),
   );
 }
