@@ -3,6 +3,7 @@ import { escapeHtml } from "../../lib/html.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import { formatDate } from "../home/view-model.js";
 import type { HomeViewModel } from "../home/view-model.js";
+import { formatClearancePer100, type MonthlyActivityInputs } from "./metric-insights.js";
 
 /**
  * Embeddable iFrame widgets. Minimal HTML — no shared shell, no masthead,
@@ -47,7 +48,7 @@ export function renderDistrictEmbedWidget(
         <span class="embed-stat__label">typical wait</span>
       </div>
       <div class="embed-stat">
-        <span class="embed-stat__value">${district.disposalRate.toFixed(0)}<span class="embed-stat__unit">/100</span></span>
+        <span class="embed-stat__value">${formatClearancePer100(monthlyActivityInputs(district), 0)}<span class="embed-stat__unit">/100</span></span>
         <span class="embed-stat__label">cleared / 100</span>
       </div>
     </div>
@@ -92,7 +93,7 @@ export function renderStateEmbedWidget(
         <span class="embed-stat__label">typical wait</span>
       </div>
       <div class="embed-stat">
-        <span class="embed-stat__value">${model.clearanceRate.toFixed(0)}<span class="embed-stat__unit">/100</span></span>
+        <span class="embed-stat__value">${model.clearancePaceAvailable ? model.clearanceRate.toFixed(0) : "N/A"}<span class="embed-stat__unit">/100</span></span>
         <span class="embed-stat__label">cleared / 100</span>
       </div>
     </div>
@@ -215,3 +216,11 @@ const EMBED_CSS = `
   }
   .embed-footer__link:hover { text-decoration: underline; }
 `;
+
+function monthlyActivityInputs(district: DistrictSnapshot): MonthlyActivityInputs {
+  return {
+    pendingCases: district.backlogCases,
+    filedLastMonthCases: district.filedLastMonthCases,
+    clearedLastMonthCases: district.clearedLastMonthCases,
+  };
+}

@@ -44,6 +44,8 @@ Already public or available in the lower-court read model:
 
 Current lower-court source facts are still aggregate NJDG facts: geography names, source date, total pending/open cases, last-month filed and cleared counts, and age-bucket totals.
 
+When NJDG reports pending cases but `0` filed and `0` cleared cases for last month, NyaayWatch treats derived monthly movement metrics as unavailable instead of converting that source row into a zero performance rate. Public wording should name the source condition directly: NJDG reports zero monthly movement inputs, so NyaayWatch marks clearance pace, file-clear gap, break-even, backlog movement, and related scenario outputs as `N/A` where the missing denominator would otherwise mislead readers.
+
 ### High Courts
 
 Already public or available in the High Court read model:

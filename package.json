@@ -50,6 +50,7 @@
     "high-court:wave-readiness": "tsx src/dev/high-court-wave-readiness.ts",
     "ops:verify-public-alpha": "tsx src/dev/ops-verify-public-alpha.ts",
     "ops:verify-internal-fetch-schedule": "tsx src/dev/ops-verify-internal-fetch-schedule.ts",
+    "ops:njdg-missing-zero-outreach": "tsx src/dev/njdg-missing-zero-outreach.ts",
     "ops:publish-pending": "tsx src/dev/ecs-publish-pending-entrypoint.ts",
     "docker:up": "docker compose up -d --wait postgres localstack",
     "docker:down": "docker compose down -v"

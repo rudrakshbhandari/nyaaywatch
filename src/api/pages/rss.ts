@@ -1,5 +1,6 @@
 import type { PublicationHistoryEntry } from "../../services/published-snapshot-service.js";
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
+import { formatClearancePer100 } from "./metric-insights.js";
 
 function escapeXml(s: string): string {
   return s
@@ -66,7 +67,7 @@ function buildItemDescription(
     lines.push(
       `<br><br><strong>Current headline numbers:</strong>`,
       `<br>Cases waiting: ${stats.pendingCases.toLocaleString("en-IN")}`,
-      `<br>Cleared per 100 filed: ${stats.disposalRate.toFixed(1)}`,
+      `<br>Cleared per 100 filed: ${formatClearancePer100(stats, 1)}`,
       `<br>Typical wait: ~${Math.round(stats.medianCaseAgeDays / 30)} months`,
       `<br>Flagged districts: ${stats.flaggedDistricts.toLocaleString("en-IN")}`,
     );

@@ -1,5 +1,6 @@
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import type { NjdgStateProfile, SupportedStateCode } from "../../geographies.js";
+import { formatClearancePer100 } from "../pages/metric-insights.js";
 import { escapeHtml } from "./view-model.js";
 import { INDIA_STATE_PATHS, INDIA_VIEWBOX } from "./india-geography.js";
 
@@ -241,7 +242,7 @@ function renderStatePath(
   const bin = binByScored.get(scoredEntry) ?? 0;
   const fill = RAMP[bin].stop;
   const href = `/states/${entry.profile.stateSlug}`;
-  const tooltip = `${entry.profile.stateName} — pressure ${scoreLabel(score)}. ${formatInt(entry.stats.pendingCases)} pending · ${formatInt(entry.stats.medianCaseAgeDays)}-day median age · ${entry.stats.disposalRate.toFixed(1)}% disposal.`;
+  const tooltip = `${entry.profile.stateName} — pressure ${scoreLabel(score)}. ${formatInt(entry.stats.pendingCases)} pending · ${formatInt(entry.stats.medianCaseAgeDays)}-day median age · ${formatClearancePer100(entry.stats, 1)} cleared per 100 filed.`;
   return `<a href="${escapeHtml(href)}" class="india-choropleth__state-link" aria-label="${escapeHtml(tooltip)}">
     <path d="${d}" fill="${fill}" stroke="${STATE_STROKE}" stroke-width="0.7" class="india-choropleth__state india-choropleth__state--live" data-pressure="${score.toFixed(2)}" />
     <title>${escapeHtml(tooltip)}</title>

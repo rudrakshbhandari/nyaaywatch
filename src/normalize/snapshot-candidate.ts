@@ -176,6 +176,8 @@ function buildTrends(
 function buildFlagReason(
   district: {
     backlogCases: number;
+    filedLastMonthCases: number;
+    clearedLastMonthCases: number;
     filingVsDisposalGap: number;
     disposalRate: number;
     medianAgeDays: number;
@@ -189,6 +191,14 @@ function buildFlagReason(
 ): string {
   if (hasNoRecentDistrictActivity(district)) {
     return "The latest data doesn't show pending-case age or recent filings-vs-clearances for this district.";
+  }
+
+  if (sourceReportsNoMonthlyActivity(district)) {
+    return "NJDG reports 0 filed and 0 cleared cases for last month, so the monthly clearance signal is unavailable from the public source.";
+  }
+
+  if (district.filedLastMonthCases <= 0) {
+    return "NJDG does not report a positive filed-case count for last month, so the monthly clearance signal is unavailable from the public source.";
   }
 
   if (district.filingVsDisposalGap > 0 && context.isFlagged) {
@@ -210,6 +220,8 @@ function buildSummary(
   district: {
     districtName: string;
     backlogCases: number;
+    filedLastMonthCases: number;
+    clearedLastMonthCases: number;
     medianAgeDays: number;
     disposalRate: number;
     filingVsDisposalGap: number;
@@ -218,6 +230,16 @@ function buildSummary(
 ): string {
   if (hasNoRecentDistrictActivity(district)) {
     return `${district.districtName} has no pending cases in the latest data, and the source didn't report a pending-age distribution or recent filings-vs-clearances for this district.`;
+  }
+
+  if (sourceReportsNoMonthlyActivity(district)) {
+    const sentence = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. NJDG reports 0 filed and 0 cleared cases for last month, so NyaayWatch marks clearance pace as N/A instead of treating it as a zero rate.`;
+    return isFlagged ? `${sentence} It stays on the list of districts to watch in this snapshot.` : sentence;
+  }
+
+  if (district.filedLastMonthCases <= 0) {
+    const sentence = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. NJDG does not report a positive filed-case count for last month, so NyaayWatch marks clearance pace as N/A instead of turning the missing denominator into a rate.`;
+    return isFlagged ? `${sentence} It stays on the list of districts to watch in this snapshot.` : sentence;
   }
 
   const sentence = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. A typical pending case falls around ${district.medianAgeDays} days old, and the district cleared ${district.disposalRate.toFixed(1)}% as many cases as it received last month.`;
@@ -430,4 +452,12 @@ function hasNoRecentDistrictActivity(district: {
     district.disposalRate === 0 &&
     district.filingVsDisposalGap === 0
   );
+}
+
+function sourceReportsNoMonthlyActivity(district: {
+  backlogCases: number;
+  filedLastMonthCases: number;
+  clearedLastMonthCases: number;
+}) {
+  return district.backlogCases > 0 && district.filedLastMonthCases === 0 && district.clearedLastMonthCases === 0;
 }

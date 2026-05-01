@@ -220,7 +220,7 @@ export function renderLearnPage(): string {
       </div>
       <div class="learn-pressure-note">
         <strong>Zero and N/A mean different things.</strong>
-        <p>A zero can be a real result, such as no extra clearances needed to break even. N/A means the public source did not publish the inputs or the metric does not apply.</p>
+        <p>A zero can be a real result, such as no extra clearances needed to break even. N/A means the public source did not publish usable inputs or the metric does not apply. When NJDG reports 0 filed and 0 cleared cases against a non-zero backlog, NyaayWatch names that source condition instead of turning it into a zero clearance rate.</p>
       </div>
     </section>
 

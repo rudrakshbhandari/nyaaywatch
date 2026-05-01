@@ -87,6 +87,7 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetc
 npm run operator:production -- --state=UP fetch "Internal Uttar Pradesh fetch"
 npm run infra:production-preflight
 npm run infra:production-cutover-inventory
+npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
 ```
 
 Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated staging now runs as `nyaaywatch-staging` at `https://staging.nyaaywatch.in`; staging schedules remain disabled unless an operator intentionally enables them for rehearsal. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping the public hostname as the HTTP and TLS host.
@@ -94,6 +95,8 @@ Use `npm run operator:production` for production heavy-state lanes that should r
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
 Use `npm run infra:production-cutover-inventory` before any mutating production-stack cutover work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and target-stack status needed by the production cutover runbook. The April 28, 2026 cutover restored `nyaaywatch-production` from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced the artifacts bucket, moved DNS to the production ALB, and reconciled production-named schedules. The later staging reclaim pointed `staging.nyaaywatch.in` at the `nyaaywatch-staging` ALB with the staging ACM certificate; `nyaaywatch-staging-v2` was retired after the reclaim.
+
+Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court state snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. Add `--send` only when `NJDG_OUTREACH_TO` and `SES_SOURCE_EMAIL` are configured; otherwise the command prints the draft email and exits without sending.
 
 Release helpers (run before, after, and to record a publication):
 
@@ -115,6 +118,8 @@ The live deploy runs five ECS schedules, all reconciled to the latest task defin
 - reviewed High Courts — `8:20 AM Asia/Kolkata`
 - publish-pending sweep — `8:30 AM Asia/Kolkata`
 - public-alpha ops monitor — every `30` minutes against `https://nyaaywatch.in`
+
+GitHub Actions also runs `ops:njdg-missing-zero-outreach` weekly on Monday at `04:30 UTC`. It emails the configured NJDG contact only while public lower-court snapshots still contain source rows with pending cases but `0` filed and `0` cleared monthly movement. Public pages show those derived clearance signals as `N/A` and name the NJDG source condition rather than presenting the value as a NyaayWatch-computed zero.
 
 The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails. The publish-pending sweep runs daily after the fetch schedules, walks every quality-complete run per scope from the past 3 days that has no newer publication, and publishes each one in chronological order through the auto-publish gate. Each deploy also runs the same sweep so post-deploy fixes pick up immediately.
 

@@ -115,5 +115,9 @@ describe("snapshot candidate normalization", () => {
     expect(candidate.stats.backlogMovementShare).toEqual({ state: "ok", value: 0 });
     expect(candidate.stats.breakEvenClearancesNeeded).toEqual({ state: "ok", value: 0 });
     expect(candidate.stats.catchUpClearancesPerMonth).toEqual({ state: "ok", value: 1 });
+    expect(candidate.districts[0]?.summary).toContain("NJDG reports 0 filed and 0 cleared cases");
+    expect(candidate.districts[0]?.summary).toContain("clearance pace as N/A");
+    expect(candidate.districts[0]?.summary).not.toContain("cleared 0.0%");
+    expect(candidate.districts[0]?.flagReason).toContain("monthly clearance signal is unavailable");
   });
 });

@@ -7,11 +7,18 @@ import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../des
 import { formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import {
-  describeBacklogMovement,
-  describeBreakEven,
+  describeBacklogMovementFromMonthlyActivity,
+  describeBreakEvenFromMonthlyActivity,
   describeCatchUp,
+  describeClearancePer100,
   describeWatchlistPersistence,
+  formatBacklogMovementFromMonthlyActivity,
+  formatBreakEvenFromMonthlyActivity,
+  formatClearancePer100,
+  formatFileClearGap,
   formatShare,
+  sourceReportsMissingMonthlyActivity,
+  type MonthlyActivityInputs,
 } from "./metric-insights.js";
 import { EVIDENCE_ENTRY_POINTS_CSS, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
@@ -45,6 +52,8 @@ export function renderDistrictPage(
   const rankDelta = currentPoint && previousPoint ? previousPoint.rank - currentPoint.rank : null;
 
   const typicalWaitMonths = Math.round(district.medianAgeDays / 30);
+  const monthlyActivity = monthlyActivityInputs(district);
+  const monthlyActivityMissing = sourceReportsMissingMonthlyActivity(monthlyActivity);
   const plainCitation = buildPlainCitation(
     district.districtName,
     snapshot.sourceAttribution,
@@ -99,9 +108,11 @@ export function renderDistrictPage(
       })}
       ${renderStatTile({
         label: "Cleared per 100",
-        value: district.disposalRate.toFixed(1),
+        value: formatClearancePer100(monthlyActivity, 1),
         infoKey: "clearance",
-        note: formatDeltaWithUnit(disposalDelta, "percentage points vs. prior snapshot"),
+        note: monthlyActivityMissing
+          ? describeClearancePer100(monthlyActivity)
+          : formatDeltaWithUnit(disposalDelta, "percentage points vs. prior snapshot"),
         methodologyHref: `${context.routes.methodology}#metric-clearance`,
         anchorId: "stat-clearance",
       })}
@@ -136,14 +147,14 @@ export function renderDistrictPage(
       })}
       ${renderStatTile({
         label: "Backlog movement",
-        value: `${district.backlogMovementShare > 0 ? "+" : ""}${district.backlogMovementShare.toFixed(1)}%`,
-        note: describeBacklogMovement(district.backlogMovementShare),
+        value: formatBacklogMovementFromMonthlyActivity(monthlyActivity),
+        note: describeBacklogMovementFromMonthlyActivity(monthlyActivity),
         methodologyHref: `${context.routes.methodology}#metric-backlog-movement`,
       })}
       ${renderStatTile({
         label: "Break-even clearances",
-        value: district.breakEvenClearancesNeeded.toLocaleString("en-IN"),
-        note: describeBreakEven(district.breakEvenClearancesNeeded),
+        value: formatBreakEvenFromMonthlyActivity(monthlyActivity),
+        note: describeBreakEvenFromMonthlyActivity(monthlyActivity),
         methodologyHref: `${context.routes.methodology}#metric-break-even-clearances`,
       })}
       ${renderStatTile({
@@ -231,8 +242,8 @@ export function renderDistrictPage(
             <h3>What this district is telling us</h3>
           </header>
           <p>${escapeHtml(district.flagReason)}</p>
-          <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${district.filingVsDisposalGap >= 0 ? "+" : "\u2212"}${Math.abs(district.filingVsDisposalGap).toFixed(1)}</strong> percentage points in the latest data.</p>
-          <p class="card__meta">${escapeHtml(describeCatchUp(district.catchUpClearancesPerMonth))}</p>
+          <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${formatFileClearGap(monthlyActivity)}</strong>${monthlyActivityMissing ? " because NJDG reports 0 filed and 0 cleared cases for last month." : " percentage points in the latest data."}</p>
+          <p class="card__meta">${escapeHtml(monthlyActivityMissing ? "NyaayWatch does not infer catch-up burden from a source row with zero monthly movement inputs." : describeCatchUp(district.catchUpClearancesPerMonth))}</p>
         </article>
 
         <article class="card" id="district-history">
@@ -276,7 +287,7 @@ export function renderDistrictPage(
             <a class="btn btn--primary btn--small" href="${context.routes.districtEvidencePack(district.districtId)}">Download evidence pack JSON</a>
             <a class="btn btn--primary btn--small" href="${context.routes.districtCsv(district.districtId)}">Download district history CSV</a>
             <a class="btn btn--ghost btn--small" href="${context.routes.districtsCsv}">${escapeHtml(context.lowerCourtCopy.aggregateAdjectiveTitle)} CSV</a>
-            <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. Typical wait: ~${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
+            <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. Typical wait: ~${typicalWaitMonths} months. Clearance pace: ${formatClearancePer100(monthlyActivity, 0)} per 100 filed. — NyaayWatch ${SITE_ORIGIN}${context.routes.district(district.districtId)}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
           </div>
         </article>
 
@@ -337,7 +348,7 @@ export function renderDistrictPage(
     <script type="application/ld+json">${structuredDataJson}</script>
   `;
 
-  const ogDescription = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. The typical case has been waiting about ${typicalWaitMonths} months. Clearance rate: ${district.disposalRate.toFixed(0)} per 100 filed. — NyaayWatch`;
+  const ogDescription = `${district.districtName} has ${district.backlogCases.toLocaleString("en-IN")} cases waiting. The typical case has been waiting about ${typicalWaitMonths} months. Clearance pace: ${formatClearancePer100(monthlyActivity, 0)} per 100 filed. — NyaayWatch`;
 
   return renderPageShell({
     title: `${district.districtName} — NyaayWatch`,
@@ -361,6 +372,18 @@ export function renderDistrictPage(
       imageAlt: `NyaayWatch district evidence for ${district.districtName}`,
     },
   });
+}
+
+function monthlyActivityInputs(district: {
+  backlogCases: number;
+  filedLastMonthCases: number;
+  clearedLastMonthCases: number;
+}): MonthlyActivityInputs {
+  return {
+    pendingCases: district.backlogCases,
+    filedLastMonthCases: district.filedLastMonthCases,
+    clearedLastMonthCases: district.clearedLastMonthCases,
+  };
 }
 
 function renderWaitingClock(months: number, districtName: string): string {
@@ -426,7 +449,7 @@ function renderHistoryTable(history: DistrictHistoryPoint[]): string {
           </td>
           <td class="num">#${point.rank}</td>
           <td class="num">${point.backlogCases.toLocaleString("en-IN")}</td>
-          <td class="num">${point.disposalRate.toFixed(1)}</td>
+          <td class="num">${formatClearancePer100(monthlyActivityInputs(point), 1)}</td>
           <td class="num">${Math.round(point.medianAgeDays / 30)} mo</td>
           <td>${escapeHtml(point.qualityState)}</td>
         </tr>

@@ -1,0 +1,48 @@
+name: NJDG Missing Zero Outreach
+
+on:
+  schedule:
+    - cron: "30 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: njdg-missing-zero-outreach
+  cancel-in-progress: false
+
+jobs:
+  outreach:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+      PUBLIC_BASE_URL: https://nyaaywatch.in
+      NJDG_OUTREACH_TO: ${{ secrets.NJDG_OUTREACH_TO }}
+      SES_SOURCE_EMAIL: ${{ secrets.SES_SOURCE_EMAIL }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
+
+      - name: Send cadence-limited NJDG outreach when missing monthly movement persists
+        run: |
+          npm run --silent ops:njdg-missing-zero-outreach -- \
+            --base-url="$PUBLIC_BASE_URL" \
+            --send

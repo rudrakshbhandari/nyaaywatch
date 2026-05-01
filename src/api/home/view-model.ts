@@ -15,6 +15,7 @@ export interface HomeViewModel {
   pendingLakh: string;
   pendingShort: string;
   clearanceRate: number;
+  clearancePaceAvailable: boolean;
   clearanceShortfall: number;
   typicalWaitDays: number;
   typicalWaitMonths: number;
@@ -55,6 +56,7 @@ export function buildViewModel(snapshot: PublishedSnapshot): HomeViewModel {
     pendingLakh: formatLakh(pending),
     pendingShort: formatShortNumber(pending),
     clearanceRate: clearance,
+    clearancePaceAvailable: snapshot.stats.filedLastMonthCases > 0,
     clearanceShortfall: Math.max(0, 100 - clearance),
     typicalWaitDays: typicalDays,
     typicalWaitMonths: Math.round(typicalDays / 30),

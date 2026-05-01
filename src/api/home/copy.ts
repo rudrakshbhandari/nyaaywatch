@@ -127,7 +127,7 @@ export function buildCopy(
       },
       clearance: {
         label: "cleared per 100 filed",
-        caption: buildClearanceCaption(model.clearanceRate),
+        caption: buildClearanceCaption(model),
       },
       flagged: {
         label: "districts flagged",
@@ -169,7 +169,11 @@ function buildHeroLede(
   return `${base} A backlog this big is not going to move on its own.`;
 }
 
-function buildClearanceCaption(rate: number): string {
+function buildClearanceCaption(model: HomeViewModel): string {
+  if (!model.clearancePaceAvailable) {
+    return "NJDG reports 0 filed and 0 cleared cases for last month, so NyaayWatch shows this pace as N/A.";
+  }
+  const rate = model.clearanceRate;
   if (rate >= 100) {
     return "Courts are finally clearing faster than new cases come in. The backlog built up over years is another story.";
   }
