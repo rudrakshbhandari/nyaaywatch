@@ -1,4 +1,10 @@
-import type { AgeBuckets, PublishedSnapshot } from "../domain/snapshot-schema.js";
+import type {
+  AgeBuckets,
+  BacklogConcentrationMetric,
+  MetricValue,
+  OldCaseBurdenMetric,
+  PublishedSnapshot,
+} from "../domain/snapshot-schema.js";
 import { SnapshotCandidateSchema, type SnapshotCandidate } from "../domain/snapshot-candidate-schema.js";
 import type { ExtractedNjdgSnapshot } from "../extract/njdg-html.js";
 import { freshnessDays, STALE_SNAPSHOT_THRESHOLD_DAYS } from "../lib/time.js";
@@ -20,12 +26,18 @@ export function buildSnapshotCandidate(
 ): SnapshotCandidate {
   const stateDisposalRate = percentage(extracted.state.disposedLastMonth, extracted.state.institutedLastMonth);
   const stateMedianAgeDays = inferMedianAgeDays(extracted.state.ageBuckets);
-  const stateBacklogMovementShare = backlogMovementShare(
+  const stateOldCaseBurden = buildOldCaseBurdenMetric(extracted.state.ageBuckets, extracted.state.pendingCases);
+  const stateBacklogMovementShare = backlogMovementMetric(
     extracted.state.pendingCases,
     extracted.state.institutedLastMonth,
     extracted.state.disposedLastMonth,
   );
-  const stateBreakEvenClearancesNeeded = breakEvenClearancesNeeded(
+  const stateBreakEvenClearancesNeeded = breakEvenClearancesMetric(
+    extracted.state.institutedLastMonth,
+    extracted.state.disposedLastMonth,
+  );
+  const stateCatchUpClearancesPerMonth = catchUpClearancesMetric(
+    extracted.state.pendingCases,
     extracted.state.institutedLastMonth,
     extracted.state.disposedLastMonth,
   );
@@ -105,15 +117,11 @@ export function buildSnapshotCandidate(
       medianCaseAgeDays: stateMedianAgeDays,
       flaggedDistricts: Math.min(DISTRICT_FLAG_LIMIT, districts.length),
       ageBuckets: extracted.state.ageBuckets,
-      oldCaseBurden: buildOldCaseBurden(extracted.state.ageBuckets),
+      oldCaseBurden: stateOldCaseBurden,
       backlogMovementShare: stateBacklogMovementShare,
       breakEvenClearancesNeeded: stateBreakEvenClearancesNeeded,
-      catchUpClearancesPerMonth: catchUpClearancesPerMonth(
-        extracted.state.pendingCases,
-        extracted.state.institutedLastMonth,
-        extracted.state.disposedLastMonth,
-      ),
-      backlogConcentration: buildBacklogConcentration(
+      catchUpClearancesPerMonth: stateCatchUpClearancesPerMonth,
+      backlogConcentration: buildBacklogConcentrationMetric(
         districts.map((district) => district.backlogCases),
         extracted.state.pendingCases,
       ),
@@ -257,6 +265,19 @@ function buildOldCaseBurden(ageBuckets: AgeBuckets) {
   };
 }
 
+function buildOldCaseBurdenMetric(ageBuckets: AgeBuckets, pendingCases: number): OldCaseBurdenMetric {
+  const total = Object.values(ageBuckets).reduce((sum, count) => sum + count, 0);
+  if (total <= 0) {
+    if (pendingCases <= 0) {
+      return { state: "missing", reason: "not-applicable" };
+    }
+
+    return { state: "missing", reason: "source-not-published" };
+  }
+
+  return { state: "ok", value: buildOldCaseBurden(ageBuckets) };
+}
+
 function backlogMovementShare(
   pendingCases: number,
   institutedLastMonth: number,
@@ -269,8 +290,27 @@ function backlogMovementShare(
   return round(((institutedLastMonth - disposedLastMonth) / pendingCases) * 100);
 }
 
+function backlogMovementMetric(
+  pendingCases: number,
+  institutedLastMonth: number,
+  disposedLastMonth: number,
+): MetricValue {
+  if (pendingCases <= 0) {
+    return { state: "missing", reason: "not-applicable" };
+  }
+
+  return {
+    state: "ok",
+    value: round(((institutedLastMonth - disposedLastMonth) / pendingCases) * 100),
+  };
+}
+
 function breakEvenClearancesNeeded(institutedLastMonth: number, disposedLastMonth: number): number {
   return Math.max(0, institutedLastMonth - disposedLastMonth);
+}
+
+function breakEvenClearancesMetric(institutedLastMonth: number, disposedLastMonth: number): MetricValue {
+  return { state: "ok", value: breakEvenClearancesNeeded(institutedLastMonth, disposedLastMonth) };
 }
 
 function catchUpClearancesPerMonth(
@@ -282,12 +322,41 @@ function catchUpClearancesPerMonth(
   return Math.max(0, monthlyReductionTarget + institutedLastMonth - disposedLastMonth);
 }
 
+function catchUpClearancesMetric(
+  pendingCases: number,
+  institutedLastMonth: number,
+  disposedLastMonth: number,
+): MetricValue {
+  if (pendingCases <= 0) {
+    return { state: "missing", reason: "not-applicable" };
+  }
+
+  return {
+    state: "ok",
+    value: catchUpClearancesPerMonth(pendingCases, institutedLastMonth, disposedLastMonth),
+  };
+}
+
 function buildBacklogConcentration(backlogCases: number[], totalPendingCases: number) {
   const sorted = [...backlogCases].sort((left, right) => right - left);
   return {
     topFiveDistrictsShare: percentage(sumTop(sorted, 5), totalPendingCases),
     topTenDistrictsShare: percentage(sumTop(sorted, 10), totalPendingCases),
   };
+}
+
+function buildBacklogConcentrationMetric(
+  backlogCases: number[],
+  totalPendingCases: number,
+): BacklogConcentrationMetric {
+  if (totalPendingCases <= 0) {
+    return { state: "missing", reason: "not-applicable" };
+  }
+  if (backlogCases.length === 0) {
+    return { state: "missing", reason: "incomplete-breakdown" };
+  }
+
+  return { state: "ok", value: buildBacklogConcentration(backlogCases, totalPendingCases) };
 }
 
 function sumTop(values: number[], limit: number) {
