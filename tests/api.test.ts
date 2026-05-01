@@ -79,6 +79,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).not.toContain("Pending trend");
     expect(homepage.text).toContain("Backlog growing");
     expect(homepage.text).toContain("Follow the court system without flattening it.");
+    expect(homepage.text).toContain('href="/learn#pressure-signals"');
     expect(homepage.text).toContain("Lower courts show the broadest pressure.");
     expect(homepage.text).toContain("Where is delay piling up across India?");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
@@ -211,6 +212,8 @@ describe("HTTP routes", () => {
     expect(learnPage.text).toContain("How the levels connect");
     expect(learnPage.text).toContain("How a case usually moves");
     expect(learnPage.text).toContain("How to read delay data");
+    expect(learnPage.text).toContain("How to read pressure signals");
+    expect(learnPage.text).toContain("Zero and N/A mean different things.");
     expect(learnPage.text).toContain("Common mistakes to avoid");
     expect(learnPage.text).toContain("A simple way to cite a number");
     expect(learnPage.text).toContain("Is this legal advice?");

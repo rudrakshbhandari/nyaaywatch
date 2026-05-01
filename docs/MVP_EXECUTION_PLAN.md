@@ -210,6 +210,7 @@ Track those in `TODOS.md`, not here.
 
 ## Update Log
 
+- 2026-05-01: Added a plain-language `/learn#pressure-signals` section and homepage pressure-tile link so readers can distinguish old-case burden, backlog movement, break-even clearances, the 10% reduction scenario, and real zero versus N/A before opening formula-level methodology.
 - 2026-04-30: Added copyable citation snippets on lower-court movers and district-comparison pages, tied to the same public snapshot dates, source attribution, and scoped routes as the Evidence Pack entry points.
 - 2026-04-30: Added lower-court Evidence Pack entry points on movers, district comparisons, and district evidence pages so the post-MVP investigation workflow now points directly to reusable JSON/CSV evidence while preserving the raw-capture and operator-only boundary.
 - 2026-04-29: Completed the first post-cutover production observation pass for the reality-named `nyaaywatch-production` stack. Production preflight, public release verification, public-alpha sweep, schedule watchdog, and CloudWatch alarm checks were green; the remaining post-MVP operations work is the explicit destructive retirement or rename of the legacy rollback stack, DNS validation for the requested `staging.nyaaywatch.in` ACM certificate, and provisioning a dedicated isolated staging stack.
