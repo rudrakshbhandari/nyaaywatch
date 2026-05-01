@@ -7,6 +7,7 @@ import { logInfo } from "../lib/logger.js";
 import { buildPublicStateRoutes } from "../api/public-state.js";
 
 const CLOUDFLARE_API_BASE = "https://api.cloudflare.com/client/v4";
+const CLOUDFLARE_SINGLE_FILE_PURGE_MAX_OPERATIONS = 100;
 
 export type PublicCacheInvalidationConfig = Pick<
   AppConfig,
@@ -101,24 +102,29 @@ export class PublicCacheInvalidationService {
 
   private async purgeUrls(urls: string[], scope: string) {
     const zoneId = await this.resolveZoneId();
-    const response = await fetch(`${CLOUDFLARE_API_BASE}/zones/${zoneId}/purge_cache`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.config.CLOUDFLARE_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ files: urls }),
-    });
-    const body = (await response.json()) as { success?: boolean; errors?: Array<{ message?: string }> };
+    const chunks = chunkUrls(urls, CLOUDFLARE_SINGLE_FILE_PURGE_MAX_OPERATIONS);
 
-    if (!response.ok || body.success !== true) {
-      const detail = body.errors?.map((error) => error.message).filter(Boolean).join("; ") || response.statusText;
-      throw new Error(`Cloudflare purge failed for ${scope}: ${detail}`);
+    for (const [index, chunk] of chunks.entries()) {
+      const response = await fetch(`${CLOUDFLARE_API_BASE}/zones/${zoneId}/purge_cache`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.config.CLOUDFLARE_API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ files: chunk }),
+      });
+      const body = (await response.json()) as { success?: boolean; errors?: Array<{ message?: string }> };
+
+      if (!response.ok || body.success !== true) {
+        const detail = body.errors?.map((error) => error.message).filter(Boolean).join("; ") || response.statusText;
+        throw new Error(`Cloudflare purge failed for ${scope} batch ${index + 1}/${chunks.length}: ${detail}`);
+      }
     }
 
     logInfo("public_cache_invalidated", {
       scope,
       urlCount: urls.length,
+      purgeRequestCount: chunks.length,
     });
   }
 
@@ -173,4 +179,13 @@ export class PublicCacheInvalidationService {
 
     return zoneId;
   }
+}
+
+function chunkUrls(urls: string[], size: number) {
+  const chunks: string[][] = [];
+  for (let index = 0; index < urls.length; index += size) {
+    chunks.push(urls.slice(index, index + size));
+  }
+
+  return chunks;
 }
