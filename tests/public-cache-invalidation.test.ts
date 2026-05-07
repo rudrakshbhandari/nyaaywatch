@@ -264,4 +264,53 @@ describe("PublicCacheInvalidationService", () => {
 
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  it("retries a transient Cloudflare zone lookup failure before purging", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ success: false, errors: [{ message: "An unknown API error occurred." }] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ success: true, result: [{ id: "zone_123" }] }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ success: true, result: { id: "purge_123" } }), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        }),
+      );
+    global.fetch = fetchMock as typeof fetch;
+
+    const service = new PublicCacheInvalidationService(
+      loadConfig({
+        NODE_ENV: "test",
+        PORT: "3000",
+        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
+        AWS_REGION: "ap-south-1",
+        AWS_ACCESS_KEY_ID: "test",
+        AWS_SECRET_ACCESS_KEY: "test",
+        S3_BUCKET: "nyaaywatch-test-artifacts",
+        DEPLOY_ENV: "dev",
+        OPERATOR_API_TOKEN: "operator-test-token",
+        STATE_CODE: "HP",
+        CANONICAL_HOST: "nyaaywatch.in",
+        LEGACY_HOSTS: "nyaaywatch.com,www.nyaaywatch.com",
+        CLOUDFLARE_API_TOKEN: "cf-test-token",
+      }),
+    );
+
+    await service.invalidateSupremeCourtRoutes();
+
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/zones?name=nyaaywatch.in");
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain("/zones?name=nyaaywatch.in");
+    expect(String(fetchMock.mock.calls[2]?.[0])).toContain("/zones/zone_123/purge_cache");
+  });
 });

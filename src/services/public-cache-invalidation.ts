@@ -8,6 +8,7 @@ import { buildPublicStateRoutes } from "../api/public-state.js";
 
 const CLOUDFLARE_API_BASE = "https://api.cloudflare.com/client/v4";
 const CLOUDFLARE_SINGLE_FILE_PURGE_MAX_OPERATIONS = 100;
+const CLOUDFLARE_API_MAX_ATTEMPTS = 3;
 
 export type PublicCacheInvalidationConfig = Pick<
   AppConfig,
@@ -105,20 +106,18 @@ export class PublicCacheInvalidationService {
     const chunks = chunkUrls(urls, CLOUDFLARE_SINGLE_FILE_PURGE_MAX_OPERATIONS);
 
     for (const [index, chunk] of chunks.entries()) {
-      const response = await fetch(`${CLOUDFLARE_API_BASE}/zones/${zoneId}/purge_cache`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.config.CLOUDFLARE_API_TOKEN}`,
-          "Content-Type": "application/json",
+      await this.fetchCloudflareJson<{ success?: boolean; errors?: Array<{ message?: string }> }>(
+        `${CLOUDFLARE_API_BASE}/zones/${zoneId}/purge_cache`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.config.CLOUDFLARE_API_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ files: chunk }),
         },
-        body: JSON.stringify({ files: chunk }),
-      });
-      const body = (await response.json()) as { success?: boolean; errors?: Array<{ message?: string }> };
-
-      if (!response.ok || body.success !== true) {
-        const detail = body.errors?.map((error) => error.message).filter(Boolean).join("; ") || response.statusText;
-        throw new Error(`Cloudflare purge failed for ${scope} batch ${index + 1}/${chunks.length}: ${detail}`);
-      }
+        `Cloudflare purge failed for ${scope} batch ${index + 1}/${chunks.length}`,
+      );
     }
 
     logInfo("public_cache_invalidated", {
@@ -159,25 +158,53 @@ export class PublicCacheInvalidationService {
       throw new Error("CLOUDFLARE_ZONE_ID or CLOUDFLARE_ZONE_NAME is required for cache invalidation.");
     }
 
-    const response = await fetch(`${CLOUDFLARE_API_BASE}/zones?name=${encodeURIComponent(zoneName)}`, {
-      headers: {
-        Authorization: `Bearer ${this.config.CLOUDFLARE_API_TOKEN}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const body = (await response.json()) as {
+    const body = await this.fetchCloudflareJson<{
       success?: boolean;
       result?: Array<{ id?: string }>;
       errors?: Array<{ message?: string }>;
-    };
+    }>(
+      `${CLOUDFLARE_API_BASE}/zones?name=${encodeURIComponent(zoneName)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.config.CLOUDFLARE_API_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+      },
+      `Cloudflare zone lookup failed for ${zoneName}`,
+    );
 
     const zoneId = body.result?.[0]?.id;
-    if (!response.ok || body.success !== true || !zoneId) {
-      const detail = body.errors?.map((error) => error.message).filter(Boolean).join("; ") || response.statusText;
+    if (!zoneId) {
+      const detail = body.errors?.map((error) => error.message).filter(Boolean).join("; ") || "zone not found";
       throw new Error(`Cloudflare zone lookup failed for ${zoneName}: ${detail}`);
     }
 
     return zoneId;
+  }
+
+  private async fetchCloudflareJson<T extends { success?: boolean; errors?: Array<{ message?: string }> }>(
+    url: string,
+    init: RequestInit,
+    errorPrefix: string,
+  ): Promise<T> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= CLOUDFLARE_API_MAX_ATTEMPTS; attempt += 1) {
+      try {
+        const response = await fetch(url, init);
+        const body = (await response.json()) as T;
+        if (response.ok && body.success === true) {
+          return body;
+        }
+
+        const detail = body.errors?.map((error) => error.message).filter(Boolean).join("; ") || response.statusText;
+        lastError = new Error(`${errorPrefix}: ${detail}`);
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+      }
+    }
+
+    throw lastError ?? new Error(`${errorPrefix}: Cloudflare request failed.`);
   }
 }
 
