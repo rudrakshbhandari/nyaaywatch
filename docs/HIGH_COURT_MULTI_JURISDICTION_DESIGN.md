@@ -212,6 +212,6 @@ Current rollout posture:
 - Punjab and Haryana is already the first live public multi-jurisdiction High Court beta page
 - the remaining deferred court-first High Courts are now approved for public-beta rollout in larger waves, not one-court-at-a-time hesitation
 
-The concrete first execution slice for this design now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`.
+The concrete first execution slice for this design lived in `docs/archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` (archived; phase 1 complete).
 The concrete public-language follow-up after that slice now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
 The concrete batch rollout plan for the remaining deferred courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`.

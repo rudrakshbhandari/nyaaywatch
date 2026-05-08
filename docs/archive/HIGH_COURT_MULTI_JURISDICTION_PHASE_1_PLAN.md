@@ -1,5 +1,7 @@
 # High Court Multi-Jurisdiction Phase 1 Plan
 
+> **Status: complete (archived 2026-05-07).** The court-first refactor and the Punjab & Haryana pilot described here have shipped. Phase 1 is marked complete in [`docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`](../HIGH_COURT_MULTI_JURISDICTION_DESIGN.md), and all 25 High Courts (including multi-jurisdiction ones) are live in public beta. Kept for historical record.
+
 Concrete implementation plan for the first court-first High Court model pass.
 
 This document exists to answer one narrow question:

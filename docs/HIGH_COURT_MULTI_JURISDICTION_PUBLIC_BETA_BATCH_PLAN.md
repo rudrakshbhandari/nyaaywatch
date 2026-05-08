@@ -129,6 +129,6 @@ This document is now the completed rollout plan for the deferred court-first Hig
 Supporting context still lives in:
 
 - `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
-- `docs/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`
+- `docs/archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`
 - `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`
 - `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`
