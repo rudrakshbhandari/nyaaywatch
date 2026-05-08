@@ -1,5 +1,7 @@
 # Accelerated Expansion Plan
 
+> **Status: complete (archived 2026-05-07).** The expansion this plan describes has shipped. All 28 states + 8 UTs publish lower-court pressure data, all 25 High Courts are live in public beta, and the production cutover to `nyaaywatch.in` completed 2026-04-28. Kept for historical record; current architecture lives in [`docs/NATIONAL_PRODUCT_ARCHITECTURE.md`](../NATIONAL_PRODUCT_ARCHITECTURE.md).
+
 Pragmatic plan for moving NyaayWatch from the current Himachal Pradesh alpha to broader Indian court coverage without waiting weeks between decisions.
 
 This document is intentionally aggressive on time but conservative on public trust. It assumes:

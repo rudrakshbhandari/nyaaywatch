@@ -12,7 +12,7 @@ It is intentionally product-level, not implementation-level. Use:
 - `docs/METRIC_STRATEGY.md` for metric inventory, candidate additions, and metric sequencing
 - `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` for the current public-source inventory
 - `docs/MULTI_STATE_EXPANSION_GATES.md` for public expansion gates
-- `docs/ACCELERATED_EXPANSION_PLAN.md` for rollout sequencing
+- `docs/archive/ACCELERATED_EXPANSION_PLAN.md` for rollout sequencing (archived; expansion complete)
 
 ## Bottom Line
 
