@@ -56,16 +56,16 @@
     "docker:down": "docker compose down -v"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1041.0",
-    "@aws-sdk/client-ses": "^3.1041.0",
-    "@aws-sdk/client-sns": "^3.1041.0",
+    "@aws-sdk/client-s3": "^3.1045.0",
+    "@aws-sdk/client-ses": "^3.1045.0",
+    "@aws-sdk/client-sns": "^3.1045.0",
     "@resvg/resvg-js": "^2.6.2",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "pg": "^8.16.3",
     "pg-mem": "^3.0.5",
     "satori": "^0.26.0",
-    "zod": "^4.4.2"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",
