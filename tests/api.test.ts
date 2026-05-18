@@ -414,6 +414,31 @@ describe("HTTP routes", () => {
     infoSpy.mockRestore();
   });
 
+  it("treats malformed JSON request bodies as client errors instead of app failures", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const response = await request(app)
+      .post("/iams/api/v1/forgot-password/sendOtp")
+      .set("content-type", "application/json")
+      .send('{"phone":"+910000000000"\n  "otp":"123456"}');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "Invalid JSON payload" });
+
+    const warningMessages = logSpy.mock.calls.map((call) => String(call[0]));
+    expect(warningMessages.some((message) => message.includes("\"event\":\"http_request_malformed_body\""))).toBe(true);
+    expect(warningMessages.some((message) => message.includes("/iams/api/v1/forgot-password/sendOtp"))).toBe(true);
+    expect(errorSpy).not.toHaveBeenCalled();
+
+    logSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
   it("protects operator endpoints and exposes fetch, publish, replay, and rollback flows", async () => {
     const context = await createTestContext();
     pools.push(context.pool);

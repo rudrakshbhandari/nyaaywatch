@@ -13,7 +13,7 @@ import {
   type HighCourtProfile,
   type SupportedHighCourtCode,
 } from "../high-courts.js";
-import { logError, logInfo } from "../lib/logger.js";
+import { logError, logInfo, logWarn } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
 import { renderNationalHome } from "./home/national-home.js";
 import { renderApiPage } from "./pages/api.js";
@@ -80,6 +80,20 @@ export function createApp(
   const app = express();
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
+  app.use((error: unknown, request: Request, response: Response, next: NextFunction) => {
+    if (!isClientBodyParseError(error)) {
+      next(error);
+      return;
+    }
+
+    logWarn("http_request_malformed_body", {
+      method: request.method,
+      path: redactSensitiveRequestUrl(request.originalUrl),
+      statusCode: 400,
+      error: error.message,
+    });
+    response.status(400).json({ error: "Invalid JSON payload" });
+  });
   app.set("trust proxy", true);
   app.use((request, response, next) => {
     const requestHost = readRequestHost(request);
@@ -1694,6 +1708,20 @@ function getRequiredPublicService(stateCode: SupportedStateCode, publicServices:
     throw new Error(`Public service for ${stateCode} is not configured.`);
   }
   return service;
+}
+
+type ClientBodyParseError = Error & {
+  status?: number;
+  type?: string;
+};
+
+function isClientBodyParseError(error: unknown): error is ClientBodyParseError {
+  if (!(error instanceof SyntaxError)) {
+    return false;
+  }
+
+  const candidate = error as ClientBodyParseError;
+  return candidate.status === 400 && candidate.type === "entity.parse.failed";
 }
 
 function resolvePublicStateRequest(request: Request, publicServices: PublicServiceMap) {
