@@ -414,6 +414,32 @@ describe("HTTP routes", () => {
     infoSpy.mockRestore();
   });
 
+  it("treats malformed JSON probes as rejected client requests instead of app failures", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    const response = await request(app)
+      .post("/iams/api/v1/forgot-password/sendOtp")
+      .set("Content-Type", "application/json")
+      .send('{"phone":"+910000000000"\n"otp":"123456"}');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: "Bad request" });
+
+    const errorMessages = errorSpy.mock.calls.map((call) => String(call[0]));
+    const logMessages = logSpy.mock.calls.map((call) => String(call[0]));
+    expect(errorMessages.some((message) => message.includes("\"event\":\"http_request_failed\""))).toBe(false);
+    expect(logMessages.some((message) => message.includes("\"event\":\"http_request_rejected\""))).toBe(true);
+    expect(logMessages.some((message) => message.includes("\"statusCode\":400"))).toBe(true);
+
+    errorSpy.mockRestore();
+    logSpy.mockRestore();
+  });
+
   it("protects operator endpoints and exposes fetch, publish, replay, and rollback flows", async () => {
     const context = await createTestContext();
     pools.push(context.pool);
