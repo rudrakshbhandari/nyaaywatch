@@ -13,7 +13,7 @@ import {
   type HighCourtProfile,
   type SupportedHighCourtCode,
 } from "../high-courts.js";
-import { logError, logInfo } from "../lib/logger.js";
+import { logError, logInfo, logWarn } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
 import { renderNationalHome } from "./home/national-home.js";
 import { renderApiPage } from "./pages/api.js";
@@ -1665,16 +1665,38 @@ export function createApp(
 
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
     const message = error instanceof Error ? error.message : "Unexpected error";
-    logError("http_request_failed", {
+    const statusCode = getHttpErrorStatus(error);
+    const fields = {
       method: _request.method,
       path: redactSensitiveRequestUrl(_request.originalUrl),
-      statusCode: 500,
+      statusCode,
       error: message,
-    });
-    response.status(500).json({ error: "Unexpected error" });
+    };
+
+    if (statusCode >= 500) {
+      logError("http_request_failed", fields);
+      response.status(statusCode).json({ error: "Unexpected error" });
+      return;
+    }
+
+    logWarn("http_request_rejected", fields);
+    response.status(statusCode).json({ error: statusCode === 400 ? "Bad request" : "Request rejected" });
   });
 
   return app;
+}
+
+function getHttpErrorStatus(error: unknown): number {
+  if (!error || typeof error !== "object") {
+    return 500;
+  }
+
+  const candidate = "status" in error ? error.status : "statusCode" in error ? error.statusCode : undefined;
+  if (typeof candidate === "number" && Number.isInteger(candidate) && candidate >= 400 && candidate < 600) {
+    return candidate;
+  }
+
+  return 500;
 }
 
 function normalizeServiceMap(
