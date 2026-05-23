@@ -154,7 +154,7 @@ jobs:
         uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
@@ -206,7 +206,7 @@ jobs:
         uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@ec61189d14ec14c8efccab744f656cffd0e33f37
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-preview-role
