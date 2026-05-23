@@ -2,6 +2,8 @@
 
 Review date: **April 29, 2026**
 
+Latest follow-up: **May 23, 2026**
+
 Purpose: record when NyaayWatch needs a public page-level caveat because an upstream source shape changes how a reader should interpret a published snapshot.
 
 This review is not a release ledger. Release evidence stays in:
@@ -13,6 +15,8 @@ This review is not a release ledger. Release evidence stays in:
 ## Bottom Line
 
 No lower-court state or Union Territory currently needs an extra public caveat beyond the common methodology text, the normal source date, the state/Union Territory label, and freshness/quality banners.
+
+The May 23, 2026 live public-alpha sweep still supports that decision. `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` reported `62/62` healthy public targets, with no stale snapshots, no daily-fetch lag, and no failing targets. No stronger per-state freshness banner or state-specific methodology note is needed right now.
 
 Tier-specific caveats do still matter:
 
