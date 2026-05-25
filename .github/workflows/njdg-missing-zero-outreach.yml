@@ -1,9 +1,9 @@
 name: NJDG Missing Zero Outreach
 
 on:
-  schedule:
-    # 10:00 AM Asia/Kolkata on Monday, Wednesday, and Friday.
-    - cron: "30 4 * * 1,3,5"
+  # Scheduled sends are paused until data@nyaaywatch.in is authenticated in SES
+  # with domain-aligned SPF/DKIM/DMARC. Keep manual dispatch available for
+  # dry-runs and the first verified send.
   workflow_dispatch:
 
 permissions:
@@ -22,7 +22,8 @@ jobs:
       PUBLIC_BASE_URL: https://nyaaywatch.in
       NJDG_OUTREACH_ARCHIVE_BUCKET: nyaaywatch-production-artifacts-723951822728
       NJDG_OUTREACH_TO: ${{ secrets.NJDG_OUTREACH_TO }}
-      SES_SOURCE_EMAIL: ${{ secrets.SES_SOURCE_EMAIL }}
+      NJDG_OUTREACH_REPLY_TO: ${{ secrets.NJDG_OUTREACH_REPLY_TO }}
+      SES_SOURCE_EMAIL: data@nyaaywatch.in
 
     steps:
       - name: Checkout repository

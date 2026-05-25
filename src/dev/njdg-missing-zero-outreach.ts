@@ -53,6 +53,7 @@ interface SendOutreachResult {
   archiveKey: string;
   bcc: string[];
   messageId: string | null;
+  replyTo: string[];
 }
 
 const OFFICIAL_CPC_EMAIL_BY_STATE_CODE: Record<SupportedStateCode, string> = {
@@ -110,6 +111,7 @@ async function main() {
     recipients,
     bccRecipientCount: 0,
     bccRecipients: [] as string[],
+    replyToRecipients: [] as string[],
     sendRequested: send,
     sent: false,
     sesMessageId: null as string | null,
@@ -128,6 +130,7 @@ async function main() {
     summary.sent = true;
     summary.bccRecipientCount = result.bcc.length;
     summary.bccRecipients = result.bcc;
+    summary.replyToRecipients = result.replyTo;
     summary.sesMessageId = result.messageId;
     summary.archiveBucket = result.archiveBucket;
     summary.archiveKey = result.archiveKey;
@@ -242,6 +245,18 @@ export function deriveOutreachBcc(sourceEmail: string, extraBcc = process.env.NJ
   return uniqueEmailList([...parseEmailList(extraBcc), sourceEmail.trim()].filter(Boolean));
 }
 
+export function validateOutreachSourceEmail(sourceEmail: string): string {
+  const normalized = sourceEmail.trim().toLowerCase();
+  if (!normalized.endsWith("@nyaaywatch.in")) {
+    throw new Error("NJDG outreach must use an authenticated @nyaaywatch.in sender. Do not send this outreach from a personal mailbox through SES.");
+  }
+  return normalized;
+}
+
+export function deriveOutreachReplyTo(sourceEmail: string, replyTo = process.env.NJDG_OUTREACH_REPLY_TO): string[] {
+  return uniqueEmailList([...parseEmailList(replyTo), sourceEmail.trim()].filter(Boolean));
+}
+
 export function buildOutreachArchiveKey(checkedAtIso: string): string {
   const date = checkedAtIso.slice(0, 10);
   const [year, month, day] = date.split("-");
@@ -257,12 +272,9 @@ async function sendOutreachEmail(
   message: NjdgOutreachMessage,
   context: { baseUrl: string; checkedAt: string; issues: MissingMonthlyMovementIssue[] },
 ): Promise<SendOutreachResult> {
-  const source = process.env.SES_SOURCE_EMAIL?.trim();
+  const source = validateOutreachSourceEmail(process.env.SES_SOURCE_EMAIL ?? "");
   const region = process.env.AWS_REGION?.trim() || "ap-south-1";
   const archiveBucket = process.env.NJDG_OUTREACH_ARCHIVE_BUCKET?.trim();
-  if (!source) {
-    throw new Error("SES_SOURCE_EMAIL is required when --send is set.");
-  }
   if (message.to.length === 0) {
     throw new Error("At least one NJDG outreach recipient is required when --send is set.");
   }
@@ -271,6 +283,7 @@ async function sendOutreachEmail(
   }
 
   const bcc = deriveOutreachBcc(source);
+  const replyTo = deriveOutreachReplyTo(source);
   const archiveKey = buildOutreachArchiveKey(context.checkedAt);
   await archiveOutreachEmail({
     bucket: archiveBucket,
@@ -280,6 +293,7 @@ async function sendOutreachEmail(
       ...context,
       bcc,
       message,
+      replyTo,
       source,
       status: "prepared",
       messageId: null,
@@ -292,6 +306,7 @@ async function sendOutreachEmail(
     new SendEmailCommand({
       Source: source,
       Destination: { ToAddresses: message.to, BccAddresses: bcc },
+      ReplyToAddresses: replyTo,
       Message: {
         Subject: { Data: message.subject },
         Body: { Text: { Data: message.text } },
@@ -307,6 +322,7 @@ async function sendOutreachEmail(
       ...context,
       bcc,
       message,
+      replyTo,
       source,
       status: "sent",
       messageId: response.MessageId ?? null,
@@ -314,7 +330,7 @@ async function sendOutreachEmail(
     }),
   });
 
-  return { archiveBucket, archiveKey, bcc, messageId: response.MessageId ?? null };
+  return { archiveBucket, archiveKey, bcc, messageId: response.MessageId ?? null, replyTo };
 }
 
 function buildOutreachArchiveRecord(input: {
@@ -324,6 +340,7 @@ function buildOutreachArchiveRecord(input: {
   issues: MissingMonthlyMovementIssue[];
   message: NjdgOutreachMessage;
   messageId: string | null;
+  replyTo: string[];
   sentAt: string | null;
   source: string;
   status: "prepared" | "sent";
@@ -339,6 +356,7 @@ function buildOutreachArchiveRecord(input: {
     source: input.source,
     to: input.message.to,
     bcc: input.bcc,
+    replyTo: input.replyTo,
     subject: input.message.subject,
     text: input.message.text,
     issueCount: input.issues.length,
