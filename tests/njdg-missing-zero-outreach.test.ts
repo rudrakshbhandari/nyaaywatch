@@ -4,9 +4,11 @@ import {
   buildOutreachArchiveKey,
   composeNjdgOutreachMessage,
   deriveOutreachBcc,
+  deriveOutreachReplyTo,
   deriveOutreachRecipients,
   parseEmailList,
   sourceReportsMissingMonthlyMovement,
+  validateOutreachSourceEmail,
   type MissingMonthlyMovementIssue,
 } from "../src/dev/njdg-missing-zero-outreach.js";
 import { listStateProfiles } from "../src/geographies.js";
@@ -71,6 +73,19 @@ describe("NJDG missing zero outreach", () => {
     expect(deriveOutreachBcc("rudrakshbhandari99@gmail.com", "ops@example.com, rudrakshbhandari99@gmail.com")).toEqual([
       "ops@example.com",
       "rudrakshbhandari99@gmail.com",
+    ]);
+  });
+
+  it("requires authenticated NyaayWatch domain mail for SES outreach", () => {
+    expect(validateOutreachSourceEmail(" data@nyaaywatch.in ")).toBe("data@nyaaywatch.in");
+    expect(() => validateOutreachSourceEmail("rudrakshbhandari99@gmail.com")).toThrow("@nyaaywatch.in sender");
+  });
+
+  it("uses the source sender as the default reply-to with optional overrides", () => {
+    expect(deriveOutreachReplyTo("data@nyaaywatch.in")).toEqual(["data@nyaaywatch.in"]);
+    expect(deriveOutreachReplyTo("data@nyaaywatch.in", "rudrakshbhandari99@gmail.com")).toEqual([
+      "rudrakshbhandari99@gmail.com",
+      "data@nyaaywatch.in",
     ]);
   });
 
