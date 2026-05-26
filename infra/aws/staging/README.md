@@ -271,7 +271,7 @@ The deploy job:
 - preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
 - updates the ECS service and waits for steady state
 - reconciles the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha-ops schedules against the new live task definition
-- keeps cadence-limited NJDG missing-zero outreach paused until `data@nyaaywatch.in` is verified in SES with aligned SPF/DKIM/DMARC; when re-enabled, the job must send from that domain identity, BCC the sender, set any configured reply-to address, and archive each outbound payload under `s3://nyaaywatch-production-artifacts-723951822728/ops/njdg-missing-zero-outreach/`
+- keeps cadence-limited NJDG missing-zero outreach sending through the SES-verified `data@nyaaywatch.in` identity with aligned SPF/DKIM/DMARC, BCCs the sender, sets any configured reply-to address, and archives each outbound payload under `s3://nyaaywatch-production-artifacts-723951822728/ops/njdg-missing-zero-outreach/`
 - confirms the raw ALB `ServiceUrl` still answers `/health`
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
