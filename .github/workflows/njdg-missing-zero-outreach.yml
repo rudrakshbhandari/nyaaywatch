@@ -1,9 +1,9 @@
 name: NJDG Missing Zero Outreach
 
 on:
-  # Scheduled sends are paused until data@nyaaywatch.in is authenticated in SES
-  # with domain-aligned SPF/DKIM/DMARC. Keep manual dispatch available for
-  # dry-runs and the first verified send.
+  schedule:
+    # 10:00 AM Asia/Kolkata on Monday, Wednesday, and Friday.
+    - cron: "30 4 * * 1,3,5"
   workflow_dispatch:
 
 permissions:
