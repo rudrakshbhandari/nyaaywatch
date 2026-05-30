@@ -408,4 +408,143 @@ describe("verifyPublicRelease", () => {
       "public data page is missing a no-store Cache-Control header.",
     );
   });
+
+  it("retries csv parity once and succeeds if the second districts.csv fetch is consistent", async () => {
+    let csvFetchCount = 0;
+    const server = createServer((_request, response) => {
+      const path = _request.url ?? "/";
+      if (path === "/health") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        return;
+      }
+      if (path === "/v1/stats/himachal") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({
+          snapshot: { stateCode: "HP", stateName: "Himachal Pradesh", sourceName: "NJDG", sourceSnapshotAt: "2026-04-10T00:00:00.000Z", publishedAt: "2026-04-15T04:44:05.159Z", methodologyVersion: "2026.04-alpha", qualityState: "complete", freshnessDays: 5, sourceAttribution: "NJDG" },
+          stats: { pendingCases: 1, disposalRate: 1, medianCaseAgeDays: 1, flaggedDistricts: 1 },
+        }));
+        return;
+      }
+      if (path === "/v1/districts") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({
+          snapshot: { stateCode: "HP", stateName: "Himachal Pradesh", sourceName: "NJDG", sourceSnapshotAt: "2026-04-10T00:00:00.000Z", publishedAt: "2026-04-15T04:44:05.159Z", methodologyVersion: "2026.04-alpha", qualityState: "complete", freshnessDays: 5, sourceAttribution: "NJDG" },
+          districts: [{ districtId: "kangra", districtName: "Kangra", rank: 1 }],
+        }));
+        return;
+      }
+      if (path === "/v1/trends") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({
+          snapshot: { stateCode: "HP", stateName: "Himachal Pradesh", sourceName: "NJDG", sourceSnapshotAt: "2026-04-10T00:00:00.000Z", publishedAt: "2026-04-15T04:44:05.159Z", methodologyVersion: "2026.04-alpha", qualityState: "complete", freshnessDays: 5, sourceAttribution: "NJDG" },
+          trends: [{ snapshotDate: "2026-04-10T00:00:00.000Z", pendingCases: 1, disposalRate: 1 }],
+        }));
+        return;
+      }
+      if (path === "/operator/publications") {
+        response.statusCode = 401;
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({ error: "Operator token required." }));
+        return;
+      }
+      if (path === "/data") {
+        response.setHeader("content-type", "text/html");
+        response.setHeader("cache-control", "no-store, max-age=0, must-revalidate");
+        response.end("<html><body>data</body></html>");
+        return;
+      }
+      if (path === "/data/districts.csv") {
+        csvFetchCount++;
+        response.setHeader("content-type", "text/csv");
+        response.setHeader("cache-control", "no-store, max-age=0, must-revalidate");
+        // First request: CDN still serving the previous publish's metadata (parity mismatch).
+        // Second request: cache has propagated, now consistent with the stats API.
+        if (csvFetchCount === 1) {
+          response.end("snapshot_date,published_at,methodology_version,district_id\n2026-04-09T00:00:00.000Z,2026-04-14T00:00:00.000Z,2026.04-alpha,kangra\n");
+        } else {
+          response.end("snapshot_date,published_at,methodology_version,district_id\n2026-04-10T00:00:00.000Z,2026-04-15T04:44:05.159Z,2026.04-alpha,kangra\n");
+        }
+        return;
+      }
+      response.statusCode = 404;
+      response.end("not found");
+    });
+    servers.push(server);
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    const result = await verifyPublicRelease(`http://127.0.0.1:${address.port}`, { csvParityRetryDelayMs: 0 });
+    expect(result.csvMetadataParity).toBe(true);
+    expect(csvFetchCount).toBe(2);
+  });
+
+  it("fails after the csv parity retry if the second districts.csv fetch is still mismatched", async () => {
+    const server = createServer((_request, response) => {
+      const path = _request.url ?? "/";
+      if (path === "/health") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        return;
+      }
+      if (path === "/v1/stats/himachal") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({
+          snapshot: { stateCode: "HP", stateName: "Himachal Pradesh", sourceName: "NJDG", sourceSnapshotAt: "2026-04-10T00:00:00.000Z", publishedAt: "2026-04-15T04:44:05.159Z", methodologyVersion: "2026.04-alpha", qualityState: "complete", freshnessDays: 5, sourceAttribution: "NJDG" },
+          stats: { pendingCases: 1, disposalRate: 1, medianCaseAgeDays: 1, flaggedDistricts: 1 },
+        }));
+        return;
+      }
+      if (path === "/v1/districts") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({
+          snapshot: { stateCode: "HP", stateName: "Himachal Pradesh", sourceName: "NJDG", sourceSnapshotAt: "2026-04-10T00:00:00.000Z", publishedAt: "2026-04-15T04:44:05.159Z", methodologyVersion: "2026.04-alpha", qualityState: "complete", freshnessDays: 5, sourceAttribution: "NJDG" },
+          districts: [{ districtId: "kangra", districtName: "Kangra", rank: 1 }],
+        }));
+        return;
+      }
+      if (path === "/v1/trends") {
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({
+          snapshot: { stateCode: "HP", stateName: "Himachal Pradesh", sourceName: "NJDG", sourceSnapshotAt: "2026-04-10T00:00:00.000Z", publishedAt: "2026-04-15T04:44:05.159Z", methodologyVersion: "2026.04-alpha", qualityState: "complete", freshnessDays: 5, sourceAttribution: "NJDG" },
+          trends: [{ snapshotDate: "2026-04-10T00:00:00.000Z", pendingCases: 1, disposalRate: 1 }],
+        }));
+        return;
+      }
+      if (path === "/operator/publications") {
+        response.statusCode = 401;
+        response.setHeader("content-type", "application/json");
+        response.end(JSON.stringify({ error: "Operator token required." }));
+        return;
+      }
+      if (path === "/data") {
+        response.setHeader("content-type", "text/html");
+        response.setHeader("cache-control", "no-store, max-age=0, must-revalidate");
+        response.end("<html><body>data</body></html>");
+        return;
+      }
+      if (path === "/data/districts.csv") {
+        response.setHeader("content-type", "text/csv");
+        response.setHeader("cache-control", "no-store, max-age=0, must-revalidate");
+        // Both requests return stale metadata — parity should fail on both attempts.
+        response.end("snapshot_date,published_at,methodology_version,district_id\n2026-04-09T00:00:00.000Z,2026-04-14T00:00:00.000Z,2026.04-alpha,kangra\n");
+        return;
+      }
+      response.statusCode = 404;
+      response.end("not found");
+    });
+    servers.push(server);
+    await new Promise<void>((resolve) => server.listen(0, resolve));
+    const address = server.address();
+    if (!address || typeof address === "string") {
+      throw new Error("Expected an ephemeral TCP port.");
+    }
+
+    await expect(
+      verifyPublicRelease(`http://127.0.0.1:${address.port}`, { csvParityRetryDelayMs: 0 }),
+    ).rejects.toThrow("District CSV publication metadata does not match the public API snapshot.");
+  });
 });

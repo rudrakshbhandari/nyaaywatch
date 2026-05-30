@@ -123,11 +123,14 @@ export async function verifyPublicRelease(
     highCourtSlug?: string;
     supremeCourt?: boolean;
     now?: Date;
+    /** Override the CSV parity retry delay. Pass 0 in tests to avoid real waits. */
+    csvParityRetryDelayMs?: number;
   } = {},
 ): Promise<ReleaseVerificationSummary> {
   const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
   const target = resolveReleaseTarget(options);
   const checkedAt = options.now ?? new Date();
+  const retryDelayMs = options.csvParityRetryDelayMs ?? CSV_PARITY_RETRY_DELAY_MS;
   if (target.tier === "high_court") {
     return verifyHighCourtRelease(normalizedBaseUrl, target, checkedAt);
   }
@@ -135,13 +138,14 @@ export async function verifyPublicRelease(
     return verifySupremeCourtRelease(normalizedBaseUrl, target, checkedAt);
   }
 
-  return verifyLowerCourtRelease(normalizedBaseUrl, target, checkedAt);
+  return verifyLowerCourtRelease(normalizedBaseUrl, target, checkedAt, retryDelayMs);
 }
 
 async function verifyLowerCourtRelease(
   normalizedBaseUrl: string,
   target: Extract<ReleaseTarget, { tier: "lower_court_state" }>,
   checkedAt: Date,
+  retryDelayMs: number,
 ): Promise<ReleaseVerificationSummary> {
   const [health, statsPayload, districtsPayload, trendsPayload, operatorAuthResult, dataPage, districtsCsv] =
     await Promise.all([
@@ -159,7 +163,17 @@ async function verifyLowerCourtRelease(
   assertMatchingSnapshot("trends", trendsPayload.snapshot, statsPayload.snapshot);
   assertCacheProtection("public data page", dataPage.response);
   assertCacheProtection("district CSV", districtsCsv.response);
-  assertCsvMetadataParity(districtsCsv.body, statsPayload.snapshot);
+  // Retry CSV parity once after a short wait. A Cloudflare cache propagation window
+  // can cause a transient mismatch immediately after a snapshot publish — the API
+  // returns the new snapshot while the CDN still serves the previous districts.csv.
+  let csvBody = districtsCsv.body;
+  try {
+    assertCsvMetadataParity(csvBody, statsPayload.snapshot);
+  } catch {
+    await sleep(retryDelayMs);
+    ({ body: csvBody } = await fetchTextResponse(`${normalizedBaseUrl}${target.districtsCsvPath}`));
+    assertCsvMetadataParity(csvBody, statsPayload.snapshot);
+  }
   const currentFreshnessDays = freshnessDays(statsPayload.snapshot.sourceSnapshotAt, checkedAt);
 
   return {
@@ -349,6 +363,12 @@ function resolveReleaseTarget(options: { stateSlug?: string; highCourtSlug?: str
     districtsCsvPath: `/states/${profile.stateSlug}/data/districts.csv`,
     operatorAuthPath: "/operator/publications",
   };
+}
+
+export const CSV_PARITY_RETRY_DELAY_MS = 15_000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function fetchJson<T extends z.ZodTypeAny>(url: string, schema: T, expectedStatus = 200): Promise<z.infer<T>> {
