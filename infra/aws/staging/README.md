@@ -58,6 +58,7 @@ The staging stack template provisions:
 - S3 bucket tagged `project=nyaaywatch env=staging`
 - CloudWatch log group `/ecs/nyaaywatch-staging`
 - SNS topic for alarm fan-out
+- AWS Budget `${ProjectName}-${EnvironmentName}-monthly-cost`, scoped to costs tagged `project=${ProjectName}` and `env=${EnvironmentName}`
 - CloudWatch dashboard `nyaaywatch-staging`
 - ECS cluster, task definition, and Fargate service
 - public Application Load Balancer
@@ -317,6 +318,7 @@ Alerting note:
 
 - the production stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
 - CloudWatch alarm `${ProjectName}-${EnvironmentName}-public-alpha-ops` fans that signal out through the existing SNS alert topic
+- cost budget alerts are only meaningful after the account-level cost allocation tags `project` and `env` are active in AWS Billing; `deploy-stack.sh` passes those stack tags, and ECS service/scheduled tasks propagate the task-definition tags for Fargate attribution
 
 ## Heavy-State Operator Lane
 
