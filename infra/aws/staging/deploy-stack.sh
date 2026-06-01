@@ -454,6 +454,9 @@ deploy_args=(
   --stack-name "$stack_name"
   --template-file "infra/aws/staging/stack.yaml"
   --capabilities CAPABILITY_NAMED_IAM
+  --tags
+    project="$project_name"
+    env="$environment_name"
   --parameter-overrides
     ProjectName="$project_name"
     EnvironmentName="$environment_name"
