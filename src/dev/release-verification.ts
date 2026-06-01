@@ -381,6 +381,9 @@ async function fetchWithTransientRetry(url: string, expectedStatus: number): Pro
       if (response.status === expectedStatus || !TRANSIENT_HTTP_STATUSES.has(response.status)) {
         return response;
       }
+      if (attempt === FETCH_RETRY_DELAYS_MS.length) {
+        return response;
+      }
       lastError = new Error(`Transient HTTP ${response.status}`);
     } catch (error) {
       lastError = error;
@@ -392,7 +395,8 @@ async function fetchWithTransientRetry(url: string, expectedStatus: number): Pro
     }
   }
 
-  throw lastError instanceof Error ? lastError : new Error(String(lastError));
+  const message = lastError instanceof Error ? lastError.message : String(lastError);
+  throw new Error(`Failed to fetch ${url} after transient retries: ${message}`);
 }
 
 function sleep(delayMs: number) {
