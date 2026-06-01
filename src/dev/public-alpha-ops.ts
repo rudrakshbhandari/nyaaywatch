@@ -6,6 +6,9 @@ import { verifyPublicRelease, type ReleaseVerificationSummary } from "./release-
 
 export const DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS = 2;
 const SUCCESSFUL_RUN_STATUSES = new Set(["completed", "published", "replayed"]);
+const TRANSIENT_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+const OPERATOR_RUN_FETCH_TIMEOUT_MS = 30_000;
+const OPERATOR_RUN_FETCH_RETRY_DELAYS_MS = [250, 1_000];
 
 interface OperatorRunRecord {
   id: string;
@@ -255,13 +258,7 @@ async function fetchLatestSuccessfulRun(
 ): Promise<OperatorRunRecord | null> {
   const normalizedBaseUrl = baseUrl.trim().replace(/\/+$/, "");
   const url = `${normalizedBaseUrl}${target.runsPath}`;
-  const response = await fetch(url, {
-    headers: {
-      accept: "application/json",
-      "x-operator-token": operatorToken,
-    },
-    signal: AbortSignal.timeout(30_000),
-  });
+  const response = await fetchOperatorRunHistoryWithRetry(url, operatorToken);
 
   if (!response.ok) {
     throw new Error(`Expected ${url} to return 200, received ${response.status}`);
@@ -271,6 +268,39 @@ async function fetchLatestSuccessfulRun(
   const runs = Array.isArray(payload.runs) ? payload.runs : [];
   const latestSuccessfulRun = runs.find(isSuccessfulOperatorRun);
   return latestSuccessfulRun ?? null;
+}
+
+async function fetchOperatorRunHistoryWithRetry(url: string, operatorToken: string): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= OPERATOR_RUN_FETCH_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          accept: "application/json",
+          "x-operator-token": operatorToken,
+        },
+        signal: AbortSignal.timeout(OPERATOR_RUN_FETCH_TIMEOUT_MS),
+      });
+      if (response.ok || !TRANSIENT_HTTP_STATUSES.has(response.status)) {
+        return response;
+      }
+      if (attempt === OPERATOR_RUN_FETCH_RETRY_DELAYS_MS.length) {
+        return response;
+      }
+      lastError = new Error(`Transient HTTP ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+
+    const delayMs = OPERATOR_RUN_FETCH_RETRY_DELAYS_MS[attempt];
+    if (delayMs !== undefined) {
+      await sleep(delayMs);
+    }
+  }
+
+  const message = lastError instanceof Error ? lastError.message : String(lastError);
+  throw new Error(`Failed to fetch ${url} after transient retries: ${message}`);
 }
 
 function formatTargetIdentifier(target: Pick<PublicAlphaOpsTargetSummary, "tier" | "identifier">) {
@@ -302,4 +332,8 @@ function latestSuccessfulRunAgeDays(run: OperatorRunRecord, checkedAt: Date) {
   // when the internal scheduler reruns without changing the upstream day's data.
   const measuredAt = run.completedAt ?? run.sourceSnapshotAt;
   return freshnessDays(measuredAt, checkedAt);
+}
+
+function sleep(delayMs: number) {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
 }
