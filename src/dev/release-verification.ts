@@ -67,6 +67,9 @@ const OperatorUnauthorizedSchema = z.object({
   error: z.literal("Operator token required."),
 });
 
+const TRANSIENT_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+const FETCH_RETRY_DELAYS_MS = [250, 1_000];
+
 type SnapshotMetadata = z.infer<typeof SnapshotMetadataSchema>;
 type HighCourtSnapshotMetadata = z.infer<typeof HighCourtSnapshotMetadataSchema>;
 type SupremeCourtSnapshotMetadata = z.infer<typeof SupremeCourtSnapshotMetadataSchema>;
@@ -352,7 +355,7 @@ function resolveReleaseTarget(options: { stateSlug?: string; highCourtSlug?: str
 }
 
 async function fetchJson<T extends z.ZodTypeAny>(url: string, schema: T, expectedStatus = 200): Promise<z.infer<T>> {
-  const response = await fetch(url);
+  const response = await fetchWithTransientRetry(url, expectedStatus);
   return schema.parse(await readResponse(url, response, expectedStatus));
 }
 
@@ -361,12 +364,43 @@ async function fetchText(url: string, expectedStatus = 200): Promise<string> {
 }
 
 async function fetchTextResponse(url: string, expectedStatus = 200): Promise<{ body: string; response: Response }> {
-  const response = await fetch(url);
+  const response = await fetchWithTransientRetry(url, expectedStatus);
   const body = await readResponse(url, response, expectedStatus);
   if (typeof body !== "string") {
     throw new Error(`Expected text response from ${url}.`);
   }
   return { body, response };
+}
+
+async function fetchWithTransientRetry(url: string, expectedStatus: number): Promise<Response> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= FETCH_RETRY_DELAYS_MS.length; attempt += 1) {
+    try {
+      const response = await fetch(url);
+      if (response.status === expectedStatus || !TRANSIENT_HTTP_STATUSES.has(response.status)) {
+        return response;
+      }
+      if (attempt === FETCH_RETRY_DELAYS_MS.length) {
+        return response;
+      }
+      lastError = new Error(`Transient HTTP ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+
+    const delayMs = FETCH_RETRY_DELAYS_MS[attempt];
+    if (delayMs !== undefined) {
+      await sleep(delayMs);
+    }
+  }
+
+  const message = lastError instanceof Error ? lastError.message : String(lastError);
+  throw new Error(`Failed to fetch ${url} after transient retries: ${message}`);
+}
+
+function sleep(delayMs: number) {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
 }
 
 async function readResponse(url: string, response: Response, expectedStatus: number): Promise<unknown> {

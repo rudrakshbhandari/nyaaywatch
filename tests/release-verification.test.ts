@@ -177,6 +177,167 @@ describe("verifyPublicRelease", () => {
     expect(supremeCourt.operatorAuthProtected).toBe(true);
   });
 
+  it("retries transient public endpoint failures before failing the release check", async () => {
+    const originalFetch = global.fetch;
+    let trendsAttempts = 0;
+    const snapshot = {
+      stateCode: "HP",
+      stateName: "Himachal Pradesh",
+      sourceName: "NJDG",
+      sourceSnapshotAt: "2026-04-10T00:00:00.000Z",
+      publishedAt: "2026-04-15T04:44:05.159Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 5,
+      sourceAttribution: "NJDG",
+    };
+
+    global.fetch = vi.fn(async (input) => {
+      const url = String(input);
+      const path = new URL(url).pathname;
+      if (path === "/health") {
+        return jsonResponse({ ok: true, region: "ap-south-1", stateCode: "HP" });
+      }
+      if (path === "/v1/stats/himachal") {
+        return jsonResponse({
+          snapshot,
+          stats: {
+            pendingCases: 1,
+            disposalRate: 1,
+            medianCaseAgeDays: 1,
+            flaggedDistricts: 1,
+          },
+        });
+      }
+      if (path === "/v1/districts") {
+        return jsonResponse({
+          snapshot,
+          districts: [{ districtId: "kangra", districtName: "Kangra", rank: 1 }],
+        });
+      }
+      if (path === "/v1/trends") {
+        trendsAttempts += 1;
+        if (trendsAttempts === 1) {
+          return new Response("temporary edge error", { status: 500, headers: { "content-type": "text/plain" } });
+        }
+        return jsonResponse({
+          snapshot,
+          trends: [{ snapshotDate: "2026-04-10T00:00:00.000Z", pendingCases: 1, disposalRate: 1 }],
+        });
+      }
+      if (path === "/operator/publications") {
+        return jsonResponse({ error: "Operator token required." }, 401);
+      }
+      if (path === "/data") {
+        return new Response("<html><body>data</body></html>", {
+          status: 200,
+          headers: {
+            "content-type": "text/html",
+            "cache-control": "no-store, max-age=0, must-revalidate",
+          },
+        });
+      }
+      if (path === "/data/districts.csv") {
+        return new Response(
+          "snapshot_date,published_at,methodology_version,district_id\n2026-04-10T00:00:00.000Z,2026-04-15T04:44:05.159Z,2026.04-alpha,kangra\n",
+          {
+            status: 200,
+            headers: {
+              "content-type": "text/csv",
+              "cache-control": "no-store, max-age=0, must-revalidate",
+            },
+          },
+        );
+      }
+      return new Response("not found", { status: 404 });
+    }) as typeof fetch;
+
+    try {
+      const result = await verifyPublicRelease("https://nyaaywatch.in");
+
+      expect(result.trendCount).toBe(1);
+      expect(trendsAttempts).toBe(2);
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
+
+  it("keeps endpoint detail when transient public endpoint failures persist", async () => {
+    const originalFetch = global.fetch;
+    const snapshot = {
+      stateCode: "HP",
+      stateName: "Himachal Pradesh",
+      sourceName: "NJDG",
+      sourceSnapshotAt: "2026-04-10T00:00:00.000Z",
+      publishedAt: "2026-04-15T04:44:05.159Z",
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 5,
+      sourceAttribution: "NJDG",
+    };
+
+    global.fetch = vi.fn(async (input) => {
+      const url = String(input);
+      const path = new URL(url).pathname;
+      if (path === "/health") {
+        return jsonResponse({ ok: true, region: "ap-south-1", stateCode: "HP" });
+      }
+      if (path === "/v1/stats/himachal") {
+        return jsonResponse({
+          snapshot,
+          stats: {
+            pendingCases: 1,
+            disposalRate: 1,
+            medianCaseAgeDays: 1,
+            flaggedDistricts: 1,
+          },
+        });
+      }
+      if (path === "/v1/districts") {
+        return jsonResponse({
+          snapshot,
+          districts: [{ districtId: "kangra", districtName: "Kangra", rank: 1 }],
+        });
+      }
+      if (path === "/v1/trends") {
+        return new Response("persistent edge error", { status: 500, headers: { "content-type": "text/plain" } });
+      }
+      if (path === "/operator/publications") {
+        return jsonResponse({ error: "Operator token required." }, 401);
+      }
+      if (path === "/data") {
+        return new Response("<html><body>data</body></html>", {
+          status: 200,
+          headers: {
+            "content-type": "text/html",
+            "cache-control": "no-store, max-age=0, must-revalidate",
+          },
+        });
+      }
+      if (path === "/data/districts.csv") {
+        return new Response(
+          "snapshot_date,published_at,methodology_version,district_id\n2026-04-10T00:00:00.000Z,2026-04-15T04:44:05.159Z,2026.04-alpha,kangra\n",
+          {
+            status: 200,
+            headers: {
+              "content-type": "text/csv",
+              "cache-control": "no-store, max-age=0, must-revalidate",
+            },
+          },
+        );
+      }
+      return new Response("not found", { status: 404 });
+    }) as typeof fetch;
+
+    try {
+      await expect(verifyPublicRelease("https://nyaaywatch.in")).rejects.toThrow(
+        "Expected https://nyaaywatch.in/v1/trends to return 200, received 500: persistent edge error",
+      );
+    } finally {
+      global.fetch = originalFetch;
+    }
+  });
+
   it("fails when release metadata drifts between public endpoints", async () => {
     const server = createServer((_request, response) => {
       const path = _request.url ?? "/";
@@ -409,3 +570,10 @@ describe("verifyPublicRelease", () => {
     );
   });
 });
+
+function jsonResponse(payload: unknown, status = 200) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
