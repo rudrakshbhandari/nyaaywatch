@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 const stackTemplate = readFileSync("infra/aws/staging/stack.yaml", "utf8");
 const deployStackScript = readFileSync("infra/aws/staging/deploy-stack.sh", "utf8");
+const githubDeployRolePolicy = readFileSync("infra/aws/staging/github-deploy-role-policy.json", "utf8");
+const redeployServiceScript = readFileSync("infra/aws/staging/redeploy-service.sh", "utf8");
 const reconcileScheduleScript = readFileSync("infra/aws/staging/reconcile-internal-fetch-schedule.sh", "utf8");
 
 describe("AWS cost budget infra", () => {
@@ -22,6 +24,12 @@ describe("AWS cost budget infra", () => {
   it("propagates NyaayWatch tags to ECS service tasks and scheduled tasks", () => {
     expect(stackTemplate).toContain("EnableECSManagedTags: true");
     expect(stackTemplate).toContain("PropagateTags: TASK_DEFINITION");
+    expect(redeployServiceScript).toContain('"tags"] = [');
+    expect(redeployServiceScript).toContain('"key": "project"');
+    expect(redeployServiceScript).toContain("--enable-ecs-managed-tags");
+    expect(redeployServiceScript).toContain("--propagate-tags TASK_DEFINITION");
+    expect(githubDeployRolePolicy).toContain('"ecs:TagResource"');
+    expect(githubDeployRolePolicy).toContain('"ecs:CreateAction": "RegisterTaskDefinition"');
     expect(reconcileScheduleScript).toContain('"EnableECSManagedTags": True');
     expect(reconcileScheduleScript).toContain('"PropagateTags": "TASK_DEFINITION"');
     expect(reconcileScheduleScript).toContain('"Action": ["ecs:TagResource"]');

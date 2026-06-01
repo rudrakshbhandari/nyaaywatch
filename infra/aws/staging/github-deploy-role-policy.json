@@ -36,6 +36,19 @@
       "Resource": "*"
     },
     {
+      "Sid": "EcsRolloutTagOnCreate",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:TagResource"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ecs:CreateAction": "RegisterTaskDefinition"
+        }
+      }
+    },
+    {
       "Sid": "CloudFormationRead",
       "Effect": "Allow",
       "Action": [

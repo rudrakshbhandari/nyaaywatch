@@ -63,6 +63,22 @@ service_url="$(
     --output text
 )"
 
+project_name="$(
+  aws cloudformation describe-stacks \
+    --region "$region" \
+    --stack-name "$stack_name" \
+    --query "Stacks[0].Parameters[?ParameterKey=='ProjectName'].ParameterValue | [0]" \
+    --output text
+)"
+
+environment_name="$(
+  aws cloudformation describe-stacks \
+    --region "$region" \
+    --stack-name "$stack_name" \
+    --query "Stacks[0].Parameters[?ParameterKey=='EnvironmentName'].ParameterValue | [0]" \
+    --output text
+)"
+
 if [[ -z "$cluster_name" || "$cluster_name" == "None" ]]; then
   echo "ClusterName output not found for stack $stack_name" >&2
   exit 1
@@ -75,6 +91,16 @@ fi
 
 if [[ -z "$service_url" || "$service_url" == "None" ]]; then
   echo "ServiceUrl output not found for stack $stack_name" >&2
+  exit 1
+fi
+
+if [[ -z "$project_name" || "$project_name" == "None" ]]; then
+  echo "ProjectName parameter not found for stack $stack_name" >&2
+  exit 1
+fi
+
+if [[ -z "$environment_name" || "$environment_name" == "None" ]]; then
+  echo "EnvironmentName parameter not found for stack $stack_name" >&2
   exit 1
 fi
 
@@ -122,12 +148,12 @@ aws ecs describe-task-definition \
   --query "taskDefinition" \
   > "$tmpdir/current-task-definition.json"
 
-python3 - "$tmpdir/current-task-definition.json" "$tmpdir/register-task-definition.json" "$container_image" <<'PY'
+python3 - "$tmpdir/current-task-definition.json" "$tmpdir/register-task-definition.json" "$container_image" "$project_name" "$environment_name" <<'PY'
 import json
 import os
 import sys
 
-source_path, target_path, image_uri = sys.argv[1:]
+source_path, target_path, image_uri, project_name, environment_name = sys.argv[1:]
 
 with open(source_path, "r", encoding="utf-8") as source_file:
     task_definition = json.load(source_file)
@@ -182,6 +208,10 @@ task_definition["containerDefinitions"][0]["environment"] = [
 task_definition["containerDefinitions"][0]["secrets"] = [
     {"name": name, "valueFrom": value} for name, value in sorted(secret_map.items()) if value
 ]
+task_definition["tags"] = [
+    {"key": "project", "value": project_name},
+    {"key": "env", "value": environment_name},
+]
 
 with open(target_path, "w", encoding="utf-8") as target_file:
     json.dump(task_definition, target_file)
@@ -200,6 +230,8 @@ aws ecs update-service \
   --cluster "$cluster_name" \
   --service "$service_arn" \
   --task-definition "$new_task_definition_arn" \
+  --enable-ecs-managed-tags \
+  --propagate-tags TASK_DEFINITION \
   >/dev/null
 
 aws ecs wait services-stable \
