@@ -20,6 +20,7 @@ export function buildHighCourtSnapshotCandidate(
   const institutedLastMonth = resolveMonthlyMetric(
     extracted.institutedLastMonth,
     previousSnapshots,
+    referenceDateAt,
     (stats) => ({
       civilCases: stats.institutedLastMonthCivilCases,
       criminalCases: stats.institutedLastMonthCriminalCases,
@@ -31,6 +32,7 @@ export function buildHighCourtSnapshotCandidate(
   const disposedLastMonth = resolveMonthlyMetric(
     extracted.disposedLastMonth,
     previousSnapshots,
+    referenceDateAt,
     (stats) => ({
       civilCases: stats.disposedLastMonthCivilCases,
       criminalCases: stats.disposedLastMonthCriminalCases,
@@ -86,6 +88,7 @@ export function buildHighCourtSnapshotCandidate(
 function resolveMonthlyMetric(
   current: HighCourtMetricBreakdown | null,
   previousSnapshots: HighCourtPublishedSnapshot[],
+  referenceDateAt: string,
   pickFromStats: (stats: HighCourtPublishedSnapshot["stats"]) => HighCourtMetricBreakdown,
   metricLabel: string,
   courtCode: string,
@@ -94,14 +97,24 @@ function resolveMonthlyMetric(
     return current;
   }
 
-  const mostRecent = previousSnapshots[previousSnapshots.length - 1];
-  if (!mostRecent) {
+  // Bound the carry-forward source to the snapshot active as of this candidate's
+  // reference date. For a normal forward fetch that is the latest prior snapshot;
+  // for a replay of an older raw artifact it excludes any newer publication, so a
+  // replayed May 31 capture cannot silently inherit June values and replays stay
+  // reproducible against their stored evidence.
+  const priorAsOf = previousSnapshots
+    .filter((snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt)
+    .reduce<HighCourtPublishedSnapshot | null>((latest, snapshot) => {
+      return !latest || snapshot.snapshot.referenceDateAt > latest.snapshot.referenceDateAt ? snapshot : latest;
+    }, null);
+
+  if (!priorAsOf) {
     throw new Error(
-      `Cannot carry forward ${metricLabel} for ${courtCode}: source has not published the value yet and there is no prior snapshot to carry forward.`,
+      `Cannot carry forward ${metricLabel} for ${courtCode}: source has not published the value yet and there is no prior snapshot on or before ${referenceDateAt} to carry forward.`,
     );
   }
 
-  return pickFromStats(mostRecent.stats);
+  return pickFromStats(priorAsOf.stats);
 }
 
 export function materializeHighCourtPublishedSnapshot(

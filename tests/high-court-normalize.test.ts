@@ -52,9 +52,9 @@ const PREVIOUS_HIGH_COURT_SNAPSHOT: HighCourtPublishedSnapshot = {
   ],
 };
 
-function buildRecomputingMphcExtract() {
+function buildRecomputingMphcExtract(sourceSnapshotAt = "2026-06-02T00:00:00.000Z") {
   return {
-    capturedAt: "2026-06-02T00:00:00.000Z",
+    capturedAt: sourceSnapshotAt,
     courtCode: "MPHC",
     courtSlug: "madhya-pradesh",
     courtName: "High Court of Madhya Pradesh",
@@ -63,7 +63,7 @@ function buildRecomputingMphcExtract() {
     ],
     sourceName: "HC NJDG High Court of Madhya Pradesh dashboard",
     sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Madhya Pradesh",
-    sourceSnapshotAt: "2026-06-02T00:00:00.000Z",
+    sourceSnapshotAt,
     benchOptions: [{ benchCode: "1", benchName: "Principal Bench" }],
     pendingCases: { civilCases: 81000, criminalCases: 12500, totalCases: 93500 },
     institutedLastMonth: null,
@@ -220,6 +220,38 @@ describe("buildHighCourtSnapshotCandidate", () => {
     expect(() => buildHighCourtSnapshotCandidate(buildRecomputingMphcExtract(), [])).toThrow(
       "Cannot carry forward instituted in last month for MPHC",
     );
+  });
+
+  it("bounds carry-forward to the reference date so replaying an older capture cannot inherit newer values", () => {
+    // Replaying a 2026-05-31 raw artifact whose monthly tile was recomputing, with a
+    // NEWER (June 1) publication already on record. Carry-forward must use the May 30
+    // snapshot active as of the replayed date, not the June 1 value — otherwise replay
+    // is no longer reproducible against its stored evidence.
+    const newerJuneSnapshot: HighCourtPublishedSnapshot = {
+      ...PREVIOUS_HIGH_COURT_SNAPSHOT,
+      snapshot: {
+        ...PREVIOUS_HIGH_COURT_SNAPSHOT.snapshot,
+        sourceSnapshotAt: "2026-06-01T00:00:00.000Z",
+        referenceDateAt: "2026-06-01T00:00:00.000Z",
+        publishedAt: "2026-06-01T03:00:00.000Z",
+        publishedFromRunId: "run_mphc_june",
+      },
+      stats: {
+        ...PREVIOUS_HIGH_COURT_SNAPSHOT.stats,
+        institutedLastMonthCivilCases: 9100,
+        institutedLastMonthCriminalCases: 1900,
+        institutedLastMonthTotalCases: 11000,
+      },
+    };
+
+    const candidate = buildHighCourtSnapshotCandidate(buildRecomputingMphcExtract("2026-05-31T00:00:00.000Z"), [
+      PREVIOUS_HIGH_COURT_SNAPSHOT, // referenceDateAt 2026-05-30
+      newerJuneSnapshot, // referenceDateAt 2026-06-01 — must NOT be used
+    ]);
+
+    expect(candidate.snapshot.referenceDateAt).toBe("2026-05-31T00:00:00.000Z");
+    // Carries the May 30 value (5900), never the June 1 value (11000).
+    expect(candidate.stats.institutedLastMonthTotalCases).toBe(5900);
   });
 });
 
