@@ -253,6 +253,36 @@ describe("buildHighCourtSnapshotCandidate", () => {
     // Carries the May 30 value (5900), never the June 1 value (11000).
     expect(candidate.stats.institutedLastMonthTotalCases).toBe(5900);
   });
+
+  it("prefers the latest publishedAt among same-date snapshots so corrections are honored", () => {
+    // Two publications share referenceDateAt 2026-05-30; loadHistoricalSnapshots sorts
+    // the older publishedAt first. Carry-forward must use the corrected (later) one.
+    const supersededSameDate: HighCourtPublishedSnapshot = {
+      ...PREVIOUS_HIGH_COURT_SNAPSHOT,
+      snapshot: {
+        ...PREVIOUS_HIGH_COURT_SNAPSHOT.snapshot,
+        publishedAt: "2026-05-30T03:00:00.000Z",
+        publishedFromRunId: "run_mphc_superseded",
+      },
+      stats: { ...PREVIOUS_HIGH_COURT_SNAPSHOT.stats, institutedLastMonthTotalCases: 5900 },
+    };
+    const correctedSameDate: HighCourtPublishedSnapshot = {
+      ...PREVIOUS_HIGH_COURT_SNAPSHOT,
+      snapshot: {
+        ...PREVIOUS_HIGH_COURT_SNAPSHOT.snapshot,
+        publishedAt: "2026-05-30T09:00:00.000Z", // later — the active correction
+        publishedFromRunId: "run_mphc_corrected",
+      },
+      stats: { ...PREVIOUS_HIGH_COURT_SNAPSHOT.stats, institutedLastMonthTotalCases: 6400 },
+    };
+
+    const candidate = buildHighCourtSnapshotCandidate(buildRecomputingMphcExtract("2026-05-31T00:00:00.000Z"), [
+      supersededSameDate, // older publishedAt, sorted first
+      correctedSameDate, // later publishedAt — must win the tie
+    ]);
+
+    expect(candidate.stats.institutedLastMonthTotalCases).toBe(6400);
+  });
 });
 
 describe("materializeHighCourtPublishedSnapshot", () => {

@@ -105,7 +105,16 @@ function resolveMonthlyMetric(
   const priorAsOf = previousSnapshots
     .filter((snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt)
     .reduce<HighCourtPublishedSnapshot | null>((latest, snapshot) => {
-      return !latest || snapshot.snapshot.referenceDateAt > latest.snapshot.referenceDateAt ? snapshot : latest;
+      if (!latest) {
+        return snapshot;
+      }
+      // Most recent reference date wins; on a same-date tie prefer the later
+      // publishedAt so a republished/corrected snapshot supersedes the value it
+      // replaced rather than regressing to it.
+      if (snapshot.snapshot.referenceDateAt !== latest.snapshot.referenceDateAt) {
+        return snapshot.snapshot.referenceDateAt > latest.snapshot.referenceDateAt ? snapshot : latest;
+      }
+      return snapshot.snapshot.publishedAt > latest.snapshot.publishedAt ? snapshot : latest;
     }, null);
 
   if (!priorAsOf) {
