@@ -1,6 +1,83 @@
 import { describe, expect, it } from "vitest";
 
+import type { HighCourtPublishedSnapshot } from "../src/domain/high-court-snapshot-schema.js";
 import { buildHighCourtSnapshotCandidate, materializeHighCourtPublishedSnapshot } from "../src/normalize/high-court-snapshot-candidate.js";
+
+const PREVIOUS_HIGH_COURT_SNAPSHOT: HighCourtPublishedSnapshot = {
+  snapshot: {
+    courtTier: "high_court",
+    courtCode: "MPHC",
+    courtSlug: "madhya-pradesh",
+    courtName: "High Court of Madhya Pradesh",
+    coveredGeographies: [
+      { geographyCode: "MP", geographyName: "Madhya Pradesh", geographyType: "state", lowerCourtStateCode: "MP" },
+    ],
+    sourceName: "HC NJDG High Court of Madhya Pradesh dashboard",
+    sourceSnapshotAt: "2026-05-30T00:00:00.000Z",
+    referenceDateAt: "2026-05-30T00:00:00.000Z",
+    referenceDateKind: "source_snapshot_at",
+    publishedAt: "2026-05-30T03:00:00.000Z",
+    methodologyVersion: "2026.04-high-court-draft",
+    qualityState: "complete",
+    freshnessDays: 0,
+    sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Madhya Pradesh",
+    publishedFromRunId: "run_mphc_prev",
+  },
+  stats: {
+    pendingCivilCases: 80000,
+    pendingCriminalCases: 12000,
+    pendingTotalCases: 92000,
+    institutedLastMonthCivilCases: 5000,
+    institutedLastMonthCriminalCases: 900,
+    institutedLastMonthTotalCases: 5900,
+    disposedLastMonthCivilCases: 4800,
+    disposedLastMonthCriminalCases: 850,
+    disposedLastMonthTotalCases: 5650,
+  },
+  ageBuckets: {
+    lessThanOneYear: 20000,
+    oneToThreeYears: 18000,
+    threeToFiveYears: 12000,
+    fiveToTenYears: 25000,
+    aboveTenYears: 17000,
+  },
+  trends: [
+    {
+      referenceDateAt: "2026-05-30T00:00:00.000Z",
+      referenceDateKind: "source_snapshot_at",
+      pendingTotalCases: 92000,
+      institutedLastMonthTotalCases: 5900,
+      disposedLastMonthTotalCases: 5650,
+    },
+  ],
+};
+
+function buildRecomputingMphcExtract() {
+  return {
+    capturedAt: "2026-06-02T00:00:00.000Z",
+    courtCode: "MPHC",
+    courtSlug: "madhya-pradesh",
+    courtName: "High Court of Madhya Pradesh",
+    coveredGeographies: [
+      { geographyCode: "MP", geographyName: "Madhya Pradesh", geographyType: "state", lowerCourtStateCode: "MP" } as const,
+    ],
+    sourceName: "HC NJDG High Court of Madhya Pradesh dashboard",
+    sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Madhya Pradesh",
+    sourceSnapshotAt: "2026-06-02T00:00:00.000Z",
+    benchOptions: [{ benchCode: "1", benchName: "Principal Bench" }],
+    pendingCases: { civilCases: 81000, criminalCases: 12500, totalCases: 93500 },
+    institutedLastMonth: null,
+    disposedLastMonth: { civilCases: 4900, criminalCases: 870, totalCases: 5770 },
+    ageBucketTotals: {
+      lessThanOneYear: 20500,
+      oneToThreeYears: 18200,
+      threeToFiveYears: 12100,
+      fiveToTenYears: 25200,
+      aboveTenYears: 17100,
+    },
+    caseTypes: ["Writ Petition", "Second Appeal"],
+  };
+}
 
 describe("buildHighCourtSnapshotCandidate", () => {
   it("falls back to captured_at when the official High Court source does not expose a source snapshot date", () => {
@@ -114,6 +191,35 @@ describe("buildHighCourtSnapshotCandidate", () => {
     expect(candidate.snapshot.sourceSnapshotAt).toBe("2026-04-17T00:00:00.000Z");
     expect(candidate.snapshot.referenceDateAt).toBe("2026-04-17T00:00:00.000Z");
     expect(candidate.snapshot.referenceDateKind).toBe("source_snapshot_at");
+  });
+
+  it("carries the prior published monthly metric forward when the source has not republished it yet", () => {
+    const candidate = buildHighCourtSnapshotCandidate(buildRecomputingMphcExtract(), [PREVIOUS_HIGH_COURT_SNAPSHOT]);
+
+    // Instituted-in-last-month was deferred by the source (null), so it carries forward
+    // from the most recent published snapshot instead of failing the whole run.
+    expect(candidate.stats.institutedLastMonthCivilCases).toBe(5000);
+    expect(candidate.stats.institutedLastMonthCriminalCases).toBe(900);
+    expect(candidate.stats.institutedLastMonthTotalCases).toBe(5900);
+    // Freshly-parsed metrics still come from the new capture.
+    expect(candidate.stats.disposedLastMonthTotalCases).toBe(5770);
+    expect(candidate.stats.pendingTotalCases).toBe(93500);
+    // The run stays publishable so cadence is preserved and the fetch-lag alarm clears.
+    expect(candidate.snapshot.qualityState).toBe("complete");
+    // The carried-forward total flows into the trend series too.
+    expect(candidate.trends.at(-1)).toEqual({
+      referenceDateAt: "2026-06-02T00:00:00.000Z",
+      referenceDateKind: "source_snapshot_at",
+      pendingTotalCases: 93500,
+      institutedLastMonthTotalCases: 5900,
+      disposedLastMonthTotalCases: 5770,
+    });
+  });
+
+  it("fails when a monthly metric is missing and there is no prior snapshot to carry forward", () => {
+    expect(() => buildHighCourtSnapshotCandidate(buildRecomputingMphcExtract(), [])).toThrow(
+      "Cannot carry forward instituted in last month for MPHC",
+    );
   });
 });
 

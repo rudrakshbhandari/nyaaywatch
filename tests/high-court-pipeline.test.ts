@@ -250,6 +250,85 @@ describe("High Court NJDG extraction", () => {
     });
   });
 
+  it("returns null for a monthly tile NJDG is still recomputing instead of failing the whole capture", () => {
+    // NJDG serves the monthly tile as an animated progress bar with the real value
+    // cells HTML-commented-out while it recomputes the accumulator (notably around the
+    // calendar-month boundary). This is the exact shape that took MP High Court's daily
+    // fetch down for days and flapped the public-alpha-ops alarm.
+    const recomputingHtml = HIMACHAL_HIGH_COURT_HTML.replace(
+      /(Instituted in last month<\/span><\/div>\s*)<table[\s\S]*?<\/table>/,
+      `$1<div class="card-body" id=''>
+<table width='100%' cellpadding='0' align='center' class='text-center'>
+  <tr><td colspan='3'><div class="progress" style="height:10px;"><div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width:" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><span class="progressText"></span></div></div></td></tr>
+  <tr><!--<td><span class='h4'><a href="#" onclick="fetchCasesRecords('ins',2);" data-bs-toggle="modal" data-bs-target="#modal_case_data"></span></td>
+  <td><span class='h4'><a href="#" onclick="fetchCasesRecords('ins',3);"></span></td>
+  <td><span class='h4'><a href="#" onclick="fetchCasesRecords('ins',1);"></span></td>--></tr>
+</table>`,
+    );
+
+    const extracted = extractHighCourtCaptureBundle({
+      capturedAt: "2026-06-02T00:00:00.000Z",
+      courtCode: "MPHC",
+      courtName: "High Court of Madhya Pradesh",
+      courtSlug: "madhya-pradesh",
+      coveredGeographies: [
+        {
+          geographyCode: "MP",
+          geographyName: "Madhya Pradesh",
+          geographyType: "state",
+          lowerCourtStateCode: "MP",
+        },
+      ],
+      sourceName: "HC NJDG High Court of Madhya Pradesh dashboard",
+      sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Madhya Pradesh",
+      homePage: {
+        url: "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=23~23",
+        html: recomputingHtml,
+      },
+      benchOptions: [{ benchCode: "1", benchName: "Principal Bench" }],
+    });
+
+    expect(extracted.institutedLastMonth).toBeNull();
+    // The rest of the page still parses; only the recomputing tile is deferred.
+    expect(extracted.disposedLastMonth).toEqual({
+      civilCases: 5552,
+      criminalCases: 976,
+      totalCases: 6528,
+    });
+    expect(extracted.pendingCases.totalCases).toBe(105599);
+  });
+
+  it("still fails loudly when a monthly tile is genuinely malformed (no recompute placeholder)", () => {
+    const driftedHtml = HIMACHAL_HIGH_COURT_HTML.replace(
+      /(Instituted in last month<\/span><\/div>\s*)<table[\s\S]*?<\/table>/,
+      `$1<table width='100%' class='text-center'><tr><th>Civil</th><th>Criminal</th><th>Total</th></tr></table>`,
+    );
+
+    expect(() =>
+      extractHighCourtCaptureBundle({
+        capturedAt: "2026-06-02T00:00:00.000Z",
+        courtCode: "MPHC",
+        courtName: "High Court of Madhya Pradesh",
+        courtSlug: "madhya-pradesh",
+        coveredGeographies: [
+          {
+            geographyCode: "MP",
+            geographyName: "Madhya Pradesh",
+            geographyType: "state",
+            lowerCourtStateCode: "MP",
+          },
+        ],
+        sourceName: "HC NJDG High Court of Madhya Pradesh dashboard",
+        sourceAttribution: "High Courts of India National Judicial Data Grid for High Court of Madhya Pradesh",
+        homePage: {
+          url: "https://njdg.ecourts.gov.in/hcnjdg_v2/?p=home&state_code=23~23",
+          html: driftedHtml,
+        },
+        benchOptions: [{ benchCode: "1", benchName: "Principal Bench" }],
+      }),
+    ).toThrow("Could not extract instituted in last month values from High Court HTML.");
+  });
+
   it("records the current source-date gap explicitly when the static High Court page does not expose a date", () => {
     expect(extractHighCourtSourceSnapshotAt(HIMACHAL_HIGH_COURT_HTML)).toBeNull();
   });
