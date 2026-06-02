@@ -87,7 +87,7 @@ export function buildHighCourtSnapshotCandidate(
 
 function resolveMonthlyMetric(
   current: HighCourtMetricBreakdown | null,
-  previousSnapshots: HighCourtPublishedSnapshot[],
+  previousSnapshotsByPublicationRecency: HighCourtPublishedSnapshot[],
   referenceDateAt: string,
   pickFromStats: (stats: HighCourtPublishedSnapshot["stats"]) => HighCourtMetricBreakdown,
   metricLabel: string,
@@ -97,33 +97,27 @@ function resolveMonthlyMetric(
     return current;
   }
 
-  // Bound the carry-forward source to the snapshot active as of this candidate's
-  // reference date. For a normal forward fetch that is the latest prior snapshot;
-  // for a replay of an older raw artifact it excludes any newer publication, so a
-  // replayed May 31 capture cannot silently inherit June values and replays stay
-  // reproducible against their stored evidence.
-  const priorAsOf = previousSnapshots
-    .filter((snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt)
-    .reduce<HighCourtPublishedSnapshot | null>((latest, snapshot) => {
-      if (!latest) {
-        return snapshot;
-      }
-      // Most recent reference date wins; on a same-date tie prefer the later
-      // publishedAt so a republished/corrected snapshot supersedes the value it
-      // replaced rather than regressing to it.
-      if (snapshot.snapshot.referenceDateAt !== latest.snapshot.referenceDateAt) {
-        return snapshot.snapshot.referenceDateAt > latest.snapshot.referenceDateAt ? snapshot : latest;
-      }
-      return snapshot.snapshot.publishedAt > latest.snapshot.publishedAt ? snapshot : latest;
-    }, null);
+  // Carry forward from the active published value. `previousSnapshots` arrives in
+  // publication-event recency order (most recently published / currently-active
+  // first), so the first entry dated on or before this candidate's reference date is
+  // the live value for the most recent period <= the candidate. Selecting by
+  // publication order (rather than the snapshot's own publishedAt) keeps three cases
+  // correct in one rule:
+  //   - rollback: a rollback is the newest publication event, so its target wins over
+  //     a later-but-rolled-back correction;
+  //   - same-date correction: the correction is published after the value it replaces;
+  //   - replay of an older capture: newer-dated publications are skipped by the bound.
+  const activePrior = previousSnapshotsByPublicationRecency.find(
+    (snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt,
+  );
 
-  if (!priorAsOf) {
+  if (!activePrior) {
     throw new Error(
       `Cannot carry forward ${metricLabel} for ${courtCode}: source has not published the value yet and there is no prior snapshot on or before ${referenceDateAt} to carry forward.`,
     );
   }
 
-  return pickFromStats(priorAsOf.stats);
+  return pickFromStats(activePrior.stats);
 }
 
 export function materializeHighCourtPublishedSnapshot(
@@ -158,8 +152,14 @@ function buildTrendPoints(
 ) {
   const { referenceDateAt, referenceDateKind } = current;
   const seen = new Set<string>();
-  const points = previousSnapshots
-    .slice()
+  // previousSnapshots arrives in publication-recency order; trends want chronological
+  // order, so sort by reference date (then publishedAt) before walking newest-first.
+  const points = [...previousSnapshots]
+    .sort(
+      (left, right) =>
+        left.snapshot.referenceDateAt.localeCompare(right.snapshot.referenceDateAt) ||
+        left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt),
+    )
     .reverse()
     .map((snapshot) => ({
       referenceDateAt: snapshot.snapshot.referenceDateAt,
