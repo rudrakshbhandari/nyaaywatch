@@ -97,18 +97,26 @@ function resolveMonthlyMetric(
     return current;
   }
 
-  // Carry forward from the active published value. `previousSnapshots` arrives in
-  // publication-event recency order (most recently published / currently-active
-  // first), so the first entry dated on or before this candidate's reference date is
-  // the live value for the most recent period <= the candidate. Selecting by
-  // publication order (rather than the snapshot's own publishedAt) keeps three cases
-  // correct in one rule:
-  //   - rollback: a rollback is the newest publication event, so its target wins over
-  //     a later-but-rolled-back correction;
+  // Carry forward the most recent PERIOD on or before this candidate's reference date,
+  // and within that period the active publication. `previousSnapshots` arrives in
+  // publication-event recency order, so the first entry matching the greatest eligible
+  // referenceDateAt is the currently-active one for that period. Combining the two
+  // orderings keeps every case correct:
+  //   - newer period wins: a June 1 value is preferred over an older May 31 replay even
+  //     if the replay is the more recent publication event;
+  //   - rollback: within a period a rollback is the newest publication event, so its
+  //     target wins over a later-but-rolled-back correction;
   //   - same-date correction: the correction is published after the value it replaces;
-  //   - replay of an older capture: newer-dated publications are skipped by the bound.
-  const activePrior = previousSnapshotsByPublicationRecency.find(
+  //   - replay of an older capture: newer-dated publications are excluded by the bound.
+  const eligible = previousSnapshotsByPublicationRecency.filter(
     (snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt,
+  );
+  const latestEligibleReferenceDate = eligible.reduce(
+    (latest, snapshot) => (snapshot.snapshot.referenceDateAt > latest ? snapshot.snapshot.referenceDateAt : latest),
+    "",
+  );
+  const activePrior = eligible.find(
+    (snapshot) => snapshot.snapshot.referenceDateAt === latestEligibleReferenceDate,
   );
 
   if (!activePrior) {

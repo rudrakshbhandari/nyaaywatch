@@ -288,6 +288,42 @@ describe("buildHighCourtSnapshotCandidate", () => {
 
     expect(candidate.stats.institutedLastMonthTotalCases).toBe(5900);
   });
+
+  it("carries the latest period forward, not a more-recently-published older replay", () => {
+    // June 1 is published (active), then a May 31 capture is replayed — the replay is the
+    // newest publication event, so it leads the recency-ordered list. A June 3 recompute
+    // run must still carry forward the June 1 value (the most recent period on or before
+    // June 3), not the May 31 replay. (Regression for the #307 review follow-up.)
+    const june1: HighCourtPublishedSnapshot = {
+      ...PREVIOUS_HIGH_COURT_SNAPSHOT,
+      snapshot: {
+        ...PREVIOUS_HIGH_COURT_SNAPSHOT.snapshot,
+        sourceSnapshotAt: "2026-06-01T00:00:00.000Z",
+        referenceDateAt: "2026-06-01T00:00:00.000Z",
+        publishedAt: "2026-06-01T03:00:00.000Z",
+        publishedFromRunId: "run_mphc_june1",
+      },
+      stats: { ...PREVIOUS_HIGH_COURT_SNAPSHOT.stats, institutedLastMonthTotalCases: 12000 },
+    };
+    const may31Replay: HighCourtPublishedSnapshot = {
+      ...PREVIOUS_HIGH_COURT_SNAPSHOT,
+      snapshot: {
+        ...PREVIOUS_HIGH_COURT_SNAPSHOT.snapshot,
+        sourceSnapshotAt: "2026-05-31T00:00:00.000Z",
+        referenceDateAt: "2026-05-31T00:00:00.000Z",
+        publishedAt: "2026-06-02T12:00:00.000Z", // replayed/published most recently
+        publishedFromRunId: "run_mphc_may31_replay",
+      },
+      stats: { ...PREVIOUS_HIGH_COURT_SNAPSHOT.stats, institutedLastMonthTotalCases: 8000 },
+    };
+
+    const candidate = buildHighCourtSnapshotCandidate(buildRecomputingMphcExtract("2026-06-03T00:00:00.000Z"), [
+      may31Replay, // newest publication event → leads the list, but older period
+      june1, // most recent period on or before June 3 → must be carried forward
+    ]);
+
+    expect(candidate.stats.institutedLastMonthTotalCases).toBe(12000);
+  });
 });
 
 describe("materializeHighCourtPublishedSnapshot", () => {
