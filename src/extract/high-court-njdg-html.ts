@@ -30,8 +30,11 @@ export interface ExtractedHighCourtSnapshot {
   sourceSnapshotAt: string | null;
   benchOptions: HighCourtBenchOption[];
   pendingCases: HighCourtMetricBreakdown;
-  institutedLastMonth: HighCourtMetricBreakdown;
-  disposedLastMonth: HighCourtMetricBreakdown;
+  // `null` when NJDG is recomputing the monthly accumulator and has not published
+  // the value yet (see extractMetricBreakdown). Callers carry the previous value
+  // forward rather than treating the whole capture as a failure.
+  institutedLastMonth: HighCourtMetricBreakdown | null;
+  disposedLastMonth: HighCourtMetricBreakdown | null;
   ageBucketTotals: HighCourtAgeBucketTotals;
   caseTypes: string[];
 }
@@ -99,7 +102,7 @@ export function extractHighCourtCaptureBundle(bundle: HighCourtCaptureBundle): E
   };
 }
 
-function extractMetricBreakdown(html: string, label: string): HighCourtMetricBreakdown {
+function extractMetricBreakdown(html: string, label: string): HighCourtMetricBreakdown | null {
   const sectionHtml = captureRaw(
     html,
     new RegExp(`<span[^>]*>${escapeLabelForRegex(label)}<\\/span>[\\s\\S]*?<table[\\s\\S]*?<\\/table>`, "i"),
@@ -111,12 +114,29 @@ function extractMetricBreakdown(html: string, label: string): HighCourtMetricBre
     .filter((value) => /[\d,]+/.test(value))
     .map((value) => parseIndianNumber(value));
 
-  if (values.length < 3) {
-    throw new Error(`Could not extract ${label.toLowerCase()} values from High Court HTML.`);
+  if (values.length >= 3) {
+    const [civilCases, criminalCases, totalCases] = values;
+    return { civilCases, criminalCases, totalCases };
   }
 
-  const [civilCases, criminalCases, totalCases] = values;
-  return { civilCases, criminalCases, totalCases };
+  // NJDG periodically recomputes the monthly accumulators (notably around the
+  // calendar-month boundary). While it does, the High Court dashboard renders the
+  // tile as an animated progress bar with the real value cells HTML-commented-out,
+  // so no numeric cells survive. Treat that as "source has not published the value
+  // yet" (null) instead of a hard failure, so one recomputing tile does not block
+  // the whole capture and snowball into multi-day internal fetch lag. Genuine
+  // markup drift (section present, no recompute placeholder) still fails loudly.
+  if (isRecomputingMetricSection(sectionHtml)) {
+    return null;
+  }
+
+  throw new Error(`Could not extract ${label.toLowerCase()} values from High Court HTML.`);
+}
+
+function isRecomputingMetricSection(sectionHtml: string): boolean {
+  const hasProgressPlaceholder = /progress-bar|progressText/i.test(sectionHtml);
+  const hasCommentedValueCells = /<!--[\s\S]*?<td[\s\S]*?-->/.test(sectionHtml);
+  return hasProgressPlaceholder || hasCommentedValueCells;
 }
 
 function extractAgeBucketTotal(html: string, label: string): number {

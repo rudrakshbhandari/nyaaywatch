@@ -273,10 +273,29 @@ Resources:
       Budget:
         BudgetName: !Sub "${ProjectName}-${EnvironmentName}-monthly-cost"
         BudgetType: COST
+        FilterExpression:
+          And:
+            - Tags:
+                Key: project
+                Values:
+                  - !Ref ProjectName
+                MatchOptions:
+                  - EQUALS
+            - Tags:
+                Key: env
+                Values:
+                  - !Ref EnvironmentName
+                MatchOptions:
+                  - EQUALS
         TimeUnit: MONTHLY
         BudgetLimit:
           Amount: !Ref MonthlyBudgetUsd
           Unit: USD
+      ResourceTags:
+        - Key: project
+          Value: !Ref ProjectName
+        - Key: env
+          Value: !Ref EnvironmentName
       NotificationsWithSubscribers:
         - Notification:
             NotificationType: ACTUAL
@@ -487,6 +506,11 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
+      Tags:
+        - Key: project
+          Value: !Ref ProjectName
+        - Key: env
+          Value: !Ref EnvironmentName
       ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
       TaskRoleArn: !GetAtt TaskRole.Arn
       ContainerDefinitions:
@@ -652,8 +676,15 @@ Resources:
     Properties:
       Cluster: !Ref Cluster
       DesiredCount: !Ref DesiredCount
+      EnableECSManagedTags: true
       LaunchType: FARGATE
+      PropagateTags: TASK_DEFINITION
       TaskDefinition: !Ref TaskDefinition
+      Tags:
+        - Key: project
+          Value: !Ref ProjectName
+        - Key: env
+          Value: !Ref EnvironmentName
       NetworkConfiguration:
         AwsvpcConfiguration:
           AssignPublicIp: ENABLED
@@ -836,7 +867,13 @@ Resources:
       Namespace: NyaayWatch/Observability
       MetricName: !Sub "${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts"
       Statistic: Sum
-      Period: 300
+      # The monitor runs every 30 min and emits this metric only on failure, so each
+      # run is a single sparse datapoint. With a 5-min period + notBreaching the alarm
+      # dropped back to OK between samples and re-fired (a fresh page) every cycle. A
+      # 30-min period aligns one evaluation window to one monitor run, so a sustained
+      # failure stays in a single ALARM state (one page) and still clears within a
+      # cycle of recovery. Detection latency is unchanged (first failing run alarms).
+      Period: 1800
       EvaluationPeriods: 1
       Threshold: 1
       ComparisonOperator: GreaterThanOrEqualToThreshold

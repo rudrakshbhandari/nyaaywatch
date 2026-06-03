@@ -428,8 +428,18 @@ export class PublishedHighCourtSnapshotService {
     const bundle = await this.artifactStore.downloadJson<HighCourtCaptureBundle>(rawArtifactKey, {
       expectedChecksumSha256: rawArtifactChecksumSha256,
     });
+    const extracted = extractHighCourtCaptureBundle(bundle);
+    if (extracted.institutedLastMonth === null || extracted.disposedLastMonth === null) {
+      logInfo("high_court_monthly_metric_carried_forward", {
+        courtCode: this.profile.courtCode,
+        runId,
+        reason: "source-not-published",
+        institutedCarriedForward: extracted.institutedLastMonth === null,
+        disposedCarriedForward: extracted.disposedLastMonth === null,
+      });
+    }
     const previousSnapshots = await this.loadHistoricalSnapshots();
-    const candidate = buildHighCourtSnapshotCandidate(extractHighCourtCaptureBundle(bundle), previousSnapshots);
+    const candidate = buildHighCourtSnapshotCandidate(extracted, previousSnapshots);
 
     const storedCandidate = await this.artifactStore.uploadJson(
       buildCandidateArtifactKey(this.config.DEPLOY_ENV, this.profile.courtCode, runId, candidate.snapshot.referenceDateAt),
@@ -484,12 +494,12 @@ export class PublishedHighCourtSnapshotService {
       }
     }
 
-    return snapshots.sort((left, right) => {
-      return (
-        left.snapshot.referenceDateAt.localeCompare(right.snapshot.referenceDateAt) ||
-        left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt)
-      );
-    });
+    // Returned in publication-event recency order (most recently published / currently
+    // active first), because listPublications is ordered created_at DESC and we keep the
+    // first occurrence per snapshot. buildHighCourtSnapshotCandidate relies on this order
+    // to carry forward the active value across rollbacks/corrections; trend building
+    // re-sorts chronologically on its own.
+    return snapshots;
   }
 }
 

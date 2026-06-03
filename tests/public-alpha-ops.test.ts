@@ -157,6 +157,71 @@ describe("public alpha ops verification", () => {
     expect(() => assertPublicAlphaOperationsHealthy(summary)).not.toThrow();
   });
 
+  it("retries transient operator run-history fetch failures before marking a target unhealthy", async () => {
+    listPublicStateProfiles.mockReturnValueOnce([{ stateCode: "HP", stateName: "Himachal Pradesh", stateSlug: "himachal-pradesh" }]);
+    verifyPublicRelease.mockResolvedValueOnce({
+      baseUrl: "https://nyaaywatch.in",
+      checkedAt: "2026-06-01T05:30:00.000Z",
+      target: {
+        stateCode: "HP",
+        stateName: "Himachal Pradesh",
+        stateSlug: "himachal-pradesh",
+        statsPath: "/v1/stats/himachal",
+        districtsPath: "/v1/districts",
+        trendsPath: "/v1/trends",
+        dataPagePath: "/data",
+        districtsCsvPath: "/data/districts.csv",
+      },
+      snapshot: {
+        sourceSnapshotAt: "2026-06-01T00:00:00.000Z",
+        publishedAt: "2026-06-01T03:00:00.000Z",
+        freshnessDaysAtPublish: 0,
+        currentFreshnessDays: 0,
+        methodologyVersion: "2026.04-alpha",
+        qualityState: "complete",
+        publishedFromRunId: "run_hp",
+        replayedFromRunId: null,
+      },
+      health: { region: "ap-south-1", stateCode: "HP" },
+      districtCount: 12,
+      trendCount: 5,
+      csvMetadataParity: true,
+      publicDataCacheProtected: true,
+      operatorAuthProtected: true,
+    });
+    fetchMock
+      .mockRejectedValueOnce(new Error("The operation was aborted due to timeout"))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            runs: [
+              {
+                id: "run_hp_latest",
+                stateCode: "HP",
+                sourceSnapshotAt: "2026-06-01T00:00:00.000Z",
+                status: "completed",
+                completedAt: "2026-06-01T03:01:00.000Z",
+              },
+            ],
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+      );
+
+    const { assertPublicAlphaOperationsHealthy, verifyPublicAlphaOperations } = await import(
+      "../src/dev/public-alpha-ops.js"
+    );
+    const summary = await verifyPublicAlphaOperations("https://nyaaywatch.in", {
+      now: new Date("2026-06-01T05:30:00.000Z"),
+      operatorToken: "operator-test-token",
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(summary.healthyStates).toEqual(["HP"]);
+    expect(summary.failingStates).toEqual([]);
+    expect(() => assertPublicAlphaOperationsHealthy(summary)).not.toThrow();
+  });
+
   it("covers public High Court and Supreme Court release targets in the ops sweep", async () => {
     listPublicStateProfiles.mockReturnValueOnce([]);
     listPublicHighCourtProfiles.mockReturnValueOnce([

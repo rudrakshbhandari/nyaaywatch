@@ -251,6 +251,16 @@ policy = {
         },
         {
             "Effect": "Allow",
+            "Action": ["ecs:TagResource"],
+            "Resource": "*",
+            "Condition": {
+                "StringEquals": {
+                    "ecs:CreateAction": "RunTask",
+                },
+            },
+        },
+        {
+            "Effect": "Allow",
             "Action": ["iam:PassRole"],
             "Resource": resources,
         },
@@ -358,8 +368,9 @@ request = {
             "LaunchType": "FARGATE",
             "TaskCount": 1,
             "TaskDefinitionArn": task_definition["taskDefinitionArn"],
-            "EnableECSManagedTags": False,
+            "EnableECSManagedTags": True,
             "EnableExecuteCommand": False,
+            "PropagateTags": "TASK_DEFINITION",
             "NetworkConfiguration": {
                 "awsvpcConfiguration": {
                     "Subnets": network["subnets"],

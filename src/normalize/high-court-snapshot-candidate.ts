@@ -1,6 +1,6 @@
 import type { HighCourtPublishedSnapshot } from "../domain/high-court-snapshot-schema.js";
 import { HighCourtSnapshotCandidateSchema, type HighCourtSnapshotCandidate } from "../domain/high-court-snapshot-candidate-schema.js";
-import type { ExtractedHighCourtSnapshot } from "../extract/high-court-njdg-html.js";
+import type { ExtractedHighCourtSnapshot, HighCourtMetricBreakdown } from "../extract/high-court-njdg-html.js";
 import { freshnessDays } from "../lib/time.js";
 
 const HIGH_COURT_METHODOLOGY_VERSION = "2026.04-high-court-draft";
@@ -11,6 +11,36 @@ export function buildHighCourtSnapshotCandidate(
 ): HighCourtSnapshotCandidate {
   const referenceDateAt = extracted.sourceSnapshotAt ?? extracted.capturedAt;
   const referenceDateKind = extracted.sourceSnapshotAt ? "source_snapshot_at" : "captured_at";
+
+  // When NJDG is recomputing a monthly accumulator it does not publish the value
+  // (extraction yields null). Carry the most recent published reading forward so a
+  // transient source gap does not block the daily run. These are slow-moving
+  // month-to-date accumulators, so the prior reading is the best available estimate
+  // until the source republishes.
+  const institutedLastMonth = resolveMonthlyMetric(
+    extracted.institutedLastMonth,
+    previousSnapshots,
+    referenceDateAt,
+    (stats) => ({
+      civilCases: stats.institutedLastMonthCivilCases,
+      criminalCases: stats.institutedLastMonthCriminalCases,
+      totalCases: stats.institutedLastMonthTotalCases,
+    }),
+    "instituted in last month",
+    extracted.courtCode,
+  );
+  const disposedLastMonth = resolveMonthlyMetric(
+    extracted.disposedLastMonth,
+    previousSnapshots,
+    referenceDateAt,
+    (stats) => ({
+      civilCases: stats.disposedLastMonthCivilCases,
+      criminalCases: stats.disposedLastMonthCriminalCases,
+      totalCases: stats.disposedLastMonthTotalCases,
+    }),
+    "disposal in last month",
+    extracted.courtCode,
+  );
 
   return HighCourtSnapshotCandidateSchema.parse({
     snapshot: {
@@ -31,12 +61,12 @@ export function buildHighCourtSnapshotCandidate(
       pendingCivilCases: extracted.pendingCases.civilCases,
       pendingCriminalCases: extracted.pendingCases.criminalCases,
       pendingTotalCases: extracted.pendingCases.totalCases,
-      institutedLastMonthCivilCases: extracted.institutedLastMonth.civilCases,
-      institutedLastMonthCriminalCases: extracted.institutedLastMonth.criminalCases,
-      institutedLastMonthTotalCases: extracted.institutedLastMonth.totalCases,
-      disposedLastMonthCivilCases: extracted.disposedLastMonth.civilCases,
-      disposedLastMonthCriminalCases: extracted.disposedLastMonth.criminalCases,
-      disposedLastMonthTotalCases: extracted.disposedLastMonth.totalCases,
+      institutedLastMonthCivilCases: institutedLastMonth.civilCases,
+      institutedLastMonthCriminalCases: institutedLastMonth.criminalCases,
+      institutedLastMonthTotalCases: institutedLastMonth.totalCases,
+      disposedLastMonthCivilCases: disposedLastMonth.civilCases,
+      disposedLastMonthCriminalCases: disposedLastMonth.criminalCases,
+      disposedLastMonthTotalCases: disposedLastMonth.totalCases,
     },
     ageBuckets: {
       lessThanOneYear: extracted.ageBucketTotals.lessThanOneYear,
@@ -45,8 +75,57 @@ export function buildHighCourtSnapshotCandidate(
       fiveToTenYears: extracted.ageBucketTotals.fiveToTenYears,
       aboveTenYears: extracted.ageBucketTotals.aboveTenYears,
     },
-    trends: buildTrendPoints(previousSnapshots, extracted),
+    trends: buildTrendPoints(previousSnapshots, {
+      referenceDateAt,
+      referenceDateKind,
+      pendingTotalCases: extracted.pendingCases.totalCases,
+      institutedLastMonthTotalCases: institutedLastMonth.totalCases,
+      disposedLastMonthTotalCases: disposedLastMonth.totalCases,
+    }),
   });
+}
+
+function resolveMonthlyMetric(
+  current: HighCourtMetricBreakdown | null,
+  previousSnapshotsByPublicationRecency: HighCourtPublishedSnapshot[],
+  referenceDateAt: string,
+  pickFromStats: (stats: HighCourtPublishedSnapshot["stats"]) => HighCourtMetricBreakdown,
+  metricLabel: string,
+  courtCode: string,
+): HighCourtMetricBreakdown {
+  if (current) {
+    return current;
+  }
+
+  // Carry forward the most recent PERIOD on or before this candidate's reference date,
+  // and within that period the active publication. `previousSnapshots` arrives in
+  // publication-event recency order, so the first entry matching the greatest eligible
+  // referenceDateAt is the currently-active one for that period. Combining the two
+  // orderings keeps every case correct:
+  //   - newer period wins: a June 1 value is preferred over an older May 31 replay even
+  //     if the replay is the more recent publication event;
+  //   - rollback: within a period a rollback is the newest publication event, so its
+  //     target wins over a later-but-rolled-back correction;
+  //   - same-date correction: the correction is published after the value it replaces;
+  //   - replay of an older capture: newer-dated publications are excluded by the bound.
+  const eligible = previousSnapshotsByPublicationRecency.filter(
+    (snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt,
+  );
+  const latestEligibleReferenceDate = eligible.reduce(
+    (latest, snapshot) => (snapshot.snapshot.referenceDateAt > latest ? snapshot.snapshot.referenceDateAt : latest),
+    "",
+  );
+  const activePrior = eligible.find(
+    (snapshot) => snapshot.snapshot.referenceDateAt === latestEligibleReferenceDate,
+  );
+
+  if (!activePrior) {
+    throw new Error(
+      `Cannot carry forward ${metricLabel} for ${courtCode}: source has not published the value yet and there is no prior snapshot on or before ${referenceDateAt} to carry forward.`,
+    );
+  }
+
+  return pickFromStats(activePrior.stats);
 }
 
 export function materializeHighCourtPublishedSnapshot(
@@ -67,43 +146,52 @@ export function materializeHighCourtPublishedSnapshot(
   };
 }
 
+interface HighCourtTrendPointInput {
+  referenceDateAt: string;
+  referenceDateKind: "source_snapshot_at" | "captured_at";
+  pendingTotalCases: number;
+  institutedLastMonthTotalCases: number;
+  disposedLastMonthTotalCases: number;
+}
+
 function buildTrendPoints(
   previousSnapshots: HighCourtPublishedSnapshot[],
-  extracted: ExtractedHighCourtSnapshot,
+  current: HighCourtTrendPointInput,
 ) {
-  const referenceDateAt = extracted.sourceSnapshotAt ?? extracted.capturedAt;
-  const referenceDateKind = extracted.sourceSnapshotAt ? "source_snapshot_at" : "captured_at";
+  const { referenceDateAt, referenceDateKind } = current;
   const seen = new Set<string>();
-  const points = previousSnapshots
-    .slice()
-    .reverse()
-    .map((snapshot) => ({
+  // previousSnapshots arrives in publication-recency order (active publication first).
+  // Dedupe per reference date keeping that first/active entry, so a rolled-back same-date
+  // correction does not override the active value in the trend series (the carried-forward
+  // tile uses the same active value). Sort chronologically for presentation afterwards.
+  const points: HighCourtTrendPointInput[] = [];
+  for (const snapshot of previousSnapshots) {
+    const dedupeKey = `${snapshot.snapshot.referenceDateKind}:${snapshot.snapshot.referenceDateAt}`;
+    if (seen.has(dedupeKey)) {
+      continue;
+    }
+    seen.add(dedupeKey);
+    points.push({
       referenceDateAt: snapshot.snapshot.referenceDateAt,
       referenceDateKind: snapshot.snapshot.referenceDateKind,
       pendingTotalCases: snapshot.stats.pendingTotalCases,
       institutedLastMonthTotalCases: snapshot.stats.institutedLastMonthTotalCases,
       disposedLastMonthTotalCases: snapshot.stats.disposedLastMonthTotalCases,
-    }))
-    .filter((point) => {
-      const dedupeKey = `${point.referenceDateKind}:${point.referenceDateAt}`;
-      if (seen.has(dedupeKey)) {
-        return false;
-      }
-
-      seen.add(dedupeKey);
-      return true;
     });
+  }
 
   const currentDedupeKey = `${referenceDateKind}:${referenceDateAt}`;
   if (!seen.has(currentDedupeKey)) {
     points.push({
       referenceDateAt,
       referenceDateKind,
-      pendingTotalCases: extracted.pendingCases.totalCases,
-      institutedLastMonthTotalCases: extracted.institutedLastMonth.totalCases,
-      disposedLastMonthTotalCases: extracted.disposedLastMonth.totalCases,
+      pendingTotalCases: current.pendingTotalCases,
+      institutedLastMonthTotalCases: current.institutedLastMonthTotalCases,
+      disposedLastMonthTotalCases: current.disposedLastMonthTotalCases,
     });
   }
+
+  points.sort((left, right) => left.referenceDateAt.localeCompare(right.referenceDateAt));
 
   return points.slice(-5);
 }
