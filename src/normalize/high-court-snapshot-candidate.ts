@@ -160,31 +160,25 @@ function buildTrendPoints(
 ) {
   const { referenceDateAt, referenceDateKind } = current;
   const seen = new Set<string>();
-  // previousSnapshots arrives in publication-recency order; trends want chronological
-  // order, so sort by reference date (then publishedAt) before walking newest-first.
-  const points = [...previousSnapshots]
-    .sort(
-      (left, right) =>
-        left.snapshot.referenceDateAt.localeCompare(right.snapshot.referenceDateAt) ||
-        left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt),
-    )
-    .reverse()
-    .map((snapshot) => ({
+  // previousSnapshots arrives in publication-recency order (active publication first).
+  // Dedupe per reference date keeping that first/active entry, so a rolled-back same-date
+  // correction does not override the active value in the trend series (the carried-forward
+  // tile uses the same active value). Sort chronologically for presentation afterwards.
+  const points: HighCourtTrendPointInput[] = [];
+  for (const snapshot of previousSnapshots) {
+    const dedupeKey = `${snapshot.snapshot.referenceDateKind}:${snapshot.snapshot.referenceDateAt}`;
+    if (seen.has(dedupeKey)) {
+      continue;
+    }
+    seen.add(dedupeKey);
+    points.push({
       referenceDateAt: snapshot.snapshot.referenceDateAt,
       referenceDateKind: snapshot.snapshot.referenceDateKind,
       pendingTotalCases: snapshot.stats.pendingTotalCases,
       institutedLastMonthTotalCases: snapshot.stats.institutedLastMonthTotalCases,
       disposedLastMonthTotalCases: snapshot.stats.disposedLastMonthTotalCases,
-    }))
-    .filter((point) => {
-      const dedupeKey = `${point.referenceDateKind}:${point.referenceDateAt}`;
-      if (seen.has(dedupeKey)) {
-        return false;
-      }
-
-      seen.add(dedupeKey);
-      return true;
     });
+  }
 
   const currentDedupeKey = `${referenceDateKind}:${referenceDateAt}`;
   if (!seen.has(currentDedupeKey)) {
@@ -196,6 +190,8 @@ function buildTrendPoints(
       disposedLastMonthTotalCases: current.disposedLastMonthTotalCases,
     });
   }
+
+  points.sort((left, right) => left.referenceDateAt.localeCompare(right.referenceDateAt));
 
   return points.slice(-5);
 }

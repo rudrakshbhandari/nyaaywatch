@@ -287,6 +287,12 @@ describe("buildHighCourtSnapshotCandidate", () => {
     ]);
 
     expect(candidate.stats.institutedLastMonthTotalCases).toBe(5900);
+    // The trend series for that date must also use the active value (A=5900), not the
+    // rolled-back correction (B=6400) — trend dedupe keeps the active publication too.
+    expect(
+      candidate.trends.find((point) => point.referenceDateAt === "2026-05-30T00:00:00.000Z")
+        ?.institutedLastMonthTotalCases,
+    ).toBe(5900);
   });
 
   it("carries the latest period forward, not a more-recently-published older replay", () => {
