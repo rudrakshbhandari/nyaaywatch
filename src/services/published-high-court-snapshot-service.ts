@@ -494,12 +494,12 @@ export class PublishedHighCourtSnapshotService {
       }
     }
 
-    return snapshots.sort((left, right) => {
-      return (
-        left.snapshot.referenceDateAt.localeCompare(right.snapshot.referenceDateAt) ||
-        left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt)
-      );
-    });
+    // Returned in publication-event recency order (most recently published / currently
+    // active first), because listPublications is ordered created_at DESC and we keep the
+    // first occurrence per snapshot. buildHighCourtSnapshotCandidate relies on this order
+    // to carry forward the active value across rollbacks/corrections; trend building
+    // re-sorts chronologically on its own.
+    return snapshots;
   }
 }
 

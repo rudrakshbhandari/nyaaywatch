@@ -87,7 +87,7 @@ export function buildHighCourtSnapshotCandidate(
 
 function resolveMonthlyMetric(
   current: HighCourtMetricBreakdown | null,
-  previousSnapshots: HighCourtPublishedSnapshot[],
+  previousSnapshotsByPublicationRecency: HighCourtPublishedSnapshot[],
   referenceDateAt: string,
   pickFromStats: (stats: HighCourtPublishedSnapshot["stats"]) => HighCourtMetricBreakdown,
   metricLabel: string,
@@ -97,33 +97,35 @@ function resolveMonthlyMetric(
     return current;
   }
 
-  // Bound the carry-forward source to the snapshot active as of this candidate's
-  // reference date. For a normal forward fetch that is the latest prior snapshot;
-  // for a replay of an older raw artifact it excludes any newer publication, so a
-  // replayed May 31 capture cannot silently inherit June values and replays stay
-  // reproducible against their stored evidence.
-  const priorAsOf = previousSnapshots
-    .filter((snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt)
-    .reduce<HighCourtPublishedSnapshot | null>((latest, snapshot) => {
-      if (!latest) {
-        return snapshot;
-      }
-      // Most recent reference date wins; on a same-date tie prefer the later
-      // publishedAt so a republished/corrected snapshot supersedes the value it
-      // replaced rather than regressing to it.
-      if (snapshot.snapshot.referenceDateAt !== latest.snapshot.referenceDateAt) {
-        return snapshot.snapshot.referenceDateAt > latest.snapshot.referenceDateAt ? snapshot : latest;
-      }
-      return snapshot.snapshot.publishedAt > latest.snapshot.publishedAt ? snapshot : latest;
-    }, null);
+  // Carry forward the most recent PERIOD on or before this candidate's reference date,
+  // and within that period the active publication. `previousSnapshots` arrives in
+  // publication-event recency order, so the first entry matching the greatest eligible
+  // referenceDateAt is the currently-active one for that period. Combining the two
+  // orderings keeps every case correct:
+  //   - newer period wins: a June 1 value is preferred over an older May 31 replay even
+  //     if the replay is the more recent publication event;
+  //   - rollback: within a period a rollback is the newest publication event, so its
+  //     target wins over a later-but-rolled-back correction;
+  //   - same-date correction: the correction is published after the value it replaces;
+  //   - replay of an older capture: newer-dated publications are excluded by the bound.
+  const eligible = previousSnapshotsByPublicationRecency.filter(
+    (snapshot) => snapshot.snapshot.referenceDateAt <= referenceDateAt,
+  );
+  const latestEligibleReferenceDate = eligible.reduce(
+    (latest, snapshot) => (snapshot.snapshot.referenceDateAt > latest ? snapshot.snapshot.referenceDateAt : latest),
+    "",
+  );
+  const activePrior = eligible.find(
+    (snapshot) => snapshot.snapshot.referenceDateAt === latestEligibleReferenceDate,
+  );
 
-  if (!priorAsOf) {
+  if (!activePrior) {
     throw new Error(
       `Cannot carry forward ${metricLabel} for ${courtCode}: source has not published the value yet and there is no prior snapshot on or before ${referenceDateAt} to carry forward.`,
     );
   }
 
-  return pickFromStats(priorAsOf.stats);
+  return pickFromStats(activePrior.stats);
 }
 
 export function materializeHighCourtPublishedSnapshot(
@@ -158,25 +160,25 @@ function buildTrendPoints(
 ) {
   const { referenceDateAt, referenceDateKind } = current;
   const seen = new Set<string>();
-  const points = previousSnapshots
-    .slice()
-    .reverse()
-    .map((snapshot) => ({
+  // previousSnapshots arrives in publication-recency order (active publication first).
+  // Dedupe per reference date keeping that first/active entry, so a rolled-back same-date
+  // correction does not override the active value in the trend series (the carried-forward
+  // tile uses the same active value). Sort chronologically for presentation afterwards.
+  const points: HighCourtTrendPointInput[] = [];
+  for (const snapshot of previousSnapshots) {
+    const dedupeKey = `${snapshot.snapshot.referenceDateKind}:${snapshot.snapshot.referenceDateAt}`;
+    if (seen.has(dedupeKey)) {
+      continue;
+    }
+    seen.add(dedupeKey);
+    points.push({
       referenceDateAt: snapshot.snapshot.referenceDateAt,
       referenceDateKind: snapshot.snapshot.referenceDateKind,
       pendingTotalCases: snapshot.stats.pendingTotalCases,
       institutedLastMonthTotalCases: snapshot.stats.institutedLastMonthTotalCases,
       disposedLastMonthTotalCases: snapshot.stats.disposedLastMonthTotalCases,
-    }))
-    .filter((point) => {
-      const dedupeKey = `${point.referenceDateKind}:${point.referenceDateAt}`;
-      if (seen.has(dedupeKey)) {
-        return false;
-      }
-
-      seen.add(dedupeKey);
-      return true;
     });
+  }
 
   const currentDedupeKey = `${referenceDateKind}:${referenceDateAt}`;
   if (!seen.has(currentDedupeKey)) {
@@ -188,6 +190,8 @@ function buildTrendPoints(
       disposedLastMonthTotalCases: current.disposedLastMonthTotalCases,
     });
   }
+
+  points.sort((left, right) => left.referenceDateAt.localeCompare(right.referenceDateAt));
 
   return points.slice(-5);
 }
