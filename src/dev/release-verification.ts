@@ -174,7 +174,12 @@ async function verifyLowerCourtRelease(
     assertCsvMetadataParity(csvBody, statsPayload.snapshot);
   } catch {
     await sleep(retryDelayMs);
-    ({ body: csvBody } = await fetchTextResponse(`${normalizedBaseUrl}${target.districtsCsvPath}`));
+    const retried = await fetchTextResponse(`${normalizedBaseUrl}${target.districtsCsvPath}`);
+    // The retried response is the CSV we ultimately accept, so re-assert cache
+    // protection on it too. The first response's headers no longer apply, and a
+    // post-propagation response missing no-store must still fail the release.
+    assertCacheProtection("district CSV", retried.response);
+    csvBody = retried.body;
     assertCsvMetadataParity(csvBody, statsPayload.snapshot);
   }
   const currentFreshnessDays = freshnessDays(statsPayload.snapshot.sourceSnapshotAt, checkedAt);
@@ -369,10 +374,6 @@ function resolveReleaseTarget(options: { stateSlug?: string; highCourtSlug?: str
 }
 
 export const CSV_PARITY_RETRY_DELAY_MS = 15_000;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 async function fetchJson<T extends z.ZodTypeAny>(url: string, schema: T, expectedStatus = 200): Promise<z.infer<T>> {
   const response = await fetchWithTransientRetry(url, expectedStatus);
