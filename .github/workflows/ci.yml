@@ -145,6 +145,7 @@ jobs:
       PUBLIC_BASE_URL: https://nyaaywatch.in
       CLOUDFLARE_ZONE_NAME: nyaaywatch.in
       CLOUDFLARE_API_TOKEN_SECRET_ARN: ${{ secrets.CLOUDFLARE_API_TOKEN_SECRET_ARN }}
+      CLOUDFLARE_WEB_ANALYTICS_TOKEN: ${{ secrets.CLOUDFLARE_WEB_ANALYTICS_TOKEN }}
 
     steps:
       - name: Checkout repository

@@ -77,6 +77,10 @@ Parameters:
     Type: String
     Default: ""
     Description: Optional Secrets Manager ARN containing the Cloudflare API token for cache invalidation.
+  CloudflareWebAnalyticsToken:
+    Type: String
+    Default: ""
+    Description: Optional Cloudflare Web Analytics site token emitted in public HTML.
   ManageCanonicalRedirectRules:
     Type: String
     Default: "true"
@@ -95,6 +99,7 @@ Conditions:
   HasPublicBaseUrl: !Not [!Equals [!Ref PublicBaseUrl, ""]]
   HasCloudflareZoneName: !Not [!Equals [!Ref CloudflareZoneName, ""]]
   HasCloudflareApiTokenSecretArn: !Not [!Equals [!Ref CloudflareApiTokenSecretArn, ""]]
+  HasCloudflareWebAnalyticsToken: !Not [!Equals [!Ref CloudflareWebAnalyticsToken, ""]]
   ShouldManageCanonicalRedirectRules: !Equals [!Ref ManageCanonicalRedirectRules, "true"]
   HasExistingDatabaseUrlSecretArn: !Not [!Equals [!Ref ExistingDatabaseUrlSecretArn, ""]]
   HasExistingOperatorApiTokenSecretArn: !Not [!Equals [!Ref ExistingOperatorApiTokenSecretArn, ""]]
@@ -546,6 +551,11 @@ Resources:
               - HasCloudflareZoneName
               - Name: CLOUDFLARE_ZONE_NAME
                 Value: !Ref CloudflareZoneName
+              - !Ref AWS::NoValue
+            - !If
+              - HasCloudflareWebAnalyticsToken
+              - Name: CLOUDFLARE_WEB_ANALYTICS_TOKEN
+                Value: !Ref CloudflareWebAnalyticsToken
               - !Ref AWS::NoValue
             - Name: AWS_RUM_APP_MONITOR_ID
               Value: !GetAtt RumAppMonitor.Id
