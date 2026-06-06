@@ -126,6 +126,7 @@ jobs:
             core.setOutput("issue-number", issueNumber);
 
       - name: Publish NJDG outreach SNS alert
+        id: publish_sns
         if: always() && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'recovery-pending')
         env:
           ACTION: ${{ steps.sync_issue.outputs.action }}
@@ -151,7 +152,7 @@ jobs:
             --message file://njdg-outreach-alert.txt
 
       - name: Close recovered NJDG outreach issue
-        if: always() && steps.sync_issue.outputs.action == 'recovery-pending'
+        if: always() && steps.sync_issue.outputs.action == 'recovery-pending' && steps.publish_sns.outcome == 'success'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
