@@ -15,6 +15,7 @@ The signals below are what "on-call" is responsible for. Everything else is norm
 | Public hostname health | `nyaaywatch-production-health-endpoint`, `nyaaywatch-production-alb-target-5xx` | SNS topic `nyaaywatch-production-alerts` |
 | Structured app errors | `nyaaywatch-production-app-errors` | SNS topic `nyaaywatch-production-alerts` |
 | Missed daily internal fetch at 08:00, 08:10, or 08:20 Asia/Kolkata | `ops:verify-internal-fetch-schedule` tier outcome | Same GitHub issue, per-tier block |
+| NJDG missing-zero outreach send failure | `.github/workflows/njdg-missing-zero-outreach.yml` Monday, Wednesday, and Friday schedule | Durable GitHub issue `NJDG outreach failure` and SNS topic `nyaaywatch-production-alerts` |
 
 ## Roles
 

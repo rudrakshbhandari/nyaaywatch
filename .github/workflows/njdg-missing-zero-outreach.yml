@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
   id-token: write
 
 concurrency:
@@ -19,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ap-south-1
+      ALARM_TOPIC_ARN: arn:aws:sns:ap-south-1:723951822728:nyaaywatch-production-alerts
       PUBLIC_BASE_URL: https://nyaaywatch.in
       NJDG_OUTREACH_ARCHIVE_BUCKET: nyaaywatch-production-artifacts-723951822728
       NJDG_OUTREACH_TO: ${{ secrets.NJDG_OUTREACH_TO }}
@@ -45,7 +47,126 @@ jobs:
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
 
       - name: Send cadence-limited NJDG outreach when missing monthly movement persists
+        id: outreach
+        continue-on-error: true
         run: |
+          set +e
           npm run --silent ops:njdg-missing-zero-outreach -- \
             --base-url="$PUBLIC_BASE_URL" \
-            --send
+            --send 2>&1 | tee njdg-outreach-output.log
+          status="${PIPESTATUS[0]}"
+          echo "exit-code=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Sync NJDG outreach issue
+        if: always()
+        id: sync_issue
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          OUTREACH_OUTCOME: ${{ steps.outreach.outcome }}
+          OUTREACH_EXIT_CODE: ${{ steps.outreach.outputs.exit-code }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = "<!-- nyaaywatch-njdg-outreach -->";
+            const title = "NJDG outreach failure";
+            const failed = process.env.OUTREACH_OUTCOME !== "success";
+            const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+            const body = [
+              marker,
+              `Updated: ${new Date().toISOString()}`,
+              `Workflow run: ${runUrl}`,
+              "",
+              failed
+                ? "The scheduled NJDG missing-zero outreach workflow is failing. Emails may not have been accepted by SES."
+                : "The scheduled NJDG missing-zero outreach workflow is green.",
+              "",
+              "## Check",
+              `- Outreach send: ${process.env.OUTREACH_OUTCOME}`,
+              `- Exit code: ${process.env.OUTREACH_EXIT_CODE || "unknown"}`,
+            ].join("\n");
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+
+            const existing = issues.find((issue) => issue.title === title || issue.body?.includes(marker));
+            let action = "noop";
+            let issueNumber = existing?.number ?? "";
+
+            if (failed) {
+              if (existing) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  title,
+                  body,
+                });
+                action = "updated";
+              } else {
+                const created = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                });
+                action = "created";
+                issueNumber = String(created.data.number);
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `NJDG outreach recovered at ${new Date().toISOString()}.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: "closed",
+              });
+              action = "closed";
+              issueNumber = String(existing.number);
+            }
+
+            core.setOutput("action", action);
+            core.setOutput("issue-number", issueNumber);
+
+      - name: Publish NJDG outreach SNS alert
+        if: always() && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'closed')
+        env:
+          ACTION: ${{ steps.sync_issue.outputs.action }}
+          OUTREACH_OUTCOME: ${{ steps.outreach.outcome }}
+          OUTREACH_EXIT_CODE: ${{ steps.outreach.outputs.exit-code }}
+        run: |
+          if [[ "$ACTION" == "closed" ]]; then
+            subject="NyaayWatch NJDG outreach recovered"
+          else
+            subject="NyaayWatch NJDG outreach failure"
+          fi
+
+          {
+            echo "NyaayWatch NJDG missing-zero outreach: $OUTREACH_OUTCOME"
+            echo "Exit code: ${OUTREACH_EXIT_CODE:-unknown}"
+            echo "Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > njdg-outreach-alert.txt
+
+          aws sns publish \
+            --region "$AWS_REGION" \
+            --topic-arn "$ALARM_TOPIC_ARN" \
+            --subject "$subject" \
+            --message file://njdg-outreach-alert.txt
+
+      - name: Fail when NJDG outreach failed
+        if: always()
+        env:
+          OUTREACH_OUTCOME: ${{ steps.outreach.outcome }}
+        run: |
+          if [[ "$OUTREACH_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
