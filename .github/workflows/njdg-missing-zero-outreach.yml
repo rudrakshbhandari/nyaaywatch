@@ -118,19 +118,7 @@ jobs:
                 issueNumber = String(created.data.number);
               }
             } else if (existing) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                body: `NJDG outreach recovered at ${new Date().toISOString()}.`,
-              });
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existing.number,
-                state: "closed",
-              });
-              action = "closed";
+              action = "recovery-pending";
               issueNumber = String(existing.number);
             }
 
@@ -138,13 +126,13 @@ jobs:
             core.setOutput("issue-number", issueNumber);
 
       - name: Publish NJDG outreach SNS alert
-        if: always() && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'closed')
+        if: always() && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'recovery-pending')
         env:
           ACTION: ${{ steps.sync_issue.outputs.action }}
           OUTREACH_OUTCOME: ${{ steps.outreach.outcome }}
           OUTREACH_EXIT_CODE: ${{ steps.outreach.outputs.exit-code }}
         run: |
-          if [[ "$ACTION" == "closed" ]]; then
+          if [[ "$ACTION" == "recovery-pending" ]]; then
             subject="NyaayWatch NJDG outreach recovered"
           else
             subject="NyaayWatch NJDG outreach failure"
@@ -161,6 +149,26 @@ jobs:
             --topic-arn "$ALARM_TOPIC_ARN" \
             --subject "$subject" \
             --message file://njdg-outreach-alert.txt
+
+      - name: Close recovered NJDG outreach issue
+        if: always() && steps.sync_issue.outputs.action == 'recovery-pending'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = Number("${{ steps.sync_issue.outputs.issue-number }}");
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `NJDG outreach recovered at ${new Date().toISOString()}.`,
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              state: "closed",
+            });
 
       - name: Fail when NJDG outreach failed
         if: always()
