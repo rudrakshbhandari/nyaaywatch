@@ -269,7 +269,7 @@ The deploy job:
 - builds a `linux/amd64` image and pushes both the commit-SHA tag and `latest` to `723951822728.dkr.ecr.ap-south-1.amazonaws.com/nyaaywatch-staging`; the repository name is historical and will be renamed separately
 - discovers the live ECS service from `PRODUCTION_STACK_NAME`; the value is `nyaaywatch-production`
 - registers a fresh task definition revision pinned to the commit-SHA image
-- preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, and only wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`
+- preserves ECS `secrets` entries for `DATABASE_URL` and `OPERATOR_API_TOKEN`, wires Cloudflare auth from `CLOUDFLARE_API_TOKEN_SECRET_ARN`, and passes `CLOUDFLARE_WEB_ANALYTICS_TOKEN` when the GitHub secret is configured
 - updates the ECS service and waits for steady state
 - reconciles the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha-ops schedules against the new live task definition
 - keeps cadence-limited NJDG missing-zero outreach sending through the SES-verified `data@nyaaywatch.in` identity with aligned SPF/DKIM/DMARC, BCCs the sender, sets any configured reply-to address, and archives each outbound payload under `s3://nyaaywatch-production-artifacts-723951822728/ops/njdg-missing-zero-outreach/`

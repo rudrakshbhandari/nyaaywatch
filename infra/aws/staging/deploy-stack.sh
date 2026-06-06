@@ -493,6 +493,10 @@ if [[ -n "${CLOUDFLARE_API_TOKEN_SECRET_ARN:-}" ]]; then
   deploy_args+=(CloudflareApiTokenSecretArn="$CLOUDFLARE_API_TOKEN_SECRET_ARN")
 fi
 
+if [[ -n "${CLOUDFLARE_WEB_ANALYTICS_TOKEN:-}" ]]; then
+  deploy_args+=(CloudflareWebAnalyticsToken="$CLOUDFLARE_WEB_ANALYTICS_TOKEN")
+fi
+
 if [[ -n "${EXISTING_DATABASE_URL_SECRET_ARN:-}" ]]; then
   deploy_args+=(ExistingDatabaseUrlSecretArn="$EXISTING_DATABASE_URL_SECRET_ARN")
 fi

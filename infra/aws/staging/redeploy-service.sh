@@ -179,7 +179,7 @@ secret_map = {entry["name"]: entry.get("valueFrom", "") for entry in secrets}
 
 environment_map.pop("CLOUDFLARE_API_TOKEN", None)
 
-for env_name in ("CLOUDFLARE_ZONE_ID", "CLOUDFLARE_ZONE_NAME", "PUBLIC_BASE_URL"):
+for env_name in ("CLOUDFLARE_ZONE_ID", "CLOUDFLARE_ZONE_NAME", "CLOUDFLARE_WEB_ANALYTICS_TOKEN", "PUBLIC_BASE_URL"):
     env_value = os.environ.get(env_name)
     if env_value:
         environment_map[env_name] = env_value
