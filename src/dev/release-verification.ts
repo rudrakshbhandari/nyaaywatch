@@ -376,8 +376,8 @@ function resolveReleaseTarget(options: { stateSlug?: string; highCourtSlug?: str
 export const CSV_PARITY_RETRY_DELAY_MS = 15_000;
 
 async function fetchJson<T extends z.ZodTypeAny>(url: string, schema: T, expectedStatus = 200): Promise<z.infer<T>> {
-  const response = await fetchWithTransientRetry(url, expectedStatus);
-  return schema.parse(await readResponse(url, response, expectedStatus));
+  const { body } = await fetchWithTransientRetry(url, expectedStatus);
+  return schema.parse(body);
 }
 
 async function fetchText(url: string, expectedStatus = 200): Promise<string> {
@@ -385,25 +385,26 @@ async function fetchText(url: string, expectedStatus = 200): Promise<string> {
 }
 
 async function fetchTextResponse(url: string, expectedStatus = 200): Promise<{ body: string; response: Response }> {
-  const response = await fetchWithTransientRetry(url, expectedStatus);
-  const body = await readResponse(url, response, expectedStatus);
+  const { body, response } = await fetchWithTransientRetry(url, expectedStatus);
   if (typeof body !== "string") {
     throw new Error(`Expected text response from ${url}.`);
   }
   return { body, response };
 }
 
-async function fetchWithTransientRetry(url: string, expectedStatus: number): Promise<Response> {
+async function fetchWithTransientRetry(url: string, expectedStatus: number): Promise<{ body: unknown; response: Response }> {
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= FETCH_RETRY_DELAYS_MS.length; attempt += 1) {
     try {
       const response = await fetch(url);
-      if (response.status === expectedStatus || !TRANSIENT_HTTP_STATUSES.has(response.status)) {
-        return response;
-      }
-      if (attempt === FETCH_RETRY_DELAYS_MS.length) {
-        return response;
+      const shouldRetryStatus =
+        response.status !== expectedStatus &&
+        TRANSIENT_HTTP_STATUSES.has(response.status) &&
+        attempt < FETCH_RETRY_DELAYS_MS.length;
+      if (!shouldRetryStatus) {
+        const body = await readResponse(url, response, expectedStatus);
+        return { body, response };
       }
       lastError = new Error(`Transient HTTP ${response.status}`);
     } catch (error) {
