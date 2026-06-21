@@ -43,10 +43,10 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
 
-      - name: Run publish-pending ECS task
+      - name: Trigger publish-pending schedule
         run: |
-          chmod +x infra/aws/staging/run-publish-pending.sh
-          infra/aws/staging/run-publish-pending.sh "$STACK_NAME"
+          chmod +x infra/aws/staging/trigger-publish-pending-schedule.sh
+          infra/aws/staging/trigger-publish-pending-schedule.sh "$STACK_NAME"
 
       - name: Load live operator token
         run: |
