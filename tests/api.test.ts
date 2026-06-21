@@ -215,6 +215,7 @@ describe("HTTP routes", () => {
     expect(oldCaseWatchroom.status).toBe(200);
     expect(oldCaseWatchroom.text).toContain("Old-case burden watchroom");
     expect(oldCaseWatchroom.text).toContain("Where are long waits concentrated in lower courts?");
+    expect(oldCaseWatchroom.text).toContain("3+ year share (%)");
     expect(oldCaseWatchroom.text).toContain("Punjab");
     expect(oldCaseWatchroom.text).toContain("37.5%");
     expect(oldCaseWatchroom.text).toContain("Amritsar");
