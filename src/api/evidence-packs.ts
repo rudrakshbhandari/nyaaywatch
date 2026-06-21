@@ -14,7 +14,7 @@ export function buildDistrictEvidencePack(
 ) {
   const pagePath = context.routes.district(district.districtId);
   const packPath = context.routes.districtEvidencePack(district.districtId);
-  const snapshotDate = formatDate(snapshot.sourceSnapshotAt);
+  const snapshotDate = formatDate(snapshot.referenceDateAt);
 
   return {
     packType: "district_evidence_pack",
@@ -83,7 +83,7 @@ export function buildDistrictEvidencePack(
     },
     citation: {
       plain: `NyaayWatch. "${district.districtName} District Court Backlog." ${snapshotDate}. ${snapshot.sourceAttribution}. ${SITE_ORIGIN}${pagePath}`,
-      note: "Cite the district evidence page as the source of the public number. Use this JSON pack to keep the source date, methodology, CSV, and caveats together.",
+      note: "Cite the district evidence page as the source of the public number. Use this JSON pack to keep the reference date, source date when available, methodology, CSV, and caveats together.",
     },
     caveats: buildEvidenceCaveats(),
     safety: buildEvidenceSafety(),
@@ -165,8 +165,8 @@ export function buildStateEvidencePack(snapshot: PublishedSnapshot, context: Pub
       trendsApi: context.routes.trendsApi,
     },
     citation: {
-      plain: `NyaayWatch. "${snapshot.snapshot.stateName} Lower-Court Backlog." ${formatDate(snapshot.snapshot.sourceSnapshotAt)}. ${snapshot.snapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.home}`,
-      note: "Cite the state or Union Territory page as the source of the public number. Use this JSON pack to keep the source date, methodology, CSV, and caveats together.",
+      plain: `NyaayWatch. "${snapshot.snapshot.stateName} Lower-Court Backlog." ${formatDate(snapshot.snapshot.referenceDateAt)}. ${snapshot.snapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.home}`,
+      note: "Cite the state or Union Territory page as the source of the public number. Use this JSON pack to keep the reference date, source date when available, methodology, CSV, and caveats together.",
     },
     caveats: buildEvidenceCaveats(),
     safety: buildEvidenceSafety(),
@@ -176,6 +176,8 @@ export function buildStateEvidencePack(snapshot: PublishedSnapshot, context: Pub
 function buildSnapshotEvidence(snapshot: PublishedSnapshot["snapshot"]) {
   return {
     sourceSnapshotAt: snapshot.sourceSnapshotAt,
+    referenceDateAt: snapshot.referenceDateAt,
+    referenceDateKind: snapshot.referenceDateKind,
     publishedAt: snapshot.publishedAt,
     methodologyVersion: snapshot.methodologyVersion,
     qualityState: snapshot.qualityState,

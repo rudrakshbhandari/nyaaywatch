@@ -68,7 +68,7 @@ export function buildViewModel(snapshot: PublishedSnapshot): HomeViewModel {
     trendsOldestFirst: trends,
     backlogDelta,
     backlogDeltaPct,
-    sourceDateLabel: formatDate(snapshot.snapshot.sourceSnapshotAt),
+    sourceDateLabel: formatDate(snapshot.snapshot.referenceDateAt),
     methodologyVersion: snapshot.snapshot.methodologyVersion,
     sourceAttribution: snapshot.snapshot.sourceAttribution,
     freshnessDays: snapshot.snapshot.freshnessDays,
@@ -85,6 +85,14 @@ export function formatDate(iso: string): string {
     month: "long",
     year: "numeric",
   });
+}
+
+export function describeLowerCourtReferenceDate(
+  snapshot: Pick<PublishedSnapshot["snapshot"], "referenceDateAt" | "referenceDateKind">,
+): string {
+  return snapshot.referenceDateKind === "captured_at"
+    ? `Captured ${formatDate(snapshot.referenceDateAt)}`
+    : `Source snapshot ${formatDate(snapshot.referenceDateAt)}`;
 }
 
 export function formatMonth(iso: string): string {

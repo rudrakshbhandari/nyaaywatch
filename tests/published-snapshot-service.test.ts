@@ -130,7 +130,7 @@ describe("PublishedSnapshotService", () => {
     expect(detail?.history[1]?.snapshotDate).toBe("2026-04-10T00:00:00.000Z");
     expect(history).toHaveLength(2);
     expect(history[0]?.snapshot.methodologyVersion).toBe("2026.03-alpha");
-    expect(statewideCsv).toContain("snapshot_date,published_at,methodology_version");
+    expect(statewideCsv).toContain("snapshot_date,source_snapshot_at,reference_date_kind,published_at,methodology_version");
     expect(statewideCsv).toContain("summary");
     expect(districtCsv).toContain("2026-03-31T00:00:00.000Z");
     expect(districtCsv).toContain("2026-04-10T00:00:00.000Z");
