@@ -130,11 +130,11 @@ export class NewsletterService {
     const { stats, snapshot: meta, districts } = snapshot;
     const topDistrict = districts[0];
     const stateUrl = `${baseUrl}/states/${stateSlug}`;
-    const subject = `NyaayWatch snapshot: ${meta.stateName} · ${meta.sourceSnapshotAt.slice(0, 10)}`;
+    const subject = `NyaayWatch snapshot: ${meta.stateName} · ${meta.referenceDateAt.slice(0, 10)}`;
 
     const text = [
       `NyaayWatch — ${meta.stateName} snapshot`,
-      `Published: ${meta.sourceSnapshotAt.slice(0, 10)}`,
+      `Published: ${meta.referenceDateAt.slice(0, 10)}`,
       `Methodology: ${meta.methodologyVersion}`,
       "",
       "HEADLINE NUMBERS",

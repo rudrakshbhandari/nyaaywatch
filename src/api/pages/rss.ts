@@ -26,7 +26,7 @@ export function renderRssFeed(opts: {
     const snap = entry.snapshot;
     const pubDate = new Date(entry.publication.createdAt).toUTCString();
     const guid = `${link}#publication-${escapeXml(entry.publication.id)}`;
-    const itemTitle = `${escapeXml(snap.stateName)} snapshot · ${snap.sourceSnapshotAt.slice(0, 10)}`;
+    const itemTitle = `${escapeXml(snap.stateName)} snapshot · ${snap.referenceDateAt.slice(0, 10)}`;
     const itemDesc = buildItemDescription(entry, currentSnapshot);
 
     return `  <item>
@@ -57,7 +57,7 @@ function buildItemDescription(
   current: PublishedSnapshot | null,
 ): string {
   const lines: string[] = [
-    `<strong>${entry.snapshot.stateName}</strong> — snapshot published ${entry.snapshot.sourceSnapshotAt.slice(0, 10)}`,
+    `<strong>${entry.snapshot.stateName}</strong> — snapshot published ${entry.snapshot.referenceDateAt.slice(0, 10)}`,
     `<br>Methodology: ${entry.snapshot.methodologyVersion}`,
     `<br>Source: ${entry.snapshot.sourceAttribution}`,
   ];
