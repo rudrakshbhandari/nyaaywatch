@@ -14,7 +14,7 @@ Read these files first:
 6. `docs/ENG_REVIEW_TEST_PLAN.md`
 7. `TODOS.md`
 
-This project is Himachal-first, snapshot-based, and evidence-first. Do not add product claims or UX that contradict those constraints.
+This project is India-first, snapshot-based, and evidence-first. The current public alpha covers the Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies. Do not add product claims or UX that imply live data, predictive analysis, legal conclusions, or unsupported parity across court tiers.
 
 ## Workflow
 

@@ -1,8 +1,8 @@
 # NyaayWatch MVP Execution Plan
 
-Living execution plan for the Himachal Pradesh alpha MVP.
+Historical execution plan for the completed Himachal Pradesh alpha MVP.
 
-This file is the canonical task sequence for building NyaayWatch to MVP from the current repository state. It is intended to be the single file a human or AI agent can read to determine the next highest-leverage task.
+This file records the task sequence that got NyaayWatch to its original Himachal alpha MVP. It is no longer the current scope source of truth. For current India-first public coverage, start with `README.md`, `docs/INDIA_COURT_COVERAGE_AUDIT.md`, and `TODOS.md`.
 
 If this file conflicts with `README.md`, `DESIGN.md`, `docs/NYAAYWATCH_DESIGN.md`, or `docs/ENG_REVIEW_TEST_PLAN.md`, update this plan so it matches those source docs or intentionally update those docs in the same change.
 
@@ -10,13 +10,14 @@ If this file conflicts with `README.md`, `DESIGN.md`, `docs/NYAAYWATCH_DESIGN.md
 
 Use this plan for:
 
-- determining the next implementation task
-- understanding which MVP items are already complete
-- tracking what remains open and what blocks later work
+- understanding which original MVP items were completed
+- preserving the historical launch sequence
+- checking whether a proposed change reopens an old MVP assumption
 - forcing each task to have a concrete done condition
 
 Do not use this file for:
 
+- determining the current implementation scope
 - speculative post-MVP ideas
 - broad product brainstorming
 - duplicating detailed methodology or design-system rules that already live elsewhere
@@ -26,19 +27,15 @@ Do not use this file for:
 When starting a new implementation task:
 
 1. Read `AGENTS.md`.
-2. Read this file.
-3. Find the first unchecked task in the earliest active milestone.
-4. Complete that task or a clearly scoped subset if the user narrows the ask.
-5. Update this file in the same PR:
-   - check completed boxes
-   - add a short completion note with the PR or commit if available
-   - update blockers or sequencing only if reality changed
+2. Read `README.md`, `docs/INDIA_COURT_COVERAGE_AUDIT.md`, and `TODOS.md`.
+3. Read this file only when the work touches historical MVP assumptions.
+4. Update this file only when a change intentionally reinterprets or archives part of the original MVP record.
 
 ## Anti-Staleness Rules
 
 This file should stay useful over time. To prevent drift:
 
-- Only list MVP-critical work in the main milestones.
+- Keep this as a historical MVP record, not an active roadmap.
 - Every unchecked item must be actionable in one focused implementation slice.
 - Every checked item should have shipped code or an intentional doc decision behind it.
 - If a task is superseded, rewrite or remove it in the same PR that changes direction.
@@ -58,15 +55,15 @@ Already shipped:
 - initial homepage, district, methodology, and API surfaces
 - local PostgreSQL plus LocalStack development stack
 
-Main gap to MVP:
+Main gap to original MVP:
 
-- none inside the current Himachal alpha MVP path
+- none
 
 ## Next Recommended Task
 
 MVP-critical phases are complete.
 
-There is no remaining approved-state rollout work inside the current roadmap. Pull any next task from `TODOS.md` only if it is maintenance or a deliberate expansion beyond the currently supported states.
+There is no remaining work inside the original Himachal alpha MVP path. Pull current tasks from `TODOS.md` and confirm current public scope against `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md`.
 
 ## MVP Definition
 

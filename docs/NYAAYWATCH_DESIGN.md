@@ -1,31 +1,31 @@
 # NyaayWatch Design
 
-Source of truth copied from the approved `/office-hours` design artifact so the repo can travel cleanly across new Codex threads.
+Source of truth for product-specific route hierarchy, trust-surface rationale, and IA decisions. Earlier Himachal-first launch language has been superseded by the current India-first public alpha described in `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md`.
 
 ## Canonical Product Definition
 
-NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable, starting with Himachal Pradesh and expanding over time toward nationwide Indian coverage.
+NyaayWatch makes Indian court-system data transparent and usable so the public can hold the judiciary accountable across India's Supreme Court, High Courts, and district/subordinate courts through reviewed, versioned snapshots.
 
 ## Problem Statement
 
-Build a public judicial observability layer for Himachal Pradesh first, with an explicit path to broader Indian coverage only after the trust model proves itself. The long-term ambition is nationwide Indian observability, but the near-term job is to turn hard-to-use Himachal court-system aggregates into legible, trustworthy public evidence without pretending the whole country is already covered.
+Build a public judicial observability layer for India that keeps each court tier methodologically honest. The current product covers the Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies, while avoiding fake cross-tier comparability or unsupported live-data claims.
 
-The first version should let an ordinary citizen, reporter, or civic group answer:
+The public alpha should let an ordinary citizen, reporter, or civic group answer:
 
-- How large is the backlog in Himachal Pradesh?
-- Which districts are getting worse?
+- How large is the backlog in the Supreme Court, a High Court, a state, a Union Territory, or a district?
+- Which geographies are getting worse within a comparable tier?
 - How old are pending cases?
 - Is filing outpacing disposal?
-- Which districts look unusually slow right now?
+- Which districts or courts show pressure signals in the latest published snapshot?
 
 ## Release Posture
 
-NyaayWatch v1 should launch as a clearly labeled public alpha with:
+NyaayWatch v1 should remain a clearly labeled public alpha with:
 
 - explicit scope limits
 - explicit data caveats
 - visible freshness and methodology metadata
-- clear language that the Himachal observability model is being proven before wider rollout
+- clear language that all public metrics come from reviewed snapshots, not live or predictive analysis
 
 ## Open Source Posture
 
@@ -81,35 +81,35 @@ The alpha is not trying to become:
 - an AI legal analysis system
 - a petitions or campaigning platform
 - a general-purpose legal research suite
-- a nationwide parity product from day one
+- a fake parity product that treats unlike court tiers as directly comparable
 - a live real-time monitoring system
-- a broad judicial API platform beyond the narrow Himachal observability read model
+- a broad judicial API platform beyond the published snapshot read models
 
 ## Chosen Architecture
 
 Snapshot Observatory:
 
-- one state: Himachal Pradesh
+- one India-first product shell across the Supreme Court, High Courts, and lower-court state/Union Territory geographies
 - one trust model: every number comes from a dated public snapshot
 - one public front door: a Supreme Court-first national overview with explicit lower-court drilldowns
 - one urgency layer: anomaly callouts
 - one enabling layer: public exports and developer-friendly API endpoints
 
-The alpha should be architected so the same model can expand state by state across India over time. The public front door may now stage multiple court tiers, but lower-court evidence should stay explicit, tier-aware, and anchored to approved published snapshots rather than collapsing into one fake national scoreboard.
+The public front door stages multiple court tiers, but lower-court evidence stays explicit, tier-aware, and anchored to approved published snapshots rather than collapsing into one fake national scoreboard.
 
 ## Current Implementation Note
 
-The repository now ships a narrow alpha reference implementation of this architecture:
+The repository now ships an India-first public alpha implementation of this architecture:
 
 - one Node/TypeScript service with an operator boundary and public boundary
-- server-rendered public pages for `/`, `/states/:stateSlug`, `/districts`, `/districts/:id`, `/data`, `/methodology`, and `/api`
+- server-rendered public pages for `/`, `/supreme-court`, `/high-courts`, `/high-courts/:courtSlug`, `/states/:stateSlug`, `/districts`, `/districts/:id`, `/data`, `/methodology`, and `/api`
 - public JSON for `GET /v1/stats/himachal`, `GET /v1/districts`, and `GET /v1/trends`
-- narrow public Supreme Court and High Court beta routes with tier-specific methodology, data, and API surfaces
-- explicit state-scoped public routes for additional approved states via `/states/:stateSlug/...` and `/v1/states/:stateSlug/...`
+- public Supreme Court and High Court beta routes with tier-specific methodology, data, and API surfaces
+- explicit state/Union Territory-scoped public routes for all 36 lower-court NJDG selector geographies via `/states/:stateSlug/...` and `/v1/states/:stateSlug/...`
 - PostgreSQL-backed run, publication, and published-snapshot state plus S3-backed raw evidence artifacts
 - published district-history and CSV export surfaces that stay inside the active public snapshot lineage
 
-This does not change the intended production direction. It proves the public trust boundary first while letting `/` act as a tier-aware national front door, while Himachal remains the default lower-court proof surface through explicit state pages and the legacy unscoped lower-court routes.
+Himachal remains only the legacy unscoped lower-court default for compatibility. It is no longer the product scope.
 
 ## Credit-Aware Infrastructure Direction
 
@@ -149,7 +149,7 @@ The homepage should prioritize content in this order:
 1. Supreme Court headline and one-sentence framing
 2. Apex-tier toplines with a compact freshness/source/methodology line nearby
 3. High Courts beta directory
-4. District/subordinate courts handoff using Himachal as the default proof surface
+4. District/subordinate courts handoff using the lower-court state and Union Territory coverage directory
 5. Lower-court state coverage directory and drilldowns
 6. Supporting trust actions: methodology, data, API docs
 
@@ -195,10 +195,10 @@ Homepage
 
 The alpha information architecture should separate overview from browsing so the product can scale beyond one state without turning the homepage into a dense control panel.
 
-- `/` is the statewide front page for the latest published snapshot, toplines, trend, flagged signals, and trust context
-- `/districts` is the main district-browsing workspace for ranking, scanning, filtering, and opening district permalinks for the default state
-- `/districts/:id` is the durable evidence page for a specific district in the default state
-- `/states/:stateSlug` is the explicit state-scoped overview page for any additional approved state
+- `/` is the national front page for the latest published tier snapshots, toplines, pressure signals, and trust context
+- `/districts` is the legacy unscoped district-browsing workspace for ranking, scanning, filtering, and opening district permalinks
+- `/districts/:id` is the durable evidence page for a specific district in the legacy unscoped lower-court geography
+- `/states/:stateSlug` is the explicit state/Union Territory-scoped overview page for supported lower-court geographies
 - `/states/:stateSlug/districts` and `/states/:stateSlug/districts/:id` are the equivalent state-scoped district browsing and district evidence surfaces
 - `/methodology` explains formulas, caveats, snapshot semantics, and change history
 - `/data` or an equivalent download surface handles CSV exports and public data access
@@ -206,17 +206,15 @@ The alpha information architecture should separate overview from browsing so the
 
 For alpha, the homepage may show a short preview of the district ranking, but it should hand off quickly to `/districts` for full browsing. This keeps the landing experience legible now and creates a clean place to absorb future state, metric, and filtering complexity.
 
-### National Expansion IA Guardrail
+### India-First IA Guardrail
 
-The structure should scale from "one state with many districts" to "many states with their own district systems" by preserving a consistent hierarchy:
+The structure should preserve a consistent hierarchy across all lower-court geographies:
 
 1. Geography overview page
 2. Geography-specific district index
 3. District evidence page
 
-Alpha should implement this hierarchy for Himachal now rather than forcing a future redesign when additional states are added.
-
-Alpha should not expose empty national scaffolding such as disabled state pickers, placeholder maps, or "coming soon" geography controls. It should instead state clearly in copy that NyaayWatch is starting with Himachal Pradesh and is being designed to expand across India over time once the trust model is proven.
+The alpha should not expose empty scaffolding such as disabled pickers, placeholder maps, or "coming soon" geography controls. It should state current coverage exactly: Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies, with tier-specific caveats where source shape or methodology differs.
 
 ### District Evidence Page Hierarchy
 
@@ -349,7 +347,7 @@ Before the first trustworthy public snapshot is published, the homepage should s
 
 The pre-publish homepage should include:
 
-- a clear statement that NyaayWatch is starting with Himachal Pradesh
+- a clear statement of the current published scope for each court tier
 - a plain explanation that the first public snapshot has not been published yet
 - a short explanation of what will appear once publication is ready
 - a methodology link so users can inspect how claims will be made

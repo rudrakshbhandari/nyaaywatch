@@ -6,7 +6,7 @@ This document is intentionally source-linked and evidence-first. It is meant to 
 
 ## Why This Exists
 
-NyaayWatch is designed to expand over time, but the public data surface across the Indian judiciary is uneven:
+NyaayWatch now covers the Indian court hierarchy at the aggregate observability layer, but the public data surface across the judiciary is still uneven:
 
 - district and subordinate court aggregates are relatively strong
 - High Court aggregates are public, but not identical in shape to district data
@@ -119,13 +119,13 @@ Also note:
 
 ### Credible Scope Today
 
-Using only what is publicly available today, NyaayWatch can credibly aim for:
+Using only what is publicly available today, NyaayWatch can credibly maintain:
 
-1. Himachal district and subordinate court observability from NJDG-derived aggregate snapshots.
-2. Himachal High Court context using HC-NJDG and official High Court service surfaces.
-3. Supreme Court national context using SCDG and official Supreme Court judgment/order surfaces.
-4. Nationwide benchmark context across tiers using NJDG and OGD datasets, provided public UX stays explicit that the alpha product itself remains Himachal-first.
-5. Link-outs to official case-status, cause-list, order, and judgment pages where NyaayWatch does not yet maintain its own normalized evidence model.
+1. Supreme Court observability using SCDG and official Supreme Court surfaces.
+2. High Court observability for all 25 HC NJDG selector-backed High Court profiles, with court-specific methodology caveats.
+3. District and subordinate court observability for all 36 lower-court state and Union Territory selector geographies from NJDG-derived aggregate snapshots.
+4. Tier-aware benchmark context using NJDG and OGD datasets, provided public UX stays explicit about source shape and comparison limits.
+5. Link-outs to official case-status, cause-list, order, and judgment pages where NyaayWatch does not maintain its own normalized evidence model.
 
 ### Not Credible Yet
 
@@ -137,26 +137,26 @@ Based on public availability today, NyaayWatch should not position itself as:
 - a complete document repository for all orders and judgments
 - a product with guaranteed parity across every court tier and state
 
-The long-term ambition can still be "all tiers of the judiciary," but the realistic path is:
+The public product can cover all tiers at the aggregate snapshot layer, but the realistic path beyond that remains:
 
 1. aggregate observability first
-2. state-by-state reproducible expansion second
+2. source-by-source and metric-by-metric reproducible expansion second
 3. deeper document and case-level enrichment only where public availability, terms, and data quality actually support it
 
 ## Recommended Product Stance
 
 This research supports keeping the current product strategy intact, with a sharper statement of scope:
 
-- alpha should stay Himachal-first
+- alpha should stay India-first at the aggregate observability layer
 - alpha should stay snapshot-based
 - alpha should prefer aggregate observability over case-level breadth
-- alpha should treat Supreme Court and High Court data primarily as contextual layers until comparable normalized evidence is in place
-- expansion should target cross-tier observability before attempting comprehensive record access
+- alpha should treat cross-tier comparisons carefully until comparable normalized evidence is in place
+- expansion beyond aggregate observability should target evidence-backed depth before comprehensive record access
 
 In plain terms:
 
-- NyaayWatch can aspire to cover the Supreme Court, High Courts, and the district/subordinate system
-- but the realistic public-data-backed version of that ambition is an evidence-backed observability product, not a full judicial-record platform
+- NyaayWatch covers the Supreme Court, High Courts, and the district/subordinate system at the published snapshot layer
+- but the public-data-backed product is an evidence-backed observability product, not a full judicial-record platform
 
 ## Claim And Provenance Rules
 
@@ -168,9 +168,7 @@ Future product and doc work should preserve these rules:
 - avoid calling dashboard values `live` or `real-time`
 - avoid redistributing raw upstream artifacts until terms and redistribution posture are explicitly reviewed
 
-## Implications For The Current MVP
-
-No change to the immediate Himachal alpha plan is required.
+## Implications For The Current Public Alpha
 
 The research reinforces these repo decisions already in place:
 
@@ -182,6 +180,6 @@ The research reinforces these repo decisions already in place:
 What should change is documentation clarity:
 
 - future contributors should have a clear source inventory
-- the repo should be explicit that cross-tier public coverage exists, but in asymmetrical forms
-- the repo should be explicit that "all courts" is a staged aggregate-observability roadmap, not an immediate full-record claim
+- the repo should stay explicit that cross-tier public coverage exists in asymmetrical forms
+- the repo should be explicit that "all courts" means aggregate observability over published snapshots, not a full-record claim
 - the repo should record a launch-specific public exposure policy for raw artifacts versus normalized published exports

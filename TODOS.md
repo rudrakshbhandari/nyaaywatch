@@ -2,7 +2,7 @@
 
 > For repo maintainers. Not user-facing.
 
-`docs/MVP_EXECUTION_PLAN.md` is the ordered path to the Himachal alpha MVP.
+`docs/MVP_EXECUTION_PLAN.md` is the historical record for the completed Himachal alpha MVP. Current public scope lives in `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md`.
 
 Use this file for:
 
