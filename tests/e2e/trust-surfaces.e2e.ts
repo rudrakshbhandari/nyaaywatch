@@ -1,7 +1,19 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const TRUST_ROUTES = ["/", "/supreme-court", "/high-courts", "/districts", "/districts/kangra", "/watch/old-case-burden", "/data", "/methodology", "/learn"];
+const TRUST_ROUTES = [
+  "/",
+  "/supreme-court",
+  "/high-courts",
+  "/districts",
+  "/districts/kangra",
+  "/watch",
+  "/watch/old-case-burden",
+  "/watch/persistent-pressure",
+  "/data",
+  "/methodology",
+  "/learn",
+];
 const RESPONSIVE_ROUTES = [
   "/",
   "/supreme-court",
@@ -18,7 +30,9 @@ const RESPONSIVE_ROUTES = [
   "/states/himachal/methodology",
   "/states/himachal/api",
   "/districts",
+  "/watch",
   "/watch/old-case-burden",
+  "/watch/persistent-pressure",
   "/data",
   "/methodology",
   "/api",

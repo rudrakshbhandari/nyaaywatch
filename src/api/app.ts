@@ -29,7 +29,9 @@ import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderLearnPage } from "./pages/learn.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
 import { renderOldCaseWatchroomPage, type OldCaseWatchroomEntry } from "./pages/old-case-watchroom.js";
+import { renderPersistentPressureWatchroomPage } from "./pages/persistent-pressure-watchroom.js";
 import { renderPressPage } from "./pages/press.js";
+import { renderWatchIndexPage } from "./pages/watch-index.js";
 import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
 import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
 import { renderDistrictEmbedWidget, renderStateEmbedWidget } from "./pages/embed.js";
@@ -170,7 +172,9 @@ export function createApp(
         origin + "/api",
         origin + "/learn",
         origin + "/press",
+        origin + "/watch",
         origin + "/watch/old-case-burden",
+        origin + "/watch/persistent-pressure",
         origin + "/high-courts",
         origin + "/supreme-court",
       ];
@@ -707,15 +711,41 @@ export function createApp(
   });
 
   app.get(
+    "/watch",
+    asyncRoute(async (_request, response) => {
+      const entries = await listWatchroomEntries(publicServices);
+      if (entries.length === 0) {
+        response.status(503).send(renderEmptyState("Watchrooms", "No lower-court public data is available yet."));
+        return;
+      }
+
+      response.send(renderWatchIndexPage(entries));
+    }),
+  );
+
+  app.get(
     "/watch/old-case-burden",
     asyncRoute(async (_request, response) => {
-      const entries = await listOldCaseWatchroomEntries(publicServices);
+      const entries = await listWatchroomEntries(publicServices);
       if (entries.length === 0) {
         response.status(503).send(renderEmptyState("Old-Case Burden Watchroom", "No lower-court public data is available yet."));
         return;
       }
 
       response.send(renderOldCaseWatchroomPage(entries));
+    }),
+  );
+
+  app.get(
+    "/watch/persistent-pressure",
+    asyncRoute(async (_request, response) => {
+      const entries = await listWatchroomEntries(publicServices);
+      if (entries.length === 0) {
+        response.status(503).send(renderEmptyState("Persistent Pressure Watchroom", "No lower-court public data is available yet."));
+        return;
+      }
+
+      response.send(renderPersistentPressureWatchroomPage(entries));
     }),
   );
 
@@ -1818,7 +1848,7 @@ async function listAvailablePublicProfiles(publicServices: PublicServiceMap, cur
   return profiles.filter((profile): profile is NjdgStateProfile => profile !== null);
 }
 
-async function listOldCaseWatchroomEntries(publicServices: PublicServiceMap): Promise<OldCaseWatchroomEntry[]> {
+async function listWatchroomEntries(publicServices: PublicServiceMap): Promise<OldCaseWatchroomEntry[]> {
   const entries = await Promise.all(
     listPublicStateProfiles().map(async (profile) => {
       const service = publicServices[profile.stateCode];
