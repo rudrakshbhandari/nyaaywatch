@@ -1,12 +1,12 @@
 # Multi-State Expansion Readiness Gates
 
-Post-MVP policy for deciding whether NyaayWatch should expand beyond Himachal Pradesh.
+Post-MVP policy that recorded how NyaayWatch should expand beyond Himachal Pradesh.
 
-This document exists to keep "Himachal first" operational rather than rhetorical. A new geography should ship only after it clears explicit trust, data, and operational gates.
+This document is now a historical policy reference. The lower-court public rollout has completed for all 36 state and Union Territory selector geographies, and the High Court public beta covers all 25 HC NJDG selector-backed High Court profiles. Keep the gates below as the standard for future new source classes, methodology shifts, or deeper non-aggregate coverage.
 
 ## Decision Rule
 
-Expansion is allowed only when a candidate geography clears every `required` gate below.
+Expansion is allowed only when a candidate geography, tier, source class, or deeper coverage mode clears every `required` gate below.
 
 Failing any required gate means:
 
@@ -18,11 +18,11 @@ Failing any required gate means:
 
 These gates apply before NyaayWatch publicly adds:
 
-- another Indian state to the district/subordinate court observability product
-- a new public court tier with different source shape, such as High Court or Supreme Court surfaces
-- any broader public UX that implies multi-state readiness
+- a new source class or metric family
+- deeper document, case-level, or historical coverage beyond aggregate snapshots
+- any broader public UX that implies a new kind of readiness
 
-They do not require the repo to stay Himachal-only forever. They require expansion to be earned.
+They no longer describe the current geographic rollout queue. That queue is complete for the current aggregate observability layer.
 
 ## Required Gates
 
@@ -124,7 +124,7 @@ Required:
 
 Do not expand if:
 
-- the UX would imply broad national coverage before it exists
+- the UX would imply a deeper kind of national coverage than actually exists
 - the homepage would become a vague multi-state shell with thin trust context
 - the product would add breadth at the cost of legibility
 
@@ -165,8 +165,10 @@ Decision values:
 
 ## Current Policy Implication
 
-Himachal Pradesh remains the default reference geography for the public alpha.
+The original geography expansion path has completed for the current aggregate observability layer:
 
-Punjab has now cleared the narrow public expansion path and is live only through explicit `/states/punjab/...` routes rather than a nationwide shell.
+- Supreme Court is public.
+- All 25 HC NJDG selector-backed High Court profiles are public beta.
+- All 36 lower-court state and Union Territory selector geographies are public alpha.
 
-This document does not itself approve any further state or tier. It defines the bar they must clear.
+This document does not override the current scope in `README.md` or `docs/INDIA_COURT_COVERAGE_AUDIT.md`. It defines the bar for future expansion beyond the current aggregate snapshot model.

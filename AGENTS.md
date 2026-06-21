@@ -33,7 +33,7 @@ Never make code or documentation changes before branch creation succeeds and the
 
 ## Critical Product Guardrails
 
-- Build for Himachal Pradesh first. Do not add nationwide scaffolding to public UX unless explicitly requested.
+- Build for India-first public coverage across the configured Supreme Court, High Court, and lower-court state/Union Territory surfaces. Do not add unsupported national claims, fake cross-tier totals, or placeholder coverage scaffolding.
 - Treat public data as snapshot-based, not live.
 - Do not make predictive, AI-forward, or legal-analysis claims.
 - Every public metric must have reproducible provenance from stored evidence.

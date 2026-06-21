@@ -7,7 +7,7 @@ This document is for the one-shot comms moment — the point at which `https://n
 ## Goals
 
 - Put NyaayWatch in front of the narrow audience that can actually check our work.
-- Set expectations that match the product guardrails in `README.md`: snapshot-based, transparency-first, Himachal-first for lower-courts, Supreme Court-first nationally, eleven High Court betas today.
+- Set expectations that match the product guardrails in `README.md`: snapshot-based, transparency-first, India-first aggregate observability across the Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies.
 - Create a record of where we announced and what we said, so the next round of operators can see what we already committed to in public.
 
 ## Audience Priority
@@ -26,7 +26,7 @@ Do not launch by posting to high-traffic aggregators. The ops cadence (`docs/REL
 Everything below applies to every external message, whether it is a DM, a post, or a footer on a blog.
 
 - Call it a "public alpha" or "snapshot-based public alpha". Do not call it a "product", "platform", or "dashboard" without qualifier.
-- Name the scope explicitly: Supreme Court, eleven High Court betas (current count from `README.md`), and twenty-eight supported lower-court states with Himachal Pradesh as the default proof surface.
+- Name the scope explicitly: Supreme Court, all 25 High Court betas, and all 36 supported lower-court state and Union Territory geographies. Himachal Pradesh remains only the legacy unscoped lower-court default.
 - Do not imply real-time monitoring, prediction, or legal verdicts. This is the same rule as the public-copy rule in `docs/RELEASE_POLICY.md`.
 - Link the methodology page for whichever scope the reader will care about, not the homepage.
 - If asked about accuracy, point at provenance, not certainty. Every number traces back to a stored NJDG snapshot and a published publication id.
@@ -36,7 +36,7 @@ Everything below applies to every external message, whether it is a DM, a post, 
 The following must be in place before the first message in the Audience Priority list. If any is missing, hold.
 
 - [ ] `robots.txt` served at `https://nyaaywatch.in/robots.txt`, permitting public crawl of public routes and disallowing `/operator/`.
-- [ ] Homepage methodology link reachable in one click for every currently live scope (Supreme Court, each High Court beta, Himachal lower-court).
+- [ ] Homepage methodology link reachable in one click for every currently live scope (Supreme Court, each High Court beta, and lower-court state/Union Territory pages).
 - [ ] `docs/ALPHA_RELEASE_CHECKLIST.md` up to date for the latest publication, so external readers who inspect the repo see a checklist that matches what is actually live.
 - [ ] On-call primary and backup named in `docs/ON_CALL_POLICY.md` with the expected working-hours window explicitly recorded.
 - [ ] Ops watchdog green: `nyaaywatch-production-public-alpha-ops` alarm not in `ALARM`, no open `Ops watchdog failure` GitHub issue.
