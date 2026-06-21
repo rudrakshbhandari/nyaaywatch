@@ -14,7 +14,8 @@
   <a href="https://nyaaywatch.in/press">Press & embed kit</a> ·
   <a href="https://nyaaywatch.in/methodology">Methodology</a> ·
   <a href="https://nyaaywatch.in/api">API reference</a> ·
-  <a href="https://nyaaywatch.in/data">Data downloads</a>
+  <a href="https://nyaaywatch.in/data">Data downloads</a> ·
+  <a href="https://www.linkedin.com/company/132634238/">LinkedIn</a>
 </p>
 
 <p align="center">
@@ -25,7 +26,7 @@
 
 NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, all 25 High Courts, and the lower courts in every state and Union Territory. It is drawn from public NJDG data with methodology disclosure, source attribution, and reproducible evidence boundaries.
 
-Open-source project links: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [License](LICENSE)
+Open-source project links: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [License](LICENSE) · [LinkedIn](https://www.linkedin.com/company/132634238/)
 
 ```bash
 curl https://nyaaywatch.in/v1/stats/himachal | jq

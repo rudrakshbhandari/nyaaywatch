@@ -193,6 +193,7 @@ function renderColophon(
     { href: "/learn", label: "Learn" },
     { href: "/press", label: "Press" },
     { href: "https://github.com/rudrakshbhandari/nyaaywatch", label: "Source code" },
+    { href: "https://www.linkedin.com/company/132634238/", label: "LinkedIn" },
   ]);
 
   return `<footer class="colophon">
