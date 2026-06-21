@@ -80,7 +80,7 @@ brand/
     nyaaywatch-favicon.svg
     nyaaywatch-logo-dark.svg
     nyaaywatch-logo-light.svg
-    nyaaywatch-nw-square-mark.svg
+    nyaaywatch-nw-square-mark@8x.png
 ```
 
 Expected future additions once the wordmark is finalized:
@@ -149,15 +149,16 @@ Rules:
 
 File:
 
-- `brand/logo/nyaaywatch-nw-square-mark.svg`
+- `brand/logo/nyaaywatch-nw-square-mark@8x.png`
 - `brand/logo/nyaaywatch-logo-light.svg`
 - `brand/logo/nyaaywatch-logo-dark.svg`
 
 Rules:
 
-- keep these files in sync with the website masthead and `/press/logo-*.svg` downloads
+- treat `nyaaywatch-nw-square-mark@8x.png` as the exact production-rendered square mark captured from the website masthead
+- keep the logo lockup SVG files in sync with `/press/logo-*.svg` downloads
 - use the square mark for compact avatar-style placements where the wordmark is too wide
-- preserve the black rounded-square field and `NW` text treatment from the public site
+- do not substitute a manually redrawn square SVG for the PNG unless the website masthead itself starts using that SVG
 
 ## Wordmark
 
