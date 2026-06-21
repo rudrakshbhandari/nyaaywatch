@@ -96,6 +96,10 @@ describe("public copy guardrails", () => {
         requiredText: "Understand India&#39;s courts before reading the numbers.",
       },
       {
+        path: "/watch/old-case-burden",
+        requiredText: "Old-case burden watchroom",
+      },
+      {
         path: "/press",
         requiredText: "currently published numbers",
       },
