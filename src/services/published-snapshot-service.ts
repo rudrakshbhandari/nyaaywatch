@@ -285,11 +285,13 @@ export class PublishedSnapshotService {
 
     const bundle = await this.sourceClient.captureLatest();
     const extracted = extractCaptureBundle(bundle);
+    const referenceDateAt = extracted.sourceSnapshotAt ?? extracted.capturedAt;
+    const referenceDateKind = extracted.sourceSnapshotAt ? "source_snapshot_at" : "captured_at";
     const run = await this.store.insertRun({
       id: createId("run"),
       stateCode: this.profile.stateCode,
       sourceLabel: extracted.sourceName,
-      sourceSnapshotAt: extracted.sourceSnapshotAt,
+      sourceSnapshotAt: referenceDateAt,
       methodologyVersion: "2026.04-alpha",
       status: "pending",
       qualityState: "partial",
@@ -298,12 +300,14 @@ export class PublishedSnapshotService {
 
     try {
       const rawArtifact = await this.artifactStore.uploadJson(
-        buildRawArtifactKey(this.config.DEPLOY_ENV, this.profile.stateCode, run.id, extracted.sourceSnapshotAt),
+        buildRawArtifactKey(this.config.DEPLOY_ENV, this.profile.stateCode, run.id, referenceDateAt),
         bundle,
         {
-        source: "njdg",
-        capturedat: bundle.capturedAt,
-        districtcount: String(bundle.districtPages.length),
+          source: "njdg",
+          capturedat: bundle.capturedAt,
+          referencedateat: referenceDateAt,
+          referencedatekind: referenceDateKind,
+          districtcount: String(bundle.districtPages.length),
         },
       );
 
@@ -318,6 +322,9 @@ export class PublishedSnapshotService {
         metadata: {
           source: "njdg",
           capturedAt: bundle.capturedAt,
+          referenceDateAt,
+          referenceDateKind,
+          sourceSnapshotAt: extracted.sourceSnapshotAt,
           districtCount: bundle.districtPages.length,
         },
       });
@@ -330,7 +337,8 @@ export class PublishedSnapshotService {
 
       logInfo("operator_fetch_completed", {
         runId: run.id,
-        sourceSnapshotAt: extracted.sourceSnapshotAt,
+        referenceDateAt,
+        referenceDateKind,
         qualityState: inspection.run.qualityState,
         artifactCount: inspection.artifacts.length,
       });
@@ -543,6 +551,8 @@ export class PublishedSnapshotService {
     const { snapshot, districts } = record.payload;
     const header = [
       "snapshot_date",
+      "source_snapshot_at",
+      "reference_date_kind",
       "published_at",
       "methodology_version",
       "quality_state",
@@ -573,7 +583,9 @@ export class PublishedSnapshotService {
     ].join(",");
     const rows = districts.map((district) =>
       [
-        snapshot.sourceSnapshotAt,
+        snapshot.referenceDateAt,
+        snapshot.sourceSnapshotAt ?? "",
+        snapshot.referenceDateKind,
         snapshot.publishedAt,
         csvCell(snapshot.methodologyVersion),
         snapshot.qualityState,
@@ -678,12 +690,13 @@ export class PublishedSnapshotService {
     const candidate = buildSnapshotCandidate(extractCaptureBundle(bundle), previousSnapshots);
 
     const storedCandidate = await this.artifactStore.uploadJson(
-      buildCandidateArtifactKey(this.config.DEPLOY_ENV, this.profile.stateCode, runId, candidate.snapshot.sourceSnapshotAt),
+      buildCandidateArtifactKey(this.config.DEPLOY_ENV, this.profile.stateCode, runId, candidate.snapshot.referenceDateAt),
       candidate,
       {
         source: "normalized",
         methodologyversion: candidate.snapshot.methodologyVersion,
-        sourcesnapshotat: candidate.snapshot.sourceSnapshotAt,
+        referencedateat: candidate.snapshot.referenceDateAt,
+        referencedatekind: candidate.snapshot.referenceDateKind,
       },
     );
 
@@ -696,6 +709,8 @@ export class PublishedSnapshotService {
       checksumSha256: storedCandidate.checksumSha256,
       sizeBytes: storedCandidate.sizeBytes,
       metadata: {
+        referenceDateAt: candidate.snapshot.referenceDateAt,
+        referenceDateKind: candidate.snapshot.referenceDateKind,
         sourceSnapshotAt: candidate.snapshot.sourceSnapshotAt,
         methodologyVersion: candidate.snapshot.methodologyVersion,
       },
@@ -729,7 +744,7 @@ export class PublishedSnapshotService {
 
     return snapshots.sort((left, right) => {
       return (
-        left.snapshot.sourceSnapshotAt.localeCompare(right.snapshot.sourceSnapshotAt) ||
+        left.snapshot.referenceDateAt.localeCompare(right.snapshot.referenceDateAt) ||
         left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt)
       );
     });
@@ -749,7 +764,7 @@ function materializePayload(
       publishedAt,
       publishedFromRunId: runId,
       replayedFromRunId,
-      freshnessDays: freshnessDays(candidate.snapshot.sourceSnapshotAt, new Date(publishedAt)),
+      freshnessDays: freshnessDays(candidate.snapshot.referenceDateAt, new Date(publishedAt)),
     },
   });
 
@@ -782,12 +797,12 @@ function requireArtifact(artifacts: ArtifactRecord[], artifactType: string): Art
   return artifact;
 }
 
-function buildRawArtifactKey(deployEnv: AppConfig["DEPLOY_ENV"], stateCode: string, runId: string, sourceSnapshotAt: string): string {
+function buildRawArtifactKey(deployEnv: AppConfig["DEPLOY_ENV"], stateCode: string, runId: string, referenceDateAt: string): string {
   return [
     "raw",
     deployEnv,
     stateCode.toLowerCase(),
-    sourceSnapshotAt.slice(0, 10),
+    referenceDateAt.slice(0, 10),
     `${runId}-njdg-dashboard-html.json`,
   ].join("/");
 }
@@ -796,13 +811,13 @@ function buildCandidateArtifactKey(
   deployEnv: AppConfig["DEPLOY_ENV"],
   stateCode: string,
   runId: string,
-  sourceSnapshotAt: string,
+  referenceDateAt: string,
 ): string {
   return [
     "normalize",
     deployEnv,
     stateCode.toLowerCase(),
-    sourceSnapshotAt.slice(0, 10),
+    referenceDateAt.slice(0, 10),
     `${runId}-snapshot-candidate.json`,
   ].join("/");
 }
@@ -838,7 +853,7 @@ function buildDistrictHistoryPoint(snapshot: PublishedSnapshot, districtId: stri
   return {
     districtId: district.districtId,
     districtName: district.districtName,
-    snapshotDate: snapshot.snapshot.sourceSnapshotAt,
+    snapshotDate: snapshot.snapshot.referenceDateAt,
     publishedAt: snapshot.snapshot.publishedAt,
     methodologyVersion: snapshot.snapshot.methodologyVersion,
     qualityState: snapshot.snapshot.qualityState,

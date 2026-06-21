@@ -24,6 +24,8 @@ export function buildSnapshotCandidate(
   extracted: ExtractedNjdgSnapshot,
   previousSnapshots: PublishedSnapshot[],
 ): SnapshotCandidate {
+  const referenceDateAt = extracted.sourceSnapshotAt ?? extracted.capturedAt;
+  const referenceDateKind = extracted.sourceSnapshotAt ? "source_snapshot_at" : "captured_at";
   const stateDisposalRate = percentage(extracted.state.disposedLastMonth, extracted.state.institutedLastMonth);
   const stateMedianAgeDays = inferMedianAgeDays(extracted.state.ageBuckets);
   const stateOldCaseBurden = buildOldCaseBurdenMetric(extracted.state.ageBuckets, extracted.state.pendingCases);
@@ -41,7 +43,7 @@ export function buildSnapshotCandidate(
     extracted.state.institutedLastMonth,
     extracted.state.disposedLastMonth,
   );
-  const stateFreshnessDays = freshnessDays(extracted.sourceSnapshotAt, new Date(extracted.capturedAt));
+  const stateFreshnessDays = freshnessDays(referenceDateAt, new Date(extracted.capturedAt));
   const qualityState =
     extracted.districts.length === extracted.expectedDistrictCount && stateFreshnessDays > STALE_SNAPSHOT_THRESHOLD_DAYS
       ? "stale"
@@ -105,6 +107,8 @@ export function buildSnapshotCandidate(
       stateName: extracted.stateName,
       sourceName: extracted.sourceName,
       sourceSnapshotAt: extracted.sourceSnapshotAt,
+      referenceDateAt,
+      referenceDateKind,
       methodologyVersion: METHODOLOGY_VERSION,
       qualityState,
       sourceAttribution: extracted.sourceAttribution,
@@ -129,7 +133,7 @@ export function buildSnapshotCandidate(
     districts,
     trends: buildTrends(
       previousSnapshots,
-      extracted.sourceSnapshotAt,
+      referenceDateAt,
       extracted.state.pendingCases,
       extracted.state.institutedLastMonth,
       extracted.state.disposedLastMonth,
@@ -151,7 +155,7 @@ function buildTrends(
     .slice()
     .reverse()
     .map((snapshot) => ({
-      snapshotDate: snapshot.snapshot.sourceSnapshotAt,
+      snapshotDate: snapshot.snapshot.referenceDateAt,
       pendingCases: snapshot.stats.pendingCases,
       filedLastMonthCases: snapshot.stats.filedLastMonthCases,
       clearedLastMonthCases: snapshot.stats.clearedLastMonthCases,

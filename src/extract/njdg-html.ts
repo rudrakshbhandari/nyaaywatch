@@ -1,4 +1,5 @@
 import { NjdgCaptureBundleSchema, type NjdgCaptureBundle } from "../domain/njdg-capture-schema.js";
+import { freshnessDays, STALE_SNAPSHOT_THRESHOLD_DAYS } from "../lib/time.js";
 
 export interface AgeBucketTotals {
   lessThanOneYear: number;
@@ -27,7 +28,7 @@ export interface ExtractedNjdgSnapshot {
   expectedDistrictCount: number;
   sourceName: string;
   sourceAttribution: string;
-  sourceSnapshotAt: string;
+  sourceSnapshotAt: string | null;
   state: ExtractedNjdgMetrics;
   districts: ExtractedNjdgDistrict[];
 }
@@ -42,14 +43,22 @@ export function extractDistrictOptions(html: string): Array<{ districtCode: stri
     .filter((option) => option.districtCode.length > 0);
 }
 
-export function extractSourceSnapshotAt(html: string): string {
+export function extractSourceSnapshotAt(html: string, capturedAt?: string): string | null {
   const rawDate = captureRaw(html, /Last Reviewed and Updated on\s*:\s*(\d{2}-\d{2}-\d{4})/, "source snapshot date");
   const [, day, month, year] = /(\d{2})-(\d{2})-(\d{4})/.exec(rawDate) ?? [];
   if (!day || !month || !year) {
     throw new Error("Could not parse NJDG source snapshot date.");
   }
 
-  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))).toISOString();
+  const sourceSnapshotAt = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))).toISOString();
+  if (
+    capturedAt &&
+    freshnessDays(sourceSnapshotAt, new Date(capturedAt)) > STALE_SNAPSHOT_THRESHOLD_DAYS
+  ) {
+    return null;
+  }
+
+  return sourceSnapshotAt;
 }
 
 export function extractCaptureBundle(bundle: NjdgCaptureBundle): ExtractedNjdgSnapshot {
@@ -61,7 +70,7 @@ export function extractCaptureBundle(bundle: NjdgCaptureBundle): ExtractedNjdgSn
     expectedDistrictCount: parsedBundle.expectedDistrictCount,
     sourceName: parsedBundle.sourceName,
     sourceAttribution: parsedBundle.sourceAttribution,
-    sourceSnapshotAt: extractSourceSnapshotAt(parsedBundle.statePage.html),
+    sourceSnapshotAt: extractSourceSnapshotAt(parsedBundle.statePage.html, parsedBundle.capturedAt),
     state: extractPageMetrics(parsedBundle.statePage.html),
     districts: parsedBundle.districtPages.map((page) => ({
       districtCode: page.districtCode,
