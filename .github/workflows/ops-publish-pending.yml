@@ -1,0 +1,74 @@
+name: Ops Publish Pending
+
+on:
+  workflow_dispatch:
+    inputs:
+      stack_name:
+        description: "Production stack to run publish-pending against"
+        required: false
+        default: "nyaaywatch-production"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ops-publish-pending
+  cancel-in-progress: false
+
+jobs:
+  publish-pending:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ap-south-1
+      STACK_NAME: ${{ inputs.stack_name || 'nyaaywatch-production' }}
+      PUBLIC_BASE_URL: https://nyaaywatch.in
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
+
+      - name: Run publish-pending ECS task
+        run: |
+          chmod +x infra/aws/staging/run-publish-pending.sh
+          infra/aws/staging/run-publish-pending.sh "$STACK_NAME"
+
+      - name: Load live operator token
+        run: |
+          operator_token_secret_arn="$(
+            aws cloudformation describe-stacks \
+              --region "$AWS_REGION" \
+              --stack-name "$STACK_NAME" \
+              --query "Stacks[0].Outputs[?OutputKey=='OperatorApiTokenSecretArn'].OutputValue | [0]" \
+              --output text
+          )"
+          operator_token="$(
+            aws secretsmanager get-secret-value \
+              --region "$AWS_REGION" \
+              --secret-id "$operator_token_secret_arn" \
+              --query SecretString \
+              --output text
+          )"
+          echo "::add-mask::$operator_token"
+          echo "OPERATOR_API_TOKEN=$operator_token" >> "$GITHUB_ENV"
+
+      - name: Verify public alpha operations
+        run: npm run ops:verify-public-alpha -- --base-url="$PUBLIC_BASE_URL"
+
+      - name: Verify internal fetch schedules
+        run: npm run ops:verify-internal-fetch-schedule -- --base-url="$PUBLIC_BASE_URL" --stack-name="$STACK_NAME"
