@@ -1,10 +1,29 @@
 # NyaayWatch
 
-> **How long is India waiting for justice?**
+<p align="center">
+  <img src="brand/logo/nyaaywatch-nw-square-mark@8x.png" alt="NyaayWatch NW mark" width="96" />
+</p>
 
-NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, all 25 High Courts, and the lower courts in every state and Union Territory — drawn from public NJDG data with full methodology disclosure. Every number links to a dated source.
+<p align="center">
+  <strong>How long is India waiting for justice?</strong>
+</p>
 
-→ [Live site](https://nyaaywatch.in) · [Learn](https://nyaaywatch.in/learn) · [Press & embed kit](https://nyaaywatch.in/press) · [Methodology](https://nyaaywatch.in/methodology) · [API reference](https://nyaaywatch.in/api) · [Data downloads](https://nyaaywatch.in/data)
+<p align="center">
+  <a href="https://nyaaywatch.in">Live site</a> ·
+  <a href="https://nyaaywatch.in/learn">Learn</a> ·
+  <a href="https://nyaaywatch.in/press">Press & embed kit</a> ·
+  <a href="https://nyaaywatch.in/methodology">Methodology</a> ·
+  <a href="https://nyaaywatch.in/api">API reference</a> ·
+  <a href="https://nyaaywatch.in/data">Data downloads</a>
+</p>
+
+<p align="center">
+  <img alt="Node >=22" src="https://img.shields.io/badge/node-%3E%3D22-0c0a08" />
+  <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-0c0a08" />
+  <img alt="Snapshot based" src="https://img.shields.io/badge/data-reviewed%20snapshots-0c0a08" />
+</p>
+
+NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, all 25 High Courts, and the lower courts in every state and Union Territory. It is drawn from public NJDG data with methodology disclosure, source attribution, and reproducible evidence boundaries.
 
 Open-source project links: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [License](LICENSE)
 
@@ -13,17 +32,30 @@ curl https://nyaaywatch.in/v1/stats/himachal | jq
 curl https://nyaaywatch.in/v1/districts | jq '.districts[0]'
 ```
 
-## What's Live
+## What Is Live
 
-The public alpha covers the full Indian court hierarchy:
+| Court layer | Public surface | Coverage |
+| --- | --- | --- |
+| Supreme Court | `/supreme-court`, `/v1/supreme-court/...` | Public beta aggregate snapshot |
+| High Courts | `/high-courts`, `/high-courts/:slug`, `/v1/high-courts/:slug/...` | All 25 HC NJDG selector-backed High Court profiles |
+| Lower courts | `/states/:slug`, `/v1/states/:slug/...` | All 36 state/Union Territory NJDG selector geographies |
+| Default lower-court shortcuts | `/districts`, `/data`, `/methodology`, `/api` | Himachal Pradesh compatibility surface |
+| Public education | `/learn` | Court-system and pressure-signal guide |
 
-- **Supreme Court** at `/supreme-court`
-- **All 25 High Courts** at `/high-courts/:slug` — canonical list in [src/high-courts.ts](src/high-courts.ts)
-- **All 36 lower-court geographies** (28 states + 8 Union Territories) at `/states/:slug` — canonical list in [src/geographies.ts](src/geographies.ts)
-- **Himachal Pradesh** remains the unscoped lower-court default at `/`, `/districts`, `/data`, `/methodology`, `/api`
-- **Plain-language court-system and pressure-signal guide** at `/learn`
+Each court family ships paired overview, `/data`, `/methodology`, and `/api` pages plus a stable `/v1/...` JSON contract where applicable.
 
-Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stable `/v1/...` JSON contract. Investigation surfaces include `/watch/old-case-burden`, `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, embeddable district and state widgets at `/embed/district/:id` and `/embed/state/:slug`, and lower-court evidence packs under `/data/evidence/...`.
+## Public Surfaces
+
+| Surface | Routes | Purpose |
+| --- | --- | --- |
+| Investigation flows | `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, `/watch/old-case-burden` | Find movement, pressure, and district-to-district comparisons without cross-tier rankings |
+| District detail | `/districts/:id`, `/states/:slug/districts/:id` | Durable local pages with history, citation text, and exports |
+| Evidence packs | `/data/evidence/...`, `/states/:slug/data/evidence/...` | Safe public JSON bundles for lower-court state and district metrics |
+| Embeds | `/embed/district/:id`, `/embed/state/:slug` | Frameable district and state widgets |
+| Press assets | `/press`, `/press/logo-light.svg`, `/press/logo-dark.svg` | Brand assets, citations, and public communication material |
+| Social cards | `/og/home.png`, `/og/national.png`, `/og/state/:slug.png`, `/og/district/:id.png`, `/og/high-court/:slug.png`, `/og/supreme-court.png` | Generated Open Graph cards for sharing |
+| Subscriptions | `/subscribe`, `/subscribe/confirm/:token`, `/unsubscribe/:token` | Plain-text email updates for new lower-court snapshots when newsletter email is configured |
+| Feeds and discovery | `/states/:slug/feed.xml`, `/sitemap.xml`, `/robots.txt` | RSS, crawler discovery, and operator-route exclusion |
 
 ## Product Guardrails
 
@@ -35,23 +67,43 @@ Each court family ships paired `/data`, `/methodology`, `/api` pages plus a stab
 
 ## Architecture
 
-- one AWS-hosted containerized app, fronted by Cloudflare
-- PostgreSQL as the canonical store for runs, artifacts, and publication state
-- S3 for raw scrape evidence and normalized snapshot candidates
-- explicit ingestion pipeline: fetch → extract → normalize → publish; the publish step requires an operator action or a passing auto-publish gate
-- auto-publish runner validates fresh internal runs against guardrails; publishes automatically when quality and delta checks pass, and pages via SNS when the gate blocks or the publish step fails
-- a daily publish-pending sweep iterates every quality-complete run per scope (within 3 days) that has no newer publication and runs each through the same gate, in chronological order
-- published snapshot read models drive every public surface; rollback is one operator call
+```text
+NJDG source pages
+  -> ingest raw captures to S3
+  -> extract typed source records
+  -> normalize snapshot candidates
+  -> validate with publish gates
+  -> publish reviewed read models in PostgreSQL
+  -> serve public HTML, CSV, JSON, RSS, embeds, and OG cards
+```
+
+- One AWS-hosted containerized app, fronted by Cloudflare.
+- PostgreSQL is the canonical store for runs, artifacts, subscriptions, and publication state.
+- S3 stores raw scrape evidence, normalized snapshot candidates, release evidence, and outreach archives.
+- Publish requires an operator action or a passing auto-publish gate.
+- Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
+- A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate.
+- Published snapshot read models drive every public surface; rollback is one operator call.
 
 ## Repository Map
 
-- `src/api/` — Express app, public routes, operator routes, HTML rendering
-- `src/services/` — published snapshot orchestration and run-pipeline logic
-- `src/storage/` — PostgreSQL and S3 adapters
-- `src/db/` — migrations and migration tooling
-- `src/ingest/`, `src/extract/`, `src/normalize/` — pipeline stages
-- `src/ops/` — auto-publish gate, publish-pending sweep, and review alerting
-- `fixtures/` — captured NJDG inputs for local dev and tests
+| Path | Responsibility |
+| --- | --- |
+| `src/api/` | Express app, public routes, operator routes, HTML rendering, RSS, embeds, and OG card registration |
+| `src/api/design/`, `src/api/home/`, `src/api/pages/`, `src/api/share/` | Shared page shell, national homepage models, route renderers, and generated share images |
+| `src/domain/` | Zod schemas and typed contracts for captured, candidate, and published snapshots |
+| `src/ingest/`, `src/extract/`, `src/normalize/` | Pipeline stages from upstream NJDG capture to deterministic snapshot candidates |
+| `src/services/` | Published snapshot orchestration, newsletter delivery, and cache invalidation |
+| `src/storage/` | PostgreSQL and S3 adapters |
+| `src/db/` | SQL migrations and migration tooling |
+| `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
+| `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
+| `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
+| `infra/aws/` | AWS dev, preview, staging, production, schedule, and cutover scripts/templates |
+| `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
+| `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
+| `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
+| `docs/` | Design, methodology, release, operations, source reviews, and coverage audit docs |
 
 ## Quickstart
 
@@ -90,15 +142,15 @@ npm run infra:production-cutover-inventory
 npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
 ```
 
-Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated staging now runs as `nyaaywatch-staging` at `https://staging.nyaaywatch.in`; staging schedules remain disabled unless an operator intentionally enables them for rehearsal. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping the public hostname as the HTTP and TLS host.
+Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated staging runs as `nyaaywatch-staging` at `https://staging.nyaaywatch.in`; staging schedules remain disabled unless an operator intentionally enables them for rehearsal. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping the public hostname as the HTTP and TLS host.
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
 Use `npm run infra:production-cutover-inventory` before any mutating production-stack cutover work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and target-stack status needed by the production cutover runbook. The April 28, 2026 cutover restored `nyaaywatch-production` from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced the artifacts bucket, moved DNS to the production ALB, and reconciled production-named schedules. The later staging reclaim pointed `staging.nyaaywatch.in` at the `nyaaywatch-staging` ALB with the staging ACM certificate; `nyaaywatch-staging-v2` was retired after the reclaim.
 
-Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court state snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory, with `NJDG_OUTREACH_TO` available only for extra recipients. Add `--send` only when `SES_SOURCE_EMAIL` is an authenticated `@nyaaywatch.in` sender and `NJDG_OUTREACH_ARCHIVE_BUCKET` is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, writes the exact outbound payload to S3 under `ops/njdg-missing-zero-outreach/`, and fails loudly if email or archive configuration is incomplete.
+Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `SES_SOURCE_EMAIL` is an authenticated `@nyaaywatch.in` sender and `NJDG_OUTREACH_ARCHIVE_BUCKET` is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, writes the exact outbound payload to S3 under `ops/njdg-missing-zero-outreach/`, and fails loudly if email or archive configuration is incomplete.
 
-Release helpers (run before, after, and to record a publication):
+Release helpers:
 
 ```bash
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -113,23 +165,25 @@ Each release helper accepts `--state-slug=<slug>` or `--high-court=<slug>` to sc
 
 The live deploy runs five ECS schedules, all reconciled to the latest task definition with `npm run operator:reconcile-fetch-schedule`:
 
-- lower-court state and UT profiles — `8:00 AM Asia/Kolkata`
-- Supreme Court — `8:10 AM Asia/Kolkata`
-- reviewed High Courts — `8:20 AM Asia/Kolkata`
-- publish-pending sweep — `8:30 AM Asia/Kolkata`
-- public-alpha ops monitor — every `30` minutes against `https://nyaaywatch.in`
+| Schedule | Cadence |
+| --- | --- |
+| Lower-court state and UT profiles | `8:00 AM Asia/Kolkata` |
+| Supreme Court | `8:10 AM Asia/Kolkata` |
+| Reviewed High Courts | `8:20 AM Asia/Kolkata` |
+| Publish-pending sweep | `8:30 AM Asia/Kolkata` |
+| Public-alpha ops monitor | Every `30` minutes against `https://nyaaywatch.in` |
 
-The GitHub Actions `ops:njdg-missing-zero-outreach` schedule runs every Monday, Wednesday, and Friday at `04:30 UTC` / `10:00 AM Asia/Kolkata` from the SES-verified `data@nyaaywatch.in` sender with domain-aligned SPF/DKIM/DMARC. It emails the official CPC contacts for the affected NJDG state or Union Territory rows only while public lower-court snapshots still contain source rows with pending cases but `0` filed and `0` cleared monthly movement. Each send BCCs the verified sender and archives the subject, body, recipients, reply-to recipients, SES message ID, and affected rows in the production artifacts bucket. Public pages show those derived clearance signals as `N/A` and name the NJDG source condition rather than presenting the value as a NyaayWatch-computed zero.
+The GitHub Actions `ops:njdg-missing-zero-outreach` schedule runs every Monday, Wednesday, and Friday at `04:30 UTC` / `10:00 AM Asia/Kolkata` from the SES-verified `data@nyaaywatch.in` sender with domain-aligned SPF/DKIM/DMARC. It emails official CPC contacts for affected NJDG state or Union Territory rows only while public lower-court snapshots still contain source rows with pending cases but `0` filed and `0` cleared monthly movement. Each send BCCs the verified sender and archives the subject, body, recipients, reply-to recipients, SES message ID, and affected rows in the production artifacts bucket.
 
 If the outreach send fails, the workflow opens or updates the durable `NJDG outreach failure` GitHub issue and publishes to the production SNS alert topic. A later successful run closes the issue and sends a recovery notification.
 
-The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails. The publish-pending sweep runs daily after the fetch schedules, walks every quality-complete run per scope from the past 3 days that has no newer publication, and publishes each one in chronological order through the auto-publish gate. Each deploy also runs the same sweep so post-deploy fixes pick up immediately.
+The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails.
 
 ## Public API
 
-State-scoped, court-scoped, and cross-jurisdiction endpoints all follow the same shape. Examples:
+State-scoped, court-scoped, and cross-jurisdiction endpoints follow the same published-snapshot shape.
 
-```
+```http
 GET /v1/stats/himachal
 GET /v1/districts
 GET /v1/trends
@@ -142,21 +196,22 @@ GET /states/:stateSlug/data/evidence/state.json
 GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
-Full contract is enforced by API contract tests under `src/api/__tests__/`.
-Lower-court snapshot metadata separates provenance from display freshness:
-`sourceSnapshotAt` is the upstream NJDG source date when the stored evidence exposes a defensible one, otherwise `null`;
-`referenceDateAt` is the date used for public freshness, trends, and CSV `snapshot_date`;
-`referenceDateKind` is either `source_snapshot_at` or `captured_at`.
-State-level pressure metrics that depend on optional NJDG inputs use tagged values:
-`{ "state": "ok", "value": ... }` when computable, or `{ "state": "missing", "reason": "source-not-published" | "insufficient-history" | "incomplete-breakdown" | "not-applicable" }` when the source inputs are unavailable or the metric does not apply.
+Full contract coverage lives in the API and route tests under `tests/`. Lower-court snapshot metadata separates provenance from display freshness:
+
+- `sourceSnapshotAt` is the upstream NJDG source date when the stored evidence exposes a defensible one, otherwise `null`.
+- `referenceDateAt` is the date used for public freshness, trends, and CSV `snapshot_date`.
+- `referenceDateKind` is either `source_snapshot_at` or `captured_at`.
+- State-level pressure metrics that depend on optional NJDG inputs use tagged values: `{ "state": "ok", "value": ... }` when computable, or `{ "state": "missing", "reason": "source-not-published" | "insufficient-history" | "incomplete-breakdown" | "not-applicable" }`.
 
 ## Operator API
 
-All `/operator/*` routes require `x-operator-token`. Three parallel namespaces mirror the public surface:
+All `/operator/*` routes require `x-operator-token`.
 
-- `/operator/runs`, `/operator/publications` — lower-court (state-scoped via `stateCode` or `stateSlug`)
-- `/operator/high-courts/:courtSlug/...` — High Court runs and publications
-- `/operator/supreme-court/...` — Supreme Court runs and publications
+| Namespace | Scope |
+| --- | --- |
+| `/operator/runs`, `/operator/publications` | Lower-court runs and publications, state-scoped via `stateCode` or `stateSlug` |
+| `/operator/high-courts/:courtSlug/...` | High Court runs and publications |
+| `/operator/supreme-court/...` | Supreme Court runs and publications |
 
 Each namespace exposes `runs`, `runs/:runId`, `runs/fetch`, `runs/:runId/{publish,replay}`, `publications`, and `publications/:publicationId/rollback`.
 
@@ -171,7 +226,7 @@ RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
 
 If Playwright browsers are not installed: `npx playwright install`.
 
-Coverage spans migration safety, golden-fixture capture, publish gating, replay/rollback, district history and CSV export parity, browser E2E for citizen/reporter/developer flows, responsive and accessibility checks, stable API contracts, persistent-stack replay/rollback through local PostgreSQL plus LocalStack S3, and operator token enforcement.
+Coverage spans migration safety, golden-fixture capture, publish gating, replay/rollback, district history and CSV export parity, browser E2E for citizen/reporter/developer flows, responsive and accessibility checks, stable API contracts, persistent-stack replay/rollback through local PostgreSQL plus LocalStack S3, operator token enforcement, copy guardrails, newsletter flows, RSS, preview cleanup, Cloudflare purge behavior, and public-alpha operations.
 
 ## Screenshot Assets
 
@@ -187,6 +242,7 @@ Design and product:
 
 - [Design system](DESIGN.md)
 - [Brand system](brand/BRAND.md)
+- [Copy voice](docs/COPY_VOICE.md)
 - [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
 - [Long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md)
 - [Metric strategy](docs/METRIC_STRATEGY.md)
