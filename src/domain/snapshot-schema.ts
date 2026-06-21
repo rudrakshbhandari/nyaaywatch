@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const QualityStateSchema = z.enum(["complete", "partial", "stale"]);
+export const ReferenceDateKindSchema = z.enum(["source_snapshot_at", "captured_at"]);
 
 export const MissingMetricReasonSchema = z.enum([
   "source-not-published",
@@ -124,11 +125,13 @@ export const WatchlistPersistenceSchema = z.object({
   lastSixWindow: z.number().int().nonnegative().default(0),
 });
 
-export const SnapshotMetadataSchema = z.object({
+export const SnapshotMetadataCanonicalSchema = z.object({
   stateCode: z.string().min(1),
   stateName: z.string().min(1),
   sourceName: z.string().min(1),
-  sourceSnapshotAt: z.string().datetime(),
+  sourceSnapshotAt: z.string().datetime().nullable(),
+  referenceDateAt: z.string().datetime(),
+  referenceDateKind: ReferenceDateKindSchema,
   publishedAt: z.string().datetime(),
   methodologyVersion: z.string().min(1),
   qualityState: QualityStateSchema,
@@ -137,6 +140,11 @@ export const SnapshotMetadataSchema = z.object({
   publishedFromRunId: z.string().min(1).optional(),
   replayedFromRunId: z.string().min(1).optional(),
 });
+
+export const SnapshotMetadataSchema = z.preprocess(
+  normalizeSnapshotMetadataInput,
+  SnapshotMetadataCanonicalSchema,
+);
 
 export const StateStatsSchema = z.object({
   pendingCases: z.number().int().nonnegative(),
@@ -181,12 +189,17 @@ export const TrendPointSchema = z.object({
   disposalRate: z.number().nonnegative(),
 });
 
-export const PublishedSnapshotSchema = z.object({
+const PublishedSnapshotCanonicalSchema = z.object({
   snapshot: SnapshotMetadataSchema,
   stats: StateStatsSchema,
   districts: z.array(DistrictSnapshotSchema).min(1),
   trends: z.array(TrendPointSchema).min(1),
 });
+
+export const PublishedSnapshotSchema = z.preprocess(
+  normalizePublishedSnapshotInput,
+  PublishedSnapshotCanonicalSchema,
+);
 
 export type QualityState = z.infer<typeof QualityStateSchema>;
 export type AgeBuckets = z.infer<typeof AgeBucketsSchema>;
@@ -196,3 +209,32 @@ export type BacklogConcentration = z.infer<typeof BacklogConcentrationSchema>;
 export type BacklogConcentrationMetric = z.infer<typeof BacklogConcentrationMetricSchema>;
 export type PublishedSnapshot = z.infer<typeof PublishedSnapshotSchema>;
 export type DistrictSnapshot = z.infer<typeof DistrictSnapshotSchema>;
+
+export function normalizeSnapshotMetadataInput(value: unknown): unknown {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const record = value as Record<string, unknown>;
+  const sourceSnapshotAt = typeof record.sourceSnapshotAt === "string" ? record.sourceSnapshotAt : null;
+  return {
+    ...record,
+    referenceDateAt: typeof record.referenceDateAt === "string" ? record.referenceDateAt : sourceSnapshotAt,
+    referenceDateKind:
+      record.referenceDateKind === "captured_at" || record.referenceDateKind === "source_snapshot_at"
+        ? record.referenceDateKind
+        : "source_snapshot_at",
+  };
+}
+
+function normalizePublishedSnapshotInput(value: unknown): unknown {
+  if (!value || typeof value !== "object") {
+    return value;
+  }
+
+  const record = value as Record<string, unknown>;
+  return {
+    ...record,
+    snapshot: normalizeSnapshotMetadataInput(record.snapshot),
+  };
+}

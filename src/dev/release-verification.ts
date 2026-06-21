@@ -182,7 +182,7 @@ async function verifyLowerCourtRelease(
     csvBody = retried.body;
     assertCsvMetadataParity(csvBody, statsPayload.snapshot);
   }
-  const currentFreshnessDays = freshnessDays(statsPayload.snapshot.sourceSnapshotAt, checkedAt);
+  const currentFreshnessDays = freshnessDays(statsPayload.snapshot.referenceDateAt, checkedAt);
 
   return {
     baseUrl: normalizedBaseUrl,
@@ -190,7 +190,8 @@ async function verifyLowerCourtRelease(
     target,
     snapshot: {
       sourceSnapshotAt: statsPayload.snapshot.sourceSnapshotAt,
-      referenceDateAt: statsPayload.snapshot.sourceSnapshotAt,
+      referenceDateAt: statsPayload.snapshot.referenceDateAt,
+      referenceDateKind: statsPayload.snapshot.referenceDateKind,
       publishedAt: statsPayload.snapshot.publishedAt,
       freshnessDaysAtPublish: statsPayload.snapshot.freshnessDays,
       currentFreshnessDays,
@@ -376,8 +377,8 @@ function resolveReleaseTarget(options: { stateSlug?: string; highCourtSlug?: str
 export const CSV_PARITY_RETRY_DELAY_MS = 15_000;
 
 async function fetchJson<T extends z.ZodTypeAny>(url: string, schema: T, expectedStatus = 200): Promise<z.infer<T>> {
-  const response = await fetchWithTransientRetry(url, expectedStatus);
-  return schema.parse(await readResponse(url, response, expectedStatus));
+  const { body } = await fetchWithTransientRetry(url, expectedStatus);
+  return schema.parse(body);
 }
 
 async function fetchText(url: string, expectedStatus = 200): Promise<string> {
@@ -385,25 +386,26 @@ async function fetchText(url: string, expectedStatus = 200): Promise<string> {
 }
 
 async function fetchTextResponse(url: string, expectedStatus = 200): Promise<{ body: string; response: Response }> {
-  const response = await fetchWithTransientRetry(url, expectedStatus);
-  const body = await readResponse(url, response, expectedStatus);
+  const { body, response } = await fetchWithTransientRetry(url, expectedStatus);
   if (typeof body !== "string") {
     throw new Error(`Expected text response from ${url}.`);
   }
   return { body, response };
 }
 
-async function fetchWithTransientRetry(url: string, expectedStatus: number): Promise<Response> {
+async function fetchWithTransientRetry(url: string, expectedStatus: number): Promise<{ body: unknown; response: Response }> {
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= FETCH_RETRY_DELAYS_MS.length; attempt += 1) {
     try {
       const response = await fetch(url);
-      if (response.status === expectedStatus || !TRANSIENT_HTTP_STATUSES.has(response.status)) {
-        return response;
-      }
-      if (attempt === FETCH_RETRY_DELAYS_MS.length) {
-        return response;
+      const shouldRetryStatus =
+        response.status !== expectedStatus &&
+        TRANSIENT_HTTP_STATUSES.has(response.status) &&
+        attempt < FETCH_RETRY_DELAYS_MS.length;
+      if (!shouldRetryStatus) {
+        const body = await readResponse(url, response, expectedStatus);
+        return { body, response };
       }
       lastError = new Error(`Transient HTTP ${response.status}`);
     } catch (error) {
@@ -513,17 +515,19 @@ function assertCsvMetadataParity(csv: string, snapshot: SnapshotMetadata) {
   }
 
   const headers = headerLine.split(",");
-  const sourceSnapshotIndex = headers.indexOf("snapshot_date");
+  const snapshotDateIndex = headers.indexOf("snapshot_date");
+  const sourceSnapshotIndex = headers.indexOf("source_snapshot_at");
   const publishedAtIndex = headers.indexOf("published_at");
   const methodologyVersionIndex = headers.indexOf("methodology_version");
 
-  if (sourceSnapshotIndex < 0 || publishedAtIndex < 0 || methodologyVersionIndex < 0) {
+  if (snapshotDateIndex < 0 || publishedAtIndex < 0 || methodologyVersionIndex < 0) {
     throw new Error("District CSV is missing publication metadata columns.");
   }
 
   const cells = firstDataLine.split(",");
   if (
-    readCsvCell(cells[sourceSnapshotIndex]) !== snapshot.sourceSnapshotAt ||
+    readCsvCell(cells[snapshotDateIndex]) !== snapshot.referenceDateAt ||
+    (sourceSnapshotIndex >= 0 && readCsvCell(cells[sourceSnapshotIndex]) !== (snapshot.sourceSnapshotAt ?? "")) ||
     readCsvCell(cells[publishedAtIndex]) !== snapshot.publishedAt ||
     readCsvCell(cells[methodologyVersionIndex]) !== snapshot.methodologyVersion
   ) {

@@ -185,7 +185,7 @@ describe("HTTP routes", () => {
     expect(districtCsv.status).toBe(200);
     expect(districtCsv.headers["cache-control"]).toContain("no-store");
     expect(districtCsv.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
-    expect(districtCsv.text).toContain("snapshot_date,published_at,methodology_version");
+    expect(districtCsv.text).toContain("snapshot_date,source_snapshot_at,reference_date_kind,published_at,methodology_version");
     expect(districtCsv.text).toContain("National Judicial Data Grid public district dashboard for Himachal Pradesh");
 
     const districtHistoryCsv = await request(app).get("/data/districts/kangra.csv");

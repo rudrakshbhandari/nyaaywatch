@@ -33,6 +33,8 @@ export function renderApiPage(context: PublicPageContext): string {
     "stateCode": "HP",
     "stateName": "Himachal Pradesh",
     "sourceSnapshotAt": "2025-03-15T00:00:00.000Z",
+    "referenceDateAt": "2025-03-15T00:00:00.000Z",
+    "referenceDateKind": "source_snapshot_at",
     "publishedAt": "2025-03-20T11:42:00.000Z",
     "methodologyVersion": "v1.3.0",
     "qualityState": "complete",
@@ -162,7 +164,7 @@ export function renderApiPage(context: PublicPageContext): string {
             <code class="endpoint__path">${context.routes.stateEvidencePack}</code>
             <code class="endpoint__path">${context.routes.districtEvidencePack(":districtId")}</code>
           </div>
-          <p>Evidence packs for citation and reuse. They bundle public metrics with source date, methodology version, CSV/API links, plain citation text, caveats, and the public-data safety boundary.</p>
+          <p>Evidence packs for citation and reuse. They bundle public metrics with reference date, source date when available, methodology version, CSV/API links, plain citation text, caveats, and the public-data safety boundary.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -176,6 +178,8 @@ export function renderApiPage(context: PublicPageContext): string {
   },
   "snapshot": {
     "sourceSnapshotAt": "2025-03-15T00:00:00.000Z",
+    "referenceDateAt": "2025-03-15T00:00:00.000Z",
+    "referenceDateKind": "source_snapshot_at",
     "methodologyVersion": "v1.3.0",
     "sourceAttribution": "NJDG \u2014 March 2025"
   },
