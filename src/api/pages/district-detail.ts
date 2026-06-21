@@ -4,7 +4,7 @@ import { escapeHtml, safeJsonForHtmlScript } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import type { PublicPageContext } from "../public-state.js";
 import { infoIcon, renderBadge, renderSectionHead, renderStatTile } from "../design/ui.js";
-import { formatDate } from "../home/view-model.js";
+import { describeLowerCourtReferenceDate, formatDate } from "../home/view-model.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import {
   describeBacklogMovementFromMonthlyActivity,
@@ -37,7 +37,7 @@ export function renderDistrictPage(
 ): string {
   const currentIndex = history.findIndex(
     (point) =>
-      point.snapshotDate === snapshot.sourceSnapshotAt && point.publishedAt === snapshot.publishedAt,
+      point.snapshotDate === snapshot.referenceDateAt && point.publishedAt === snapshot.publishedAt,
   );
   const currentPoint = currentIndex >= 0 ? history[currentIndex] : history[history.length - 1] ?? null;
   const previousPoint =
@@ -57,13 +57,14 @@ export function renderDistrictPage(
   const plainCitation = buildPlainCitation(
     district.districtName,
     snapshot.sourceAttribution,
-    formatDate(snapshot.sourceSnapshotAt),
+    formatDate(snapshot.referenceDateAt),
     `${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
   );
+  const referenceDateLabel = describeLowerCourtReferenceDate(snapshot);
   const citationsJson = safeJsonForHtmlScript({
     plain: plainCitation,
-    apa: `NyaayWatch. (${new Date(snapshot.sourceSnapshotAt).getFullYear()}). ${district.districtName} district court backlog. ${snapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
-    mla: `NyaayWatch. "${district.districtName} District Court Backlog." ${snapshot.sourceAttribution}, ${formatDate(snapshot.sourceSnapshotAt)}, ${SITE_ORIGIN}${context.routes.district(district.districtId)}.`,
+    apa: `NyaayWatch. (${new Date(snapshot.referenceDateAt).getFullYear()}). ${district.districtName} district court backlog. ${snapshot.sourceAttribution}. ${SITE_ORIGIN}${context.routes.district(district.districtId)}`,
+    mla: `NyaayWatch. "${district.districtName} District Court Backlog." ${snapshot.sourceAttribution}, ${formatDate(snapshot.referenceDateAt)}, ${SITE_ORIGIN}${context.routes.district(district.districtId)}.`,
   });
   const structuredDataJson = safeJsonForHtmlScript({
     "@context": "https://schema.org",
@@ -208,7 +209,7 @@ export function renderDistrictPage(
     ${renderEvidenceEntryPoints({
       headline: "Download and cite this district.",
       lede:
-        "The JSON pack keeps the public metrics, source date, method, CSV links, citation text, and caveats together. Raw captures and operator notes stay private.",
+        "The JSON pack keeps the public metrics, reference date, source date when available, method, CSV links, citation text, and caveats together. Raw captures and operator notes stay private.",
       entries: [
         {
           title: "District evidence pack",
@@ -266,7 +267,7 @@ export function renderDistrictPage(
           <dl class="citation-list">
             <div><dt>Permalink</dt><dd><code>${escapeHtml(context.routes.district(district.districtId))}</code></dd></div>
             <div><dt>Evidence pack</dt><dd><code>${escapeHtml(context.routes.districtEvidencePack(district.districtId))}</code></dd></div>
-            <div><dt>Source snapshot</dt><dd>${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}</dd></div>
+            <div><dt>Reference date</dt><dd>${escapeHtml(referenceDateLabel)}</dd></div>
             <div><dt>Methodology</dt><dd><code>${escapeHtml(snapshot.methodologyVersion)}</code></dd></div>
             <div><dt>Source</dt><dd>${escapeHtml(snapshot.sourceAttribution)}</dd></div>
           </dl>
@@ -340,7 +341,7 @@ export function renderDistrictPage(
     <div class="colophon-print">
       <strong>NyaayWatch</strong> · ${escapeHtml(district.districtName)} district evidence ·
       Source: ${escapeHtml(snapshot.sourceAttribution)} ·
-      Snapshot: ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} ·
+      Snapshot: ${escapeHtml(formatDate(snapshot.referenceDateAt))} ·
       Methodology: ${escapeHtml(snapshot.methodologyVersion)} ·
       nyaaywatch.in${escapeHtml(context.routes.district(district.districtId))}
     </div>
@@ -358,10 +359,10 @@ export function renderDistrictPage(
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
-    ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · SNAPSHOT ${escapeHtml(formatDate(snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.methodologyVersion)}`,
+    ticker: `${escapeHtml(snapshot.stateName.toUpperCase())} · SNAPSHOT ${escapeHtml(formatDate(snapshot.referenceDateAt))} · ${escapeHtml(snapshot.methodologyVersion)}`,
     pageCss: DISTRICT_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS + EVIDENCE_ENTRY_POINTS_CSS,
     footer: {
-      sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
+      sourceDateLabel: formatDate(snapshot.referenceDateAt),
       methodologyVersion: snapshot.methodologyVersion,
       sourceAttribution: snapshot.sourceAttribution,
     },

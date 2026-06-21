@@ -142,6 +142,8 @@ export async function insertHistoricalPublishedSnapshot(
 ) {
   const payload = loadFixturePublishedSnapshot();
   payload.snapshot.sourceSnapshotAt = overrides.sourceSnapshotAt;
+  payload.snapshot.referenceDateAt = overrides.sourceSnapshotAt;
+  payload.snapshot.referenceDateKind = "source_snapshot_at";
   payload.snapshot.publishedAt = overrides.publishedAt;
   payload.snapshot.methodologyVersion = overrides.methodologyVersion ?? payload.snapshot.methodologyVersion;
   payload.snapshot.qualityState = overrides.qualityState ?? payload.snapshot.qualityState;
@@ -239,7 +241,7 @@ export async function insertPublishedSnapshot(
       input.stateCode,
       input.stateCode,
       payload.snapshot.sourceName,
-      payload.snapshot.sourceSnapshotAt,
+      payload.snapshot.referenceDateAt,
       payload.snapshot.methodologyVersion,
       "published",
       payload.snapshot.qualityState,

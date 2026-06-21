@@ -143,6 +143,10 @@ GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
 Full contract is enforced by API contract tests under `src/api/__tests__/`.
+Lower-court snapshot metadata separates provenance from display freshness:
+`sourceSnapshotAt` is the upstream NJDG source date when the stored evidence exposes a defensible one, otherwise `null`;
+`referenceDateAt` is the date used for public freshness, trends, and CSV `snapshot_date`;
+`referenceDateKind` is either `source_snapshot_at` or `captured_at`.
 State-level pressure metrics that depend on optional NJDG inputs use tagged values:
 `{ "state": "ok", "value": ... }` when computable, or `{ "state": "missing", "reason": "source-not-published" | "insufficient-history" | "incomplete-breakdown" | "not-applicable" }` when the source inputs are unavailable or the metric does not apply.
 
