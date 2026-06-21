@@ -1,5 +1,8 @@
 # Assam Go-Live Checklist
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Checklist for moving Assam from internal trial to soft public availability.
 
 This is narrower than a nationwide launch checklist. Assam cleared the repo-level gates first, and the live rollout checks are now complete.

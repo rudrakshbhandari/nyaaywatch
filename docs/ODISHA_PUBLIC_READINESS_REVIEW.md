@@ -1,5 +1,8 @@
 # Odisha Public Readiness Review
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Review of what Odisha required before exposing the public Odisha route family.
 
 Odisha had already cleared the internal proof bar on the live stack before launch. This review records why the remaining public question was narrow: Odisha no longer needed extractor invention or source-shape debate, but it still needed stable-URL verification and a deliberate public rollout before exposure on the live hostname.
@@ -73,7 +76,7 @@ The Odisha-specific artifact for that pass is:
 
 ### 2. Information Architecture Discipline
 
-The product is intentionally not a surprise nationwide shell. Odisha public exposure needed to stay concrete through explicit state-scoped navigation, without widening public claims beyond the states actually live.
+At the time of this record, the product was intentionally kept to explicit live geographies rather than presented as an all-India shell. Odisha public exposure needed to stay concrete through explicit state-scoped navigation, without widening public claims beyond the then-live states.
 
 ### 3. Expansion Risk Management
 

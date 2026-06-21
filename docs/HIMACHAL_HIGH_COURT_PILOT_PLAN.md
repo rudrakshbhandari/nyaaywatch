@@ -1,5 +1,7 @@
 # Himachal High Court Pilot Plan
 
+Historical note: this was the first High Court tier pilot plan. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage and route scope.
+
 Execution plan for the first High Court tier pilot inside NyaayWatch.
 
 This document turns the national product architecture into a concrete High Court implementation slice.
@@ -29,7 +31,7 @@ It is:
 Himachal High Court is the correct first tier pilot because:
 
 - Himachal remains the repo's reference geography
-- the product already speaks in Himachal-first terms
+- the product still had Himachal as its original reference geography
 - the High Court source surface is public and legible enough to support a narrow pilot
 - it lets NyaayWatch test tier expansion without taking on a multi-High-Court wave immediately
 

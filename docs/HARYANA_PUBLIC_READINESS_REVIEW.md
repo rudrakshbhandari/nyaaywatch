@@ -1,5 +1,8 @@
 # Haryana Public Readiness Review
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Review of the Haryana public go / no-go question and the resulting live rollout.
 
 This review is now closed in favor of the live result. Haryana cleared the trust-surface gates, passed public-route parity, and went live on `https://nyaaywatch.in/states/haryana` on `2026-04-17`. The current remaining work is no longer Haryana readiness; it is keeping later public expansion narrower than the larger internal-only state set.
@@ -78,11 +81,11 @@ Haryana is no longer dark on the public site. The explicit Haryana route family 
 
 ### 2. Information Architecture Discipline Held
 
-The product is no longer Himachal-only, but it is still intentionally not nationwide. Haryana stayed within the narrow explicit posture:
+At the time of this record, the product had moved beyond Himachal but did not yet claim all-India coverage. Haryana stayed within the narrow explicit posture:
 
 - explicit state-scoped navigation
-- no generic national coverage language
-- no silent widening of claims beyond the states actually live
+- no generic all-India coverage language
+- no silent widening of claims beyond the then-live states
 
 ### 3. Expansion Risk Management Still Matters
 

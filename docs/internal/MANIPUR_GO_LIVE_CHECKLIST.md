@@ -1,5 +1,8 @@
 # Manipur Go-Live Checklist
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Checklist for deciding whether Manipur can move from approved public-prep state to public availability.
 
 This is narrower than a nationwide launch checklist. Manipur had already cleared the internal proof bar and was wired in repo config as an approved public state before launch.
@@ -40,7 +43,7 @@ This is narrower than a nationwide launch checklist. Manipur had already cleared
 - [x] Manipur exposure stays concrete through explicit `/states/manipur/...` routes rather than broader national scaffolding.
 - [x] The website remains explicit about what is covered now.
 - [x] Himachal Pradesh remains the default unscoped surface.
-- [x] No UI implies nationwide parity beyond the states actually live.
+- [x] No UI implies nationwide parity beyond the then-live states.
 
 ### 5. Source And Export Boundary
 

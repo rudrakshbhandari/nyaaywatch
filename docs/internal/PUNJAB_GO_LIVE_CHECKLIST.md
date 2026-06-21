@@ -1,5 +1,8 @@
 # Punjab Go-Live Checklist
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Checklist for deciding whether Punjab can move from internal trial to soft public availability.
 
 This is narrower than a nationwide launch checklist. Punjab should clear this before any public website exposure, even if traffic is expected to be low.
@@ -46,7 +49,7 @@ Punjab's first live public publication is `publication_7db9a015-68d0-4182-8c77-f
 
 - [x] Punjab exposure is concrete, not placeholder scaffolding.
 - [x] The website remains explicit about what is covered now.
-- [x] Himachal-first trust language is updated carefully rather than silently removed.
+- [x] the original Himachal-centered trust language was updated carefully rather than silently removed.
 - [x] No UI implies nationwide parity or cross-state coverage breadth that does not exist.
 
 ### 5. Source And Export Boundary

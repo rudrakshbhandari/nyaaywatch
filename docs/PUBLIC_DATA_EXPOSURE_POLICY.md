@@ -1,10 +1,10 @@
 # Public Data Exposure Policy
 
-Launch-policy note for the Himachal Pradesh alpha on what NyaayWatch may expose publicly and what must stay internal.
+Launch-policy note for the India-first public alpha on what NyaayWatch may expose publicly and what must stay internal.
 
 ## Why This Exists
 
-Phase 5 requires an explicit decision about raw artifact redistribution before alpha launch.
+The public alpha requires an explicit decision about raw artifact redistribution before any new public download or evidence-pack format ships.
 
 This document records the current repo decision so operators, reviewers, and future contributors do not infer public exposure rules from implementation details alone.
 
@@ -30,7 +30,7 @@ This is a product and launch decision, not formal legal advice.
 
 ## Current Alpha Decision
 
-Public alpha exposure is limited to published read-model outputs and citation metadata.
+Public alpha exposure is limited to published read-model outputs and citation metadata across the Supreme Court, High Court, and lower-court route families.
 
 Raw upstream captures, replay copies, operator inspection payloads, and unpublished candidates stay internal.
 
@@ -41,8 +41,8 @@ Downloadable public evidence packs that bundle raw upstream HTML are out of scop
 | Surface or artifact | Stored in | Public in alpha | Reason |
 |---|---|---:|---|
 | Homepage, district pages, methodology, API docs | App read model | Yes | Public trust surface built from the active published snapshot only |
-| `GET /v1/stats/himachal`, `GET /v1/districts`, `GET /v1/trends` | PostgreSQL published snapshot payload | Yes | Narrow machine-readable published snapshot boundary |
-| Statewide and district history CSV exports | Published snapshot payload plus published history | Yes | Normalized exports with snapshot date, methodology version, freshness, and source attribution |
+| Supreme Court, High Court, and lower-court public JSON endpoints | PostgreSQL published snapshot payload | Yes | Narrow machine-readable published snapshot boundary |
+| Lower-court, High Court, Supreme Court, and district history CSV exports | Published snapshot payload plus published history | Yes | Normalized exports with snapshot date, methodology version, freshness, and source attribution |
 | District permalinks and citation metadata | Published snapshot payload | Yes | Needed for durable public citation and responsible sharing |
 | Raw NJDG HTML capture bundles | S3 raw artifacts | No | Redistribution posture is not cleared for public bulk exposure |
 | Replay copies of raw artifacts | S3 replay prefixes | No | Internal operator artifacts only |
@@ -52,7 +52,7 @@ Downloadable public evidence packs that bundle raw upstream HTML are out of scop
 
 ## Public Exposure Rules
 
-For the Himachal alpha:
+For the public alpha:
 
 1. Public downloads must stay inside the published snapshot schema.
 2. Every public export must carry snapshot date, publication date, methodology version, and source attribution.

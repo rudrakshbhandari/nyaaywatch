@@ -1,5 +1,8 @@
 # Assam Public Readiness Review
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Review of what Assam required before exposing the public Assam route family, now updated with the completed live rollout evidence.
 
 This review closed the Assam go / no-go question at the trust-surface level before launch. The remaining work at that point was the actual live hostname rollout and stable-URL verification, which are now complete.
@@ -83,11 +86,11 @@ The verification artifacts for that pass now live in:
 
 ### 2. Information Architecture Discipline
 
-The product is no longer Himachal-only, but it is still intentionally not nationwide. Assam public exposure should keep that narrow explicit posture:
+At the time of this record, the product had moved beyond Himachal but did not yet claim all-India coverage. Assam public exposure had to keep that narrow explicit posture:
 
 - explicit state-scoped navigation
-- no generic national coverage language
-- no silent widening of claims beyond the states actually live
+- no generic all-India coverage language
+- no silent widening of claims beyond the then-live states
 
 ### 3. Expansion Risk Management
 
