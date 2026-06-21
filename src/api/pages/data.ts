@@ -35,8 +35,8 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
         note: `The ${aggregateAdjective} CSV mirrors the same fields exposed by the JSON endpoints.`,
       })}
       ${renderStatTile({
-        label: "Source snapshot",
-        value: formatDate(snapshot.snapshot.sourceSnapshotAt),
+        label: "Reference date",
+        value: formatDate(snapshot.snapshot.referenceDateAt),
         note: "Every download carries this date and the methodology version so a citation stays valid.",
       })}
       ${renderStatTile({
@@ -78,7 +78,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
             <code class="download__path">${escapeHtml(context.routes.stateEvidencePack)}</code>
           </div>
           <h3>Evidence packs</h3>
-          <p>State and district JSON packs keep the visible metrics, source date, methodology version, citation text, CSV/API links, and caveats together. District packs are also linked from each district evidence page.</p>
+          <p>State and district JSON packs keep the visible metrics, reference date, source date when available, methodology version, citation text, CSV/API links, and caveats together. District packs are also linked from each district evidence page.</p>
           <p class="download__cta"><a class="btn btn--ghost btn--small" href="${context.routes.stateEvidencePack}">Open state pack</a></p>
         </article>
       </div>
@@ -109,10 +109,10 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
-    ticker: `${escapeHtml(snapshot.snapshot.stateName.toUpperCase())} · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))}`,
+    ticker: `${escapeHtml(snapshot.snapshot.stateName.toUpperCase())} · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.referenceDateAt))}`,
     pageCss: DATA_PAGE_CSS,
     footer: {
-      sourceDateLabel: formatDate(snapshot.snapshot.sourceSnapshotAt),
+      sourceDateLabel: formatDate(snapshot.snapshot.referenceDateAt),
       methodologyVersion: snapshot.snapshot.methodologyVersion,
       sourceAttribution: snapshot.snapshot.sourceAttribution,
     },

@@ -10,8 +10,8 @@ import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidence
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderMoversPage(result: DistrictMoversResult, context: PublicPageContext): string {
-  const currentDate = formatDate(result.currentSnapshot.sourceSnapshotAt);
-  const previousDate = formatDate(result.previousSnapshot.sourceSnapshotAt);
+  const currentDate = formatDate(result.currentSnapshot.referenceDateAt);
+  const previousDate = formatDate(result.previousSnapshot.referenceDateAt);
 
   const biggestJumps = [...result.movers]
     .sort((a, b) => b.backlogDelta - a.backlogDelta)
@@ -72,7 +72,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
         {
           eyebrow: "04",
           title: "Cite the snapshot",
-          body: "Use CSV and methodology links so the movement window and source date remain visible beside the number.",
+          body: "Use CSV and methodology links so the movement window and reference date remain visible beside the number.",
           href: context.routes.data,
           cta: "Open data",
         },
@@ -82,7 +82,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     ${renderEvidenceEntryPoints({
       headline: "Download the evidence behind these movers.",
       lede:
-        "Use the state pack for the full movers list, then open district packs when you need a specific source date, method, CSV link, citation text, and caveats together.",
+        "Use the state pack for the full movers list, then open district packs when you need a specific reference date, method, CSV link, citation text, and caveats together.",
       entries: [
         {
           title: "Movers citation",

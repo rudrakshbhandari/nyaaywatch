@@ -137,7 +137,7 @@ export function renderMethodologyPage(
         <article class="card" id="source-caveat-review-status">
           ${renderAnchorLink("source-caveat-review-status", "Current review status")}
           <h3>Current review status</h3>
-          <p>The April 2026 source review did not find a lower-court geography that needs an extra public caveat beyond the state or Union Territory label, source date, and freshness or quality banner.</p>
+          <p>The April 2026 source review did not find a lower-court geography that needs an extra public caveat beyond the state or Union Territory label, reference date, and freshness or quality banner.</p>
         </article>
         <article class="card" id="source-caveat-future-changes">
           ${renderAnchorLink("source-caveat-future-changes", "Future source changes")}
@@ -150,12 +150,12 @@ export function renderMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published methodology and snapshot lineage",
-        lede: "One row per source-snapshot date, sorted newest first, showing the publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
+        lede: "One row per reference date, sorted newest first, showing the publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
       })}
       ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
-        referenceDateLabel: (entry) => formatDate(entry.snapshot.sourceSnapshotAt),
+        referenceDateLabel: (entry) => formatDate(entry.snapshot.referenceDateAt),
         publicationTimestamp: (entry) => entry.publication.createdAt,
-        referenceDateSortKey: (entry) => entry.snapshot.sourceSnapshotAt,
+        referenceDateSortKey: (entry) => entry.snapshot.referenceDateAt,
       })) : emptyHistoryCallout()}
     </section>
   `;
@@ -171,7 +171,7 @@ export function renderMethodologyPage(
     ticker,
     pageCss: METHODOLOGY_PAGE_CSS,
     footer: {
-      sourceDateLabel: snapshot ? formatDate(snapshot.sourceSnapshotAt) : null,
+      sourceDateLabel: snapshot ? formatDate(snapshot.referenceDateAt) : null,
       methodologyVersion: snapshot?.methodologyVersion ?? null,
       sourceAttribution: snapshot?.sourceAttribution ?? null,
     },
@@ -183,7 +183,7 @@ function renderHistoryTable(history: PublicationHistoryEntry[]): string {
     .map(
       (entry) => `
         <tr>
-          <td>${escapeHtml(formatDate(entry.snapshot.sourceSnapshotAt))}</td>
+          <td>${escapeHtml(formatDate(entry.snapshot.referenceDateAt))}</td>
           <td><code>${escapeHtml(entry.snapshot.methodologyVersion)}</code></td>
           <td>${escapeHtml(entry.snapshot.qualityState)}</td>
           <td class="num">${entry.stats.pendingCases.toLocaleString("en-IN")}</td>
@@ -198,7 +198,7 @@ function renderHistoryTable(history: PublicationHistoryEntry[]): string {
       <table class="data-table">
         <thead>
           <tr>
-            <th>Source snapshot</th>
+            <th>Reference date</th>
             <th>Methodology</th>
             <th>Quality</th>
             <th>Cases waiting</th>

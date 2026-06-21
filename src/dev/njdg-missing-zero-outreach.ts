@@ -10,7 +10,9 @@ interface PublicStatsPayload {
   snapshot: {
     stateCode: string;
     stateName: string;
-    sourceSnapshotAt: string;
+    sourceSnapshotAt: string | null;
+    referenceDateAt: string;
+    referenceDateKind: "source_snapshot_at" | "captured_at";
     sourceAttribution: string;
   };
   stats: {
@@ -33,7 +35,9 @@ export interface MissingMonthlyMovementIssue {
   scope: "state" | "district";
   stateCode: string;
   stateName: string;
-  sourceSnapshotAt: string;
+  sourceSnapshotAt: string | null;
+  referenceDateAt: string;
+  referenceDateKind: "source_snapshot_at" | "captured_at";
   sourceAttribution: string;
   districtName?: string;
   pendingCases: number;
@@ -157,6 +161,8 @@ async function findMissingMonthlyMovementIssues(baseUrl: string): Promise<Missin
         stateCode: statsPayload.snapshot.stateCode,
         stateName: statsPayload.snapshot.stateName,
         sourceSnapshotAt: statsPayload.snapshot.sourceSnapshotAt,
+        referenceDateAt: statsPayload.snapshot.referenceDateAt,
+        referenceDateKind: statsPayload.snapshot.referenceDateKind,
         sourceAttribution: statsPayload.snapshot.sourceAttribution,
         pendingCases: statsPayload.stats.pendingCases,
         filedLastMonthCases: statsPayload.stats.filedLastMonthCases,
@@ -175,6 +181,8 @@ async function findMissingMonthlyMovementIssues(baseUrl: string): Promise<Missin
         stateCode: statsPayload.snapshot.stateCode,
         stateName: statsPayload.snapshot.stateName,
         sourceSnapshotAt: statsPayload.snapshot.sourceSnapshotAt,
+        referenceDateAt: statsPayload.snapshot.referenceDateAt,
+        referenceDateKind: statsPayload.snapshot.referenceDateKind,
         sourceAttribution: statsPayload.snapshot.sourceAttribution,
         districtName: district.districtName,
         pendingCases: district.backlogCases,
@@ -194,7 +202,7 @@ export function composeNjdgOutreachMessage(baseUrl: string, issues: MissingMonth
     const label = issue.scope === "district" ? `${issue.stateName} / ${issue.districtName}` : issue.stateName;
     return [
       `- ${label}`,
-      `  Source date: ${formatDate(issue.sourceSnapshotAt)}`,
+      `  Reference date: ${issue.referenceDateKind === "captured_at" ? "captured " : "source snapshot "}${formatDate(issue.referenceDateAt)}`,
       `  Pending cases: ${issue.pendingCases.toLocaleString("en-IN")}`,
       `  Filed last month shown by NJDG: ${issue.filedLastMonthCases.toLocaleString("en-IN")}`,
       `  Cleared last month shown by NJDG: ${issue.clearedLastMonthCases.toLocaleString("en-IN")}`,
