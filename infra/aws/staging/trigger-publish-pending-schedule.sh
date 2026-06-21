@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -gt 1 ]]; then
-  echo "Usage: $0 [stack-name]" >&2
+if [[ $# -gt 2 ]]; then
+  echo "Usage: $0 [stack-name] [schedule-name]" >&2
   exit 1
 fi
 
 stack_name="${1:-nyaaywatch-production}"
 region="${AWS_REGION:-ap-south-1}"
-schedule_name="${PUBLISH_PENDING_SCHEDULE_NAME:-${stack_name}-publish-pending-sweep}"
+schedule_name="${2:-${PUBLISH_PENDING_SCHEDULE_NAME:-${stack_name}-publish-pending-sweep}}"
 schedule_group="${PUBLISH_PENDING_SCHEDULE_GROUP:-default}"
 
 tmpdir="$(mktemp -d)"
@@ -89,7 +89,7 @@ aws scheduler update-schedule \
   >/dev/null
 
 echo "Waiting for the one-time scheduler window to fire..."
-sleep "${PUBLISH_PENDING_TRIGGER_WAIT_SECONDS:-180}"
+sleep "${SCHEDULE_TRIGGER_WAIT_SECONDS:-${PUBLISH_PENDING_TRIGGER_WAIT_SECONDS:-180}}"
 
 echo "Restoring $schedule_name to its original expression..."
 restore_schedule

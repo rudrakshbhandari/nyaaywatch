@@ -78,7 +78,7 @@ For every incident, in order:
    - public trust / freshness / lag: `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md`
    - publish or rollback decisions: `docs/RELEASE_POLICY.md` and `docs/OPERATING_EVIDENCE.md`
    - stack or environment anomalies: `docs/internal/DEPLOYMENT_STATUS.md`
-5. If the failure is stale public lower-court snapshots after a deployed code fix and fresh internal runs already exist, run the manual **Ops Publish Pending** workflow from `main`. It triggers the existing production publish-pending EventBridge schedule through the live stack, restores the normal schedule expression, then reruns the public-alpha and internal-fetch verifiers. Do not use it to bypass publish gates or publish stale/partial runs.
+5. If the failure is stale public lower-court snapshots after a deployed code fix, run the manual **Ops Publish Pending** workflow from `main`. Use `refresh_lower_courts=true` when the latest lower-court internal runs were created before the deployed fix; otherwise leave it false. The workflow triggers the existing production EventBridge schedules through the live stack, restores the normal schedule expressions, then reruns the public-alpha and internal-fetch verifiers. Do not use it to bypass publish gates or publish stale/partial runs.
 6. Take the action or explicitly record why no action is being taken. Every incident closes with either a publication id, a PR link, or a one-line "held, reason recorded" note.
 7. If any assumption in this document was wrong in practice, propose an edit to this file in the same PR that closes the incident.
 
