@@ -78,6 +78,9 @@ brand/
     nyaaywatch-archive-seal-mark.svg
     nyaaywatch-docket-stamp-mark.svg
     nyaaywatch-favicon.svg
+    nyaaywatch-logo-dark.svg
+    nyaaywatch-logo-light.svg
+    nyaaywatch-nw-square-mark.svg
 ```
 
 Expected future additions once the wordmark is finalized:
@@ -141,6 +144,20 @@ Rules:
 - no thin inner details
 - one accent max
 - remains legible at 16px
+
+## NW Square Mark
+
+File:
+
+- `brand/logo/nyaaywatch-nw-square-mark.svg`
+- `brand/logo/nyaaywatch-logo-light.svg`
+- `brand/logo/nyaaywatch-logo-dark.svg`
+
+Rules:
+
+- keep these files in sync with the website masthead and `/press/logo-*.svg` downloads
+- use the square mark for compact avatar-style placements where the wordmark is too wide
+- preserve the black rounded-square field and `NW` text treatment from the public site
 
 ## Wordmark
 
