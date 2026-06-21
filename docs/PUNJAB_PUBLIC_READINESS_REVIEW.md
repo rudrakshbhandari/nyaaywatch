@@ -1,5 +1,8 @@
 # Punjab Public Readiness Review
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Review of what we can already validate for Punjab before public exposure.
 
 This review was written before the second spaced Punjab publish window and remains useful after it. The second window is now complete, so the remaining blockers are public-surface implementation and parity verification rather than operator repeatability.
@@ -78,7 +81,7 @@ This is the biggest unresolved public-launch work item besides the second spaced
 
 ### 2. Scope Copy
 
-The current live website is explicitly Himachal-first. Before Punjab goes public, copy needs a deliberate update such as:
+At the time of this record, the live website was still explicitly centered on Himachal. Before Punjab goes public, copy needs a deliberate update such as:
 
 - `starting with Himachal and now covering Punjab`, or
 - another equally explicit formulation

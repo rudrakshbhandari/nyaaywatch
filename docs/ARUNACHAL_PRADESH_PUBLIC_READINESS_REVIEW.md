@@ -1,5 +1,8 @@
 # Arunachal Pradesh Public Readiness Review
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Review of what Arunachal Pradesh required before exposing the public Arunachal Pradesh route family.
 
 Arunachal Pradesh had already cleared the internal proof bar on the live stack before launch. This review records why the remaining public question was narrow: Arunachal Pradesh no longer needed extractor invention or source-shape debate, but it still needed stable-URL verification and a deliberate public rollout before exposure on the live hostname.
@@ -85,11 +88,11 @@ The Arunachal Pradesh-specific artifacts for that pass are:
 
 ### 2. Information Architecture Discipline
 
-The product is intentionally not nationwide. Arunachal Pradesh public exposure should keep that narrow explicit posture:
+At the time of this record, the product did not yet claim all-India coverage. Arunachal Pradesh public exposure had to keep that narrow explicit posture:
 
 - explicit state-scoped navigation
-- no generic national coverage language
-- no silent widening of claims beyond the states actually live
+- no generic all-India coverage language
+- no silent widening of claims beyond the then-live states
 
 ### 3. Expansion Risk Management
 

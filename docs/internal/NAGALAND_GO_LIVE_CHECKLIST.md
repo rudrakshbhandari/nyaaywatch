@@ -1,5 +1,8 @@
 # Nagaland Go-Live Checklist
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Checklist for deciding whether Nagaland can move from approved public-prep state to soft public availability.
 
 This is narrower than a nationwide launch checklist. Nagaland had already cleared the internal proof bar and was wired in repo config as an approved public state before launch.

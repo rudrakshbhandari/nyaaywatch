@@ -1,6 +1,6 @@
-# Alpha Release Policy
+# Public Alpha Release Policy
 
-Operating policy for keeping the Himachal Pradesh public alpha trustworthy.
+Operating policy for keeping the India-first public alpha trustworthy.
 
 This policy sets cadence, publisher rules, and blocking criteria. Use `docs/ALPHA_RELEASE_CHECKLIST.md` as the release go/no-go runbook, `docs/internal/DEPLOYMENT_STATUS.md` as the live environment map, and `docs/DOMAIN_CUTOVER_CHECKLIST.md` only for hostname, certificate, or DNS changes.
 
@@ -31,7 +31,7 @@ Why this cadence:
 - it leaves room for operator inspection before public publish
 - it is frequent enough for a public alpha but slow enough to keep every release deliberate
 
-Do not publish just because a newer run exists. Publish only after the release checklist is green.
+Do not publish just because a newer run exists. Publish only after the release checklist is green for the affected court family and route scope.
 
 Treat the daily fetches as internal evidence collection only:
 
@@ -43,16 +43,16 @@ Treat a lower-court row with pending cases but `0` filed and `0` cleared cases f
 
 ## Environment Rule
 
-`https://nyaaywatch.in` is production, even though the AWS resources currently use `nyaaywatch-staging` names. Treat the current `nyaaywatch-staging` stack as production for release and operator safety decisions until a reality-named `nyaaywatch-production` replacement is verified and cut over.
+`https://nyaaywatch.in` is production and is backed by the reality-named `nyaaywatch-production` stack. `https://staging.nyaaywatch.in` is dedicated staging and is backed by `nyaaywatch-staging`.
 
-The intended environment split is:
+The environment split is:
 
 - local development for implementation and fixture-backed checks
 - PR previews for public UI, copy, and responsive review only
-- dedicated AWS staging for isolated release rehearsal once provisioned as `nyaaywatch-staging`
-- production public alpha at `https://nyaaywatch.in`, target stack name `nyaaywatch-production`
+- dedicated AWS staging for isolated release rehearsal as `nyaaywatch-staging`
+- production public alpha at `https://nyaaywatch.in` as `nyaaywatch-production`
 
-Until the production and staging names are corrected, do not treat production as a sandbox for destructive rehearsal. Production operator actions should use `npm run operator:production`, be release-scoped, be recorded, and be backed by an explicit rollback target.
+Do not treat production as a sandbox for destructive rehearsal. Production operator actions should use `npm run operator:production`, be release-scoped, be recorded, and be backed by an explicit rollback target.
 
 ## Publish Authority
 
@@ -81,8 +81,8 @@ Treat a release as blocked if any one of these is true:
 - ALB target health is not fully healthy
 - a new run is `partial`, `failed`, or missing required artifacts
 - dedicated staging exists and the operator cannot complete `fetch -> inspect -> publish -> replay -> rollback` there before production release work
-- until dedicated staging exists, the production-lane operator validation is not release-scoped, recorded, or backed by a clear rollback target
-- the homepage, district pages, CSV, and API do not agree on the active publication
+- production-lane operator validation is not release-scoped, recorded, or backed by a clear rollback target
+- the homepage, court-tier pages, district pages, CSVs, evidence packs, and APIs do not agree on the active publication for the checked scope
 - freshness, methodology version, source attribution, or quality state are missing from trust-critical surfaces
 - the public copy implies real-time monitoring, prediction, or verdicts
 - a structured app-error alarm or ALB 5xx alarm is firing and the cause is not understood
@@ -107,7 +107,7 @@ Treat a release as blocked if any one of these is true:
    ```bash
    npm run release:verify -- --base-url=https://nyaaywatch.in
    ```
-   For an approved state-scoped rollout, run the same command with `--state-slug=<state-slug>` as an additional check. For tier-level release checks, run `--supreme-court` for the Supreme Court surface and `--high-court=<court-slug>` for the relevant High Court surface; each verifies the tier-specific stats, trends, data page, cache headers, and operator-auth boundary.
+   For a lower-court geography rollout, run the same command with `--state-slug=<state-slug>` as an additional check. For tier-level release checks, run `--supreme-court` for the Supreme Court surface and `--high-court=<court-slug>` for the relevant High Court surface; each verifies the tier-specific stats, trends, data page, cache headers, and operator-auth boundary.
 5. For the broad post-launch sweep, run the all-public-targets ops check:
    ```bash
    export OPERATOR_API_TOKEN=...
@@ -119,7 +119,7 @@ Treat a release as blocked if any one of these is true:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
    ```
-   For an approved state-scoped rollout, add `--state-slug=<state-slug>` so the release summary verifies the matching public route family.
+   For a lower-court geography rollout, add `--state-slug=<state-slug>` so the release summary verifies the matching public route family.
 
 ### During publish
 
@@ -136,8 +136,9 @@ For the next 15 minutes:
 
 - watch the dashboard
 - confirm the public hostname still passes `/health`
-- confirm `GET /v1/stats/himachal` reflects the intended active publication
-- if rolling out an additional approved state, confirm its explicit state-scoped stats route reflects the intended active publication
+- confirm `GET /v1/supreme-court/stats` reflects the intended active publication when the release touches Supreme Court data or homepage hero data
+- confirm `GET /v1/high-courts/<court-slug>/stats` reflects the intended active publication when the release touches a High Court
+- confirm `GET /v1/stats/himachal` and the relevant `GET /v1/states/<state-slug>/stats` route reflect the intended active publication when the release touches lower-court data
 - if rolling out a High Court or Supreme Court publication, confirm the matching `/v1/high-courts/:courtSlug/stats` or `/v1/supreme-court/stats` route reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
 - rerun `release:verify` with `--supreme-court`, `--high-court=<court-slug>`, or `--state-slug=<state-slug>` for the tier actually published

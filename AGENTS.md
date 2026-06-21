@@ -12,8 +12,10 @@ Primary repo context lives in:
 2. `DESIGN.md`
 3. `docs/NYAAYWATCH_DESIGN.md`
 4. `docs/ENG_REVIEW_TEST_PLAN.md`
-5. `docs/MVP_EXECUTION_PLAN.md`
+5. `docs/INDIA_COURT_COVERAGE_AUDIT.md`
 6. `TODOS.md`
+
+`docs/MVP_EXECUTION_PLAN.md` is a historical plan. Read it only when auditing how the original MVP evolved; do not treat it as current scope or roadmap guidance.
 
 If this file and those docs conflict, update the work so it matches the repo docs or fix the docs intentionally.
 
@@ -65,7 +67,7 @@ Keep boundaries legible as the repo grows:
 - Keep changes small and scoped. Do not mix unrelated refactors into the same task.
 - Add or update tests for every behavior change.
 - Update docs when product behavior, methodology, schema, or operator workflows change.
-- Update `docs/MVP_EXECUTION_PLAN.md` in the same change when a plan item is completed, superseded, or reordered.
+- Update `TODOS.md` or the current source-of-truth doc in the same change when a plan item is completed, superseded, or reordered. Do not reactivate historical plans such as `docs/MVP_EXECUTION_PLAN.md` unless the change is explicitly archival.
 - Update `README.md` in the same PR when any of the following change: the Architecture bullets, the Repository Map (`src/` entries), the Operator Workflow scripts, the Scheduled Internal Fetches section, or the Public/Operator API shape. Do not leave these sections describing behavior that no longer exists — README.md is the first thing external contributors and operators read.
 - Prefer explicit schemas, typed boundaries, and deterministic transforms over implicit behavior.
 - Preserve reproducibility. Ingestion, normalization, and publish steps should be replayable and auditable.

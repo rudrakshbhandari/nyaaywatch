@@ -1,6 +1,6 @@
 # NyaayWatch Design
 
-Source of truth for product-specific route hierarchy, trust-surface rationale, and IA decisions. Earlier Himachal-first launch language has been superseded by the current India-first public alpha described in `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md`.
+Source of truth for product-specific route hierarchy, trust-surface rationale, and IA decisions. Earlier single-state launch language has been superseded by the current India-first public alpha described in `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md`.
 
 ## Canonical Product Definition
 
@@ -263,9 +263,9 @@ District detail should not live primarily in modals, side panels, or expandable 
 
 Methodology, download, and API docs are trust-supporting surfaces. They must be easy to reach from the header and footer, but they should not outrank the core public evidence workflow on the homepage.
 
-## MVP API
+## Public API
 
-Initial public endpoints:
+Current public endpoints:
 
 - `GET /v1/stats/himachal`
 - `GET /v1/districts`
@@ -273,6 +273,10 @@ Initial public endpoints:
 - `GET /v1/states/:stateSlug/stats`
 - `GET /v1/states/:stateSlug/districts`
 - `GET /v1/states/:stateSlug/trends`
+- `GET /v1/high-courts/:courtSlug/stats`
+- `GET /v1/high-courts/:courtSlug/trends`
+- `GET /v1/supreme-court/stats`
+- `GET /v1/supreme-court/trends`
 
 The API should expose the same evidence model the public page uses. No hidden richer truth than the public trust surface supports.
 
@@ -282,7 +286,7 @@ The `time_to_justice_index` remains in scope for alpha, but only as:
 
 - a transparent system-stress score
 - secondary to raw metrics and anomaly evidence
-- relative within the Himachal comparison cohort
+- relative within the relevant court-family cohort
 - fully reproducible with public weights and formula versions
 - stored as a derived fact with explicit lineage
 
@@ -290,7 +294,7 @@ It must not imply:
 
 - exact expected wait time
 - causal blame
-- national comparability before the system supports it
+- comparability across court families before the methodology explicitly supports it
 - predictive forecasting or AI inference
 
 ## Anomaly Layer
@@ -299,7 +303,7 @@ Anomalies should be:
 
 - rule-based
 - reproducible
-- Himachal-cohort-relative in alpha
+- cohort-relative within the relevant Supreme Court, High Court, or lower-court route family
 - framed as flagged signals, not verdicts
 
 ## Freshness Promise
@@ -326,11 +330,11 @@ NyaayWatch must specify what the user sees in degraded states, not just what the
 
 | Surface | Loading | Empty | Error | Success | Partial / Stale |
 |---|---|---|---|---|---|
-| Homepage `/` | Skeleton layout for headline, trust strip, metrics, and preview surfaces; no fake numbers | No published snapshot yet message, short explanation of what NyaayWatch is preparing, and links to methodology plus project status context | Calm error banner explaining the public snapshot could not be loaded, with a retry affordance and methodology link | Latest published Himachal snapshot with trust strip, toplines, preview ranking, trend, and flagged signals | Continue showing last published snapshot with an amber freshness banner; if quality is partial, label affected metrics and point to caveats |
+| Homepage `/` | Skeleton layout for headline, trust strip, metrics, and preview surfaces; no fake numbers | No published snapshot yet message, short explanation of what NyaayWatch is preparing, and links to methodology plus project status context | Calm error banner explaining the public snapshot could not be loaded, with a retry affordance and methodology link | Latest published Supreme Court hero, High Court section, lower-court handoff, trust strip, toplines, trends, and flagged signals | Continue showing last published snapshot with an amber freshness banner; if quality is partial, label affected metrics and point to caveats |
 | District index `/districts` | Table skeleton with filter placeholders and note that rankings are loading from latest published snapshot | No districts available in current published snapshot, with explanation that publication is not ready or geography is not yet covered | Error banner above table with plain-language explanation and retry affordance | Sortable / scannable district table tied to the same published snapshot as the homepage | Rows with partial or inconsistent quality stay visible but are badged and may sort below fully trustworthy rows by default |
 | District page `/districts/:id` | Skeleton for summary, trust strip, metrics, and chart | District not available in published coverage, with explanation of current geographic scope and a path back to the district index | Error state that preserves page shell and explains that district evidence could not be loaded | District summary, flagged explanation, evidence surfaces, export actions, and caveats | Keep district page visible with explicit badges for partial quality, stale snapshot, or changed methodology; never imply certainty the data does not have |
 | Methodology `/methodology` | Text skeleton and section anchors loading | Not applicable | Error message with fallback link to the public repo docs if available | Formula explanations, caveats, change log, and snapshot semantics | If some methodology sections are unavailable, show the last published version with a note that a fuller update is pending |
-| Data / API surfaces | Endpoint or download list skeletons without placeholder payload claims | No public downloads or endpoints for current scope yet, with explanation of the alpha boundary | Error state with status text and link to repo/API docs | Stable public CSV and API access matching the current published snapshot | If a download or endpoint is temporarily unavailable, keep the rest visible and mark the affected artifact as unavailable rather than implying the entire system is down |
+| Data / API surfaces | Endpoint or download list skeletons without placeholder payload claims | No public downloads or endpoints for the selected court family yet, with explanation of the alpha boundary | Error state with status text and link to repo/API docs | Stable public CSV and API access matching the current published snapshot | If a download or endpoint is temporarily unavailable, keep the rest visible and mark the affected artifact as unavailable rather than implying the entire system is down |
 
 ### Stale Snapshot Presentation Rule
 
@@ -464,7 +468,7 @@ The following design decisions were considered and intentionally deferred from a
 
 The alpha is successful if:
 
-- a non-technical user can understand Himachal backlog in under 60 seconds
+- a non-technical user can understand the Supreme Court, High Court, and lower-court snapshot model in under 60 seconds
 - a reporter can cite the data without custom maintainer help
 - every published metric can be traced to a dated public source and transformation note
 - a developer can reproduce homepage toplines from the API
@@ -496,7 +500,7 @@ The product should not begin in an alarmist tone. It should first help a user un
 ### Time-Horizon Design
 
 - first 5 seconds: understand what NyaayWatch is and that the data is grounded in a published snapshot
-- first 5 minutes: inspect where Himachal appears to be struggling and why specific districts are flagged
+- first 5 minutes: inspect where a court family or lower-court geography appears to be under pressure and why specific districts or courts are flagged
 - long-term relationship: trust that NyaayWatch is careful, reproducible, and worth returning to as more Indian geographies are added
 
 ### Tone Progression Rule
@@ -543,14 +547,14 @@ Keep this document focused on the product-specific design decisions that are har
 - PostgreSQL as the normalized query layer
 - one containerized app for web, API, admin, and jobs
 
-## Immediate Next Steps
+## Current Product Direction
 
-1. Define the exact Himachal NJDG source pages and fields.
-2. Draft the canonical schema for sources, runs, facts, dimensions, and lineage.
-3. Specify the methodology page and first-pass formula package.
-4. Design the narrow API around the normalized evidence model.
-5. Build one end-to-end dry run with static sample data.
-6. Lock anomaly thresholds and publish-gate rules.
+1. Keep the homepage oriented around Supreme Court-first public accountability without implying cross-tier totals.
+2. Keep all 25 High Court beta surfaces discoverable, source-aware, and caveated.
+3. Keep all 36 lower-court state/Union Territory route families plain-language and evidence-backed.
+4. Preserve separate methodology tracks for Supreme Court, High Court, and lower-court data.
+5. Keep public APIs and downloads aligned with the exact published snapshot shown in the UI.
+6. Expand product storytelling only where stored evidence and public methodology can defend the claim.
 
 ## Design Review Completion Summary
 

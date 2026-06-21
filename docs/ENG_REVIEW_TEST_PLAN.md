@@ -23,7 +23,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 
 - homepage loads only published tier snapshots, never partial run data
 - homepage keeps accountability metadata visible but visually subordinate to the Supreme Court opening
-- homepage lower-court handoff avoids Himachal-first public copy even though the legacy unscoped lower-court routes still resolve to the featured snapshot
+- homepage lower-court handoff avoids single-state public copy even though the legacy unscoped lower-court routes still resolve to the featured snapshot
 - district page explains why a district was flagged and shows matching snapshot / methodology metadata
 - citation surface / CSV export matches the same published snapshot the UI shows
 - state-scoped routes only expose states with an active published snapshot in the current runtime

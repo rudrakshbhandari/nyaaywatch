@@ -1,5 +1,8 @@
 # Tamil Nadu Public Readiness Review
 
+Historical rollout note: this dated readiness record preserves the rollout scope and evidence available when it was written. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage.
+
+
 Review of what we can already validate for Tamil Nadu before exposing any public Tamil Nadu route family.
 
 This review closed the Tamil Nadu go / no-go question at the trust-surface level. Tamil Nadu then completed stable-URL verification plus the live rollout itself on `2026-04-17`.
@@ -80,11 +83,11 @@ The verification artifacts for that pass now live in:
 
 ### 2. Information Architecture Discipline
 
-The product is no longer Himachal-only, but it is still intentionally not nationwide. Tamil Nadu public exposure should keep that narrow explicit posture:
+At the time of this record, the product had moved beyond Himachal but did not yet claim all-India coverage. Tamil Nadu public exposure had to keep that narrow explicit posture:
 
 - explicit state-scoped navigation
-- no generic national coverage language
-- no silent widening of claims beyond the states actually live
+- no generic all-India coverage language
+- no silent widening of claims beyond the then-live states
 
 ### 3. Expansion Risk Management
 
