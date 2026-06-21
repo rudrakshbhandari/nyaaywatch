@@ -2,17 +2,21 @@ import { z } from "zod";
 
 import {
   DistrictSnapshotSchema,
-  SnapshotMetadataSchema,
+  SnapshotMetadataCanonicalSchema,
   StateStatsSchema,
   TrendPointSchema,
+  normalizeSnapshotMetadataInput,
 } from "./snapshot-schema.js";
 
-export const SnapshotCandidateMetadataSchema = SnapshotMetadataSchema.omit({
-  publishedAt: true,
-  freshnessDays: true,
-  publishedFromRunId: true,
-  replayedFromRunId: true,
-});
+export const SnapshotCandidateMetadataSchema = z.preprocess(
+  normalizeSnapshotMetadataInput,
+  SnapshotMetadataCanonicalSchema.omit({
+    publishedAt: true,
+    freshnessDays: true,
+    publishedFromRunId: true,
+    replayedFromRunId: true,
+  }),
+);
 
 export const SnapshotCandidateSchema = z.object({
   snapshot: SnapshotCandidateMetadataSchema,

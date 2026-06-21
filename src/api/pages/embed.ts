@@ -32,7 +32,7 @@ export function renderDistrictEmbedWidget(
   <div class="embed-card">
     <div class="embed-header">
       <span class="embed-header__label">NyaayWatch · ${escapeHtml(snapshot.stateName.toUpperCase())}</span>
-      <span class="embed-header__date">${escapeHtml(formatDate(snapshot.sourceSnapshotAt))}</span>
+      <span class="embed-header__date">${escapeHtml(formatDate(snapshot.referenceDateAt))}</span>
     </div>
     <div class="embed-divider"></div>
     <p class="embed-eyebrow">DISTRICT EVIDENCE · RANK #${district.rank}</p>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48" width="240" height="48" role="img" aria-labelledby="title desc">
+  <title id="title">NyaayWatch logo for light backgrounds</title>
+  <desc id="desc">The NyaayWatch website logo lockup with a black NW mark and black wordmark.</desc>
+  <rect width="48" height="48" rx="4" fill="#0c0a08"/>
+  <text x="24" y="26" text-anchor="middle" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="-1.2" fill="#f4efe3">NW</text>
+  <text x="64" y="26" dominant-baseline="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="900" letter-spacing="-1" fill="#0c0a08">NyaayWatch</text>
+</svg>

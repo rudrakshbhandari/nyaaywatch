@@ -142,7 +142,7 @@ export function registerOgRoutes(
         backlogCases: district.backlogCases,
         typicalWaitMonths,
         clearanceRate: district.disposalRate,
-        sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
+        sourceDateLabel: formatDate(snapshot.referenceDateAt),
       };
       const cacheKey = `district:${districtId}:${snapshot.publishedAt}`;
       const png = await renderDistrictOgCard(data, cacheKey);
@@ -177,7 +177,7 @@ export function registerOgRoutes(
         backlogCases: district.backlogCases,
         typicalWaitMonths,
         clearanceRate: district.disposalRate,
-        sourceDateLabel: formatDate(snapshot.sourceSnapshotAt),
+        sourceDateLabel: formatDate(snapshot.referenceDateAt),
       };
       const cacheKey = `district-sq:${districtId}:${snapshot.publishedAt}`;
       const png = await renderSquareDistrictCard(data, cacheKey);
