@@ -96,8 +96,16 @@ describe("public copy guardrails", () => {
         requiredText: "Understand India&#39;s courts before reading the numbers.",
       },
       {
+        path: "/watch",
+        requiredText: "Watchrooms",
+      },
+      {
         path: "/watch/old-case-burden",
         requiredText: "Old-case burden watchroom",
+      },
+      {
+        path: "/watch/persistent-pressure",
+        requiredText: "Persistent pressure watchroom",
       },
       {
         path: "/press",

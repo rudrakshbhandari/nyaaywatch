@@ -200,7 +200,9 @@ The alpha information architecture should separate overview from browsing so the
 - `/districts/:id` is the durable evidence page for a specific district in the legacy unscoped lower-court geography
 - `/states/:stateSlug` is the explicit state/Union Territory-scoped overview page for supported lower-court geographies
 - `/states/:stateSlug/districts` and `/states/:stateSlug/districts/:id` are the equivalent state-scoped district browsing and district evidence surfaces
+- `/watch` is the issue-watchroom hub: a lower-court-only entry surface for choosing an inspection question before opening a route-specific evidence page
 - `/watch/old-case-burden` is the first issue watchroom: a lower-court-only evidence page for old-case age buckets across public states and Union Territories, with missing-source states shown as missing rather than estimated
+- `/watch/persistent-pressure` is the second issue watchroom: a lower-court-only evidence page for districts repeatedly flagged across recent published snapshots, with persistence framed as an inspection signal rather than a cause or verdict
 - `/methodology` explains formulas, caveats, snapshot semantics, and change history
 - `/data` or an equivalent download surface handles CSV exports and public data access
 - `/api` or equivalent docs surface explains the developer-facing read model

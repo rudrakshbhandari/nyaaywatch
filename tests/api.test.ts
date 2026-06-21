@@ -75,6 +75,12 @@ describe("HTTP routes", () => {
               fivePlusYearsShare: 25.8,
               tenPlusYearsShare: 7.9,
             },
+            watchlistPersistence: {
+              flaggedInLastThree: 3,
+              lastThreeWindow: 3,
+              flaggedInLastSix: 5,
+              lastSixWindow: 6,
+            },
           }
         : {
             ...district,
@@ -85,6 +91,12 @@ describe("HTTP routes", () => {
               threePlusYearsShare: 12.4,
               fivePlusYearsShare: 5.2,
               tenPlusYearsShare: 0.9,
+            },
+            watchlistPersistence: {
+              flaggedInLastThree: 1,
+              lastThreeWindow: 3,
+              flaggedInLastSix: 2,
+              lastSixWindow: 6,
             },
           },
     );
@@ -211,6 +223,14 @@ describe("HTTP routes", () => {
     expect(moversPage.text).toContain("/data/evidence/state.json");
     expect(moversPage.text).toContain("Evidence JSON");
 
+    const watchIndex = await request(app).get("/watch");
+    expect(watchIndex.status).toBe(200);
+    expect(watchIndex.text).toContain("Watchrooms");
+    expect(watchIndex.text).toContain("Start with the pressure signals that deserve closer inspection.");
+    expect(watchIndex.text).toContain("Old-case burden");
+    expect(watchIndex.text).toContain("Persistent pressure");
+    expect(watchIndex.text).toContain("/watch/persistent-pressure");
+
     const oldCaseWatchroom = await request(app).get("/watch/old-case-burden");
     expect(oldCaseWatchroom.status).toBe(200);
     expect(oldCaseWatchroom.text).toContain("Old-case burden watchroom");
@@ -223,6 +243,16 @@ describe("HTTP routes", () => {
     expect(oldCaseWatchroom.text).toContain("/states/punjab/data/evidence/districts/amritsar.json");
     expect(oldCaseWatchroom.text).toContain("Watchroom citation");
     expect(oldCaseWatchroom.text).toContain("Age buckets not available");
+
+    const persistentPressureWatchroom = await request(app).get("/watch/persistent-pressure");
+    expect(persistentPressureWatchroom.status).toBe(200);
+    expect(persistentPressureWatchroom.text).toContain("Persistent pressure watchroom");
+    expect(persistentPressureWatchroom.text).toContain("Which districts keep appearing under pressure?");
+    expect(persistentPressureWatchroom.text).toContain("Amritsar");
+    expect(persistentPressureWatchroom.text).toContain("5 of 6");
+    expect(persistentPressureWatchroom.text).toContain("83.3%");
+    expect(persistentPressureWatchroom.text).toContain("/states/punjab/data/evidence/districts/amritsar.json");
+    expect(persistentPressureWatchroom.text).toContain("Watchroom citation");
 
     const dataPage = await request(app).get("/data");
     expect(dataPage.status).toBe(200);
@@ -285,7 +315,9 @@ describe("HTTP routes", () => {
     const sitemap = await request(app).get("/sitemap.xml");
     expect(sitemap.status).toBe(200);
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/learn</loc>");
+    expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch</loc>");
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/old-case-burden</loc>");
+    expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/persistent-pressure</loc>");
   });
 
   it("serves the national homepage when an older lower-court snapshot is missing embedded state metadata", async () => {
