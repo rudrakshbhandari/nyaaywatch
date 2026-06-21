@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <img alt="Node >=22" src="https://img.shields.io/badge/node-%3E%3D22-0c0a08" />
+  <img alt="Node 22 plus" src="https://img.shields.io/badge/node-22%2B-0c0a08" />
   <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-0c0a08" />
   <img alt="Snapshot based" src="https://img.shields.io/badge/data-reviewed%20snapshots-0c0a08" />
 </p>
@@ -67,14 +67,57 @@ Each court family ships paired overview, `/data`, `/methodology`, and `/api` pag
 
 ## Architecture
 
-```text
-NJDG source pages
-  -> ingest raw captures to S3
-  -> extract typed source records
-  -> normalize snapshot candidates
-  -> validate with publish gates
-  -> publish reviewed read models in PostgreSQL
-  -> serve public HTML, CSV, JSON, RSS, embeds, and OG cards
+```mermaid
+flowchart LR
+  subgraph sources["Public court data sources"]
+    sc["Supreme Court NJDG"]
+    hc["High Court NJDG"]
+    lc["District and subordinate court NJDG"]
+  end
+
+  subgraph pipeline["Reviewed snapshot pipeline"]
+    ingest["Ingest raw captures"]
+    extract["Extract typed records"]
+    normalize["Normalize snapshot candidates"]
+    gate["Quality and delta gates"]
+    publish["Operator or auto-publish"]
+  end
+
+  subgraph stores["Durable stores"]
+    s3["S3 raw evidence and candidates"]
+    pg["PostgreSQL runs, publications, subscriptions"]
+  end
+
+  subgraph public["Public surfaces"]
+    html["HTML pages"]
+    api["JSON API"]
+    csv["CSV and evidence packs"]
+    embeds["Embeds, RSS, OG cards"]
+  end
+
+  sc --> ingest
+  hc --> ingest
+  lc --> ingest
+  ingest --> s3
+  ingest --> extract --> normalize --> gate --> publish
+  normalize --> s3
+  publish --> pg
+  pg --> html
+  pg --> api
+  pg --> csv
+  pg --> embeds
+```
+
+```mermaid
+flowchart TD
+  scheduled["Scheduled internal fetches"] --> reviewed["Quality-complete runs"]
+  operator["Operator fetch or replay"] --> reviewed
+  reviewed --> gate{"Publish gate passes?"}
+  gate -->|yes| publish["Publish reviewed read model"]
+  gate -->|no| alert["SNS alert and human review"]
+  publish --> current["Current public snapshot"]
+  current --> rollback["Rollback stays one operator action"]
+  rollback --> current
 ```
 
 - One AWS-hosted containerized app, fronted by Cloudflare.
