@@ -49,7 +49,7 @@ Each court family ships paired overview, `/data`, `/methodology`, and `/api` pag
 
 | Surface | Routes | Purpose |
 | --- | --- | --- |
-| Investigation flows | `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, `/watch`, `/watch/old-case-burden`, `/watch/persistent-pressure` | Find movement, pressure, issue watchrooms, and district-to-district comparisons without cross-tier rankings |
+| Investigation flows | `/movers`, `/states/:slug/movers`, `/compare/:slug`, `/states/:slug/compare/:slug`, `/watch`, `/watch/old-case-burden`, `/watch/persistent-pressure`, `/watch/backlog-concentration` | Find movement, pressure, issue watchrooms, and district-to-district comparisons without cross-tier rankings |
 | District detail | `/districts/:id`, `/states/:slug/districts/:id` | Durable local pages with history, citation text, and exports |
 | Evidence packs | `/data/evidence/...`, `/states/:slug/data/evidence/...` | Safe public JSON bundles for lower-court state and district metrics |
 | Embeds | `/embed/district/:id`, `/embed/state/:slug` | Frameable district and state widgets |

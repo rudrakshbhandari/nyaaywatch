@@ -63,6 +63,13 @@ describe("HTTP routes", () => {
         tenPlusYearsShare: 5,
       },
     };
+    punjabOldCaseSnapshot.stats.backlogConcentration = {
+      state: "ok",
+      value: {
+        topFiveDistrictsShare: 61.2,
+        topTenDistrictsShare: 83.4,
+      },
+    };
     punjabOldCaseSnapshot.districts = punjabOldCaseSnapshot.districts.map((district) =>
       district.districtId === "amritsar"
         ? {
@@ -229,6 +236,8 @@ describe("HTTP routes", () => {
     expect(watchIndex.text).toContain("Start with the pressure signals that deserve closer inspection.");
     expect(watchIndex.text).toContain("Old-case burden");
     expect(watchIndex.text).toContain("Persistent pressure");
+    expect(watchIndex.text).toContain("Backlog concentration");
+    expect(watchIndex.text).toContain("/watch/backlog-concentration");
     expect(watchIndex.text).toContain("/watch/persistent-pressure");
 
     const oldCaseWatchroom = await request(app).get("/watch/old-case-burden");
@@ -243,6 +252,19 @@ describe("HTTP routes", () => {
     expect(oldCaseWatchroom.text).toContain("/states/punjab/data/evidence/districts/amritsar.json");
     expect(oldCaseWatchroom.text).toContain("Watchroom citation");
     expect(oldCaseWatchroom.text).toContain("Age buckets not available");
+
+    const backlogConcentrationWatchroom = await request(app).get("/watch/backlog-concentration");
+    expect(backlogConcentrationWatchroom.status).toBe(200);
+    expect(backlogConcentrationWatchroom.text).toContain("Backlog concentration watchroom");
+    expect(backlogConcentrationWatchroom.text).toContain("Where is the pending pile concentrated in a few districts?");
+    expect(backlogConcentrationWatchroom.text).toContain("Punjab");
+    expect(backlogConcentrationWatchroom.text).toContain("61.2%");
+    expect(backlogConcentrationWatchroom.text).toContain("83.4%");
+    expect(backlogConcentrationWatchroom.text).toContain("Ludhiana");
+    expect(backlogConcentrationWatchroom.text).toContain("25.1%");
+    expect(backlogConcentrationWatchroom.text).toContain("/states/punjab/data/evidence/state.json");
+    expect(backlogConcentrationWatchroom.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
+    expect(backlogConcentrationWatchroom.text).toContain("Watchroom citation");
 
     const persistentPressureWatchroom = await request(app).get("/watch/persistent-pressure");
     expect(persistentPressureWatchroom.status).toBe(200);
@@ -316,6 +338,7 @@ describe("HTTP routes", () => {
     expect(sitemap.status).toBe(200);
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/learn</loc>");
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch</loc>");
+    expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/backlog-concentration</loc>");
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/old-case-burden</loc>");
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/persistent-pressure</loc>");
   });

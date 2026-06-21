@@ -100,6 +100,10 @@ describe("public copy guardrails", () => {
         requiredText: "Watchrooms",
       },
       {
+        path: "/watch/backlog-concentration",
+        requiredText: "Backlog concentration watchroom",
+      },
+      {
         path: "/watch/old-case-burden",
         requiredText: "Old-case burden watchroom",
       },
