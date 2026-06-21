@@ -7,6 +7,11 @@ on:
         description: "Production stack to run publish-pending against"
         required: false
         default: "nyaaywatch-production"
+      refresh_lower_courts:
+        description: "Run the lower-court internal fetch schedule before publish-pending"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -43,7 +48,18 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
 
+      - name: Trigger lower-court internal fetch schedule
+        if: ${{ inputs.refresh_lower_courts }}
+        env:
+          SCHEDULE_NAME: ${{ env.STACK_NAME }}-weekday-internal-fetch
+          SCHEDULE_TRIGGER_WAIT_SECONDS: "1500"
+        run: |
+          chmod +x infra/aws/staging/trigger-publish-pending-schedule.sh
+          infra/aws/staging/trigger-publish-pending-schedule.sh "$STACK_NAME" "$SCHEDULE_NAME"
+
       - name: Trigger publish-pending schedule
+        env:
+          SCHEDULE_TRIGGER_WAIT_SECONDS: "300"
         run: |
           chmod +x infra/aws/staging/trigger-publish-pending-schedule.sh
           infra/aws/staging/trigger-publish-pending-schedule.sh "$STACK_NAME"
