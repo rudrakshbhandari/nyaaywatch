@@ -2,7 +2,7 @@
 
 Review date: **April 29, 2026**
 
-Latest follow-up: **May 23, 2026**
+Latest follow-up: **June 12, 2026**
 
 Purpose: record when NyaayWatch needs a public page-level caveat because an upstream source shape changes how a reader should interpret a published snapshot.
 
@@ -16,7 +16,11 @@ This review is not a release ledger. Release evidence stays in:
 
 No lower-court state or Union Territory currently needs an extra public caveat beyond the common methodology text, the normal source date, the state/Union Territory label, and freshness/quality banners.
 
-The May 23, 2026 live public-alpha sweep still supports that decision. `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` reported `62/62` healthy public targets, with no stale snapshots, no daily-fetch lag, and no failing targets. No stronger per-state freshness banner or state-specific methodology note is needed right now.
+The May 23, 2026 live public-alpha sweep still supports that decision. `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` reported `62/62` healthy public targets, with no stale snapshots, no daily-fetch lag, and no failing targets.
+
+The June 12, 2026 CPC Meghalaya response to the NyaayWatch source-data check supports the current missing-zero treatment: when NJDG displays zero-valued monthly movement fields, those values may represent missing data for that period rather than true zero activity. The response wording referred to `0` pending backlog alongside `0` filed and `0` disposed cases, while the NyaayWatch examples included pending-positive rows. Until NJDG provides a broader source-side correction or general rule, NyaayWatch should continue showing pending-positive rows with `0` filed and `0` disposed monthly movement as `N/A`, not zero-rate performance.
+
+That source-side clarification does not require a new state-specific public caveat because the common metric-level `N/A` treatment already protects readers from a false zero. It does, however, remain a public-interest source-quality issue: court movement data should not be missing or unreported on an official public dashboard in the first place. When monthly movement fields are unavailable, the public loses the ability to understand whether filings, clearances, and backlog movement are being reported for that period.
 
 Tier-specific caveats do still matter:
 
@@ -70,6 +74,7 @@ Current public posture:
 - multi-geography courts list their coverage through `coveredGeographies[]`
 - public copy names the court first and coverage second
 - current High Court public pages use `captured_at` when HC NJDG does not expose a defensible source snapshot date
+- lower-court monthly movement values are shown as `N/A` when NJDG reports pending cases but `0` filed and `0` disposed cases for last month; CPC Meghalaya's June 12, 2026 reply supports the missing-data interpretation, but follow-up should confirm whether the rule applies generally to pending-positive rows across CPC jurisdictions
 
 Review outcome:
 

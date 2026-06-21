@@ -182,7 +182,7 @@ async function verifyLowerCourtRelease(
     csvBody = retried.body;
     assertCsvMetadataParity(csvBody, statsPayload.snapshot);
   }
-  const currentFreshnessDays = freshnessDays(statsPayload.snapshot.sourceSnapshotAt, checkedAt);
+  const currentFreshnessDays = freshnessDays(statsPayload.snapshot.referenceDateAt, checkedAt);
 
   return {
     baseUrl: normalizedBaseUrl,
@@ -190,7 +190,8 @@ async function verifyLowerCourtRelease(
     target,
     snapshot: {
       sourceSnapshotAt: statsPayload.snapshot.sourceSnapshotAt,
-      referenceDateAt: statsPayload.snapshot.sourceSnapshotAt,
+      referenceDateAt: statsPayload.snapshot.referenceDateAt,
+      referenceDateKind: statsPayload.snapshot.referenceDateKind,
       publishedAt: statsPayload.snapshot.publishedAt,
       freshnessDaysAtPublish: statsPayload.snapshot.freshnessDays,
       currentFreshnessDays,
@@ -514,17 +515,19 @@ function assertCsvMetadataParity(csv: string, snapshot: SnapshotMetadata) {
   }
 
   const headers = headerLine.split(",");
-  const sourceSnapshotIndex = headers.indexOf("snapshot_date");
+  const snapshotDateIndex = headers.indexOf("snapshot_date");
+  const sourceSnapshotIndex = headers.indexOf("source_snapshot_at");
   const publishedAtIndex = headers.indexOf("published_at");
   const methodologyVersionIndex = headers.indexOf("methodology_version");
 
-  if (sourceSnapshotIndex < 0 || publishedAtIndex < 0 || methodologyVersionIndex < 0) {
+  if (snapshotDateIndex < 0 || publishedAtIndex < 0 || methodologyVersionIndex < 0) {
     throw new Error("District CSV is missing publication metadata columns.");
   }
 
   const cells = firstDataLine.split(",");
   if (
-    readCsvCell(cells[sourceSnapshotIndex]) !== snapshot.sourceSnapshotAt ||
+    readCsvCell(cells[snapshotDateIndex]) !== snapshot.referenceDateAt ||
+    (sourceSnapshotIndex >= 0 && readCsvCell(cells[sourceSnapshotIndex]) !== (snapshot.sourceSnapshotAt ?? "")) ||
     readCsvCell(cells[publishedAtIndex]) !== snapshot.publishedAt ||
     readCsvCell(cells[methodologyVersionIndex]) !== snapshot.methodologyVersion
   ) {

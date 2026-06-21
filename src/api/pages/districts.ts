@@ -40,7 +40,7 @@ const VIEW_LABELS: Record<DistrictView, string> = {
  * /districts — the district workspace. Lets a reader sort and filter the same
  * published snapshot by different pressure angles, then click through to a
  * district's evidence page. Stays entirely within the published read model,
- * so every row is citeable with the same source date.
+ * so every row is citeable with the same reference date.
  */
 export function renderDistrictsPage(
   snapshot: PublishedSnapshot,
@@ -211,10 +211,10 @@ export function renderDistrictsPage(
     brandTag: context.brandTag,
     navLinks: context.navLinks,
     stateLinks: context.stateLinks,
-    ticker: `${escapeHtml(snapshot.snapshot.stateName.toUpperCase())} · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.sourceSnapshotAt))} · ${escapeHtml(snapshot.snapshot.methodologyVersion)}`,
+    ticker: `${escapeHtml(snapshot.snapshot.stateName.toUpperCase())} · UPDATED ${escapeHtml(formatDate(snapshot.snapshot.referenceDateAt))} · ${escapeHtml(snapshot.snapshot.methodologyVersion)}`,
     pageCss: DISTRICTS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     footer: {
-      sourceDateLabel: formatDate(snapshot.snapshot.sourceSnapshotAt),
+      sourceDateLabel: formatDate(snapshot.snapshot.referenceDateAt),
       methodologyVersion: snapshot.snapshot.methodologyVersion,
       sourceAttribution: snapshot.snapshot.sourceAttribution,
     },
