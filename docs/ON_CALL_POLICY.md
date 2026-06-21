@@ -78,8 +78,9 @@ For every incident, in order:
    - public trust / freshness / lag: `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md`
    - publish or rollback decisions: `docs/RELEASE_POLICY.md` and `docs/OPERATING_EVIDENCE.md`
    - stack or environment anomalies: `docs/internal/DEPLOYMENT_STATUS.md`
-5. Take the action or explicitly record why no action is being taken. Every incident closes with either a publication id, a PR link, or a one-line "held, reason recorded" note.
-6. If any assumption in this document was wrong in practice, propose an edit to this file in the same PR that closes the incident.
+5. If the failure is stale public lower-court snapshots after a deployed code fix and fresh internal runs already exist, run the manual **Ops Publish Pending** workflow from `main`. It starts the existing production publish-pending ECS task through the live stack, then reruns the public-alpha and internal-fetch verifiers. Do not use it to bypass publish gates or publish stale/partial runs.
+6. Take the action or explicitly record why no action is being taken. Every incident closes with either a publication id, a PR link, or a one-line "held, reason recorded" note.
+7. If any assumption in this document was wrong in practice, propose an edit to this file in the same PR that closes the incident.
 
 ## What Not To Do
 
@@ -95,3 +96,4 @@ For every incident, in order:
 - `docs/OPERATING_EVIDENCE.md` — required evidence per release
 - `docs/internal/DEPLOYMENT_STATUS.md` — live environment map, alarm names, topic ARNs
 - `.github/workflows/ops-watchdog.yml` — scheduled watchdog and issue wiring
+- `.github/workflows/ops-publish-pending.yml` — manual gated publish-pending recovery
