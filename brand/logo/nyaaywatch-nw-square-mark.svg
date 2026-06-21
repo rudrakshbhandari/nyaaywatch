@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42" width="42" height="42" role="img" aria-labelledby="title desc">
+  <title id="title">NyaayWatch NW square mark</title>
+  <desc id="desc">The black rounded-square NW mark used in the NyaayWatch website masthead.</desc>
+  <rect width="42" height="42" rx="2" fill="#0c0a08"/>
+  <text x="21" y="21" text-anchor="middle" dominant-baseline="middle" font-family="Inter Tight, Arial, Helvetica, sans-serif" font-size="18" font-weight="900" letter-spacing="-0.03em" fill="#f4efe3">NW</text>
+</svg>
