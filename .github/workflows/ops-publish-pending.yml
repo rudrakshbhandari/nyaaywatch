@@ -48,6 +48,11 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
 
+      - name: Reconcile internal fetch schedules
+        run: |
+          chmod +x infra/aws/staging/reconcile-internal-fetch-schedule.sh
+          infra/aws/staging/reconcile-internal-fetch-schedule.sh "$STACK_NAME"
+
       - name: Trigger lower-court internal fetch schedule
         if: ${{ inputs.refresh_lower_courts }}
         env:
@@ -63,6 +68,9 @@ jobs:
         run: |
           chmod +x infra/aws/staging/trigger-publish-pending-schedule.sh
           infra/aws/staging/trigger-publish-pending-schedule.sh "$STACK_NAME"
+
+      - name: Reconcile internal fetch schedules after manual triggers
+        run: infra/aws/staging/reconcile-internal-fetch-schedule.sh "$STACK_NAME"
 
       - name: Load live operator token
         run: |
