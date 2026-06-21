@@ -44,12 +44,56 @@ describe("HTTP routes", () => {
         },
       },
     });
+    const punjabOldCaseSnapshot = buildPunjabTestSnapshot();
+    punjabOldCaseSnapshot.stats.ageBuckets = {
+      lessThanOneYear: 240320,
+      oneToThreeYears: 360480,
+      threeToFiveYears: 180240,
+      fiveToTenYears: 132180,
+      aboveTenYears: 48060,
+    };
+    punjabOldCaseSnapshot.stats.oldCaseBurden = {
+      state: "ok",
+      value: {
+        threePlusYearsCases: 360480,
+        fivePlusYearsCases: 180240,
+        tenPlusYearsCases: 48060,
+        threePlusYearsShare: 37.5,
+        fivePlusYearsShare: 18.7,
+        tenPlusYearsShare: 5,
+      },
+    };
+    punjabOldCaseSnapshot.districts = punjabOldCaseSnapshot.districts.map((district) =>
+      district.districtId === "amritsar"
+        ? {
+            ...district,
+            oldCaseBurden: {
+              threePlusYearsCases: 36000,
+              fivePlusYearsCases: 21000,
+              tenPlusYearsCases: 6400,
+              threePlusYearsShare: 44.3,
+              fivePlusYearsShare: 25.8,
+              tenPlusYearsShare: 7.9,
+            },
+          }
+        : {
+            ...district,
+            oldCaseBurden: {
+              threePlusYearsCases: 12000,
+              fivePlusYearsCases: 5000,
+              tenPlusYearsCases: 900,
+              threePlusYearsShare: 12.4,
+              fivePlusYearsShare: 5.2,
+              tenPlusYearsShare: 0.9,
+            },
+          },
+    );
     await insertPublishedSnapshot(context.pool, {
       runId: "run_pb_public",
       snapshotId: "snapshot_pb_public",
       publicationId: "publication_pb_public",
       stateCode: "PB",
-      payload: buildPunjabTestSnapshot(),
+      payload: punjabOldCaseSnapshot,
     });
     await insertPublishedSnapshot(context.pool, {
       runId: "run_hr_public",
@@ -167,6 +211,18 @@ describe("HTTP routes", () => {
     expect(moversPage.text).toContain("/data/evidence/state.json");
     expect(moversPage.text).toContain("Evidence JSON");
 
+    const oldCaseWatchroom = await request(app).get("/watch/old-case-burden");
+    expect(oldCaseWatchroom.status).toBe(200);
+    expect(oldCaseWatchroom.text).toContain("Old-case burden watchroom");
+    expect(oldCaseWatchroom.text).toContain("Where are long waits concentrated in lower courts?");
+    expect(oldCaseWatchroom.text).toContain("Punjab");
+    expect(oldCaseWatchroom.text).toContain("37.5%");
+    expect(oldCaseWatchroom.text).toContain("Amritsar");
+    expect(oldCaseWatchroom.text).toContain("/states/punjab/data/evidence/state.json");
+    expect(oldCaseWatchroom.text).toContain("/states/punjab/data/evidence/districts/amritsar.json");
+    expect(oldCaseWatchroom.text).toContain("Watchroom citation");
+    expect(oldCaseWatchroom.text).toContain("Age buckets not available");
+
     const dataPage = await request(app).get("/data");
     expect(dataPage.status).toBe(200);
     expect(dataPage.headers["cache-control"]).toContain("no-store");
@@ -228,6 +284,7 @@ describe("HTTP routes", () => {
     const sitemap = await request(app).get("/sitemap.xml");
     expect(sitemap.status).toBe(200);
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/learn</loc>");
+    expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/old-case-burden</loc>");
   });
 
   it("serves the national homepage when an older lower-court snapshot is missing embedded state metadata", async () => {

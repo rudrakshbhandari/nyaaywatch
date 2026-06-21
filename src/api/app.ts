@@ -28,6 +28,7 @@ import { renderHighCourtOverviewPage } from "./pages/high-court-overview.js";
 import { renderHighCourtsIndexPage } from "./pages/high-courts-index.js";
 import { renderLearnPage } from "./pages/learn.js";
 import { renderMethodologyPage } from "./pages/methodology.js";
+import { renderOldCaseWatchroomPage, type OldCaseWatchroomEntry } from "./pages/old-case-watchroom.js";
 import { renderPressPage } from "./pages/press.js";
 import { renderComparePage, renderCompareNotFound } from "./pages/compare.js";
 import { renderMoversPage, renderMoversUnavailable } from "./pages/movers.js";
@@ -169,6 +170,7 @@ export function createApp(
         origin + "/api",
         origin + "/learn",
         origin + "/press",
+        origin + "/watch/old-case-burden",
         origin + "/high-courts",
         origin + "/supreme-court",
       ];
@@ -703,6 +705,19 @@ export function createApp(
   app.get("/learn", (_request, response) => {
     response.send(renderLearnPage());
   });
+
+  app.get(
+    "/watch/old-case-burden",
+    asyncRoute(async (_request, response) => {
+      const entries = await listOldCaseWatchroomEntries(publicServices);
+      if (entries.length === 0) {
+        response.status(503).send(renderEmptyState("Old-Case Burden Watchroom", "No lower-court public data is available yet."));
+        return;
+      }
+
+      response.send(renderOldCaseWatchroomPage(entries));
+    }),
+  );
 
   app.get("/press/logo-light.svg", (_request, response) => {
     response.setHeader("Content-Type", "image/svg+xml");
@@ -1801,6 +1816,22 @@ async function listAvailablePublicProfiles(publicServices: PublicServiceMap, cur
   );
 
   return profiles.filter((profile): profile is NjdgStateProfile => profile !== null);
+}
+
+async function listOldCaseWatchroomEntries(publicServices: PublicServiceMap): Promise<OldCaseWatchroomEntry[]> {
+  const entries = await Promise.all(
+    listPublicStateProfiles().map(async (profile) => {
+      const service = publicServices[profile.stateCode];
+      if (!service) {
+        return null;
+      }
+
+      const snapshot = await service.getPublishedSnapshot();
+      return snapshot ? { profile, snapshot: snapshot.payload } : null;
+    }),
+  );
+
+  return entries.filter((entry): entry is OldCaseWatchroomEntry => entry !== null);
 }
 
 async function listAvailablePublicHighCourtProfiles(highCourtServices: HighCourtServiceMap, currentProfile: HighCourtProfile) {
