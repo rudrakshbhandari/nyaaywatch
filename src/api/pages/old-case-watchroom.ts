@@ -72,7 +72,7 @@ export function renderOldCaseWatchroomPage(entries: OldCaseWatchroomEntry[]): st
         tone: "accent",
       })}
       ${renderStatTile({
-        label: "Highest 3+ year share",
+        label: "Highest 3+ year share (%)",
         value: topState ? formatPercent(topState.burden.threePlusYearsShare) : "N/A",
         note: topState ? topState.entry.profile.stateName : "Age buckets not available",
       })}
@@ -254,9 +254,9 @@ function renderStateTable(entries: RankedStateEntry[]): string {
             <th>Geography</th>
             <th>Cases waiting</th>
             <th>3+ year cases</th>
-            <th>3+ year share</th>
-            <th>5+ year share</th>
-            <th>10+ year share</th>
+            <th>3+ year share (%)</th>
+            <th>5+ year share (%)</th>
+            <th>10+ year share (%)</th>
             <th>Data date</th>
             <th>Use</th>
           </tr>
@@ -297,9 +297,9 @@ function renderDistrictTable(entries: RankedDistrictEntry[]): string {
             <th>Geography</th>
             <th>Cases waiting</th>
             <th>3+ year cases</th>
-            <th>3+ year share</th>
-            <th>5+ year share</th>
-            <th>10+ year share</th>
+            <th>3+ year share (%)</th>
+            <th>5+ year share (%)</th>
+            <th>10+ year share (%)</th>
             <th>Use</th>
           </tr>
         </thead>
