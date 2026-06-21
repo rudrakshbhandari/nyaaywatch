@@ -22,57 +22,57 @@ Record the actual values for the release being reviewed:
 
 ### 1. Published Snapshot Integrity
 
-- [x] Public routes load only from the active published snapshot.
-- [x] No route or download reads unpublished run state.
-- [x] Supreme Court, High Court, and lower-court JSON endpoints match the active publication for the checked scope.
-- [x] Lower-court CSVs, district history CSVs, and evidence packs match the same publication lineage.
+- [ ] Public routes load only from the active published snapshot.
+- [ ] No route or download reads unpublished run state.
+- [ ] Supreme Court, High Court, and lower-court JSON endpoints match the active publication for the checked scope.
+- [ ] Lower-court CSVs, district history CSVs, and evidence packs match the same publication lineage.
 
 ### 2. Freshness And Caveat Discipline
 
-- [x] Homepage shows snapshot date, publication date, freshness, methodology version, and source attribution.
-- [x] Supreme Court, High Court, lower-court geography, district workspace, and district detail pages show the same trust metadata for their scope.
-- [x] Stale-state behavior is visible and still pinned to the last safe publication.
-- [x] Partial runs remain blocked from public publish.
+- [ ] Homepage shows snapshot date, publication date, freshness, methodology version, and source attribution.
+- [ ] Supreme Court, High Court, lower-court geography, district workspace, and district detail pages show the same trust metadata for their scope.
+- [ ] Stale-state behavior is visible and still pinned to the last safe publication.
+- [ ] Partial runs remain blocked from public publish.
 
 ### 3. Methodology And Copy
 
-- [x] Methodology page explains formulas, quality states, and published snapshot lineage.
-- [x] Public copy uses `published snapshot`, `flagged signal`, and `operator-published` semantics.
-- [x] Public copy does not present the product as continuously refreshed, predictive, or verdict-like.
-- [x] India-first scope remains explicit: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Himachal remains only the unscoped lower-court default.
+- [ ] Methodology page explains formulas, quality states, and published snapshot lineage.
+- [ ] Public copy uses `published snapshot`, `flagged signal`, and `operator-published` semantics.
+- [ ] Public copy does not present the product as continuously refreshed, predictive, or verdict-like.
+- [ ] India-first scope remains explicit: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Himachal remains only the unscoped lower-court default.
 
 ### 4. Source And Export Boundary
 
-- [x] `docs/PUBLIC_DATA_EXPOSURE_POLICY.md` still matches the actual product behavior.
-- [x] Public downloads are limited to normalized published read-model fields.
-- [x] Raw upstream HTML bundles, replay copies, and unpublished candidates are not exposed publicly.
-- [x] Public citation surfaces still include clear source attribution and dates.
+- [ ] `docs/PUBLIC_DATA_EXPOSURE_POLICY.md` still matches the actual product behavior.
+- [ ] Public downloads are limited to normalized published read-model fields.
+- [ ] Raw upstream HTML bundles, replay copies, and unpublished candidates are not exposed publicly.
+- [ ] Public citation surfaces still include clear source attribution and dates.
 
 ### 5. Publish Safety
 
-- [x] Operator `fetch -> inspect -> publish -> replay -> rollback` flow succeeds in dedicated staging or an equivalent isolated environment.
-- [x] Publish gating still requires completed run state, required artifacts, and non-partial quality state.
-- [x] Rollback returns the public API and UI to the intended prior publication.
-- [x] Cloud logs and operator notes are available for the release run.
-- [x] `docs/internal/DEPLOYMENT_STATUS.md` contains the actual live URL and current resource names for the target environment.
+- [ ] Operator `fetch -> inspect -> publish -> replay -> rollback` flow succeeds in dedicated staging or an equivalent isolated environment.
+- [ ] Publish gating still requires completed run state, required artifacts, and non-partial quality state.
+- [ ] Rollback returns the public API and UI to the intended prior publication.
+- [ ] Cloud logs and operator notes are available for the release run.
+- [ ] `docs/internal/DEPLOYMENT_STATUS.md` contains the actual live URL and current resource names for the target environment.
 
 ### 6. Domain And HTTPS
 
-- [x] The intended public hostname is chosen explicitly.
-- [x] HTTPS is active with a valid ACM-backed certificate.
-- [x] DNS points at the intended AWS load balancer.
-- [x] `docs/DOMAIN_CUTOVER_CHECKLIST.md` records the completed `nyaaywatch.in` cutover and any remaining optional legacy-host follow-up.
+- [ ] The intended public hostname is chosen explicitly.
+- [ ] HTTPS is active with a valid ACM-backed certificate.
+- [ ] DNS points at the intended AWS load balancer.
+- [ ] `docs/DOMAIN_CUTOVER_CHECKLIST.md` records the completed `nyaaywatch.in` cutover and any remaining optional legacy-host follow-up.
 
 ### 7. Verification
 
-- [x] `npm run typecheck`
-- [x] `npm test`
-- [x] `npm run test:e2e`
-- [x] `RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent` or an explicit equivalent persistent-stack validation note
+- [ ] `npm run typecheck`
+- [ ] `npm test`
+- [ ] `npm run test:e2e`
+- [ ] `RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent` or an explicit equivalent persistent-stack validation note
 
 ## Release Decision
 
-- [x] Ready to keep public
+- [ ] Ready to keep public
 - [ ] Blocked
 
 If blocked, record the exact blocker and required follow-up:

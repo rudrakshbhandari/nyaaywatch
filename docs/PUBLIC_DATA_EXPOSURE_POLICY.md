@@ -42,7 +42,7 @@ Downloadable public evidence packs that bundle raw upstream HTML are out of scop
 |---|---|---:|---|
 | Homepage, district pages, methodology, API docs | App read model | Yes | Public trust surface built from the active published snapshot only |
 | Supreme Court, High Court, and lower-court public JSON endpoints | PostgreSQL published snapshot payload | Yes | Narrow machine-readable published snapshot boundary |
-| Lower-court, High Court, Supreme Court, and district history CSV exports | Published snapshot payload plus published history | Yes | Normalized exports with snapshot date, methodology version, freshness, and source attribution |
+| Lower-court and district history CSV exports | Published snapshot payload plus published history | Yes | Normalized exports with snapshot date, methodology version, freshness, and source attribution |
 | District permalinks and citation metadata | Published snapshot payload | Yes | Needed for durable public citation and responsible sharing |
 | Raw NJDG HTML capture bundles | S3 raw artifacts | No | Redistribution posture is not cleared for public bulk exposure |
 | Replay copies of raw artifacts | S3 replay prefixes | No | Internal operator artifacts only |
