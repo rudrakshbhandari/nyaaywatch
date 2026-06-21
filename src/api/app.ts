@@ -17,6 +17,7 @@ import { logError, logInfo, logWarn } from "../lib/logger.js";
 import { renderHome } from "./home/home.js";
 import { renderNationalHome } from "./home/national-home.js";
 import { renderApiPage } from "./pages/api.js";
+import { renderBacklogConcentrationWatchroomPage } from "./pages/backlog-concentration-watchroom.js";
 import { renderDataPage } from "./pages/data.js";
 import { renderDistrictPage } from "./pages/district-detail.js";
 import { renderDistrictsPage } from "./pages/districts.js";
@@ -173,6 +174,7 @@ export function createApp(
         origin + "/learn",
         origin + "/press",
         origin + "/watch",
+        origin + "/watch/backlog-concentration",
         origin + "/watch/old-case-burden",
         origin + "/watch/persistent-pressure",
         origin + "/high-courts",
@@ -733,6 +735,19 @@ export function createApp(
       }
 
       response.send(renderOldCaseWatchroomPage(entries));
+    }),
+  );
+
+  app.get(
+    "/watch/backlog-concentration",
+    asyncRoute(async (_request, response) => {
+      const entries = await listWatchroomEntries(publicServices);
+      if (entries.length === 0) {
+        response.status(503).send(renderEmptyState("Backlog Concentration Watchroom", "No lower-court public data is available yet."));
+        return;
+      }
+
+      response.send(renderBacklogConcentrationWatchroomPage(entries));
     }),
   );
 

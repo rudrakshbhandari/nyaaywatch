@@ -13,6 +13,7 @@ export interface WatchIndexEntry {
 
 export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
   const geographiesWithAgeBuckets = entries.filter((entry) => entry.snapshot.stats.oldCaseBurden.state === "ok").length;
+  const geographiesWithConcentration = entries.filter((entry) => entry.snapshot.stats.backlogConcentration.state === "ok").length;
   const persistentDistricts = entries.flatMap((entry) =>
     entry.snapshot.districts.filter(
       (district) => district.watchlistPersistence.lastSixWindow > 0 && district.watchlistPersistence.flaggedInLastSix > 0,
@@ -41,8 +42,8 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
     <section class="watchroom-toplines" aria-label="Watchroom toplines">
       ${renderStatTile({
         label: "Issue pages live",
-        value: "2",
-        note: "Old-case burden and persistent pressure",
+        value: "3",
+        note: "Old-case burden, persistent pressure, and backlog concentration",
         tone: "accent",
       })}
       ${renderStatTile({
@@ -51,9 +52,9 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
         unit: `/ ${entries.length.toLocaleString("en-IN")}`,
       })}
       ${renderStatTile({
-        label: "With repeat signals",
-        value: geographiesWithPersistentSignals.toLocaleString("en-IN"),
-        note: `${persistentDistricts.length.toLocaleString("en-IN")} districts flagged at least once in the recent window`,
+        label: "With concentration",
+        value: geographiesWithConcentration.toLocaleString("en-IN"),
+        unit: `/ ${entries.length.toLocaleString("en-IN")}`,
       })}
     </section>
 
@@ -74,9 +75,32 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
           <p>Find districts that have been flagged repeatedly across recent published snapshots.</p>
           <a href="/watch/persistent-pressure">Open persistent-pressure watchroom</a>
         </article>
-        <article class="watchroom-card--muted">
+        <article>
           <h3>Backlog concentration</h3>
-          <p>Next candidate: show whether delay is held by a few large districts or spread across the geography.</p>
+          <p>Find whether pending cases are held by a few large districts or spread across the geography.</p>
+          <a href="/watch/backlog-concentration">Open concentration watchroom</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="watchroom-section">
+      <header class="watchroom-section__head">
+        <p class="watchroom-section__eyebrow">QUICK COUNTS</p>
+        <h2>What the watchrooms can read right now.</h2>
+        <p>These counts only show available lower-court signals. Missing source fields stay out of the ranking until the public data can support them.</p>
+      </header>
+      <div class="watchroom-card-grid">
+        <article>
+          <h3>Repeat signals</h3>
+          <p>${geographiesWithPersistentSignals.toLocaleString("en-IN")} geographies include ${persistentDistricts.length.toLocaleString("en-IN")} districts flagged at least once in the recent window.</p>
+        </article>
+        <article>
+          <h3>Age buckets</h3>
+          <p>${geographiesWithAgeBuckets.toLocaleString("en-IN")} geographies expose old-case age buckets for the old-case burden watchroom.</p>
+        </article>
+        <article>
+          <h3>District concentration</h3>
+          <p>${geographiesWithConcentration.toLocaleString("en-IN")} geographies expose district pending-case counts for the concentration watchroom.</p>
         </article>
       </div>
     </section>
