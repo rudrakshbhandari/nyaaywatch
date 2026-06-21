@@ -22,7 +22,7 @@ export function renderComparePage(
 ): string {
   const waitA = Math.round(a.medianAgeDays / 30);
   const waitB = Math.round(b.medianAgeDays / 30);
-  const snapshotDate = formatDate(snapshot.snapshot.sourceSnapshotAt);
+  const snapshotDate = formatDate(snapshot.snapshot.referenceDateAt);
   const comparePath = context.routes.compare(a.districtId, b.districtId);
   const compareUrl = `${SITE_ORIGIN}${comparePath}`;
   const compareCitation = `NyaayWatch. "${a.districtName} vs. ${b.districtName} District Comparison." ${snapshotDate}. ${snapshot.snapshot.sourceAttribution}. ${compareUrl}`;
@@ -88,7 +88,7 @@ export function renderComparePage(
     ${renderEvidenceEntryPoints({
       headline: "Download both evidence packs.",
       lede:
-        "Use these packs when the comparison needs to travel with source dates, methodology version, CSV links, citation text, and caveats for each district.",
+        "Use these packs when the comparison needs to travel with reference dates, source dates when available, methodology version, CSV links, citation text, and caveats for each district.",
       entries: [
         {
           title: "Comparison citation",

@@ -3,6 +3,55 @@ import { describe, expect, it } from "vitest";
 import { buildSnapshotCandidate } from "../src/normalize/snapshot-candidate.js";
 
 describe("snapshot candidate normalization", () => {
+  it("falls back to captured_at when NJDG does not expose a defensible source date", () => {
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-06-20T00:00:00.000Z",
+        stateCode: "HP",
+        stateName: "Himachal Pradesh",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Himachal Pradesh district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Himachal Pradesh",
+        sourceSnapshotAt: null,
+        state: {
+          pendingCases: 100,
+          institutedLastMonth: 10,
+          disposedLastMonth: 9,
+          ageBuckets: {
+            lessThanOneYear: 100,
+            oneToThreeYears: 0,
+            threeToFiveYears: 0,
+            fiveToTenYears: 0,
+            aboveTenYears: 0,
+          },
+        },
+        districts: [
+          {
+            districtCode: "shimla",
+            districtName: "Shimla",
+            pendingCases: 100,
+            institutedLastMonth: 10,
+            disposedLastMonth: 9,
+            ageBuckets: {
+              lessThanOneYear: 100,
+              oneToThreeYears: 0,
+              threeToFiveYears: 0,
+              fiveToTenYears: 0,
+              aboveTenYears: 0,
+            },
+          },
+        ],
+      },
+      [],
+    );
+
+    expect(candidate.snapshot.sourceSnapshotAt).toBeNull();
+    expect(candidate.snapshot.referenceDateAt).toBe("2026-06-20T00:00:00.000Z");
+    expect(candidate.snapshot.referenceDateKind).toBe("captured_at");
+    expect(candidate.snapshot.qualityState).toBe("complete");
+    expect(candidate.trends.at(-1)?.snapshotDate).toBe("2026-06-20T00:00:00.000Z");
+  });
+
   it("does not fabricate age or pressure metrics for zero-volume snapshots", () => {
     const candidate = buildSnapshotCandidate(
       {

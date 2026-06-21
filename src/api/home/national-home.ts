@@ -380,7 +380,7 @@ export function renderNationalHome(input: {
       { id: "learn", href: "/learn", label: "Learn" },
     ],
     footer: {
-      sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(input.lowerCourtSnapshot.snapshot.sourceSnapshotAt),
+      sourceDateLabel: model.supremeCourt.referenceLabel ?? formatDate(input.lowerCourtSnapshot.snapshot.referenceDateAt),
       methodologyVersion:
         model.supremeCourt.snapshot?.snapshot.methodologyVersion ?? input.lowerCourtSnapshot.snapshot.methodologyVersion,
       sourceAttribution:

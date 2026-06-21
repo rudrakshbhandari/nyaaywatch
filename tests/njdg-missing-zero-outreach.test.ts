@@ -19,6 +19,8 @@ function issue(overrides: Partial<MissingMonthlyMovementIssue> = {}): MissingMon
     stateCode: "AR",
     stateName: "Arunachal Pradesh",
     sourceSnapshotAt: "2026-04-30T00:00:00.000Z",
+    referenceDateAt: "2026-04-30T00:00:00.000Z",
+    referenceDateKind: "source_snapshot_at",
     sourceAttribution: "National Judicial Data Grid",
     pendingCases: 1200,
     filedLastMonthCases: 0,
