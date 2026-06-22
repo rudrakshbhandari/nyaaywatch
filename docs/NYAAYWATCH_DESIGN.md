@@ -150,7 +150,7 @@ The homepage should prioritize content in this order:
 2. Apex-tier toplines with a compact freshness/source/methodology line nearby
 3. High Courts beta directory
 4. District/subordinate courts handoff using the lower-court state and Union Territory coverage directory
-5. Lower-court state coverage directory and drilldowns
+5. Lower-court state coverage directory, issue watchrooms, and drilldowns
 6. Supporting trust actions: methodology, data, API docs
 
 The first viewport should be dominated by the Supreme Court story. Trust metadata must remain visible, but it should support the hero rather than leading it. Lower-court discovery belongs below the fold and on explicit state pages, not as a chip wall at the top of `/`.
@@ -208,7 +208,7 @@ The alpha information architecture should separate overview from browsing so the
 - `/data` or an equivalent download surface handles CSV exports and public data access
 - `/api` or equivalent docs surface explains the developer-facing read model
 
-For alpha, the homepage may show a short preview of the district ranking, but it should hand off quickly to `/districts` for full browsing. This keeps the landing experience legible now and creates a clean place to absorb future state, metric, and filtering complexity.
+For alpha, the homepage may show a short preview of the district ranking, but it should hand off quickly to `/districts` for full browsing and `/watch` for issue-led inspection. This keeps the landing experience legible now and creates a clean place to absorb future state, metric, and filtering complexity.
 
 ### India-First IA Guardrail
 

@@ -150,6 +150,8 @@ describe("HTTP routes", () => {
     expect(homepage.text).not.toContain('aria-label="Supported states"');
     expect(homepage.text).toContain("Browse lower-court pages");
     expect(homepage.text).toContain('href="#lower-court-pages"');
+    expect(homepage.text).toContain("Open watchrooms");
+    expect(homepage.text).toContain('href="/watch"');
     expect(homepage.text).toContain('id="lower-court-pages" open');
     expect(homepage.text).toContain("Pending across public geographies");
     expect(homepage.text).toContain("Highest-pressure geography");
@@ -257,6 +259,9 @@ describe("HTTP routes", () => {
     expect(backlogConcentrationWatchroom.status).toBe(200);
     expect(backlogConcentrationWatchroom.text).toContain("Backlog concentration watchroom");
     expect(backlogConcentrationWatchroom.text).toContain("Where is the pending pile concentrated in a few districts?");
+    expect(backlogConcentrationWatchroom.text).toContain("Highest comparable top-5 share (%)");
+    expect(backlogConcentrationWatchroom.text).toContain("Largest comparable district share (%)");
+    expect(backlogConcentrationWatchroom.text).toContain("Small geographies can show 100% top-5 share");
     expect(backlogConcentrationWatchroom.text).toContain("Punjab");
     expect(backlogConcentrationWatchroom.text).toContain("61.2%");
     expect(backlogConcentrationWatchroom.text).toContain("83.4%");

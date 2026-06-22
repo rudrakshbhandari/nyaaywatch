@@ -47,7 +47,15 @@ export const WATCHROOM_PAGE_CSS = `
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
-    margin: 10px 0 48px;
+    margin: 10px 0 14px;
+  }
+  .watchroom-toplines-note {
+    margin: 0 0 48px;
+    max-width: 760px;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 600;
   }
   .watchroom-section {
     margin: 64px 0;

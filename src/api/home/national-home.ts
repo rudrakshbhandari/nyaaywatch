@@ -328,6 +328,7 @@ export function renderNationalHome(input: {
       </div>
       <div class="national-section__actions">
         <a class="btn btn--primary" href="#lower-court-pages">Browse lower-court pages</a>
+        <a class="btn btn--ghost" href="/watch">Open watchrooms</a>
         <a class="btn btn--ghost" href="${model.lowerCourts.topStateHref}">Open top geography</a>
         <a class="btn btn--ghost" href="/learn#pressure-signals">Read pressure signals</a>
       </div>

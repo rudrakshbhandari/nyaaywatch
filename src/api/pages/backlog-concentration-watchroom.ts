@@ -59,9 +59,13 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
     .sort((a, b) => b.districtShare - a.districtShare || b.district.backlogCases - a.district.backlogCases)
     .slice(0, 15);
 
+  const comparableGeographies = rankedGeographies.filter(({ entry }) => hasComparableTopFive(entry.snapshot));
+  const comparableDistricts = rankedDistricts.filter(({ entry }) => hasComparableLargestDistrict(entry.snapshot));
   const missingEntries = entries.filter((entry) => entry.snapshot.stats.backlogConcentration.state === "missing");
-  const topGeography = rankedGeographies[0] ?? null;
-  const topDistrict = rankedDistricts[0] ?? null;
+  const smallGeographyCount = rankedGeographies.length - comparableGeographies.length;
+  const singleDistrictGeographyCount = rankedGeographies.filter(({ entry }) => !hasComparableLargestDistrict(entry.snapshot)).length;
+  const topGeography = comparableGeographies[0] ?? null;
+  const topDistrict = comparableDistricts[0] ?? null;
   const topGeographyRoutes = topGeography ? buildPublicStateRoutes(topGeography.entry.profile) : null;
   const topDistrictRoutes = topDistrict ? buildPublicStateRoutes(topDistrict.entry.profile) : null;
   const latestReferenceDate = entries
@@ -88,16 +92,19 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
         tone: "accent",
       })}
       ${renderStatTile({
-        label: "Highest top-5 share (%)",
+        label: "Highest comparable top-5 share (%)",
         value: topGeography ? formatShare(topGeography.concentration.topFiveDistrictsShare) : "N/A",
-        note: topGeography ? topGeography.entry.profile.stateName : "Concentration not available",
+        note: topGeography ? topGeography.entry.profile.stateName : "Needs more than five district rows",
       })}
       ${renderStatTile({
-        label: "Largest district share (%)",
+        label: "Largest comparable district share (%)",
         value: topDistrict ? formatShare(topDistrict.districtShare) : "N/A",
-        note: topDistrict ? `${topDistrict.district.districtName}, ${topDistrict.entry.profile.stateName}` : "District shares not available",
+        note: topDistrict ? `${topDistrict.district.districtName}, ${topDistrict.entry.profile.stateName}` : "Needs more than one district row",
       })}
     </section>
+    <p class="watchroom-toplines-note">
+      Small geographies can show 100% top-5 share because the top five districts cover the whole geography. They stay visible in the tables, but the headline cards use comparable geographies with enough district rows.
+    </p>
 
     ${renderInvestigationWorkflow({
       headline: "Use concentration to choose the right scale of inspection.",
@@ -206,6 +213,10 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
         <article>
           <h3>Missing stays missing.</h3>
           <p>Geographies without usable district pending-case counts stay out of the ranking rather than being estimated.</p>
+        </article>
+        <article>
+          <h3>Small geographies need care.</h3>
+          <p>${smallGeographyCount.toLocaleString("en-IN")} geographies with five or fewer district rows can show 100% top-5 share because the top five covers the whole geography. ${singleDistrictGeographyCount.toLocaleString("en-IN")} single-district geographies can also show 100% largest-district share.</p>
         </article>
       </div>
       ${missingEntries.length > 0 ? renderMissingList(missingEntries) : ""}
@@ -332,6 +343,14 @@ function renderMissingList(entries: BacklogConcentrationWatchroomEntry[]): strin
 
 function districtShare(district: DistrictSnapshot, pendingCases: number): number {
   return pendingCases > 0 ? (district.backlogCases / pendingCases) * 100 : 0;
+}
+
+function hasComparableTopFive(snapshot: PublishedSnapshot): boolean {
+  return snapshot.districts.length > 5;
+}
+
+function hasComparableLargestDistrict(snapshot: PublishedSnapshot): boolean {
+  return snapshot.districts.length > 1;
 }
 
 function formatShare(value: number): string {
