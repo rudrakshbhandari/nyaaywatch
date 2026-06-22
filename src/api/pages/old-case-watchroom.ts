@@ -8,7 +8,7 @@ import { SITE_ORIGIN } from "../share/site-origin.js";
 import { formatDate } from "../home/view-model.js";
 import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
-import { WATCHROOM_PAGE_CSS } from "./watchroom-shared.js";
+import { renderWatchroomSiblingNav, WATCHROOM_PAGE_CSS } from "./watchroom-shared.js";
 
 export interface OldCaseWatchroomEntry {
   profile: NjdgStateProfile;
@@ -64,6 +64,7 @@ export function renderOldCaseWatchroomPage(entries: OldCaseWatchroomEntry[]): st
       <p class="watchroom-hero__body">This page follows lower-court states and Union Territories where the public source gives age buckets for pending cases. It highlights the share of cases waiting more than three, five, and ten years.</p>
       <p class="watchroom-hero__meta">${entries.length.toLocaleString("en-IN")} lower-court geographies checked · ${rankedStates.length.toLocaleString("en-IN")} with old-case age buckets · Source: National Judicial Data Grid public district dashboards</p>
     </section>
+    ${renderWatchroomSiblingNav("old-case-burden")}
 
     <section class="watchroom-toplines" aria-label="Old-case burden toplines">
       ${renderStatTile({
