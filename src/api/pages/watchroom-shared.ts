@@ -1,3 +1,43 @@
+type WatchroomId = "old-case-burden" | "persistent-pressure" | "backlog-concentration";
+
+const WATCHROOM_LINKS: Array<{ id: WatchroomId; href: string; label: string; question: string }> = [
+  {
+    id: "old-case-burden",
+    href: "/watch/old-case-burden",
+    label: "Old-case burden",
+    question: "Where are old cases concentrated?",
+  },
+  {
+    id: "persistent-pressure",
+    href: "/watch/persistent-pressure",
+    label: "Persistent pressure",
+    question: "Which districts keep getting flagged?",
+  },
+  {
+    id: "backlog-concentration",
+    href: "/watch/backlog-concentration",
+    label: "Backlog concentration",
+    question: "Is backlog concentrated in a few districts?",
+  },
+];
+
+export function renderWatchroomSiblingNav(activeId: WatchroomId): string {
+  const links = WATCHROOM_LINKS.map((link) => {
+    const active = link.id === activeId;
+    return `<a class="watchroom-switcher__link${active ? " is-active" : ""}" href="${link.href}"${active ? ' aria-current="page"' : ""}>
+      <span>${link.label}</span>
+      <small>${link.question}</small>
+    </a>`;
+  }).join("");
+
+  return `
+    <nav class="watchroom-switcher" aria-label="Issue watchrooms">
+      <a class="watchroom-switcher__home" href="/watch">All watchrooms</a>
+      <div class="watchroom-switcher__links">${links}</div>
+    </nav>
+  `;
+}
+
 export const WATCHROOM_PAGE_CSS = `
   .watchroom-hero {
     padding: 58px 0 34px;
@@ -56,6 +96,93 @@ export const WATCHROOM_PAGE_CSS = `
     font-size: 14px;
     line-height: 1.5;
     font-weight: 600;
+  }
+  .watchroom-switcher {
+    margin: 8px 0 34px;
+    padding: 14px 0 0;
+    border-top: 1px solid var(--rule);
+  }
+  .watchroom-switcher__home {
+    display: inline-flex;
+    margin-bottom: 12px;
+    color: var(--accent-dark);
+    font-weight: 800;
+  }
+  .watchroom-switcher__links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+  }
+  .watchroom-switcher__link {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding: 16px;
+    background: var(--paper-bright);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .watchroom-switcher__link span {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.08;
+  }
+  .watchroom-switcher__link small {
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .watchroom-switcher__link:hover,
+  .watchroom-switcher__link:focus-visible,
+  .watchroom-switcher__link.is-active {
+    background: var(--ink);
+    color: var(--paper-bright);
+  }
+  .watchroom-switcher__link:hover small,
+  .watchroom-switcher__link:focus-visible small,
+  .watchroom-switcher__link.is-active small {
+    color: rgba(255, 255, 255, 0.72);
+  }
+  .watchroom-decision-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .watchroom-decision-card__question {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .watchroom-decision-card__meta {
+    display: grid;
+    gap: 10px;
+    margin: auto 0 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+  .watchroom-decision-card__meta p {
+    display: grid;
+    gap: 3px;
+  }
+  .watchroom-decision-card__meta span {
+    color: var(--ink-muted);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .watchroom-decision-card__cta {
+    display: inline-flex;
+    margin-top: 2px;
+    font-weight: 900;
   }
   .watchroom-section {
     margin: 64px 0;
@@ -159,6 +286,7 @@ export const WATCHROOM_PAGE_CSS = `
     background: var(--paper);
   }
   @media (max-width: 860px) {
+    .watchroom-switcher__links,
     .watchroom-toplines,
     .watchroom-caveat__grid,
     .watchroom-card-grid {

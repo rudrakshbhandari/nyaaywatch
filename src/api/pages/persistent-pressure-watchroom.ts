@@ -8,7 +8,7 @@ import { SITE_ORIGIN } from "../share/site-origin.js";
 import { formatDate } from "../home/view-model.js";
 import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
-import { WATCHROOM_PAGE_CSS } from "./watchroom-shared.js";
+import { renderWatchroomSiblingNav, WATCHROOM_PAGE_CSS } from "./watchroom-shared.js";
 
 export interface PersistentPressureWatchroomEntry {
   profile: NjdgStateProfile;
@@ -69,6 +69,7 @@ export function renderPersistentPressureWatchroomPage(entries: PersistentPressur
       <p class="watchroom-hero__body">This page follows lower-court districts that were flagged repeatedly across recent published snapshots. It helps separate repeated pressure from a one-snapshot spike.</p>
       <p class="watchroom-hero__meta">${entries.length.toLocaleString("en-IN")} lower-court geographies checked · ${rankedDistricts.length.toLocaleString("en-IN")} district signals shown · Source: National Judicial Data Grid public district dashboards</p>
     </section>
+    ${renderWatchroomSiblingNav("persistent-pressure")}
 
     <section class="watchroom-toplines" aria-label="Persistent pressure toplines">
       ${renderStatTile({

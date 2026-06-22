@@ -181,6 +181,10 @@ The first viewport should be dominated by the Supreme Court story. Trust metadat
 
 ```text
 Homepage
+  -> Open watchrooms
+      -> Choose an issue question
+      -> Open old-case burden, persistent pressure, or backlog concentration
+      -> Carry evidence and caveats from the watchroom page
   -> Open statewide districts index
       -> Explore districts table, filters, and ranking views
   -> Open district permalink
@@ -200,7 +204,7 @@ The alpha information architecture should separate overview from browsing so the
 - `/districts/:id` is the durable evidence page for a specific district in the legacy unscoped lower-court geography
 - `/states/:stateSlug` is the explicit state/Union Territory-scoped overview page for supported lower-court geographies
 - `/states/:stateSlug/districts` and `/states/:stateSlug/districts/:id` are the equivalent state-scoped district browsing and district evidence surfaces
-- `/watch` is the issue-watchroom hub: a lower-court-only entry surface for choosing an inspection question before opening a route-specific evidence page
+- `/watch` is the issue-watchroom hub: a lower-court-only entry surface for choosing an inspection question, seeing the current top signal for each issue, and opening a route-specific evidence page
 - `/watch/old-case-burden` is the first issue watchroom: a lower-court-only evidence page for old-case age buckets across public states and Union Territories, with missing-source states shown as missing rather than estimated
 - `/watch/persistent-pressure` is the second issue watchroom: a lower-court-only evidence page for districts repeatedly flagged across recent published snapshots, with persistence framed as an inspection signal rather than a cause or verdict
 - `/watch/backlog-concentration` is the third issue watchroom: a lower-court-only evidence page for geographies where pending cases are concentrated in a few districts, with district shares measured inside their own geography rather than as a national ranking

@@ -1,5 +1,6 @@
 import type { PublishedSnapshot } from "../../domain/snapshot-schema.js";
 import type { NjdgStateProfile } from "../../geographies.js";
+import { escapeHtml } from "../../lib/html.js";
 import { renderPageShell } from "../design/shell.js";
 import { renderStatTile } from "../design/ui.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
@@ -14,11 +15,35 @@ export interface WatchIndexEntry {
 export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
   const geographiesWithAgeBuckets = entries.filter((entry) => entry.snapshot.stats.oldCaseBurden.state === "ok").length;
   const geographiesWithConcentration = entries.filter((entry) => entry.snapshot.stats.backlogConcentration.state === "ok").length;
-  const persistentDistricts = entries.flatMap((entry) =>
-    entry.snapshot.districts.filter(
-      (district) => district.watchlistPersistence.lastSixWindow > 0 && district.watchlistPersistence.flaggedInLastSix > 0,
-    ),
-  );
+  const oldCaseSignals = entries
+    .flatMap((entry) =>
+      entry.snapshot.stats.oldCaseBurden.state === "ok"
+        ? [{ entry, share: entry.snapshot.stats.oldCaseBurden.value.threePlusYearsShare }]
+        : [],
+    )
+    .sort((a, b) => b.share - a.share || b.entry.snapshot.stats.pendingCases - a.entry.snapshot.stats.pendingCases);
+  const topOldCaseSignal = oldCaseSignals[0] ?? null;
+  const persistentDistricts = entries
+    .flatMap((entry) =>
+      entry.snapshot.districts
+        .filter((district) => district.watchlistPersistence.lastSixWindow > 0 && district.watchlistPersistence.flaggedInLastSix > 0)
+        .map((district) => ({ entry, district })),
+    )
+    .sort(
+      (a, b) =>
+        persistenceRate(b.district) - persistenceRate(a.district) ||
+        b.district.watchlistPersistence.flaggedInLastSix - a.district.watchlistPersistence.flaggedInLastSix ||
+        b.district.backlogCases - a.district.backlogCases,
+    );
+  const topPersistentSignal = persistentDistricts[0] ?? null;
+  const concentrationSignals = entries
+    .flatMap((entry) =>
+      entry.snapshot.stats.backlogConcentration.state === "ok" && entry.snapshot.districts.length > 5
+        ? [{ entry, share: entry.snapshot.stats.backlogConcentration.value.topFiveDistrictsShare }]
+        : [],
+    )
+    .sort((a, b) => b.share - a.share || b.entry.snapshot.stats.pendingCases - a.entry.snapshot.stats.pendingCases);
+  const topConcentrationSignal = concentrationSignals[0] ?? null;
   const geographiesWithPersistentSignals = entries.filter((entry) =>
     entry.snapshot.districts.some(
       (district) => district.watchlistPersistence.lastSixWindow > 0 && district.watchlistPersistence.flaggedInLastSix > 0,
@@ -65,20 +90,41 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
         <p>These pages do not rank every court tier together. They keep each issue inside the lower-court source family and point back to reusable evidence.</p>
       </header>
       <div class="watchroom-card-grid">
-        <article>
-          <h3>Old-case burden</h3>
-          <p>Find where pending cases are already older than three, five, and ten years.</p>
-          <a href="/watch/old-case-burden">Open old-case watchroom</a>
+        <article class="watchroom-decision-card">
+          <div>
+            <p class="watchroom-decision-card__question">Where are old cases concentrated?</p>
+            <h3>Old-case burden</h3>
+            <p>Find where pending cases are already older than three, five, and ten years.</p>
+          </div>
+          <div class="watchroom-decision-card__meta">
+            <p><span>Top signal</span>${escapeHtml(describeOldCaseSignal(topOldCaseSignal))}</p>
+            <p><span>Use when</span>You need to separate long waits from the size of the pending pile.</p>
+          </div>
+          <a class="watchroom-decision-card__cta" href="/watch/old-case-burden">Open watchroom</a>
         </article>
-        <article>
-          <h3>Persistent pressure</h3>
-          <p>Find districts that have been flagged repeatedly across recent published snapshots.</p>
-          <a href="/watch/persistent-pressure">Open persistent-pressure watchroom</a>
+        <article class="watchroom-decision-card">
+          <div>
+            <p class="watchroom-decision-card__question">Which districts keep getting flagged?</p>
+            <h3>Persistent pressure</h3>
+            <p>Find districts that have been flagged repeatedly across recent public readings.</p>
+          </div>
+          <div class="watchroom-decision-card__meta">
+            <p><span>Top signal</span>${escapeHtml(describePersistentSignal(topPersistentSignal))}</p>
+            <p><span>Use when</span>You want repeated pressure, not a one-reading spike.</p>
+          </div>
+          <a class="watchroom-decision-card__cta" href="/watch/persistent-pressure">Open watchroom</a>
         </article>
-        <article>
-          <h3>Backlog concentration</h3>
-          <p>Find whether pending cases are held by a few large districts or spread across the geography.</p>
-          <a href="/watch/backlog-concentration">Open concentration watchroom</a>
+        <article class="watchroom-decision-card">
+          <div>
+            <p class="watchroom-decision-card__question">Is backlog concentrated in a few districts?</p>
+            <h3>Backlog concentration</h3>
+            <p>Find whether pending cases are held by a few large districts or spread across the geography.</p>
+          </div>
+          <div class="watchroom-decision-card__meta">
+            <p><span>Top signal</span>${escapeHtml(describeConcentrationSignal(topConcentrationSignal))}</p>
+            <p><span>Use when</span>You need to choose between district-level inspection and wider geography pressure.</p>
+          </div>
+          <a class="watchroom-decision-card__cta" href="/watch/backlog-concentration">Open watchroom</a>
         </article>
       </div>
     </section>
@@ -152,4 +198,35 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
       url: `${SITE_ORIGIN}/watch`,
     },
   });
+}
+
+function describeOldCaseSignal(signal: { entry: WatchIndexEntry; share: number } | null): string {
+  if (!signal) {
+    return "No age-bucket signal is available right now.";
+  }
+  return `${signal.entry.profile.stateName}: ${formatPercent(signal.share)} of pending cases are older than 3 years.`;
+}
+
+function describePersistentSignal(signal: { entry: WatchIndexEntry; district: PublishedSnapshot["districts"][number] } | null): string {
+  if (!signal) {
+    return "No repeat district signal is available right now.";
+  }
+  const { flaggedInLastSix, lastSixWindow } = signal.district.watchlistPersistence;
+  return `${signal.district.districtName}, ${signal.entry.profile.stateName}: flagged in ${flaggedInLastSix} of ${lastSixWindow} recent readings.`;
+}
+
+function describeConcentrationSignal(signal: { entry: WatchIndexEntry; share: number } | null): string {
+  if (!signal) {
+    return "No comparable concentration signal is available right now.";
+  }
+  return `${signal.entry.profile.stateName}: top 5 districts hold ${formatPercent(signal.share)} of pending cases.`;
+}
+
+function persistenceRate(district: PublishedSnapshot["districts"][number]): number {
+  const { flaggedInLastSix, lastSixWindow } = district.watchlistPersistence;
+  return lastSixWindow > 0 ? flaggedInLastSix / lastSixWindow : 0;
+}
+
+function formatPercent(value: number): string {
+  return `${(Math.round(value * 10) / 10).toLocaleString("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
 }

@@ -237,14 +237,21 @@ describe("HTTP routes", () => {
     expect(watchIndex.text).toContain("Watchrooms");
     expect(watchIndex.text).toContain("Start with the pressure signals that deserve closer inspection.");
     expect(watchIndex.text).toContain("Old-case burden");
+    expect(watchIndex.text).toContain("Where are old cases concentrated?");
+    expect(watchIndex.text).toContain("Top signal");
+    expect(watchIndex.text).toContain("Use when");
     expect(watchIndex.text).toContain("Persistent pressure");
+    expect(watchIndex.text).toContain("Which districts keep getting flagged?");
     expect(watchIndex.text).toContain("Backlog concentration");
+    expect(watchIndex.text).toContain("Is backlog concentrated in a few districts?");
     expect(watchIndex.text).toContain("/watch/backlog-concentration");
     expect(watchIndex.text).toContain("/watch/persistent-pressure");
 
     const oldCaseWatchroom = await request(app).get("/watch/old-case-burden");
     expect(oldCaseWatchroom.status).toBe(200);
     expect(oldCaseWatchroom.text).toContain("Old-case burden watchroom");
+    expect(oldCaseWatchroom.text).toContain("All watchrooms");
+    expect(oldCaseWatchroom.text).toContain('aria-current="page"');
     expect(oldCaseWatchroom.text).toContain("Where are long waits concentrated in lower courts?");
     expect(oldCaseWatchroom.text).toContain("3+ year share (%)");
     expect(oldCaseWatchroom.text).toContain("Punjab");
@@ -258,6 +265,7 @@ describe("HTTP routes", () => {
     const backlogConcentrationWatchroom = await request(app).get("/watch/backlog-concentration");
     expect(backlogConcentrationWatchroom.status).toBe(200);
     expect(backlogConcentrationWatchroom.text).toContain("Backlog concentration watchroom");
+    expect(backlogConcentrationWatchroom.text).toContain("All watchrooms");
     expect(backlogConcentrationWatchroom.text).toContain("Where is the pending pile concentrated in a few districts?");
     expect(backlogConcentrationWatchroom.text).toContain("Highest comparable top-5 share (%)");
     expect(backlogConcentrationWatchroom.text).toContain("Largest comparable district share (%)");
@@ -274,6 +282,7 @@ describe("HTTP routes", () => {
     const persistentPressureWatchroom = await request(app).get("/watch/persistent-pressure");
     expect(persistentPressureWatchroom.status).toBe(200);
     expect(persistentPressureWatchroom.text).toContain("Persistent pressure watchroom");
+    expect(persistentPressureWatchroom.text).toContain("All watchrooms");
     expect(persistentPressureWatchroom.text).toContain("Which districts keep appearing under pressure?");
     expect(persistentPressureWatchroom.text).toContain("Amritsar");
     expect(persistentPressureWatchroom.text).toContain("5 of 6");

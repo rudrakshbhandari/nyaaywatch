@@ -8,7 +8,7 @@ import { buildPublicStateRoutes } from "../public-state.js";
 import { SITE_ORIGIN } from "../share/site-origin.js";
 import { EVIDENCE_ENTRY_POINTS_CSS, EVIDENCE_ENTRY_POINTS_SCRIPT, renderEvidenceEntryPoints } from "./evidence-entry-points.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
-import { WATCHROOM_PAGE_CSS } from "./watchroom-shared.js";
+import { renderWatchroomSiblingNav, WATCHROOM_PAGE_CSS } from "./watchroom-shared.js";
 
 export interface BacklogConcentrationWatchroomEntry {
   profile: NjdgStateProfile;
@@ -83,6 +83,7 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
       <p class="watchroom-hero__body">This page follows lower-court geographies where district-level pending-case counts can show whether the backlog is concentrated in the largest districts or spread more broadly.</p>
       <p class="watchroom-hero__meta">${entries.length.toLocaleString("en-IN")} lower-court geographies checked · ${rankedGeographies.length.toLocaleString("en-IN")} with concentration signals · Source: National Judicial Data Grid public district dashboards</p>
     </section>
+    ${renderWatchroomSiblingNav("backlog-concentration")}
 
     <section class="watchroom-toplines" aria-label="Backlog concentration toplines">
       ${renderStatTile({
