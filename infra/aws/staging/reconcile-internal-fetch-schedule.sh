@@ -29,6 +29,7 @@ public_alpha_ops_schedule_timezone="${PUBLIC_ALPHA_OPS_SCHEDULE_TIMEZONE:-Asia/K
 public_alpha_ops_schedule_state="${PUBLIC_ALPHA_OPS_SCHEDULE_STATE:-ENABLED}"
 public_alpha_ops_schedule_name="${PUBLIC_ALPHA_OPS_SCHEDULE_NAME:-${stack_name}-public-alpha-ops-monitor}"
 public_alpha_ops_note_prefix="${PUBLIC_ALPHA_OPS_NOTE_PREFIX:-Scheduled public alpha ops verification}"
+public_alpha_ops_target_set="${PUBLIC_ALPHA_OPS_TARGET_SET:-smoke}"
 publish_pending_schedule_expression="${PUBLISH_PENDING_SCHEDULE_EXPRESSION:-cron(30 8 * * ? *)}"
 publish_pending_schedule_timezone="${PUBLISH_PENDING_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
 publish_pending_schedule_state="${PUBLISH_PENDING_SCHEDULE_STATE:-ENABLED}"
@@ -191,6 +192,11 @@ if [[ "$manage_iam_mode" != "auto" && "$manage_iam_mode" != "always" && "$manage
   exit 1
 fi
 
+if [[ "$public_alpha_ops_target_set" != "all" && "$public_alpha_ops_target_set" != "smoke" ]]; then
+  echo "PUBLIC_ALPHA_OPS_TARGET_SET must be one of: all, smoke" >&2
+  exit 1
+fi
+
 manage_iam="false"
 if [[ "$manage_iam_mode" == "always" ]]; then
   manage_iam="true"
@@ -301,6 +307,7 @@ reconcile_schedule() {
   local schedule_description="$5"
   local entrypoint_path="$6"
   local note_prefix="$7"
+  local extra_args_json="${8:-[]}"
   local request_path="$tmpdir/${schedule_name}.json"
 
   python3 - \
@@ -315,7 +322,8 @@ reconcile_schedule() {
     "$note_prefix" \
     "$role_arn" \
     "$schedule_description" \
-    "$entrypoint_path" <<'PY'
+    "$entrypoint_path" \
+    "$extra_args_json" <<'PY'
 import json
 import sys
 
@@ -332,6 +340,7 @@ import sys
     role_arn,
     schedule_description,
     entrypoint_path,
+    extra_args_json,
 ) = sys.argv[1:]
 
 with open(service_path, "r", encoding="utf-8") as handle:
@@ -348,6 +357,7 @@ command = [
     entrypoint_path,
     f"{note_prefix} (<aws.scheduler.scheduled-time>)",
 ]
+command.extend(json.loads(extra_args_json))
 
 request = {
     "Name": schedule_name,
@@ -449,9 +459,10 @@ reconcile_schedule \
   "$public_alpha_ops_schedule_expression" \
   "$public_alpha_ops_schedule_timezone" \
   "$public_alpha_ops_schedule_state" \
-  "Scheduled public alpha verification across every live public state. Failures emit alert log lines and trigger the staging SNS alarm path." \
+  "Scheduled public alpha smoke verification across representative live public surfaces. Failures emit alert log lines and trigger the staging SNS alarm path." \
   "dist/src/dev/ecs-public-alpha-ops-entrypoint.js" \
-  "$public_alpha_ops_note_prefix"
+  "$public_alpha_ops_note_prefix" \
+  "[\"--target-set\",\"$public_alpha_ops_target_set\"]"
 
 reconcile_schedule \
   "$publish_pending_schedule_name" \

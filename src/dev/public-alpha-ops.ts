@@ -5,10 +5,13 @@ import { getSupremeCourtProfile } from "../supreme-court.js";
 import { verifyPublicRelease, type ReleaseVerificationSummary } from "./release-verification.js";
 
 export const DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS = 2;
+export const PUBLIC_ALPHA_TARGET_SETS = ["all", "smoke"] as const;
 const SUCCESSFUL_RUN_STATUSES = new Set(["completed", "published", "replayed"]);
 const TRANSIENT_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
 const OPERATOR_RUN_FETCH_TIMEOUT_MS = 30_000;
 const OPERATOR_RUN_FETCH_RETRY_DELAYS_MS = [250, 1_000];
+
+export type PublicAlphaTargetSet = (typeof PUBLIC_ALPHA_TARGET_SETS)[number];
 
 interface OperatorRunRecord {
   id: string;
@@ -95,16 +98,18 @@ export async function verifyPublicAlphaOperations(
     now?: Date;
     dailyFetchLagThresholdDays?: number;
     operatorToken?: string;
+    targetSet?: PublicAlphaTargetSet;
   } = {},
 ): Promise<PublicAlphaOpsSummary> {
   const checkedAt = options.now ?? new Date();
   const dailyFetchLagThresholdDays = options.dailyFetchLagThresholdDays ?? DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS;
+  const targetSet = options.targetSet ?? "all";
   if (!options.operatorToken?.trim()) {
     throw new Error("verifyPublicAlphaOperations requires an operator token so daily internal fetch cadence is measured from operator run history.");
   }
   const targets: PublicAlphaOpsTargetSummary[] = [];
 
-  for (const target of buildPublicReleaseTargets()) {
+  for (const target of buildPublicReleaseTargets(targetSet)) {
     try {
       const verification = await verifyPublicRelease(baseUrl, {
         ...target.verifyOptions,
@@ -211,7 +216,7 @@ export function assertPublicAlphaOperationsHealthy(summary: PublicAlphaOpsSummar
   throw new Error(`Public alpha operations check failed: ${failures.join("; ")}`);
 }
 
-function buildPublicReleaseTargets(): PublicAlphaOpsTargetDescriptor[] {
+function buildPublicReleaseTargets(targetSet: PublicAlphaTargetSet): PublicAlphaOpsTargetDescriptor[] {
   const stateTargets = listPublicStateProfiles().map((profile) => ({
     tier: "lower_court_state" as const,
     identifier: profile.stateCode,
@@ -248,7 +253,31 @@ function buildPublicReleaseTargets(): PublicAlphaOpsTargetDescriptor[] {
       ]
     : [];
 
+  if (targetSet === "smoke") {
+    const legacyDefaultState = stateTargets.find((target) => target.stateCode === "HP") ?? stateTargets[0];
+    const stateScopedSurface = stateTargets.find((target) => target.stateCode && target.stateCode !== "HP");
+    return [
+      ...dedupeTargets([legacyDefaultState, stateScopedSurface]),
+      ...dedupeTargets([highCourtTargets[0], supremeCourtTargets[0]]),
+    ];
+  }
+
   return [...stateTargets, ...highCourtTargets, ...supremeCourtTargets];
+}
+
+function dedupeTargets(targets: Array<PublicAlphaOpsTargetDescriptor | undefined>) {
+  const seen = new Set<string>();
+  return targets.filter((target): target is PublicAlphaOpsTargetDescriptor => {
+    if (!target) {
+      return false;
+    }
+    const key = `${target.tier}:${target.identifier}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
 }
 
 async function fetchLatestSuccessfulRun(

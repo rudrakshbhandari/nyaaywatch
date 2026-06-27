@@ -100,21 +100,17 @@ For live remote operation from a local terminal, use:
 npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 ```
 
-For heavier internal states that may exceed Cloudflare's edge timeout, bypass Cloudflare while preserving `nyaaywatch.in` as the HTTP and TLS host:
+For heavier production internal states that may exceed Cloudflare's edge timeout, use the ECS-backed operator lane:
 
 ```bash
-npm run operator:remote -- \
-  --base-url=https://nyaaywatch.in \
-  --connect-host=<alb-dns> \
-  --state=UP \
-  fetch "Internal Uttar Pradesh fetch"
+npm run operator:production -- --state=UP fetch "Internal Uttar Pradesh fetch"
 ```
 
 Notes:
 
-- `OPERATOR_API_TOKEN` must be set in the shell that runs `operator:remote`.
-- `--connect-host` changes only the network target. The request still carries the canonical host, so the app and certificate path behave like production origin traffic.
-- Use the direct-origin lane for long-running internal operator requests only. Public verification should still run against `https://nyaaywatch.in`.
+- `operator:production` loads the live operator token from the production stack secret; local `operator:remote` still requires `OPERATOR_API_TOKEN` when it is used against the public hostname.
+- After the production public-ingress WAF is enabled, direct ALB `--connect-host=<alb-dns>` operator traffic is blocked unless the WAF is intentionally disabled or allowlisted for a controlled recovery window.
+- Public verification should still run against `https://nyaaywatch.in`.
 
 ## Local Development
 
@@ -140,7 +136,7 @@ If `5432` or `4566` are already occupied, set `POSTGRES_PORT` and `LOCALSTACK_PO
    `npm run operator:fetch -- --state PB "Internal Punjab fetch"`
    For a live remote internal-state flow from a local terminal:
    `npm run operator:remote -- --base-url=https://nyaaywatch.in --state=PB fetch "Internal Punjab fetch"`
-   For heavier states, add `--connect-host=<alb-dns>` to bypass Cloudflare.
+   For heavier production states, use `npm run operator:production -- --state <STATE_CODE> fetch "<note>"` so the work runs inside ECS instead of through the public HTTP path.
 5. Inspect the stored candidate:
    `npm run operator:inspect -- <run-id>`
    For a live remote flow:
@@ -195,7 +191,7 @@ Requirements:
 - access to run ECS and CloudWatch Logs commands in `ap-south-1`
 - the local machine does not need direct database or operator-token access because the command runs inside ECS
 
-The older ALB plus `curl --connect-to` path remains a recovery fallback only. It is no longer the default documented operator lane for heavier states.
+The older ALB plus `curl --connect-to` path is not available after the production public-ingress WAF blocks non-Cloudflare source IPs. Use the ECS-backed operator lane first; only use direct-origin checks during a controlled recovery where the WAF has been explicitly disabled or allowlisted.
 
 ### Replay -> Rollback
 

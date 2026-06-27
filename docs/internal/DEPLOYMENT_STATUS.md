@@ -69,7 +69,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
   - Supreme Court: `nyaaywatch-production-supreme-court-internal-fetch` at `8:10 AM Asia/Kolkata`
   - reviewed High Courts: `nyaaywatch-production-high-courts-internal-fetch` at `8:20 AM Asia/Kolkata`
   - publish-pending sweep: `nyaaywatch-production-publish-pending-sweep` at `8:30 AM Asia/Kolkata`
-  - public alpha ops monitor: `nyaaywatch-production-public-alpha-ops-monitor` every `30` minutes
+  - public alpha ops smoke monitor: `nyaaywatch-production-public-alpha-ops-monitor` every `30` minutes
 - Internal raw fetch schedule scope policy:
   - lower-court geographies: profiles returned by `listInternalFetchStateProfiles()`; all 36 lower-court state/Union Territory profiles are included after April 23, 2026 proof cycles
   - Supreme Court: the single configured Supreme Court profile
@@ -79,6 +79,8 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - CloudWatch log group: `/ecs/nyaaywatch-production`
 - CloudWatch dashboard: `nyaaywatch-production`
 - Alarm topic ARN: `arn:aws:sns:ap-south-1:723951822728:nyaaywatch-production-alerts`
+- ALB access logs: retained under `s3://nyaaywatch-production-artifacts-723951822728/alb-access-logs/AWSLogs/723951822728/` after the production stack is redeployed with the current template
+- Public-ingress WAF: regional web ACL `nyaaywatch-production-public-ingress` after the production stack is redeployed with the current template; blocks non-Cloudflare source IPs at the origin and applies a default `1200` requests per 5 minutes limit to forwarded clients using `CF-Connecting-IP`
 - CloudWatch alarms:
   - `nyaaywatch-production-health-endpoint`
   - `nyaaywatch-production-alb-target-5xx`
@@ -87,7 +89,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Artifacts bucket: `nyaaywatch-production-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-production-stagingdatabase-g3twsdpyvdw2.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: production public-alpha serving, scheduled internal fetches, public-alpha ops monitoring, release verification, and release-scoped operator actions
-- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, and reconciling the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha monitor schedules against the live task definition while reusing the production scheduler role
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, keeping production desired count at `2` unless overridden, and reconciling the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha smoke monitor schedules against the live task definition while reusing the production scheduler role. CloudFormation-only changes such as WAF attachment and ALB access logging still require `infra/aws/staging/deploy-stack.sh` or an equivalent reviewed stack update.
 - Last observation check: `2026-04-29T00:51:30Z`; production preflight passed with both `nyaaywatch-staging` and `nyaaywatch-production` in `UPDATE_COMPLETE`, public `release:verify` passed for `https://nyaaywatch.in`, the public-alpha ops sweep reported `62/62` healthy targets with no stale snapshots, no daily-fetch lag, and no failures, all production schedules targeted `nyaaywatch-production:11`, and the four production CloudWatch alarms were `OK`.
 
 Operational notes:
@@ -102,9 +104,9 @@ Operational notes:
 - For heavier internal-only operator runs, use `npm run operator:production -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
 - On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through the legacy `npm run operator:staging` command; future production runs should use `npm run operator:production`.
 - The documented internal raw-fetch policy is to run lower-court geography fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
-- The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag.
+- The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL` with `--target-set=smoke`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag in representative public surfaces. The full all-target sweep still runs through the daily GitHub watchdog and manual release-window checks.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
-- ALB plus `curl --connect-to` remains a recovery fallback if the ECS helper itself is unavailable.
+- After the production public-ingress WAF is enabled, ALB plus `curl --connect-to` is blocked for non-Cloudflare source IPs. Use ECS-backed operator helpers first; only use direct-origin checks during a controlled recovery where the WAF has been explicitly disabled or allowlisted.
 
 ### Retired Temporary Staging Bridge
 
@@ -349,7 +351,7 @@ Expected:
 
 - `/health` returns `ok: true`
 - public API responses come from a published snapshot, not an empty or unpublished state
-- `npm run ops:verify-public-alpha` stays green across every public state and fails if any state has parity drift, a stale snapshot, or a latest successful internal fetch run old enough to imply the daily internal fetch cadence is slipping
+- `npm run ops:verify-public-alpha` stays green across every public target by default and fails if any state, High Court, or Supreme Court surface has parity drift, a stale snapshot, or a latest successful internal fetch run old enough to imply the daily internal fetch cadence is slipping. Use `--target-set=smoke` only for low-blast-radius incident checks.
 - the CloudWatch alarm `nyaaywatch-production-public-alpha-ops` stays `OK`; if it flips to `ALARM`, inspect the matching `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` line in `/ecs/nyaaywatch-production`
 - `.github/workflows/ops-watchdog.yml` now runs the public-alpha sweep plus `npm run ops:verify-internal-fetch-schedule` on a daily schedule, loading `OPERATOR_API_TOKEN` from the live `OperatorApiTokenSecretArn` stack output instead of scraping task-definition env, opening or updating a durable GitHub issue on failure, and publishing a first-incident SNS alert through `AlarmTopicArn`
 

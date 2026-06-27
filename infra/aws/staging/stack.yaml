@@ -93,6 +93,33 @@ Parameters:
     Default: 50
     MinValue: 1
     Description: Monthly AWS cost budget in USD. Budgets notify AlarmTopic at 80% actual and 100% forecasted.
+  AlbAccessLogsEnabled:
+    Type: String
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Whether the public ALB should write access logs into the retained artifacts bucket.
+  PublicIngressWebAclEnabled:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Whether to attach the regional public-ingress WAF web ACL to the public ALB.
+  PublicIngressRateLimitPerFiveMinutes:
+    Type: Number
+    Default: 1200
+    MinValue: 100
+    Description: Maximum requests per five minutes per client IP before the public-ingress WAF returns 429.
+  CloudflareIpv4Cidrs:
+    Type: CommaDelimitedList
+    Default: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
+    Description: Cloudflare IPv4 source CIDRs allowed to reach the public ALB when the public-ingress WAF is enabled.
+  CloudflareIpv6Cidrs:
+    Type: CommaDelimitedList
+    Default: "2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
+    Description: Cloudflare IPv6 source CIDRs allowed to reach the public ALB when the public-ingress WAF is enabled.
 
 Conditions:
   HasAlarmEmail: !Not [!Equals [!Ref AlarmEmail, ""]]
@@ -106,6 +133,7 @@ Conditions:
   HasDatabaseSnapshotIdentifier: !Not [!Equals [!Ref DatabaseSnapshotIdentifier, ""]]
   CreateManagedDatabaseUrlSecret: !Equals [!Ref ExistingDatabaseUrlSecretArn, ""]
   CreateManagedOperatorApiTokenSecret: !Equals [!Ref ExistingOperatorApiTokenSecretArn, ""]
+  ShouldEnablePublicIngressWebAcl: !Equals [!Ref PublicIngressWebAclEnabled, "true"]
 
 Resources:
   Vpc:
@@ -228,6 +256,29 @@ Resources:
           Value: !Ref ProjectName
         - Key: env
           Value: !Ref EnvironmentName
+
+  ArtifactsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ArtifactsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowAlbAccessLogDeliveryAclCheck
+            Effect: Allow
+            Principal:
+              Service: logdelivery.elasticloadbalancing.amazonaws.com
+            Action: s3:GetBucketAcl
+            Resource: !GetAtt ArtifactsBucket.Arn
+          - Sid: AllowAlbAccessLogDeliveryWrite
+            Effect: Allow
+            Principal:
+              Service: logdelivery.elasticloadbalancing.amazonaws.com
+            Action: s3:PutObject
+            Resource: !Sub "${ArtifactsBucket.Arn}/alb-access-logs/AWSLogs/${AWS::AccountId}/*"
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: bucket-owner-full-control
 
   ApplicationLogGroup:
     Type: AWS::Logs::LogGroup
@@ -582,14 +633,98 @@ Resources:
 
   LoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    DependsOn: ArtifactsBucketPolicy
     Properties:
       Name: !Sub "${ProjectName}-${EnvironmentName}"
       Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: access_logs.s3.enabled
+          Value: !Ref AlbAccessLogsEnabled
+        - Key: access_logs.s3.bucket
+          Value: !Ref ArtifactsBucket
+        - Key: access_logs.s3.prefix
+          Value: alb-access-logs
       SecurityGroups:
         - !Ref LoadBalancerSecurityGroup
       Subnets:
         - !Ref PublicSubnetAz1
         - !Ref PublicSubnetAz2
+
+  PublicIngressWebAcl:
+    Type: AWS::WAFv2::WebACL
+    Condition: ShouldEnablePublicIngressWebAcl
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}-public-ingress"
+      Scope: REGIONAL
+      DefaultAction:
+        Allow: {}
+      Description: !Sub "Rate-limit public ${EnvironmentName} ALB traffic before it can exhaust the origin task."
+      VisibilityConfig:
+        CloudWatchMetricsEnabled: true
+        MetricName: !Sub "${ProjectName}-${EnvironmentName}-public-ingress"
+        SampledRequestsEnabled: true
+      Rules:
+        - Name: non-cloudflare-origin-block
+          Priority: 0
+          Action:
+            Block:
+              CustomResponse:
+                ResponseCode: 429
+          Statement:
+            NotStatement:
+              Statement:
+                OrStatement:
+                  Statements:
+                    - IPSetReferenceStatement:
+                        Arn: !GetAtt PublicIngressCloudflareIpv4IpSet.Arn
+                    - IPSetReferenceStatement:
+                        Arn: !GetAtt PublicIngressCloudflareIpv6IpSet.Arn
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub "${ProjectName}-${EnvironmentName}-non-cloudflare-origin-block"
+            SampledRequestsEnabled: true
+        - Name: forwarded-client-rate-limit
+          Priority: 1
+          Action:
+            Block:
+              CustomResponse:
+                ResponseCode: 429
+          Statement:
+            RateBasedStatement:
+              Limit: !Ref PublicIngressRateLimitPerFiveMinutes
+              AggregateKeyType: FORWARDED_IP
+              ForwardedIPConfig:
+                HeaderName: CF-Connecting-IP
+                FallbackBehavior: MATCH
+          VisibilityConfig:
+            CloudWatchMetricsEnabled: true
+            MetricName: !Sub "${ProjectName}-${EnvironmentName}-forwarded-client-rate-limit"
+            SampledRequestsEnabled: true
+
+  PublicIngressCloudflareIpv4IpSet:
+    Type: AWS::WAFv2::IPSet
+    Condition: ShouldEnablePublicIngressWebAcl
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}-cloudflare-ipv4"
+      Scope: REGIONAL
+      IPAddressVersion: IPV4
+      Addresses: !Ref CloudflareIpv4Cidrs
+
+  PublicIngressCloudflareIpv6IpSet:
+    Type: AWS::WAFv2::IPSet
+    Condition: ShouldEnablePublicIngressWebAcl
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}-cloudflare-ipv6"
+      Scope: REGIONAL
+      IPAddressVersion: IPV6
+      Addresses: !Ref CloudflareIpv6Cidrs
+
+  PublicIngressWebAclAssociation:
+    Type: AWS::WAFv2::WebACLAssociation
+    Condition: ShouldEnablePublicIngressWebAcl
+    Properties:
+      ResourceArn: !Ref LoadBalancer
+      WebACLArn: !GetAtt PublicIngressWebAcl.Arn
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
@@ -1141,3 +1276,6 @@ Outputs:
     Value: !GetAtt RumAppMonitor.Id
   RumIdentityPoolId:
     Value: !Ref RumIdentityPool
+  PublicIngressWebAclArn:
+    Condition: ShouldEnablePublicIngressWebAcl
+    Value: !GetAtt PublicIngressWebAcl.Arn
