@@ -39,6 +39,7 @@ describe("public alpha monitor helpers", () => {
 
   it("parses the target set from flags or environment", () => {
     expect(readPublicAlphaMonitorTargetSet(["--target-set", "smoke"])).toBe("smoke");
+    expect(readPublicAlphaMonitorTargetSet(["--target-set=smoke"])).toBe("smoke");
     expect(readPublicAlphaMonitorTargetSet([], { PUBLIC_ALPHA_OPS_TARGET_SET: "all" } as NodeJS.ProcessEnv)).toBe("all");
     expect(() => readPublicAlphaMonitorTargetSet(["--target-set", "wide"])).toThrow(
       "--target-set must be one of: all, smoke.",
