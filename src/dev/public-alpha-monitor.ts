@@ -1,5 +1,6 @@
 import type { PublicAlphaOpsSummary } from "./public-alpha-ops.js";
 import { PUBLIC_ALPHA_TARGET_SETS, type PublicAlphaTargetSet } from "./public-alpha-ops.js";
+import { readFlag } from "./cli-flags.js";
 
 export const PUBLIC_ALPHA_OPS_RESULT_PREFIX = "NYAAYWATCH_PUBLIC_ALPHA_OPS_RESULT=";
 export const PUBLIC_ALPHA_OPS_ALERT_PREFIX = "NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=";
@@ -79,9 +80,4 @@ export function buildPublicAlphaMonitorAlertPayload(
 
 function normalizeBaseUrl(baseUrl: string) {
   return baseUrl.trim().replace(/\/+$/, "");
-}
-
-function readFlag(args: string[], flag: string) {
-  const index = args.findIndex((value) => value === flag);
-  return index >= 0 ? args[index + 1] : undefined;
 }
