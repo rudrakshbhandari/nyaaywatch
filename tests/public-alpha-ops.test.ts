@@ -367,6 +367,106 @@ describe("public alpha ops verification", () => {
     expect(() => assertPublicAlphaOperationsHealthy(summary)).not.toThrow();
   });
 
+  it("limits smoke sweeps to representative lower-court, High Court, and Supreme Court targets", async () => {
+    listPublicStateProfiles.mockReturnValueOnce([
+      { stateCode: "HP", stateName: "Himachal Pradesh", stateSlug: "himachal-pradesh" },
+      { stateCode: "PB", stateName: "Punjab", stateSlug: "punjab" },
+      { stateCode: "HR", stateName: "Haryana", stateSlug: "haryana" },
+    ]);
+    listPublicHighCourtProfiles.mockReturnValueOnce([
+      {
+        courtCode: "HPHC",
+        courtName: "High Court of Himachal Pradesh",
+        courtSlug: "himachal",
+      },
+      {
+        courtCode: "DLHC",
+        courtName: "Delhi High Court",
+        courtSlug: "delhi",
+      },
+    ]);
+    getSupremeCourtProfile.mockReturnValueOnce({
+      courtCode: "SCI",
+      courtName: "Supreme Court of India",
+      courtSlug: "supreme-court",
+      publicBeta: true,
+    });
+
+    for (const [runId, stateCode] of [
+      ["run_hp", "HP"],
+      ["run_pb", "PB"],
+      ["run_hphc", "HPHC"],
+      ["run_sci", "SCI"],
+    ]) {
+      verifyPublicRelease.mockResolvedValueOnce({
+        baseUrl: "https://nyaaywatch.in",
+        checkedAt: "2026-06-24T12:00:00.000Z",
+        target: {},
+        snapshot: {
+          sourceSnapshotAt: "2026-06-24T00:00:00.000Z",
+          referenceDateAt: "2026-06-24T00:00:00.000Z",
+          referenceDateKind: "captured_at",
+          publishedAt: "2026-06-24T03:00:00.000Z",
+          freshnessDaysAtPublish: 0,
+          currentFreshnessDays: 0,
+          methodologyVersion: "2026.04-alpha",
+          qualityState: "complete",
+          publishedFromRunId: runId,
+          replayedFromRunId: null,
+        },
+        health: { region: "ap-south-1", stateCode: "HP" },
+        districtCount: stateCode.endsWith("HC") || stateCode === "SCI" ? null : 1,
+        trendCount: 1,
+        csvMetadataParity: stateCode.endsWith("HC") || stateCode === "SCI" ? null : true,
+        publicDataCacheProtected: true,
+        operatorAuthProtected: true,
+      });
+      fetchMock.mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            runs: [
+              {
+                id: runId,
+                stateCode,
+                sourceSnapshotAt: "2026-06-24T00:00:00.000Z",
+                status: "completed",
+                completedAt: "2026-06-24T03:00:00.000Z",
+              },
+            ],
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+      );
+    }
+
+    const { verifyPublicAlphaOperations } = await import("../src/dev/public-alpha-ops.js");
+    const summary = await verifyPublicAlphaOperations("https://nyaaywatch.in", {
+      now: new Date("2026-06-24T12:00:00.000Z"),
+      operatorToken: "operator-test-token",
+      targetSet: "smoke",
+    });
+
+    expect(summary.totalTargets).toBe(4);
+    expect(summary.healthyTargets).toEqual(["HP", "PB", "high_court:HPHC", "supreme_court:SCI"]);
+    expect(verifyPublicRelease).toHaveBeenCalledTimes(4);
+    expect(verifyPublicRelease).toHaveBeenNthCalledWith(1, "https://nyaaywatch.in", {
+      stateSlug: "himachal-pradesh",
+      now: new Date("2026-06-24T12:00:00.000Z"),
+    });
+    expect(verifyPublicRelease).toHaveBeenNthCalledWith(2, "https://nyaaywatch.in", {
+      stateSlug: "punjab",
+      now: new Date("2026-06-24T12:00:00.000Z"),
+    });
+    expect(verifyPublicRelease).toHaveBeenNthCalledWith(3, "https://nyaaywatch.in", {
+      highCourtSlug: "himachal",
+      now: new Date("2026-06-24T12:00:00.000Z"),
+    });
+    expect(verifyPublicRelease).toHaveBeenNthCalledWith(4, "https://nyaaywatch.in", {
+      supremeCourt: true,
+      now: new Date("2026-06-24T12:00:00.000Z"),
+    });
+  });
+
   it("fails when a state verification breaks or the daily fetch cadence is behind", async () => {
     listPublicStateProfiles.mockReturnValueOnce([
       { stateCode: "HP", stateName: "Himachal Pradesh", stateSlug: "himachal-pradesh" },

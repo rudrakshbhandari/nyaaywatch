@@ -133,19 +133,19 @@ aws cloudformation describe-stacks \
   --query "Stacks[0].Outputs"
 ```
 
-Then use the target `ServiceUrl` for low-level health checks:
+Before enabling Cloudflare-only public-ingress WAF on a target stack, use the target `ServiceUrl` for low-level health checks:
 
 ```bash
 curl -fsSL <target-service-url>/health
 ```
 
-For public-host verification before DNS, connect the production hostname to the target ALB:
+For public-host verification before DNS and before Cloudflare-only public-ingress WAF is enabled, connect the production hostname to the target ALB:
 
 ```bash
 curl --connect-to nyaaywatch.in:443:<target-alb-dns>:443 https://nyaaywatch.in/health
 ```
 
-`release:verify` does not currently support `--connect-host`, so use focused `curl --connect-to` checks for `/`, `/v1/stats/himachal`, `/v1/districts`, `/v1/trends`, `/supreme-court`, `/high-courts`, `/data`, `/methodology`, and `/api` before DNS. After DNS cutover, run the normal release verifier against `https://nyaaywatch.in`.
+`release:verify` does not currently support `--connect-host`, so use focused `curl --connect-to` checks for `/`, `/v1/stats/himachal`, `/v1/districts`, `/v1/trends`, `/supreme-court`, `/high-courts`, `/data`, `/methodology`, and `/api` before DNS and before Cloudflare-only public-ingress WAF is enabled. After DNS cutover, run the normal release verifier against `https://nyaaywatch.in`; after the WAF is enabled, direct-origin checks require an intentional temporary WAF bypass or allowlist.
 
 Also verify:
 

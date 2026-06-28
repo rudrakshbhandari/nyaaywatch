@@ -9,6 +9,7 @@ import {
   PUBLIC_ALPHA_OPS_ALERT_PREFIX,
   PUBLIC_ALPHA_OPS_RESULT_PREFIX,
   readPublicAlphaMonitorLagThreshold,
+  readPublicAlphaMonitorTargetSet,
   resolvePublicAlphaMonitorBaseUrl,
 } from "../src/dev/public-alpha-monitor.js";
 
@@ -33,6 +34,14 @@ describe("public alpha monitor helpers", () => {
     expect(readPublicAlphaMonitorLagThreshold(["--daily-fetch-lag-days", "3"])).toBe(3);
     expect(() => readPublicAlphaMonitorLagThreshold(["--daily-fetch-lag-days", "-1"])).toThrow(
       "--daily-fetch-lag-days must be a non-negative integer.",
+    );
+  });
+
+  it("parses the target set from flags or environment", () => {
+    expect(readPublicAlphaMonitorTargetSet(["--target-set", "smoke"])).toBe("smoke");
+    expect(readPublicAlphaMonitorTargetSet([], { PUBLIC_ALPHA_OPS_TARGET_SET: "all" } as NodeJS.ProcessEnv)).toBe("all");
+    expect(() => readPublicAlphaMonitorTargetSet(["--target-set", "wide"])).toThrow(
+      "--target-set must be one of: all, smoke.",
     );
   });
 

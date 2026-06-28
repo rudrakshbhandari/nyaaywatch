@@ -1,4 +1,5 @@
 import type { PublicAlphaOpsSummary } from "./public-alpha-ops.js";
+import { PUBLIC_ALPHA_TARGET_SETS, type PublicAlphaTargetSet } from "./public-alpha-ops.js";
 
 export const PUBLIC_ALPHA_OPS_RESULT_PREFIX = "NYAAYWATCH_PUBLIC_ALPHA_OPS_RESULT=";
 export const PUBLIC_ALPHA_OPS_ALERT_PREFIX = "NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=";
@@ -23,7 +24,7 @@ export function resolvePublicAlphaMonitorBaseUrl(args: string[], env: NodeJS.Pro
 }
 
 export function buildPublicAlphaMonitorUsage() {
-  return "Usage: node dist/src/dev/ecs-public-alpha-ops-entrypoint.js [--base-url <https://nyaaywatch.in>] [--daily-fetch-lag-days <2>]";
+  return "Usage: node dist/src/dev/ecs-public-alpha-ops-entrypoint.js [--base-url <https://nyaaywatch.in>] [--daily-fetch-lag-days <2>] [--target-set <all|smoke>]";
 }
 
 export function readPublicAlphaMonitorLagThreshold(args: string[], flag = "--daily-fetch-lag-days") {
@@ -38,6 +39,23 @@ export function readPublicAlphaMonitorLagThreshold(args: string[], flag = "--dai
   }
 
   return parsed;
+}
+
+export function readPublicAlphaMonitorTargetSet(
+  args: string[],
+  env: NodeJS.ProcessEnv = process.env,
+  flag = "--target-set",
+): PublicAlphaTargetSet | undefined {
+  const value = readFlag(args, flag) ?? env.PUBLIC_ALPHA_OPS_TARGET_SET;
+  if (!value) {
+    return undefined;
+  }
+
+  if (PUBLIC_ALPHA_TARGET_SETS.includes(value as PublicAlphaTargetSet)) {
+    return value as PublicAlphaTargetSet;
+  }
+
+  throw new Error(`${flag} must be one of: ${PUBLIC_ALPHA_TARGET_SETS.join(", ")}.`);
 }
 
 export function buildPublicAlphaMonitorAlertPayload(

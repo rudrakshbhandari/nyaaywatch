@@ -186,7 +186,7 @@ npm run infra:production-cutover-inventory
 npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
 ```
 
-Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated staging runs as `nyaaywatch-staging` at `https://staging.nyaaywatch.in`; staging schedules remain disabled unless an operator intentionally enables them for rehearsal. Add `--connect-host=<alb-dns>` to `operator:remote` to bypass Cloudflare while keeping the public hostname as the HTTP and TLS host.
+Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated staging runs as `nyaaywatch-staging` at `https://staging.nyaaywatch.in`; staging schedules remain disabled unless an operator intentionally enables them for rehearsal. After the production public-ingress WAF is enabled, direct ALB `--connect-host=<alb-dns>` operator traffic is blocked unless the WAF is intentionally disabled or allowlisted for a controlled recovery window.
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
@@ -215,13 +215,13 @@ The live deploy runs five ECS schedules, all reconciled to the latest task defin
 | Supreme Court | `8:10 AM Asia/Kolkata` |
 | Reviewed High Courts | `8:20 AM Asia/Kolkata` |
 | Publish-pending sweep | `8:30 AM Asia/Kolkata` |
-| Public-alpha ops monitor | Every `30` minutes against `https://nyaaywatch.in` |
+| Public-alpha ops smoke monitor | Every `30` minutes against representative public surfaces on `https://nyaaywatch.in` |
 
 The GitHub Actions `ops:njdg-missing-zero-outreach` schedule runs every Monday, Wednesday, and Friday at `04:30 UTC` / `10:00 AM Asia/Kolkata` from the SES-verified `data@nyaaywatch.in` sender with domain-aligned SPF/DKIM/DMARC. It emails official CPC contacts for affected NJDG state or Union Territory rows only while public lower-court snapshots still contain source rows with pending cases but `0` filed and `0` cleared monthly movement. Each send BCCs the verified sender and archives the subject, body, recipients, reply-to recipients, SES message ID, and affected rows in the production artifacts bucket.
 
 If the outreach send fails, the workflow opens or updates the durable `NJDG outreach failure` GitHub issue and publishes to the production SNS alert topic. A later successful run closes the issue and sends a recovery notification.
 
-The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The ops monitor pages on parity drift, stale public snapshots, or internal fetch lag. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails.
+The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The in-stack ops monitor runs a low-blast-radius smoke target set by default and pages on route/parity drift, stale public snapshots, or internal fetch lag in those representative surfaces. The daily GitHub watchdog and manual `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` command still run the full all-public-target sweep unless `--target-set=smoke` is passed explicitly. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails.
 
 ## Public API
 

@@ -88,5 +88,5 @@ If the public hostname regresses after a future DNS or certificate change:
 
 1. Point `nyaaywatch.in` back to the prior known-good target or remove the changed record.
 2. Keep the ALB, HTTPS listener, and ACM certificate in place while investigating.
-3. Verify the raw ALB hostname and `https://nyaaywatch.in/health` separately before retrying the cutover.
+3. Verify the raw ALB hostname only before Cloudflare-only public-ingress WAF is enabled, or during a controlled recovery where the WAF has been explicitly disabled or allowlisted. Always verify `https://nyaaywatch.in/health` before retrying the cutover.
 4. Record the exact failure mode in `docs/DEPLOYMENT_STATUS.md` or the release checklist before reattempting.

@@ -273,7 +273,7 @@ The deploy job:
 - updates the ECS service and waits for steady state
 - reconciles the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha-ops schedules against the new live task definition
 - keeps cadence-limited NJDG missing-zero outreach sending through the SES-verified `data@nyaaywatch.in` identity with aligned SPF/DKIM/DMARC, BCCs the sender, sets any configured reply-to address, and archives each outbound payload under `s3://nyaaywatch-production-artifacts-723951822728/ops/njdg-missing-zero-outreach/`
-- confirms the raw ALB `ServiceUrl` still answers `/health`
+- confirms `/health` through the configured `PUBLIC_BASE_URL` when present, falling back to the raw ALB `ServiceUrl` only for stacks without Cloudflare-only origin protection
 
 This keeps the deploy path inside the existing AWS stack instead of re-running CloudFormation with database or operator secrets on every merge.
 
@@ -286,7 +286,7 @@ Default schedules:
 - lower-court states: every day at `8:00 AM Asia/Kolkata` across all implemented states
 - Supreme Court: every day at `8:10 AM Asia/Kolkata`
 - reviewed High Courts: every day at `8:20 AM Asia/Kolkata` across High Court profiles whose `sourceReviewStatus` is `reviewed`
-- public-alpha ops monitor: every `30` minutes against the deployed `PUBLIC_BASE_URL`
+- public-alpha ops smoke monitor: every `30` minutes against representative surfaces on the deployed `PUBLIC_BASE_URL`
 - behavior: each schedule launches its own one-off ECS task, keeps failures isolated by tier, and leaves public publication unchanged
 
 Manual reconcile command:
@@ -318,6 +318,9 @@ Alerting note:
 
 - the production stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
 - CloudWatch alarm `${ProjectName}-${EnvironmentName}-public-alpha-ops` fans that signal out through the existing SNS alert topic
+- production image redeploys keep at least two ECS tasks by default for `ENVIRONMENT_NAME=production`; set `PRODUCTION_DESIRED_COUNT` or `DESIRED_COUNT` to override that during a controlled window
+- the stack template can enable ALB access logs under `s3://<artifacts-bucket>/alb-access-logs/AWSLogs/<account-id>/`; set `ALB_ACCESS_LOGS_ENABLED=false` only for a deliberate non-attribution rehearsal
+- production stack deploys attach regional WAF rules `non-cloudflare-origin-block` and `forwarded-client-rate-limit` to the ALB by default; non-production stack deploys leave that Cloudflare-only origin protection off unless `PUBLIC_INGRESS_WEB_ACL_ENABLED=true` is set for a proxied hostname. Refresh `CLOUDFLARE_IPV4_CIDRS` / `CLOUDFLARE_IPV6_CIDRS` from Cloudflare if their published ranges change, set `PUBLIC_INGRESS_RATE_LIMIT_PER_FIVE_MINUTES` to tune the default `1200` requests per five minutes, or `PUBLIC_INGRESS_WEB_ACL_ENABLED=false` only for an intentional production bypass.
 - cost budget alerts are only meaningful after the account-level cost allocation tags `project` and `env` are active in AWS Billing; `deploy-stack.sh` passes those stack tags, and ECS service/scheduled tasks propagate the task-definition tags for Fargate attribution
 
 ## Heavy-State Operator Lane

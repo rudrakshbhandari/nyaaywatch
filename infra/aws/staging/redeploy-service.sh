@@ -10,6 +10,7 @@ fi
 stack_name="$1"
 container_image="$2"
 region="${AWS_REGION:-ap-south-1}"
+desired_count="${DESIRED_COUNT:-}"
 
 lookup_stack_resource() {
   local logical_resource_id="$1"
@@ -63,6 +64,14 @@ service_url="$(
     --output text
 )"
 
+public_base_url="$(
+  aws cloudformation describe-stacks \
+    --region "$region" \
+    --stack-name "$stack_name" \
+    --query "Stacks[0].Parameters[?ParameterKey=='PublicBaseUrl'].ParameterValue | [0]" \
+    --output text
+)"
+
 project_name="$(
   aws cloudformation describe-stacks \
     --region "$region" \
@@ -94,6 +103,11 @@ if [[ -z "$service_url" || "$service_url" == "None" ]]; then
   exit 1
 fi
 
+health_check_url="$service_url"
+if [[ -n "$public_base_url" && "$public_base_url" != "None" ]]; then
+  health_check_url="${public_base_url%/}"
+fi
+
 if [[ -z "$project_name" || "$project_name" == "None" ]]; then
   echo "ProjectName parameter not found for stack $stack_name" >&2
   exit 1
@@ -101,6 +115,20 @@ fi
 
 if [[ -z "$environment_name" || "$environment_name" == "None" ]]; then
   echo "EnvironmentName parameter not found for stack $stack_name" >&2
+  exit 1
+fi
+
+if [[ -z "$desired_count" && "$environment_name" == "production" ]]; then
+  desired_count="${PRODUCTION_DESIRED_COUNT:-2}"
+fi
+
+if [[ -n "$desired_count" && ! "$desired_count" =~ ^[0-9]+$ ]]; then
+  echo "DESIRED_COUNT must be a positive integer when set." >&2
+  exit 1
+fi
+
+if [[ -n "$desired_count" && "$desired_count" -lt 1 ]]; then
+  echo "DESIRED_COUNT must be at least 1." >&2
   exit 1
 fi
 
@@ -225,14 +253,21 @@ new_task_definition_arn="$(
     --output text
 )"
 
-aws ecs update-service \
-  --region "$region" \
-  --cluster "$cluster_name" \
-  --service "$service_arn" \
-  --task-definition "$new_task_definition_arn" \
-  --enable-ecs-managed-tags \
-  --propagate-tags TASK_DEFINITION \
-  >/dev/null
+update_service_args=(
+  aws ecs update-service
+  --region "$region"
+  --cluster "$cluster_name"
+  --service "$service_arn"
+  --task-definition "$new_task_definition_arn"
+  --enable-ecs-managed-tags
+  --propagate-tags TASK_DEFINITION
+)
+
+if [[ -n "$desired_count" ]]; then
+  update_service_args+=(--desired-count "$desired_count")
+fi
+
+"${update_service_args[@]}" >/dev/null
 
 aws ecs wait services-stable \
   --region "$region" \
@@ -240,7 +275,7 @@ aws ecs wait services-stable \
   --services "$service_arn"
 
 for attempt in {1..12}; do
-  if health_payload="$(curl --fail --silent --show-error --location --insecure "$service_url/health")"; then
+  if health_payload="$(curl --fail --silent --show-error --location --insecure "$health_check_url/health")"; then
     if [[ "$health_payload" == *'"ok":true'* ]]; then
       echo "$health_payload"
       exit 0
@@ -250,5 +285,5 @@ for attempt in {1..12}; do
   sleep 10
 done
 
-echo "Service deployment reached ECS steady state, but $service_url/health did not return success." >&2
+echo "Service deployment reached ECS steady state, but $health_check_url/health did not return success." >&2
 exit 1

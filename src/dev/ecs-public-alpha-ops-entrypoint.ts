@@ -5,6 +5,7 @@ import {
   PUBLIC_ALPHA_OPS_ALERT_PREFIX,
   PUBLIC_ALPHA_OPS_RESULT_PREFIX,
   readPublicAlphaMonitorLagThreshold,
+  readPublicAlphaMonitorTargetSet,
   resolvePublicAlphaMonitorBaseUrl,
 } from "./public-alpha-monitor.js";
 
@@ -28,6 +29,7 @@ async function main() {
       now: checkedAt,
       dailyFetchLagThresholdDays: readPublicAlphaMonitorLagThreshold(args),
       operatorToken,
+      targetSet: readPublicAlphaMonitorTargetSet(args),
     });
     console.log(`${PUBLIC_ALPHA_OPS_RESULT_PREFIX}${JSON.stringify(summary)}`);
     assertPublicAlphaOperationsHealthy(summary);

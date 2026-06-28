@@ -20,9 +20,16 @@ environment_name="${ENVIRONMENT_NAME:-staging}"
 database_name="${STACK_DATABASE_NAME:-nyaaywatch}"
 database_username="${STACK_DATABASE_USERNAME:-nyaaywatch}"
 database_allocated_storage="${STACK_DATABASE_ALLOCATED_STORAGE:-20}"
+desired_count="${DESIRED_COUNT:-}"
+alb_access_logs_enabled="${ALB_ACCESS_LOGS_ENABLED:-true}"
+public_ingress_web_acl_enabled="${PUBLIC_INGRESS_WEB_ACL_ENABLED:-}"
+public_ingress_rate_limit_per_five_minutes="${PUBLIC_INGRESS_RATE_LIMIT_PER_FIVE_MINUTES:-1200}"
+cloudflare_ipv4_cidrs="${CLOUDFLARE_IPV4_CIDRS:-173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22}"
+cloudflare_ipv6_cidrs="${CLOUDFLARE_IPV6_CIDRS:-2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32}"
 database_name_explicit=false
 database_username_explicit=false
 database_allocated_storage_explicit=false
+desired_count_explicit=false
 canonical_host="${CANONICAL_HOST:-nyaaywatch.in}"
 legacy_hosts="${LEGACY_HOSTS:-}"
 manage_canonical_redirect_rules="${MANAGE_CANONICAL_REDIRECT_RULES:-}"
@@ -48,6 +55,10 @@ fi
 
 if [[ -n "${STACK_DATABASE_ALLOCATED_STORAGE:-}" ]]; then
   database_allocated_storage_explicit=true
+fi
+
+if [[ -n "$desired_count" ]]; then
+  desired_count_explicit=true
 fi
 
 normalize_host() {
@@ -129,8 +140,55 @@ if [[ "$snapshot_database_password_confirmed" != "true" && "$snapshot_database_p
   exit 1
 fi
 
+if [[ -z "$public_ingress_web_acl_enabled" ]]; then
+  if [[ "$environment_name" == "production" ]]; then
+    public_ingress_web_acl_enabled="true"
+  else
+    public_ingress_web_acl_enabled="false"
+  fi
+fi
+
+if [[ "$alb_access_logs_enabled" != "true" && "$alb_access_logs_enabled" != "false" ]]; then
+  echo "ALB_ACCESS_LOGS_ENABLED must be true or false." >&2
+  exit 1
+fi
+
+if [[ "$public_ingress_web_acl_enabled" != "true" && "$public_ingress_web_acl_enabled" != "false" ]]; then
+  echo "PUBLIC_INGRESS_WEB_ACL_ENABLED must be true or false." >&2
+  exit 1
+fi
+
+if ! [[ "$public_ingress_rate_limit_per_five_minutes" =~ ^[0-9]+$ ]]; then
+  echo "PUBLIC_INGRESS_RATE_LIMIT_PER_FIVE_MINUTES must be a positive integer." >&2
+  exit 1
+fi
+
+if [[ -z "$cloudflare_ipv4_cidrs" || -z "$cloudflare_ipv6_cidrs" ]]; then
+  echo "CLOUDFLARE_IPV4_CIDRS and CLOUDFLARE_IPV6_CIDRS must be non-empty comma-separated CIDR lists." >&2
+  exit 1
+fi
+
+if (( public_ingress_rate_limit_per_five_minutes < 100 )); then
+  echo "PUBLIC_INGRESS_RATE_LIMIT_PER_FIVE_MINUTES must be at least 100." >&2
+  exit 1
+fi
+
 if ! [[ "$database_allocated_storage" =~ ^[0-9]+$ ]]; then
   echo "STACK_DATABASE_ALLOCATED_STORAGE must be a positive integer when set." >&2
+  exit 1
+fi
+
+if [[ -z "$desired_count" && "$environment_name" == "production" ]]; then
+  desired_count=2
+fi
+
+if [[ -n "$desired_count" && ! "$desired_count" =~ ^[0-9]+$ ]]; then
+  echo "DESIRED_COUNT must be a positive integer when set." >&2
+  exit 1
+fi
+
+if [[ -n "$desired_count" && "$desired_count" -lt 1 ]]; then
+  echo "DESIRED_COUNT must be at least 1." >&2
   exit 1
 fi
 
@@ -467,6 +525,11 @@ deploy_args=(
     CanonicalHost="$canonical_host"
     LegacyHosts="$legacy_hosts"
     ManageCanonicalRedirectRules="$manage_canonical_redirect_rules"
+    AlbAccessLogsEnabled="$alb_access_logs_enabled"
+    PublicIngressWebAclEnabled="$public_ingress_web_acl_enabled"
+    PublicIngressRateLimitPerFiveMinutes="$public_ingress_rate_limit_per_five_minutes"
+    CloudflareIpv4Cidrs="$cloudflare_ipv4_cidrs"
+    CloudflareIpv6Cidrs="$cloudflare_ipv6_cidrs"
 )
 
 if [[ "$database_name_explicit" == "true" || -n "$database_snapshot_identifier" ]]; then
@@ -479,6 +542,10 @@ fi
 
 if [[ "$database_allocated_storage_explicit" == "true" || -n "$database_snapshot_identifier" ]]; then
   deploy_args+=(DatabaseAllocatedStorage="$database_allocated_storage")
+fi
+
+if [[ "$desired_count_explicit" == "true" || "$environment_name" == "production" ]]; then
+  deploy_args+=(DesiredCount="$desired_count")
 fi
 
 if [[ -n "${PUBLIC_BASE_URL:-}" ]]; then

@@ -10,7 +10,7 @@ The signals below are what "on-call" is responsible for. Everything else is norm
 
 | Signal | Source | How it surfaces |
 | --- | --- | --- |
-| Public-alpha ops sweep failure | `nyaaywatch-production-public-alpha-ops-monitor` (every 30 min) and `.github/workflows/ops-watchdog.yml` (daily 05:00 UTC) | CloudWatch alarm `nyaaywatch-production-public-alpha-ops`, SNS topic `nyaaywatch-production-alerts`, and durable GitHub issue `Ops watchdog failure` |
+| Public-alpha ops sweep failure | `nyaaywatch-production-public-alpha-ops-monitor` smoke target set (every 30 min) and `.github/workflows/ops-watchdog.yml` full sweep (daily 05:00 UTC) | CloudWatch alarm `nyaaywatch-production-public-alpha-ops`, SNS topic `nyaaywatch-production-alerts`, and durable GitHub issue `Ops watchdog failure` |
 | Internal fetch schedule failure | `npm run ops:verify-internal-fetch-schedule` inside the watchdog | Same GitHub issue, `failingTiers` section |
 | Public hostname health | `nyaaywatch-production-health-endpoint`, `nyaaywatch-production-alb-target-5xx` | SNS topic `nyaaywatch-production-alerts` |
 | Structured app errors | `nyaaywatch-production-app-errors` | SNS topic `nyaaywatch-production-alerts` |
@@ -70,17 +70,25 @@ For every incident, in order:
 3. Run the relevant verification command against the live hostname:
    ```bash
    export OPERATOR_API_TOKEN=...
+   npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in --target-set=smoke
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
    npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in
    npm run release:verify -- --base-url=https://nyaaywatch.in
    ```
-4. Decide whether the alert maps to a runbook:
+4. For an origin-timeout, request-burst, or unexplained 5xx incident, inspect attribution and protection first:
+   ```bash
+   aws s3 ls s3://nyaaywatch-production-artifacts-723951822728/alb-access-logs/AWSLogs/723951822728/ --recursive --summarize
+   aws wafv2 get-sampled-requests --region ap-south-1 --scope REGIONAL --web-acl-arn <PublicIngressWebAclArn> --rule-metric-name nyaaywatch-production-forwarded-client-rate-limit --time-window StartTime=<iso>,EndTime=<iso> --max-items 100
+   aws wafv2 get-sampled-requests --region ap-south-1 --scope REGIONAL --web-acl-arn <PublicIngressWebAclArn> --rule-metric-name nyaaywatch-production-non-cloudflare-origin-block --time-window StartTime=<iso>,EndTime=<iso> --max-items 100
+   ```
+   If the stack has not yet been updated to include `PublicIngressWebAclArn`, record that as the incident blocker before guessing at client or path attribution.
+5. Decide whether the alert maps to a runbook:
    - public trust / freshness / lag: `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md`
    - publish or rollback decisions: `docs/RELEASE_POLICY.md` and `docs/OPERATING_EVIDENCE.md`
    - stack or environment anomalies: `docs/internal/DEPLOYMENT_STATUS.md`
-5. If the failure is stale public lower-court snapshots after a deployed code fix, wait for the `main` deployment workflow to finish, then run the manual **Ops Publish Pending** workflow from `main`. Use `refresh_lower_courts=true` when the latest lower-court internal runs were created before the deployed fix; otherwise leave it false. The workflow reconciles the production EventBridge schedules against the live ECS service, triggers the existing schedules through the live stack, restores the normal schedule expressions, reconciles again, then reruns the public-alpha and internal-fetch verifiers. Do not use it to bypass publish gates or publish stale/partial runs.
-6. Take the action or explicitly record why no action is being taken. Every incident closes with either a publication id, a PR link, or a one-line "held, reason recorded" note.
-7. If any assumption in this document was wrong in practice, propose an edit to this file in the same PR that closes the incident.
+6. If the failure is stale public lower-court snapshots after a deployed code fix, wait for the `main` deployment workflow to finish, then run the manual **Ops Publish Pending** workflow from `main`. Use `refresh_lower_courts=true` when the latest lower-court internal runs were created before the deployed fix; otherwise leave it false. The workflow reconciles the production EventBridge schedules against the live ECS service, triggers the existing schedules through the live stack, restores the normal schedule expressions, reconciles again, then reruns the public-alpha and internal-fetch verifiers. Do not use it to bypass publish gates or publish stale/partial runs.
+7. Take the action or explicitly record why no action is being taken. Every incident closes with either a publication id, a PR link, or a one-line "held, reason recorded" note.
+8. If any assumption in this document was wrong in practice, propose an edit to this file in the same PR that closes the incident.
 
 ## What Not To Do
 
