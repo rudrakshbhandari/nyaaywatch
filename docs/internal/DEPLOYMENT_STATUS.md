@@ -40,6 +40,19 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
 - Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, CloudWatch dashboard, SNS alarm topic, and operator token. No staging EventBridge fetch schedules are enabled.
 - Idle posture: ECS desired count `0`; staging RDS instance stopped; ALB retained (fixed hourly cost) so the stack can be woken without a full redeploy. Staging schedules remain `DISABLED`.
+- RDS stop limit: AWS automatically restarts a stopped RDS instance after **7 days**. A stopped staging DB is therefore not a permanent cost pause. While staging stays idled, re-stop it at least every 6 days (calendar reminder is fine; there is no GitHub deploy-role RDS permission yet for an automated re-stop):
+  ```bash
+  aws rds describe-db-instances \
+    --db-instance-identifier nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m \
+    --region ap-south-1 \
+    --query 'DBInstances[0].DBInstanceStatus' \
+    --output text
+  # if available (auto-restarted) and staging should stay idled:
+  aws rds stop-db-instance \
+    --db-instance-identifier nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m \
+    --region ap-south-1
+  ```
+  Do not re-stop if you intentionally woke staging for rehearsal. Last stopped for this cost pause: `2026-07-09`; next re-stop due by `2026-07-15`.
 - Wake procedure: `aws rds start-db-instance --db-instance-identifier nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m --region ap-south-1`, wait until `available`, then set ECS desired count to `1` (or CloudFormation `DesiredCount=1`) and confirm `https://staging.nyaaywatch.in/health`.
 - Intended use when awake: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
 - Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
