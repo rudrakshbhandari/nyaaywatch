@@ -87,7 +87,7 @@ describe("public alpha monitor helpers", () => {
   it("keeps the exported schedule defaults and log prefixes stable", () => {
     expect(PUBLIC_ALPHA_OPS_RESULT_PREFIX).toBe("NYAAYWATCH_PUBLIC_ALPHA_OPS_RESULT=");
     expect(PUBLIC_ALPHA_OPS_ALERT_PREFIX).toBe("NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=");
-    expect(DEFAULT_PUBLIC_ALPHA_MONITOR_SCHEDULE_EXPRESSION).toBe("cron(0/30 * * * ? *)");
+    expect(DEFAULT_PUBLIC_ALPHA_MONITOR_SCHEDULE_EXPRESSION).toBe("cron(0 * * * ? *)");
     expect(DEFAULT_PUBLIC_ALPHA_MONITOR_SCHEDULE_TIMEZONE).toBe("Asia/Kolkata");
     expect(DEFAULT_PUBLIC_ALPHA_MONITOR_SCHEDULE_STATE).toBe("ENABLED");
     expect(buildPublicAlphaMonitorUsage()).toContain("ecs-public-alpha-ops-entrypoint.js");

@@ -24,7 +24,8 @@ high_court_schedule_timezone="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_TIMEZONE:-Asi
 high_court_schedule_state="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_STATE:-ENABLED}"
 high_court_schedule_name="${HIGH_COURT_INTERNAL_FETCH_SCHEDULE_NAME:-${stack_name}-high-courts-internal-fetch}"
 high_court_note_prefix="${HIGH_COURT_INTERNAL_FETCH_NOTE_PREFIX:-Scheduled daily High Court internal raw fetch}"
-public_alpha_ops_schedule_expression="${PUBLIC_ALPHA_OPS_SCHEDULE_EXPRESSION:-cron(0/30 * * * ? *)}"
+# Hourly smoke check is enough for alpha; daily GitHub watchdog still does the full sweep.
+public_alpha_ops_schedule_expression="${PUBLIC_ALPHA_OPS_SCHEDULE_EXPRESSION:-cron(0 * * * ? *)}"
 public_alpha_ops_schedule_timezone="${PUBLIC_ALPHA_OPS_SCHEDULE_TIMEZONE:-Asia/Kolkata}"
 public_alpha_ops_schedule_state="${PUBLIC_ALPHA_OPS_SCHEDULE_STATE:-ENABLED}"
 public_alpha_ops_schedule_name="${PUBLIC_ALPHA_OPS_SCHEDULE_NAME:-${stack_name}-public-alpha-ops-monitor}"

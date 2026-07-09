@@ -12,10 +12,10 @@ NyaayWatch should operate with four distinct lanes:
 
 - **Local development**: local Node, PostgreSQL, and LocalStack S3 for implementation and fixture-backed operator checks.
 - **Pull request previews**: fixture-backed public web previews for copy, UI, and responsive review. Previews do not expose operator routes or touch live evidence.
-- **Dedicated AWS staging**: isolated rehearsal environment for release checks, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing before public release work. The current stack is `nyaaywatch-staging` and is reachable at `https://staging.nyaaywatch.in`.
+- **Dedicated AWS staging**: optional isolated rehearsal environment for release checks, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing before public release work. Provision on demand with `infra/aws/staging/deploy-stack.sh`; do not keep it always-on for alpha cost.
 - **Production / public alpha**: `https://nyaaywatch.in`, serving public snapshots and live operator schedules from the reality-named production stack `nyaaywatch-production`.
 
-Important current-state note: production traffic now runs through `nyaaywatch-production`. The rollback tradeoff was accepted on `2026-04-29`, and `nyaaywatch-staging` has been reclaimed as the dedicated staging stack. It is no longer production rollback infrastructure.
+Important current-state note: production traffic runs through `nyaaywatch-production`. The dedicated `nyaaywatch-staging` stack was deleted on `2026-07-09` for cost; recreate it only when a real AWS rehearsal is needed.
 
 ## Current Environments
 
@@ -34,47 +34,16 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 
 ### Dedicated AWS Staging
 
-- Status: `idled` (cost pause as of `2026-07-09`)
-- Stack name: `nyaaywatch-staging`
-- Target URL: `https://staging.nyaaywatch.in` (DNS retained; origin is down while idled)
-- ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
-- Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, CloudWatch dashboard, SNS alarm topic, and operator token. No staging EventBridge fetch schedules are enabled.
-- Idle posture: ECS desired count `0`; staging RDS instance stopped; staging uptime canary `nyaaywatch-staging-up` stopped and `nyaaywatch-staging-canary-failures` alarm actions disabled; ALB retained (fixed hourly cost) so the stack can be woken without a full redeploy. Staging schedules remain `DISABLED`.
-- RDS stop limit: AWS automatically restarts a stopped RDS instance after **7 days**. A stopped staging DB is therefore not a permanent cost pause. While staging stays idled, re-stop it at least every 6 days (calendar reminder is fine; there is no GitHub deploy-role RDS permission yet for an automated re-stop):
-  ```bash
-  aws rds describe-db-instances \
-    --db-instance-identifier nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m \
-    --region ap-south-1 \
-    --query 'DBInstances[0].DBInstanceStatus' \
-    --output text
-  # if available (auto-restarted) and staging should stay idled:
-  aws rds stop-db-instance \
-    --db-instance-identifier nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m \
-    --region ap-south-1
-  ```
-  Do not re-stop if you intentionally woke staging for rehearsal. Last stopped for this cost pause: `2026-07-09`; next re-stop due by `2026-07-15`.
-- Canary idle commands (already applied for this pause; re-run if a stack update restarts the canary):
-  ```bash
-  aws synthetics stop-canary --name nyaaywatch-staging-up --region ap-south-1
-  aws cloudwatch disable-alarm-actions --alarm-names nyaaywatch-staging-canary-failures --region ap-south-1
-  ```
-- Wake procedure: `aws rds start-db-instance --db-instance-identifier nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m --region ap-south-1`, wait until `available`, then set ECS desired count to `1` (or CloudFormation `DesiredCount=1`), start the canary (`aws synthetics start-canary --name nyaaywatch-staging-up --region ap-south-1`), re-enable `nyaaywatch-staging-canary-failures` alarm actions, and confirm `https://staging.nyaaywatch.in/health`.
-- Intended use when awake: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
+- Status: `retired` (CloudFormation stack deleted `2026-07-09` for alpha cost)
+- Former stack name: `nyaaywatch-staging`
+- Former URL: `https://staging.nyaaywatch.in` (DNS may still exist; origin is gone until the stack is re-provisioned)
+- Intended use when provisioned: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
 - Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
-- ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`; issued on `2026-04-29`
-- ECS cluster: `nyaaywatch-staging`
-- ECS service: `nyaaywatch-staging-Service-zXxqGRuc7amS`
-- ECS task definition: `nyaaywatch-staging:239`
-- CloudWatch log group: `/ecs/nyaaywatch-staging`
-- CloudWatch dashboard: `nyaaywatch-staging`
-- Alarm topic ARN: `arn:aws:sns:ap-south-1:723951822728:nyaaywatch-staging-alerts`
-- Artifacts bucket: `nyaaywatch-staging-artifacts-723951822728`
-- Canary artifacts bucket: `nyaaywatch-staging-canary-723951822728`
-- Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
-- Database secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-staging/database-url-k5nXo9`
-- Operator token secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-staging/operator-api-token-QKhZz0`
-- Verification on `2026-04-30T01:21Z` (pre-idle): CloudFormation stack `UPDATE_COMPLETE`; ECS service `ACTIVE` with `1/1` running and rollout `COMPLETED`; Cloudflare DNS resolves `staging.nyaaywatch.in` to `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; `curl -fsS https://staging.nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`; `npm run release:verify -- --base-url=https://staging.nyaaywatch.in` passed with `districtCount=12`, `trendCount=5`, `csvMetadataParity=true`, `publicDataCacheProtected=true`, and `operatorAuthProtected=true`.
-- Current blocker: staging is intentionally idled for cost. Wake before any staging rehearsal.
+- Retirement snapshot: `nyaaywatch-staging-retire-20260709-0648` (manual pre-delete). CloudFormation `DeletionPolicy: Snapshot` also retains an automatic final RDS snapshot.
+- Retained audit artifacts (S3 `DeletionPolicy: Retain`): `nyaaywatch-staging-artifacts-723951822728`, `nyaaywatch-staging-canary-723951822728`, plus older bridge leftovers `nyaaywatch-stage-staging-artifacts-723951822728` and `nyaaywatch-stage-staging-canary-723951822728`
+- ACM certificate ARN (kept in account): `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`
+- Re-provision: deploy with `RECLAIMED_STAGING_NAME=true` via `infra/aws/staging/deploy-stack.sh`, point Cloudflare `staging` at the new ALB, seed a publication if needed, then run `npm run release:verify -- --base-url=https://staging.nyaaywatch.in`. Do not enable staging EventBridge fetch schedules unless rehearsing scheduler behavior on purpose.
+- Current blocker: none for production. Staging is intentionally absent until the next rehearsal.
 
 ### Production Backing Stack
 
@@ -89,7 +58,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
   - Supreme Court: `nyaaywatch-production-supreme-court-internal-fetch` at `8:10 AM Asia/Kolkata`
   - reviewed High Courts: `nyaaywatch-production-high-courts-internal-fetch` at `8:20 AM Asia/Kolkata`
   - publish-pending sweep: `nyaaywatch-production-publish-pending-sweep` at `8:30 AM Asia/Kolkata`
-  - public alpha ops smoke monitor: `nyaaywatch-production-public-alpha-ops-monitor` every `30` minutes
+  - public alpha ops smoke monitor: `nyaaywatch-production-public-alpha-ops-monitor` hourly (`cron(0 * * * ? *)` Asia/Kolkata)
 - Internal raw fetch schedule scope policy:
   - lower-court geographies: profiles returned by `listInternalFetchStateProfiles()`; all 36 lower-court state/Union Territory profiles are included after April 23, 2026 proof cycles
   - Supreme Court: the single configured Supreme Court profile
@@ -110,7 +79,7 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Database endpoint: `nyaaywatch-production-stagingdatabase-g3twsdpyvdw2.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: production public-alpha serving, scheduled internal fetches, public-alpha ops monitoring, release verification, and release-scoped operator actions
 - Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, keeping production desired count at `1` by default (set `PRODUCTION_DESIRED_COUNT=2` for an HA window), and reconciling the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha smoke monitor schedules against the live task definition while reusing the production scheduler role. CloudFormation-only changes such as WAF attachment and ALB access logging still require `infra/aws/staging/deploy-stack.sh` or an equivalent reviewed stack update.
-- Cost posture (`2026-07-09`): production ECS desired count `1`; monthly cost budgets raised to `$80` per environment; staging stack idled (ECS `0`, RDS stopped) while production schedules and public alpha stay live.
+- Cost posture (`2026-07-09`): production ECS desired count `1`; monthly cost budgets `$80` per environment; dedicated staging stack deleted; public-alpha ops monitor hourly (was every 30 minutes). Production fetch and publish-pending schedules stay daily.
 - Last observation check: `2026-04-29T00:51:30Z`; production preflight passed with both `nyaaywatch-staging` and `nyaaywatch-production` in `UPDATE_COMPLETE`, public `release:verify` passed for `https://nyaaywatch.in`, the public-alpha ops sweep reported `62/62` healthy targets with no stale snapshots, no daily-fetch lag, and no failures, all production schedules targeted `nyaaywatch-production:11`, and the four production CloudWatch alarms were `OK`.
 
 Operational notes:
@@ -125,7 +94,7 @@ Operational notes:
 - For heavier internal-only operator runs, use `npm run operator:production -- --state <STATE_CODE> <command> ...` as the default lane so fetches execute inside a one-off ECS task instead of through Cloudflare.
 - On April 23, 2026, all 8 UT/UT-style lower-court profiles cleared live `fetch -> inspect -> publish -> replay -> rollback` proof cycles through the legacy `npm run operator:staging` command; future production runs should use `npm run operator:production`.
 - The documented internal raw-fetch policy is to run lower-court geography fetches every day at `8:00 AM Asia/Kolkata`, Supreme Court fetches every day at `8:10 AM Asia/Kolkata`, and reviewed High Court fetches every day at `8:20 AM Asia/Kolkata`. None of these schedules publish or change the public snapshot automatically.
-- The public-alpha monitor now runs every `30` minutes through a one-off ECS task, hits the configured `PUBLIC_BASE_URL` with `--target-set=smoke`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag in representative public surfaces. The full all-target sweep still runs through the daily GitHub watchdog and manual release-window checks.
+- The public-alpha monitor now runs hourly through a one-off ECS task, hits the configured `PUBLIC_BASE_URL` with `--target-set=smoke`, and emits a dedicated alert log line if it detects parity drift, stale public snapshots, or daily internal fetch lag in representative public surfaces. The full all-target sweep still runs through the daily GitHub watchdog and manual release-window checks.
 - Scheduler-role bootstrap and policy rewrites still require an IAM-capable operator run; GitHub Actions only updates the schedule target after bootstrap is complete.
 - After the production public-ingress WAF is enabled, ALB plus `curl --connect-to` is blocked for non-Cloudflare source IPs. Use ECS-backed operator helpers first; only use direct-origin checks during a controlled recovery where the WAF has been explicitly disabled or allowlisted.
 

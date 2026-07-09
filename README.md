@@ -186,7 +186,7 @@ npm run infra:production-cutover-inventory
 npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
 ```
 
-Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated staging (`nyaaywatch-staging` / `https://staging.nyaaywatch.in`) is currently idled for cost (ECS desired count `0`, RDS stopped); wake it before rehearsal. Staging schedules remain disabled unless an operator intentionally enables them. After the production public-ingress WAF is enabled, direct ALB `--connect-host=<alb-dns>` operator traffic is blocked unless the WAF is intentionally disabled or allowlisted for a controlled recovery window. Production ECS defaults to one task; set `PRODUCTION_DESIRED_COUNT=2` for an HA window.
+Use `npm run operator:production` for production heavy-state lanes that should run inside a one-off ECS task instead of through the Cloudflare-fronted operator path. It targets the reality-named production backing stack `nyaaywatch-production`. Dedicated AWS staging is provisioned on demand and was retired on `2026-07-09` for alpha cost; recreate `nyaaywatch-staging` only for a real rehearsal. After the production public-ingress WAF is enabled, direct ALB `--connect-host=<alb-dns>` operator traffic is blocked unless the WAF is intentionally disabled or allowlisted for a controlled recovery window. Production ECS defaults to one task; set `PRODUCTION_DESIRED_COUNT=2` for an HA window.
 
 Use `npm run infra:production-preflight` before any production-stack cutover work. It performs read-only checks against the current production backing stack and `https://nyaaywatch.in`; it does not deploy, update DNS, rename resources, or change the live service.
 
@@ -215,7 +215,7 @@ The live deploy runs five ECS schedules, all reconciled to the latest task defin
 | Supreme Court | `8:10 AM Asia/Kolkata` |
 | Reviewed High Courts | `8:20 AM Asia/Kolkata` |
 | Publish-pending sweep | `8:30 AM Asia/Kolkata` |
-| Public-alpha ops smoke monitor | Every `30` minutes against representative public surfaces on `https://nyaaywatch.in` |
+| Public-alpha ops smoke monitor | Hourly against representative public surfaces on `https://nyaaywatch.in` |
 
 The GitHub Actions `ops:njdg-missing-zero-outreach` schedule runs every Monday, Wednesday, and Friday at `04:30 UTC` / `10:00 AM Asia/Kolkata` from the SES-verified `data@nyaaywatch.in` sender with domain-aligned SPF/DKIM/DMARC. It emails official CPC contacts for affected NJDG state or Union Territory rows only while public lower-court snapshots still contain source rows with pending cases but `0` filed and `0` cleared monthly movement. Each send BCCs the verified sender and archives the subject, body, recipients, reply-to recipients, SES message ID, and affected rows in the production artifacts bucket.
 

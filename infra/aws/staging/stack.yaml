@@ -1012,7 +1012,7 @@ Resources:
       Namespace: NyaayWatch/Observability
       MetricName: !Sub "${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts"
       Statistic: Sum
-      # The monitor runs every 30 min and emits this metric only on failure, so each
+      # The monitor runs hourly and emits this metric only on failure, so each
       # run is a single sparse datapoint. With a 5-min period + notBreaching the alarm
       # dropped back to OK between samples and re-fired (a fresh page) every cycle. A
       # 30-min period aligns one evaluation window to one monitor run, so a sustained
