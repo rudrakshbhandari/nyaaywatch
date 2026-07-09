@@ -318,10 +318,10 @@ Alerting note:
 
 - the production stack now counts `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` log lines from the scheduled monitor into the `NyaayWatch/Observability` metric `${ProjectName}-${EnvironmentName}-public-alpha-ops-alerts`
 - CloudWatch alarm `${ProjectName}-${EnvironmentName}-public-alpha-ops` fans that signal out through the existing SNS alert topic
-- production image redeploys keep at least two ECS tasks by default for `ENVIRONMENT_NAME=production`; set `PRODUCTION_DESIRED_COUNT` or `DESIRED_COUNT` to override that during a controlled window
+- production image redeploys keep one ECS task by default for `ENVIRONMENT_NAME=production` (cost-aware alpha); set `PRODUCTION_DESIRED_COUNT=2` or `DESIRED_COUNT=2` for an HA window
 - the stack template can enable ALB access logs under `s3://<artifacts-bucket>/alb-access-logs/AWSLogs/<account-id>/`; set `ALB_ACCESS_LOGS_ENABLED=false` only for a deliberate non-attribution rehearsal
 - production stack deploys attach regional WAF rules `non-cloudflare-origin-block` and `forwarded-client-rate-limit` to the ALB by default; non-production stack deploys leave that Cloudflare-only origin protection off unless `PUBLIC_INGRESS_WEB_ACL_ENABLED=true` is set for a proxied hostname. Refresh `CLOUDFLARE_IPV4_CIDRS` / `CLOUDFLARE_IPV6_CIDRS` from Cloudflare if their published ranges change, set `PUBLIC_INGRESS_RATE_LIMIT_PER_FIVE_MINUTES` to tune the default `1200` requests per five minutes, or `PUBLIC_INGRESS_WEB_ACL_ENABLED=false` only for an intentional production bypass.
-- cost budget alerts are only meaningful after the account-level cost allocation tags `project` and `env` are active in AWS Billing; `deploy-stack.sh` passes those stack tags, and ECS service/scheduled tasks propagate the task-definition tags for Fargate attribution
+- cost budget alerts are only meaningful after the account-level cost allocation tags `project` and `env` are active in AWS Billing; `deploy-stack.sh` passes those stack tags, and ECS service/scheduled tasks propagate the task-definition tags for Fargate attribution. Default `MonthlyBudgetUsd` is `80` per environment to match observed full-stack alpha spend; set `MONTHLY_BUDGET_USD` to override. `deploy-stack.sh` always passes `MonthlyBudgetUsd` so existing stacks pick up budget changes on the next deploy.
 
 ## Heavy-State Operator Lane
 

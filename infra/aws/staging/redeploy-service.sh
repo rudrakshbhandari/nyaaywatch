@@ -119,7 +119,9 @@ if [[ -z "$environment_name" || "$environment_name" == "None" ]]; then
 fi
 
 if [[ -z "$desired_count" && "$environment_name" == "production" ]]; then
-  desired_count="${PRODUCTION_DESIRED_COUNT:-2}"
+  # Cost-aware alpha default: one task is enough for snapshot serving.
+  # Override with PRODUCTION_DESIRED_COUNT=2 (or DESIRED_COUNT) for HA windows.
+  desired_count="${PRODUCTION_DESIRED_COUNT:-1}"
 fi
 
 if [[ -n "$desired_count" && ! "$desired_count" =~ ^[0-9]+$ ]]; then

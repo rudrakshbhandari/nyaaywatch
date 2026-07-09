@@ -21,6 +21,7 @@ database_name="${STACK_DATABASE_NAME:-nyaaywatch}"
 database_username="${STACK_DATABASE_USERNAME:-nyaaywatch}"
 database_allocated_storage="${STACK_DATABASE_ALLOCATED_STORAGE:-20}"
 desired_count="${DESIRED_COUNT:-}"
+monthly_budget_usd="${MONTHLY_BUDGET_USD:-}"
 alb_access_logs_enabled="${ALB_ACCESS_LOGS_ENABLED:-true}"
 public_ingress_web_acl_enabled="${PUBLIC_INGRESS_WEB_ACL_ENABLED:-}"
 public_ingress_rate_limit_per_five_minutes="${PUBLIC_INGRESS_RATE_LIMIT_PER_FIVE_MINUTES:-1200}"
@@ -179,7 +180,9 @@ if ! [[ "$database_allocated_storage" =~ ^[0-9]+$ ]]; then
 fi
 
 if [[ -z "$desired_count" && "$environment_name" == "production" ]]; then
-  desired_count=2
+  # Cost-aware alpha default: one task is enough for snapshot serving.
+  # Override with DESIRED_COUNT=2 for HA windows.
+  desired_count="${PRODUCTION_DESIRED_COUNT:-1}"
 fi
 
 if [[ -n "$desired_count" && ! "$desired_count" =~ ^[0-9]+$ ]]; then
@@ -189,6 +192,16 @@ fi
 
 if [[ -n "$desired_count" && "$desired_count" -lt 1 ]]; then
   echo "DESIRED_COUNT must be at least 1." >&2
+  exit 1
+fi
+
+if [[ -z "$monthly_budget_usd" ]]; then
+  # Keep existing stacks on the current cost-aware alpha budget unless overridden.
+  monthly_budget_usd=80
+fi
+
+if [[ ! "$monthly_budget_usd" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+  echo "MONTHLY_BUDGET_USD must be a positive number when set." >&2
   exit 1
 fi
 
@@ -547,6 +560,11 @@ fi
 if [[ "$desired_count_explicit" == "true" || "$environment_name" == "production" ]]; then
   deploy_args+=(DesiredCount="$desired_count")
 fi
+
+# Always pass MonthlyBudgetUsd so template-default changes and cost-pause
+# updates apply on existing stacks (cloudformation deploy otherwise keeps the
+# previous stack parameter value when the key is omitted).
+deploy_args+=(MonthlyBudgetUsd="$monthly_budget_usd")
 
 if [[ -n "${PUBLIC_BASE_URL:-}" ]]; then
   deploy_args+=(PublicBaseUrl="$PUBLIC_BASE_URL")

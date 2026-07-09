@@ -173,3 +173,7 @@ A change is not done until, where relevant:
 - commit scope is clean and intentionally named
 - the branch is pushed and a pull request link is included in the final output for any code or doc change, unless the user explicitly requested no-PR local work
 - the final user-facing message includes clear next steps, recommended follow-up work, or an explicit statement that no further action is recommended right now
+
+## AWS
+
+Only use AWS account **723951822728** for all AWS operations in this project.

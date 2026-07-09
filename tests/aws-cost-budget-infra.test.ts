@@ -8,6 +8,22 @@ const redeployServiceScript = readFileSync("infra/aws/staging/redeploy-service.s
 const reconcileScheduleScript = readFileSync("infra/aws/staging/reconcile-internal-fetch-schedule.sh", "utf8");
 
 describe("AWS cost budget infra", () => {
+  it("defaults the monthly budget to observed full-stack alpha spend", () => {
+    expect(stackTemplate).toMatch(/MonthlyBudgetUsd:\s*\n\s*Type: Number\s*\n\s*Default: 80/);
+  });
+
+  it("defaults production ECS desired count to one task for cost-aware alpha", () => {
+    expect(redeployServiceScript).toContain('desired_count="${PRODUCTION_DESIRED_COUNT:-1}"');
+    expect(deployStackScript).toContain('desired_count="${PRODUCTION_DESIRED_COUNT:-1}"');
+    expect(redeployServiceScript).not.toContain('desired_count="${PRODUCTION_DESIRED_COUNT:-2}"');
+  });
+
+  it("passes MonthlyBudgetUsd on every stack deploy so existing stacks pick up budget changes", () => {
+    expect(deployStackScript).toContain('monthly_budget_usd="${MONTHLY_BUDGET_USD:-}"');
+    expect(deployStackScript).toContain('monthly_budget_usd=80');
+    expect(deployStackScript).toContain('deploy_args+=(MonthlyBudgetUsd="$monthly_budget_usd")');
+  });
+
   it("scopes the monthly budget to project and environment cost tags", () => {
     expect(stackTemplate).toContain("FilterExpression:");
     expect(stackTemplate).toContain("Key: project");
