@@ -34,12 +34,14 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 
 ### Dedicated AWS Staging
 
-- Status: `live`
+- Status: `idled` (cost pause as of `2026-07-09`)
 - Stack name: `nyaaywatch-staging`
-- Target URL: `https://staging.nyaaywatch.in`
+- Target URL: `https://staging.nyaaywatch.in` (DNS retained; origin is down while idled)
 - ALB DNS name: `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`
-- Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, CloudWatch dashboard, SNS alarm topic, and operator token. No staging EventBridge fetch schedules are enabled yet.
-- Intended use: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
+- Target backing services: isolated ECS service, RDS database, S3 artifact bucket, Secrets Manager entries, CloudWatch dashboard, SNS alarm topic, and operator token. No staging EventBridge fetch schedules are enabled.
+- Idle posture: ECS desired count `0`; staging RDS instance stopped; ALB retained (fixed hourly cost) so the stack can be woken without a full redeploy. Staging schedules remain `DISABLED`.
+- Wake procedure: `aws rds start-db-instance --db-instance-identifier nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m --region ap-south-1`, wait until `available`, then set ECS desired count to `1` (or CloudFormation `DesiredCount=1`) and confirm `https://staging.nyaaywatch.in/health`.
+- Intended use when awake: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
 - Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
 - ACM certificate ARN: `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`; issued on `2026-04-29`
 - ECS cluster: `nyaaywatch-staging`
@@ -53,8 +55,8 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Database endpoint: `nyaaywatch-staging-stagingdatabase-qcmxgxoytk9m.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Database secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-staging/database-url-k5nXo9`
 - Operator token secret ARN: `arn:aws:secretsmanager:ap-south-1:723951822728:secret:nyaaywatch-staging/operator-api-token-QKhZz0`
-- Verification on `2026-04-30T01:21Z`: CloudFormation stack `UPDATE_COMPLETE`; ECS service `ACTIVE` with `1/1` running and rollout `COMPLETED`; Cloudflare DNS resolves `staging.nyaaywatch.in` to `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; `curl -fsS https://staging.nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`; `npm run release:verify -- --base-url=https://staging.nyaaywatch.in` passed with `districtCount=12`, `trendCount=5`, `csvMetadataParity=true`, `publicDataCacheProtected=true`, and `operatorAuthProtected=true`.
-- Current blocker: none for public staging DNS. Staging schedules remain disabled until an operator explicitly enables them for rehearsal.
+- Verification on `2026-04-30T01:21Z` (pre-idle): CloudFormation stack `UPDATE_COMPLETE`; ECS service `ACTIVE` with `1/1` running and rollout `COMPLETED`; Cloudflare DNS resolves `staging.nyaaywatch.in` to `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; `curl -fsS https://staging.nyaaywatch.in/health` returned `{"ok":true,"region":"ap-south-1","stateCode":"HP"}`; `npm run release:verify -- --base-url=https://staging.nyaaywatch.in` passed with `districtCount=12`, `trendCount=5`, `csvMetadataParity=true`, `publicDataCacheProtected=true`, and `operatorAuthProtected=true`.
+- Current blocker: staging is intentionally idled for cost. Wake before any staging rehearsal.
 
 ### Production Backing Stack
 
@@ -89,7 +91,8 @@ Important current-state note: production traffic now runs through `nyaaywatch-pr
 - Artifacts bucket: `nyaaywatch-production-artifacts-723951822728`
 - Database endpoint: `nyaaywatch-production-stagingdatabase-g3twsdpyvdw2.ct0sogc8a838.ap-south-1.rds.amazonaws.com`
 - Intended use: production public-alpha serving, scheduled internal fetches, public-alpha ops monitoring, release verification, and release-scoped operator actions
-- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, keeping production desired count at `2` unless overridden, and reconciling the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha smoke monitor schedules against the live task definition while reusing the production scheduler role. CloudFormation-only changes such as WAF attachment and ALB access logging still require `infra/aws/staging/deploy-stack.sh` or an equivalent reviewed stack update.
+- Deploy path: GitHub Actions auto-deploys every successful `main` merge by publishing a new ECR image, rolling the ECS service in place, keeping production desired count at `1` by default (set `PRODUCTION_DESIRED_COUNT=2` for an HA window), and reconciling the lower-court, Supreme Court, reviewed-High-Court, publish-pending, and public-alpha smoke monitor schedules against the live task definition while reusing the production scheduler role. CloudFormation-only changes such as WAF attachment and ALB access logging still require `infra/aws/staging/deploy-stack.sh` or an equivalent reviewed stack update.
+- Cost posture (`2026-07-09`): production ECS desired count `1`; monthly cost budgets raised to `$80` per environment; staging stack idled (ECS `0`, RDS stopped) while production schedules and public alpha stay live.
 - Last observation check: `2026-04-29T00:51:30Z`; production preflight passed with both `nyaaywatch-staging` and `nyaaywatch-production` in `UPDATE_COMPLETE`, public `release:verify` passed for `https://nyaaywatch.in`, the public-alpha ops sweep reported `62/62` healthy targets with no stale snapshots, no daily-fetch lag, and no failures, all production schedules targeted `nyaaywatch-production:11`, and the four production CloudWatch alarms were `OK`.
 
 Operational notes:

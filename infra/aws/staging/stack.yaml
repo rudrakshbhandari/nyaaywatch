@@ -90,9 +90,9 @@ Parameters:
     Description: Whether this stack should create and manage the .com to .in ALB redirect listener rules.
   MonthlyBudgetUsd:
     Type: Number
-    Default: 50
+    Default: 80
     MinValue: 1
-    Description: Monthly AWS cost budget in USD. Budgets notify AlarmTopic at 80% actual and 100% forecasted.
+    Description: Monthly AWS cost budget in USD for costs tagged project+env. Budgets notify AlarmTopic at 80% actual and 100% forecasted. Default 80 matches observed alpha spend for a full stack (~ALB+RDS+Fargate).
   AlbAccessLogsEnabled:
     Type: String
     Default: "true"

@@ -207,6 +207,7 @@ Track those in `TODOS.md`, not here.
 
 ## Update Log
 
+- 2026-07-09: Cost pause for alpha burn rate: production ECS desired count default changed from `2` to `1` (override with `PRODUCTION_DESIRED_COUNT=2`), staging idled (ECS desired `0`, RDS stopped, ALB retained), and per-environment monthly cost budgets raised from `$50` to `$80`. Public alpha and production schedules remain live; wake staging before any rehearsal.
 - 2026-05-23: Reviewed the live public-alpha ops sweep after multiple real release windows: production verification reported `62/62` healthy targets with no stale snapshots, no daily-fetch lag, and no failing targets. The freshness trust-surface backlog item in `TODOS.md` is now closed with no stronger per-state banner or state-specific methodology note needed right now; keep the common freshness/quality banners plus the existing tier-specific High Court and Supreme Court caveats.
 - 2026-05-01: Added a plain-language `/learn#pressure-signals` section and homepage pressure-tile link so readers can distinguish old-case burden, backlog movement, break-even clearances, the 10% reduction scenario, and real zero versus N/A before opening formula-level methodology.
 - 2026-04-30: Added copyable citation snippets on lower-court movers and district-comparison pages, tied to the same public snapshot dates, source attribution, and scoped routes as the Evidence Pack entry points.

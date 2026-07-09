@@ -179,7 +179,9 @@ if ! [[ "$database_allocated_storage" =~ ^[0-9]+$ ]]; then
 fi
 
 if [[ -z "$desired_count" && "$environment_name" == "production" ]]; then
-  desired_count=2
+  # Cost-aware alpha default: one task is enough for snapshot serving.
+  # Override with DESIRED_COUNT=2 for HA windows.
+  desired_count="${PRODUCTION_DESIRED_COUNT:-1}"
 fi
 
 if [[ -n "$desired_count" && ! "$desired_count" =~ ^[0-9]+$ ]]; then
