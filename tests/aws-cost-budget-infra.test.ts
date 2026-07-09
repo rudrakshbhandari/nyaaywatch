@@ -18,6 +18,12 @@ describe("AWS cost budget infra", () => {
     expect(redeployServiceScript).not.toContain('desired_count="${PRODUCTION_DESIRED_COUNT:-2}"');
   });
 
+  it("passes MonthlyBudgetUsd on every stack deploy so existing stacks pick up budget changes", () => {
+    expect(deployStackScript).toContain('monthly_budget_usd="${MONTHLY_BUDGET_USD:-}"');
+    expect(deployStackScript).toContain('monthly_budget_usd=80');
+    expect(deployStackScript).toContain('deploy_args+=(MonthlyBudgetUsd="$monthly_budget_usd")');
+  });
+
   it("scopes the monthly budget to project and environment cost tags", () => {
     expect(stackTemplate).toContain("FilterExpression:");
     expect(stackTemplate).toContain("Key: project");
