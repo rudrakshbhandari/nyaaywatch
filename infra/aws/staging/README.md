@@ -12,16 +12,16 @@ This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for N
 
 ## Current Naming Caveat
 
-The production public alpha at `https://nyaaywatch.in` now runs on the reality-named `nyaaywatch-production` stack. The rollback tradeoff has been accepted, and `nyaaywatch-staging` is again the dedicated staging stack at `https://staging.nyaaywatch.in`.
+The production public alpha at `https://nyaaywatch.in` runs on `nyaaywatch-production`. The dedicated `nyaaywatch-staging` stack was deleted on `2026-07-09` for alpha cost; recreate it only for a real AWS rehearsal. Cloudflare still has a leftover CNAME for `staging.nyaaywatch.in` pointing at the deleted ALB until that DNS record is removed manually.
 
 The target environment split is:
 
 - `local`: local Node, PostgreSQL, and LocalStack S3
 - `preview`: fixture-backed App Runner PR previews with `APP_MODE=preview`
-- `staging`: future isolated AWS stack named `nyaaywatch-staging` for release and operator-flow rehearsal
+- `staging`: optional isolated AWS stack named `nyaaywatch-staging` for release and operator-flow rehearsal (currently absent)
 - `production`: `https://nyaaywatch.in`, stack name `nyaaywatch-production`
 
-Do not run sandbox experiments against either the live production stack or the dedicated staging stack.
+Do not run sandbox experiments against the live production stack.
 
 ## Production Cutover Preflight
 
@@ -222,7 +222,7 @@ export RECLAIMED_STAGING_NAME=true
   '[alarm-email]'
 ```
 
-As of `2026-04-29`, the final dedicated staging stack is `nyaaywatch-staging` with `PUBLIC_BASE_URL=https://staging.nyaaywatch.in` and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. Its ALB is `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`; Cloudflare DNS has CNAME `staging` -> that ALB as DNS-only. The temporary `nyaaywatch-staging-v2` bridge was retired after the reclaim.
+As of `2026-04-29`, the dedicated staging stack was reclaimed as `nyaaywatch-staging` with `PUBLIC_BASE_URL=https://staging.nyaaywatch.in` and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. That stack was deleted on `2026-07-09` for cost; Cloudflare still has a leftover CNAME `staging` -> `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` until removed manually. Re-deploy with `RECLAIMED_STAGING_NAME=true` when a rehearsal is needed.
 
 `deploy-stack.sh` refuses the dangerous combinations that would deploy non-production with production hostnames or let non-production manage production canonical redirect rules. The reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true`.
 
