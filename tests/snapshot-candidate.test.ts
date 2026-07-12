@@ -1,6 +1,68 @@
 import { describe, expect, it } from "vitest";
 
+import { PublishedSnapshotSchema, type PublishedSnapshot } from "../src/domain/snapshot-schema.js";
 import { buildSnapshotCandidate } from "../src/normalize/snapshot-candidate.js";
+import { evaluateAutoPublish } from "../src/ops/auto-publish-gate.js";
+
+function historySnapshot(input: {
+  referenceDateAt: string;
+  pendingCases: number;
+  publishedAt?: string;
+}): PublishedSnapshot {
+  return PublishedSnapshotSchema.parse({
+    snapshot: {
+      stateCode: "MZ",
+      stateName: "Mizoram",
+      sourceName: "NJDG Mizoram district dashboard",
+      sourceSnapshotAt: null,
+      referenceDateAt: input.referenceDateAt,
+      referenceDateKind: "captured_at",
+      publishedAt: input.publishedAt ?? input.referenceDateAt,
+      methodologyVersion: "2026.04-alpha",
+      qualityState: "complete",
+      freshnessDays: 0,
+      sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+      publishedFromRunId: `run_${input.referenceDateAt}`,
+    },
+    stats: {
+      pendingCases: input.pendingCases,
+      filedLastMonthCases: 0,
+      clearedLastMonthCases: 0,
+      disposalRate: 0,
+      medianCaseAgeDays: 0,
+      flaggedDistricts: 0,
+      ageBuckets: {
+        lessThanOneYear: input.pendingCases,
+        oneToThreeYears: 0,
+        threeToFiveYears: 0,
+        fiveToTenYears: 0,
+        aboveTenYears: 0,
+      },
+    },
+    districts: [
+      {
+        districtId: "aizawl",
+        districtName: "Aizawl",
+        rank: 1,
+        backlogCases: input.pendingCases,
+        disposalRate: 0,
+        medianAgeDays: 0,
+        filingVsDisposalGap: 0,
+        flagReason: "Synthetic history fixture for trend-window coverage.",
+        summary: "Synthetic history fixture for trend-window coverage.",
+      },
+    ],
+    trends: [
+      {
+        snapshotDate: input.referenceDateAt,
+        pendingCases: input.pendingCases,
+        filedLastMonthCases: 0,
+        clearedLastMonthCases: 0,
+        disposalRate: 0,
+      },
+    ],
+  });
+}
 
 describe("snapshot candidate normalization", () => {
   it("falls back to captured_at when NJDG does not expose a defensible source date", () => {
@@ -168,5 +230,258 @@ describe("snapshot candidate normalization", () => {
     expect(candidate.districts[0]?.summary).toContain("clearance pace as N/A");
     expect(candidate.districts[0]?.summary).not.toContain("cleared 0.0%");
     expect(candidate.districts[0]?.flagReason).toContain("monthly clearance signal is unavailable");
+  });
+
+  it("keeps the most recent published pending values in the trend window used by auto-publish", () => {
+    // Reproduce the MZ/GJ gate failure mode: several older April points plus a
+    // recent July publish, then a new July candidate. The window must end with
+    // [..., recentPublish, current], not [..., oldestApril, current].
+    const previousSnapshots = [
+      historySnapshot({ referenceDateAt: "2026-04-16T00:00:00.000Z", pendingCases: 7677 }),
+      historySnapshot({ referenceDateAt: "2026-04-19T00:00:00.000Z", pendingCases: 7677 }),
+      historySnapshot({ referenceDateAt: "2026-04-20T00:00:00.000Z", pendingCases: 7655 }),
+      historySnapshot({ referenceDateAt: "2026-04-22T00:00:00.000Z", pendingCases: 7739 }),
+      historySnapshot({ referenceDateAt: "2026-07-08T02:44:02.606Z", pendingCases: 8063 }),
+    ];
+
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-07-12T02:44:58.175Z",
+        stateCode: "MZ",
+        stateName: "Mizoram",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Mizoram district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+        sourceSnapshotAt: null,
+        state: {
+          pendingCases: 9619,
+          institutedLastMonth: 968,
+          disposedLastMonth: 814,
+          ageBuckets: {
+            lessThanOneYear: 5000,
+            oneToThreeYears: 3000,
+            threeToFiveYears: 1000,
+            fiveToTenYears: 600,
+            aboveTenYears: 19,
+          },
+        },
+        districts: [
+          {
+            districtCode: "aizawl",
+            districtName: "Aizawl",
+            pendingCases: 9619,
+            institutedLastMonth: 968,
+            disposedLastMonth: 814,
+            ageBuckets: {
+              lessThanOneYear: 5000,
+              oneToThreeYears: 3000,
+              threeToFiveYears: 1000,
+              fiveToTenYears: 600,
+              aboveTenYears: 19,
+            },
+          },
+        ],
+      },
+      previousSnapshots,
+    );
+
+    expect(candidate.trends.map((point) => point.pendingCases)).toEqual([7677, 7655, 7739, 8063, 9619]);
+    expect(candidate.trends.at(-2)?.pendingCases).toBe(8063);
+
+    const decision = evaluateAutoPublish({
+      qualityState: candidate.snapshot.qualityState,
+      currentPending: candidate.stats.pendingCases,
+      previousPending: candidate.trends.at(-2)?.pendingCases,
+    });
+    expect(decision.publish).toBe(true);
+    expect(decision.deltaFraction).toBeCloseTo(0.193, 3);
+  });
+
+  it("keeps a replayed older capture in the trend window when newer publishes exist", () => {
+    const previousSnapshots = [
+      historySnapshot({ referenceDateAt: "2026-04-16T00:00:00.000Z", pendingCases: 7677 }),
+      historySnapshot({ referenceDateAt: "2026-04-19T00:00:00.000Z", pendingCases: 7677 }),
+      historySnapshot({ referenceDateAt: "2026-04-20T00:00:00.000Z", pendingCases: 7655 }),
+      historySnapshot({ referenceDateAt: "2026-04-22T00:00:00.000Z", pendingCases: 7739 }),
+      historySnapshot({ referenceDateAt: "2026-07-08T02:44:02.606Z", pendingCases: 8063 }),
+      historySnapshot({ referenceDateAt: "2026-07-09T02:44:00.000Z", pendingCases: 8200 }),
+      historySnapshot({ referenceDateAt: "2026-07-10T02:44:00.000Z", pendingCases: 8300 }),
+      historySnapshot({ referenceDateAt: "2026-07-11T02:44:00.000Z", pendingCases: 8400 }),
+      historySnapshot({ referenceDateAt: "2026-07-12T02:44:00.000Z", pendingCases: 9619 }),
+    ];
+
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-04-22T12:00:00.000Z",
+        stateCode: "MZ",
+        stateName: "Mizoram",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Mizoram district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+        sourceSnapshotAt: "2026-04-22T00:00:00.000Z",
+        state: {
+          pendingCases: 7800,
+          institutedLastMonth: 100,
+          disposedLastMonth: 90,
+          ageBuckets: {
+            lessThanOneYear: 7800,
+            oneToThreeYears: 0,
+            threeToFiveYears: 0,
+            fiveToTenYears: 0,
+            aboveTenYears: 0,
+          },
+        },
+        districts: [
+          {
+            districtCode: "aizawl",
+            districtName: "Aizawl",
+            pendingCases: 7800,
+            institutedLastMonth: 100,
+            disposedLastMonth: 90,
+            ageBuckets: {
+              lessThanOneYear: 7800,
+              oneToThreeYears: 0,
+              threeToFiveYears: 0,
+              fiveToTenYears: 0,
+              aboveTenYears: 0,
+            },
+          },
+        ],
+      },
+      previousSnapshots,
+    );
+
+    expect(candidate.trends.map((point) => point.snapshotDate)).toEqual([
+      "2026-04-16T00:00:00.000Z",
+      "2026-04-19T00:00:00.000Z",
+      "2026-04-20T00:00:00.000Z",
+      "2026-04-22T00:00:00.000Z",
+      "2026-04-22T00:00:00.000Z",
+    ]);
+    expect(candidate.trends.map((point) => point.pendingCases)).toEqual([7677, 7677, 7655, 7739, 7800]);
+    expect(candidate.trends.at(-1)?.pendingCases).toBe(7800);
+    expect(candidate.trends.at(-2)?.pendingCases).toBe(7739);
+    expect(candidate.trends.some((point) => point.snapshotDate.startsWith("2026-07"))).toBe(false);
+  });
+
+  it("keeps a same-date published pending as the auto-publish baseline", () => {
+    const previousSnapshots = [
+      historySnapshot({ referenceDateAt: "2026-04-20T00:00:00.000Z", pendingCases: 7655 }),
+      historySnapshot({ referenceDateAt: "2026-04-22T00:00:00.000Z", pendingCases: 7739 }),
+      historySnapshot({ referenceDateAt: "2026-07-08T02:44:02.606Z", pendingCases: 8063 }),
+    ];
+
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-07-08T02:44:02.606Z",
+        stateCode: "MZ",
+        stateName: "Mizoram",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Mizoram district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+        sourceSnapshotAt: null,
+        state: {
+          pendingCases: 12000,
+          institutedLastMonth: 968,
+          disposedLastMonth: 814,
+          ageBuckets: {
+            lessThanOneYear: 7000,
+            oneToThreeYears: 3000,
+            threeToFiveYears: 1000,
+            fiveToTenYears: 900,
+            aboveTenYears: 100,
+          },
+        },
+        districts: [
+          {
+            districtCode: "aizawl",
+            districtName: "Aizawl",
+            pendingCases: 12000,
+            institutedLastMonth: 968,
+            disposedLastMonth: 814,
+            ageBuckets: {
+              lessThanOneYear: 7000,
+              oneToThreeYears: 3000,
+              threeToFiveYears: 1000,
+              fiveToTenYears: 900,
+              aboveTenYears: 100,
+            },
+          },
+        ],
+      },
+      previousSnapshots,
+    );
+
+    expect(candidate.trends.at(-1)?.pendingCases).toBe(12000);
+    expect(candidate.trends.at(-2)?.pendingCases).toBe(8063);
+    expect(candidate.trends.at(-1)?.snapshotDate).toBe(candidate.trends.at(-2)?.snapshotDate);
+
+    const decision = evaluateAutoPublish({
+      qualityState: candidate.snapshot.qualityState,
+      currentPending: candidate.stats.pendingCases,
+      previousPending: candidate.trends.at(-2)?.pendingCases,
+    });
+    expect(decision.publish).toBe(false);
+    expect(decision.reason).toBe("outlier_pending_delta");
+  });
+
+  it("keeps a same-calendar-day captured_at publish when the new run uses source midnight", () => {
+    const previousSnapshots = [
+      historySnapshot({ referenceDateAt: "2026-07-11T02:44:00.000Z", pendingCases: 8000 }),
+      historySnapshot({ referenceDateAt: "2026-07-12T02:44:00.000Z", pendingCases: 8063 }),
+    ];
+
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-07-12T03:10:00.000Z",
+        stateCode: "MZ",
+        stateName: "Mizoram",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Mizoram district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+        sourceSnapshotAt: "2026-07-12T00:00:00.000Z",
+        state: {
+          pendingCases: 12000,
+          institutedLastMonth: 968,
+          disposedLastMonth: 814,
+          ageBuckets: {
+            lessThanOneYear: 7000,
+            oneToThreeYears: 3000,
+            threeToFiveYears: 1000,
+            fiveToTenYears: 900,
+            aboveTenYears: 100,
+          },
+        },
+        districts: [
+          {
+            districtCode: "aizawl",
+            districtName: "Aizawl",
+            pendingCases: 12000,
+            institutedLastMonth: 968,
+            disposedLastMonth: 814,
+            ageBuckets: {
+              lessThanOneYear: 7000,
+              oneToThreeYears: 3000,
+              threeToFiveYears: 1000,
+              fiveToTenYears: 900,
+              aboveTenYears: 100,
+            },
+          },
+        ],
+      },
+      previousSnapshots,
+    );
+
+    expect(candidate.snapshot.referenceDateAt).toBe("2026-07-12T00:00:00.000Z");
+    expect(candidate.trends.at(-1)?.pendingCases).toBe(12000);
+    expect(candidate.trends.at(-2)?.pendingCases).toBe(8063);
+
+    const decision = evaluateAutoPublish({
+      qualityState: candidate.snapshot.qualityState,
+      currentPending: candidate.stats.pendingCases,
+      previousPending: candidate.trends.at(-2)?.pendingCases,
+    });
+    expect(decision.publish).toBe(false);
+    expect(decision.reason).toBe("outlier_pending_delta");
   });
 });
