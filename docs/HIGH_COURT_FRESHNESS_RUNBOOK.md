@@ -17,7 +17,7 @@ These two signals are intentionally separated because upstream NJDG breakage is 
 
 The ops watchdog is where these signals surface first:
 
-- scheduled run: `.github/workflows/ops-watchdog.yml` (every day at `05:00` UTC) and the in-stack `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule every `30` minutes
+- scheduled run: `.github/workflows/ops-watchdog.yml` (every day at `05:00` UTC) and the in-stack `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule hourly
 - failure artifact: the durable GitHub issue titled `Ops watchdog failure`, which lists `dailyFetchLagStates`, `staleStates`, and `failingTiers`
 - first-incident alert: SNS topic `nyaaywatch-production-alerts`
 - command for an ad-hoc check:

@@ -114,7 +114,7 @@ Treat a release as blocked if any one of these is true:
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
    ```
    This must stay green before treating the release window as operationally quiet. It fails if any public lower-court state, public High Court, or the Supreme Court surface has route/parity drift, a stale public snapshot, or a latest successful internal fetch run old enough to suggest the daily internal fetch cadence is slipping.
-   Outside the release window, the live stack reruns a smaller `--target-set=smoke` check every `30` minutes through the `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm if the smoke check fails. Keep the full sweep for release windows and the daily GitHub watchdog so routine monitoring does not overload the single public origin with every route family at once.
+   Outside the release window, the live stack reruns a smaller `--target-set=smoke` check hourly through the `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm if the smoke check fails. Keep the full sweep for release windows and the daily GitHub watchdog so routine monitoring does not overload the single public origin with every route family at once.
 6. Run prepublish verification for the candidate run and note the rollback target:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
