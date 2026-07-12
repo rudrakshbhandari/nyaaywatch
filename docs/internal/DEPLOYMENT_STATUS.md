@@ -40,7 +40,7 @@ Important current-state note: production traffic runs through `nyaaywatch-produc
 - DNS leftover: Cloudflare CNAME `staging.nyaaywatch.in` still points at the deleted ALB `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`. Delete that record in Cloudflare before the next staging re-provision. The Secrets Manager token `nyaaywatch-staging/cloudflare-api-token` can list the zone but lacks Zone DNS Edit; production still mounts that same secret as `CloudflareApiTokenSecretArn`.
 - Intended use when provisioned: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
 - Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
-- Retirement snapshot: `nyaaywatch-staging-retire-20260709-0648` (manual pre-delete). CloudFormation `DeletionPolicy: Snapshot` also retains an automatic final RDS snapshot. Older April 2026 staging proof/validation snapshots remain in the account until explicitly purged.
+- Retirement snapshot: `nyaaywatch-staging-retire-20260709-0648` (manual pre-delete). CloudFormation `DeletionPolicy: Snapshot` also retains an automatic final RDS snapshot. April 2026 staging proof/validation and bridge snapshots were deleted `2026-07-12`; kept retirement snapshot `nyaaywatch-staging-retire-20260709-0648` and CFN final snapshot `nyaaywatch-staging-snapshot-stagingdatabase-rfz9qqpecvod`.
 - Retained S3 audit buckets: deleted `2026-07-12` after stack retirement (`nyaaywatch-staging-artifacts-723951822728`, `nyaaywatch-stage-staging-artifacts-723951822728`; canary buckets were already gone).
 - Orphan Secrets Manager leftovers: `nyaaywatch-staging/database-url` and `nyaaywatch-staging/operator-api-token` deleted `2026-07-12`. Keep `nyaaywatch-staging/cloudflare-api-token` until production is rewired to a production-named Cloudflare secret.
 - ACM certificate ARN (kept in account): `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`
@@ -106,7 +106,7 @@ Operational notes:
 - Status: CloudFormation stack deleted after `staging.nyaaywatch.in` was repointed to the reclaimed `nyaaywatch-staging` stack.
 - Former ALB DNS name: `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com`
 - Former purpose: temporary isolated bridge while the `nyaaywatch-staging` name was still held for rollback.
-- Retained artifacts: final RDS snapshot `nyaaywatch-staging-v2-snapshot-stagingdatabase-s1hxakakdlnj`. Bridge S3 buckets deleted with the dedicated-staging cleanup on `2026-07-12`.
+- Retained artifacts: bridge S3 buckets and the v2 final RDS snapshot were deleted with the dedicated-staging cleanup on `2026-07-12`.
 
 ### Public Alpha
 
