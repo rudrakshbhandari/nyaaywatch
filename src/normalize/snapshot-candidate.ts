@@ -150,30 +150,40 @@ function buildTrends(
   clearedLastMonthCases: number,
   disposalRate: number,
 ) {
+  // `previousSnapshots` arrives oldest→newest from loadHistoricalSnapshots.
+  // Walk newest-first so the first hit per reference date is the newest
+  // publication for that date, then sort chronologically before the window
+  // slice. Without the re-sort, slice(-5) kept the oldest history and dropped
+  // recent publishes — which made auto-publish compare against a stale baseline.
   const seen = new Set<string>();
-  const points = previousSnapshots
-    .slice()
-    .reverse()
-    .map((snapshot) => ({
-      snapshotDate: snapshot.snapshot.referenceDateAt,
+  const points: Array<{
+    snapshotDate: string;
+    pendingCases: number;
+    filedLastMonthCases: number;
+    clearedLastMonthCases: number;
+    disposalRate: number;
+  }> = [];
+
+  for (const snapshot of [...previousSnapshots].reverse()) {
+    const pointDate = snapshot.snapshot.referenceDateAt;
+    if (seen.has(pointDate)) {
+      continue;
+    }
+    seen.add(pointDate);
+    points.push({
+      snapshotDate: pointDate,
       pendingCases: snapshot.stats.pendingCases,
       filedLastMonthCases: snapshot.stats.filedLastMonthCases,
       clearedLastMonthCases: snapshot.stats.clearedLastMonthCases,
       disposalRate: snapshot.stats.disposalRate,
-    }))
-    .filter((point) => {
-      if (seen.has(point.snapshotDate)) {
-        return false;
-      }
-
-      seen.add(point.snapshotDate);
-      return true;
     });
+  }
 
   if (!seen.has(snapshotDate)) {
     points.push({ snapshotDate, pendingCases, filedLastMonthCases, clearedLastMonthCases, disposalRate });
   }
 
+  points.sort((left, right) => left.snapshotDate.localeCompare(right.snapshotDate));
   return points.slice(-5);
 }
 
