@@ -424,4 +424,64 @@ describe("snapshot candidate normalization", () => {
     expect(decision.publish).toBe(false);
     expect(decision.reason).toBe("outlier_pending_delta");
   });
+
+  it("keeps a same-calendar-day captured_at publish when the new run uses source midnight", () => {
+    const previousSnapshots = [
+      historySnapshot({ referenceDateAt: "2026-07-11T02:44:00.000Z", pendingCases: 8000 }),
+      historySnapshot({ referenceDateAt: "2026-07-12T02:44:00.000Z", pendingCases: 8063 }),
+    ];
+
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-07-12T03:10:00.000Z",
+        stateCode: "MZ",
+        stateName: "Mizoram",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Mizoram district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+        sourceSnapshotAt: "2026-07-12T00:00:00.000Z",
+        state: {
+          pendingCases: 12000,
+          institutedLastMonth: 968,
+          disposedLastMonth: 814,
+          ageBuckets: {
+            lessThanOneYear: 7000,
+            oneToThreeYears: 3000,
+            threeToFiveYears: 1000,
+            fiveToTenYears: 900,
+            aboveTenYears: 100,
+          },
+        },
+        districts: [
+          {
+            districtCode: "aizawl",
+            districtName: "Aizawl",
+            pendingCases: 12000,
+            institutedLastMonth: 968,
+            disposedLastMonth: 814,
+            ageBuckets: {
+              lessThanOneYear: 7000,
+              oneToThreeYears: 3000,
+              threeToFiveYears: 1000,
+              fiveToTenYears: 900,
+              aboveTenYears: 100,
+            },
+          },
+        ],
+      },
+      previousSnapshots,
+    );
+
+    expect(candidate.snapshot.referenceDateAt).toBe("2026-07-12T00:00:00.000Z");
+    expect(candidate.trends.at(-1)?.pendingCases).toBe(12000);
+    expect(candidate.trends.at(-2)?.pendingCases).toBe(8063);
+
+    const decision = evaluateAutoPublish({
+      qualityState: candidate.snapshot.qualityState,
+      currentPending: candidate.stats.pendingCases,
+      previousPending: candidate.trends.at(-2)?.pendingCases,
+    });
+    expect(decision.publish).toBe(false);
+    expect(decision.reason).toBe("outlier_pending_delta");
+  });
 });

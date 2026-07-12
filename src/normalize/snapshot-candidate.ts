@@ -142,6 +142,10 @@ export function buildSnapshotCandidate(
   });
 }
 
+function utcCalendarDay(isoDatetime: string): string {
+  return isoDatetime.slice(0, 10);
+}
+
 function buildTrends(
   previousSnapshots: PublishedSnapshot[],
   snapshotDate: string,
@@ -151,15 +155,14 @@ function buildTrends(
   disposalRate: number,
 ) {
   // `previousSnapshots` arrives oldest→newest from loadHistoricalSnapshots.
-  // Walk newest-first so the first hit per reference date is the newest
-  // publication for that date. Only keep history on or before this capture so a
-  // replay/backfill of an older run cannot inherit newer publications. Always
-  // append the current point after trimming priors — including when a same-date
-  // publish already exists — so auto-publish's trends[-2] baseline stays the
-  // live publish rather than an older date. Without the chronological window
-  // ending on current, slice(-5) on a newest-first array kept April leftovers
-  // and dropped recent publishes for MZ/GJ.
-  const seen = new Set<string>();
+  // Walk newest-first so the first hit per UTC calendar day is the newest
+  // publication for that day. Bound history by calendar day (not raw timestamp)
+  // so a same-day shift from `captured_at` to an earlier `source_snapshot_at`
+  // midnight does not drop the live publish as "future". Always append the
+  // current point after trimming priors so auto-publish's trends[-2] stays the
+  // live baseline — including same-day re-fetches.
+  const currentDay = utcCalendarDay(snapshotDate);
+  const seenDays = new Set<string>();
   const priorPoints: Array<{
     snapshotDate: string;
     pendingCases: number;
@@ -170,10 +173,11 @@ function buildTrends(
 
   for (const snapshot of [...previousSnapshots].reverse()) {
     const pointDate = snapshot.snapshot.referenceDateAt;
-    if (pointDate > snapshotDate || seen.has(pointDate)) {
+    const pointDay = utcCalendarDay(pointDate);
+    if (pointDay > currentDay || seenDays.has(pointDay)) {
       continue;
     }
-    seen.add(pointDate);
+    seenDays.add(pointDay);
     priorPoints.push({
       snapshotDate: pointDate,
       pendingCases: snapshot.stats.pendingCases,
