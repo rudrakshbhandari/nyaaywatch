@@ -356,8 +356,72 @@ describe("snapshot candidate normalization", () => {
       "2026-04-19T00:00:00.000Z",
       "2026-04-20T00:00:00.000Z",
       "2026-04-22T00:00:00.000Z",
+      "2026-04-22T00:00:00.000Z",
     ]);
+    expect(candidate.trends.map((point) => point.pendingCases)).toEqual([7677, 7677, 7655, 7739, 7800]);
     expect(candidate.trends.at(-1)?.pendingCases).toBe(7800);
+    expect(candidate.trends.at(-2)?.pendingCases).toBe(7739);
     expect(candidate.trends.some((point) => point.snapshotDate.startsWith("2026-07"))).toBe(false);
+  });
+
+  it("keeps a same-date published pending as the auto-publish baseline", () => {
+    const previousSnapshots = [
+      historySnapshot({ referenceDateAt: "2026-04-20T00:00:00.000Z", pendingCases: 7655 }),
+      historySnapshot({ referenceDateAt: "2026-04-22T00:00:00.000Z", pendingCases: 7739 }),
+      historySnapshot({ referenceDateAt: "2026-07-08T02:44:02.606Z", pendingCases: 8063 }),
+    ];
+
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-07-08T02:44:02.606Z",
+        stateCode: "MZ",
+        stateName: "Mizoram",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Mizoram district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+        sourceSnapshotAt: null,
+        state: {
+          pendingCases: 12000,
+          institutedLastMonth: 968,
+          disposedLastMonth: 814,
+          ageBuckets: {
+            lessThanOneYear: 7000,
+            oneToThreeYears: 3000,
+            threeToFiveYears: 1000,
+            fiveToTenYears: 900,
+            aboveTenYears: 100,
+          },
+        },
+        districts: [
+          {
+            districtCode: "aizawl",
+            districtName: "Aizawl",
+            pendingCases: 12000,
+            institutedLastMonth: 968,
+            disposedLastMonth: 814,
+            ageBuckets: {
+              lessThanOneYear: 7000,
+              oneToThreeYears: 3000,
+              threeToFiveYears: 1000,
+              fiveToTenYears: 900,
+              aboveTenYears: 100,
+            },
+          },
+        ],
+      },
+      previousSnapshots,
+    );
+
+    expect(candidate.trends.at(-1)?.pendingCases).toBe(12000);
+    expect(candidate.trends.at(-2)?.pendingCases).toBe(8063);
+    expect(candidate.trends.at(-1)?.snapshotDate).toBe(candidate.trends.at(-2)?.snapshotDate);
+
+    const decision = evaluateAutoPublish({
+      qualityState: candidate.snapshot.qualityState,
+      currentPending: candidate.stats.pendingCases,
+      previousPending: candidate.trends.at(-2)?.pendingCases,
+    });
+    expect(decision.publish).toBe(false);
+    expect(decision.reason).toBe("outlier_pending_delta");
   });
 });

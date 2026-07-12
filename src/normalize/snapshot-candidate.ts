@@ -153,11 +153,12 @@ function buildTrends(
   // `previousSnapshots` arrives oldest→newest from loadHistoricalSnapshots.
   // Walk newest-first so the first hit per reference date is the newest
   // publication for that date. Only keep history on or before this capture so a
-  // replay/backfill of an older run cannot inherit newer publications, then
-  // always append the current point after trimming priors. Without the
-  // chronological window ending on current, slice(-5) on a newest-first array
-  // kept April leftovers and dropped recent publishes — which made auto-publish
-  // compare against a stale baseline for MZ/GJ.
+  // replay/backfill of an older run cannot inherit newer publications. Always
+  // append the current point after trimming priors — including when a same-date
+  // publish already exists — so auto-publish's trends[-2] baseline stays the
+  // live publish rather than an older date. Without the chronological window
+  // ending on current, slice(-5) on a newest-first array kept April leftovers
+  // and dropped recent publishes for MZ/GJ.
   const seen = new Set<string>();
   const priorPoints: Array<{
     snapshotDate: string;
@@ -169,11 +170,7 @@ function buildTrends(
 
   for (const snapshot of [...previousSnapshots].reverse()) {
     const pointDate = snapshot.snapshot.referenceDateAt;
-    if (pointDate > snapshotDate) {
-      continue;
-    }
-    // Same-date history is replaced by the current capture below.
-    if (pointDate === snapshotDate || seen.has(pointDate)) {
+    if (pointDate > snapshotDate || seen.has(pointDate)) {
       continue;
     }
     seen.add(pointDate);
