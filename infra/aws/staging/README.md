@@ -12,7 +12,7 @@ This directory defines the AWS ECS/PostgreSQL/S3 stack shape first created for N
 
 ## Current Naming Caveat
 
-The production public alpha at `https://nyaaywatch.in` runs on `nyaaywatch-production`. The dedicated `nyaaywatch-staging` stack was deleted on `2026-07-09` for alpha cost; recreate it only for a real AWS rehearsal. Cloudflare still has a leftover CNAME for `staging.nyaaywatch.in` pointing at the deleted ALB until that DNS record is removed manually.
+The production public alpha at `https://nyaaywatch.in` runs on `nyaaywatch-production`. The dedicated `nyaaywatch-staging` stack was deleted on `2026-07-09` for alpha cost; recreate it only for a real AWS rehearsal. Cloudflare `staging.nyaaywatch.in` CNAME was removed `2026-07-12` with the staging retirement cleanup.
 
 The target environment split is:
 
@@ -222,7 +222,7 @@ export RECLAIMED_STAGING_NAME=true
   '[alarm-email]'
 ```
 
-As of `2026-04-29`, the dedicated staging stack was reclaimed as `nyaaywatch-staging` with `PUBLIC_BASE_URL=https://staging.nyaaywatch.in` and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. That stack was deleted on `2026-07-09` for cost; Cloudflare still has a leftover CNAME `staging` -> `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` until removed manually. Re-deploy with `RECLAIMED_STAGING_NAME=true` when a rehearsal is needed.
+As of `2026-04-29`, the dedicated staging stack was reclaimed as `nyaaywatch-staging` with `PUBLIC_BASE_URL=https://staging.nyaaywatch.in` and ACM certificate `arn:aws:acm:ap-south-1:723951822728:certificate/12a69434-d2e6-4a6f-a42e-d7bf64797870`. That stack was deleted on `2026-07-09` for cost; the `staging.nyaaywatch.in` CNAME was removed `2026-07-12`. Re-deploy with `RECLAIMED_STAGING_NAME=true` and recreate the Cloudflare CNAME when a rehearsal is needed.
 
 `deploy-stack.sh` refuses the dangerous combinations that would deploy non-production with production hostnames or let non-production manage production canonical redirect rules. The reclaimed `nyaaywatch-staging` stack should use `RECLAIMED_STAGING_NAME=true`.
 

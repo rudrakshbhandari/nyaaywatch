@@ -37,7 +37,7 @@ Important current-state note: production traffic runs through `nyaaywatch-produc
 - Status: `retired` (CloudFormation stack deleted `2026-07-09` for alpha cost)
 - Former stack name: `nyaaywatch-staging`
 - Former URL: `https://staging.nyaaywatch.in`
-- DNS leftover: Cloudflare CNAME `staging.nyaaywatch.in` still points at the deleted ALB `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`. Delete that record in Cloudflare before the next staging re-provision. The Secrets Manager token `nyaaywatch-staging/cloudflare-api-token` can list the zone but lacks Zone DNS Edit; production still mounts that same secret as `CloudflareApiTokenSecretArn`.
+- DNS: Cloudflare CNAME `staging.nyaaywatch.in` deleted `2026-07-12` (was pointing at retired ALB `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com`). Recreate it only when re-provisioning staging. Production still mounts Secrets Manager `nyaaywatch-staging/cloudflare-api-token` as `CloudflareApiTokenSecretArn` (cache-purge token; lacks Zone DNS Edit).
 - Intended use when provisioned: release rehearsal, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing without changing `https://nyaaywatch.in`
 - Required rule: staging data and artifacts must stay isolated from production data, even if the same CloudFormation template is reused
 - Retirement snapshot: `nyaaywatch-staging-retire-20260709-0648` (manual pre-delete). CloudFormation `DeletionPolicy: Snapshot` also retains an automatic final RDS snapshot. April 2026 staging proof/validation and bridge snapshots were deleted `2026-07-12`; kept retirement snapshot `nyaaywatch-staging-retire-20260709-0648` and CFN final snapshot `nyaaywatch-staging-snapshot-stagingdatabase-rfz9qqpecvod`.
