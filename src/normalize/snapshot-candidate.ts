@@ -152,11 +152,14 @@ function buildTrends(
 ) {
   // `previousSnapshots` arrives oldest→newest from loadHistoricalSnapshots.
   // Walk newest-first so the first hit per reference date is the newest
-  // publication for that date, then sort chronologically before the window
-  // slice. Without the re-sort, slice(-5) kept the oldest history and dropped
-  // recent publishes — which made auto-publish compare against a stale baseline.
+  // publication for that date. Only keep history on or before this capture so a
+  // replay/backfill of an older run cannot inherit newer publications, then
+  // always append the current point after trimming priors. Without the
+  // chronological window ending on current, slice(-5) on a newest-first array
+  // kept April leftovers and dropped recent publishes — which made auto-publish
+  // compare against a stale baseline for MZ/GJ.
   const seen = new Set<string>();
-  const points: Array<{
+  const priorPoints: Array<{
     snapshotDate: string;
     pendingCases: number;
     filedLastMonthCases: number;
@@ -166,11 +169,15 @@ function buildTrends(
 
   for (const snapshot of [...previousSnapshots].reverse()) {
     const pointDate = snapshot.snapshot.referenceDateAt;
-    if (seen.has(pointDate)) {
+    if (pointDate > snapshotDate) {
+      continue;
+    }
+    // Same-date history is replaced by the current capture below.
+    if (pointDate === snapshotDate || seen.has(pointDate)) {
       continue;
     }
     seen.add(pointDate);
-    points.push({
+    priorPoints.push({
       snapshotDate: pointDate,
       pendingCases: snapshot.stats.pendingCases,
       filedLastMonthCases: snapshot.stats.filedLastMonthCases,
@@ -179,12 +186,12 @@ function buildTrends(
     });
   }
 
-  if (!seen.has(snapshotDate)) {
-    points.push({ snapshotDate, pendingCases, filedLastMonthCases, clearedLastMonthCases, disposalRate });
-  }
+  priorPoints.sort((left, right) => left.snapshotDate.localeCompare(right.snapshotDate));
 
-  points.sort((left, right) => left.snapshotDate.localeCompare(right.snapshotDate));
-  return points.slice(-5);
+  return [
+    ...priorPoints.slice(-4),
+    { snapshotDate, pendingCases, filedLastMonthCases, clearedLastMonthCases, disposalRate },
+  ];
 }
 
 function buildFlagReason(

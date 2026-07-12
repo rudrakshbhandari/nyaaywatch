@@ -296,4 +296,68 @@ describe("snapshot candidate normalization", () => {
     expect(decision.publish).toBe(true);
     expect(decision.deltaFraction).toBeCloseTo(0.193, 3);
   });
+
+  it("keeps a replayed older capture in the trend window when newer publishes exist", () => {
+    const previousSnapshots = [
+      historySnapshot({ referenceDateAt: "2026-04-16T00:00:00.000Z", pendingCases: 7677 }),
+      historySnapshot({ referenceDateAt: "2026-04-19T00:00:00.000Z", pendingCases: 7677 }),
+      historySnapshot({ referenceDateAt: "2026-04-20T00:00:00.000Z", pendingCases: 7655 }),
+      historySnapshot({ referenceDateAt: "2026-04-22T00:00:00.000Z", pendingCases: 7739 }),
+      historySnapshot({ referenceDateAt: "2026-07-08T02:44:02.606Z", pendingCases: 8063 }),
+      historySnapshot({ referenceDateAt: "2026-07-09T02:44:00.000Z", pendingCases: 8200 }),
+      historySnapshot({ referenceDateAt: "2026-07-10T02:44:00.000Z", pendingCases: 8300 }),
+      historySnapshot({ referenceDateAt: "2026-07-11T02:44:00.000Z", pendingCases: 8400 }),
+      historySnapshot({ referenceDateAt: "2026-07-12T02:44:00.000Z", pendingCases: 9619 }),
+    ];
+
+    const candidate = buildSnapshotCandidate(
+      {
+        capturedAt: "2026-04-22T12:00:00.000Z",
+        stateCode: "MZ",
+        stateName: "Mizoram",
+        expectedDistrictCount: 1,
+        sourceName: "NJDG Mizoram district dashboard",
+        sourceAttribution: "National Judicial Data Grid public district dashboard for Mizoram",
+        sourceSnapshotAt: "2026-04-22T00:00:00.000Z",
+        state: {
+          pendingCases: 7800,
+          institutedLastMonth: 100,
+          disposedLastMonth: 90,
+          ageBuckets: {
+            lessThanOneYear: 7800,
+            oneToThreeYears: 0,
+            threeToFiveYears: 0,
+            fiveToTenYears: 0,
+            aboveTenYears: 0,
+          },
+        },
+        districts: [
+          {
+            districtCode: "aizawl",
+            districtName: "Aizawl",
+            pendingCases: 7800,
+            institutedLastMonth: 100,
+            disposedLastMonth: 90,
+            ageBuckets: {
+              lessThanOneYear: 7800,
+              oneToThreeYears: 0,
+              threeToFiveYears: 0,
+              fiveToTenYears: 0,
+              aboveTenYears: 0,
+            },
+          },
+        ],
+      },
+      previousSnapshots,
+    );
+
+    expect(candidate.trends.map((point) => point.snapshotDate)).toEqual([
+      "2026-04-16T00:00:00.000Z",
+      "2026-04-19T00:00:00.000Z",
+      "2026-04-20T00:00:00.000Z",
+      "2026-04-22T00:00:00.000Z",
+    ]);
+    expect(candidate.trends.at(-1)?.pendingCases).toBe(7800);
+    expect(candidate.trends.some((point) => point.snapshotDate.startsWith("2026-07"))).toBe(false);
+  });
 });
