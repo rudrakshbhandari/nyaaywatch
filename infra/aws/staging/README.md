@@ -437,4 +437,4 @@ Temporary proof stacks from earlier failed attempts can be deleted after validat
 
 ## Next Operational Step
 
-`staging.nyaaywatch.in` points at `nyaaywatch-staging-964594065.ap-south-1.elb.amazonaws.com` with a DNS-only Cloudflare CNAME, and the reclaimed staging stack has been verified through normal DNS.
+Dedicated AWS staging is retired. The CloudFormation stack and the Cloudflare `staging.nyaaywatch.in` CNAME are both gone. When a rehearsal is needed again: deploy with `RECLAIMED_STAGING_NAME=true`, recreate a DNS-only Cloudflare CNAME for `staging.nyaaywatch.in` to the new ALB, seed a publication if needed, then run `npm run release:verify -- --base-url=https://staging.nyaaywatch.in`.
