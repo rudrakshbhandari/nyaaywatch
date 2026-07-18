@@ -142,6 +142,10 @@ export function buildSnapshotCandidate(
   });
 }
 
+function utcCalendarDay(isoDatetime: string): string {
+  return isoDatetime.slice(0, 10);
+}
+
 function buildTrends(
   previousSnapshots: PublishedSnapshot[],
   snapshotDate: string,
@@ -150,31 +154,45 @@ function buildTrends(
   clearedLastMonthCases: number,
   disposalRate: number,
 ) {
-  const seen = new Set<string>();
-  const points = previousSnapshots
-    .slice()
-    .reverse()
-    .map((snapshot) => ({
-      snapshotDate: snapshot.snapshot.referenceDateAt,
+  // `previousSnapshots` arrives oldest→newest from loadHistoricalSnapshots.
+  // Walk newest-first so the first hit per UTC calendar day is the newest
+  // publication for that day. Bound history by calendar day (not raw timestamp)
+  // so a same-day shift from `captured_at` to an earlier `source_snapshot_at`
+  // midnight does not drop the live publish as "future". Always append the
+  // current point after trimming priors so auto-publish's trends[-2] stays the
+  // live baseline — including same-day re-fetches.
+  const currentDay = utcCalendarDay(snapshotDate);
+  const seenDays = new Set<string>();
+  const priorPoints: Array<{
+    snapshotDate: string;
+    pendingCases: number;
+    filedLastMonthCases: number;
+    clearedLastMonthCases: number;
+    disposalRate: number;
+  }> = [];
+
+  for (const snapshot of [...previousSnapshots].reverse()) {
+    const pointDate = snapshot.snapshot.referenceDateAt;
+    const pointDay = utcCalendarDay(pointDate);
+    if (pointDay > currentDay || seenDays.has(pointDay)) {
+      continue;
+    }
+    seenDays.add(pointDay);
+    priorPoints.push({
+      snapshotDate: pointDate,
       pendingCases: snapshot.stats.pendingCases,
       filedLastMonthCases: snapshot.stats.filedLastMonthCases,
       clearedLastMonthCases: snapshot.stats.clearedLastMonthCases,
       disposalRate: snapshot.stats.disposalRate,
-    }))
-    .filter((point) => {
-      if (seen.has(point.snapshotDate)) {
-        return false;
-      }
-
-      seen.add(point.snapshotDate);
-      return true;
     });
-
-  if (!seen.has(snapshotDate)) {
-    points.push({ snapshotDate, pendingCases, filedLastMonthCases, clearedLastMonthCases, disposalRate });
   }
 
-  return points.slice(-5);
+  priorPoints.sort((left, right) => left.snapshotDate.localeCompare(right.snapshotDate));
+
+  return [
+    ...priorPoints.slice(-4),
+    { snapshotDate, pendingCases, filedLastMonthCases, clearedLastMonthCases, disposalRate },
+  ];
 }
 
 function buildFlagReason(
