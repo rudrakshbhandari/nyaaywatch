@@ -125,7 +125,7 @@ flowchart TD
 - PostgreSQL is the canonical store for runs, artifacts, subscriptions, and publication state.
 - S3 stores raw scrape evidence, normalized snapshot candidates, release evidence, and outreach archives.
 - Publish requires an operator action or a passing auto-publish gate.
-- Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
+- Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked. Lower-court sweeps also block concentrated single-district pending swings and large absolute pending moves that stay under the primary 20% fraction threshold.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate.
 - Published snapshot read models drive every public surface; rollback is one operator call.
 

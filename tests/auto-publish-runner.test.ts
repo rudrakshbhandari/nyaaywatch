@@ -114,6 +114,44 @@ describe("runAutoPublish", () => {
     expect(notifier.calls).toHaveLength(0);
   });
 
+  it("notifies and skips when a concentrated district swing trips the gate", async () => {
+    const notifier = makeNotifier();
+    const runOperator = vi.fn();
+
+    // State move stays under both the 20% primary and the absolute secondary
+    // floors; the Surat-style concentrated district swing should still block.
+    const outcome = await runAutoPublish(
+      {
+        scopeLabel: "State (GJ)",
+        selector: { stateCode: "GJ" },
+        fetchResult: {
+          run: { id: "run_gj" },
+          candidate: {
+            snapshot: { qualityState: "complete" },
+            stats: { pendingCases: 1_040_000 },
+            trends: [{ pendingCases: 1_000_000 }, { pendingCases: 1_040_000 }],
+            districts: [
+              { districtId: "surat", backlogCases: 150_000 },
+              { districtId: "ahmedabad", backlogCases: 190_000 },
+            ],
+          },
+        },
+        pendingField: "pendingCases",
+        previousDistrictPending: {
+          surat: 100_000,
+          ahmedabad: 200_000,
+        },
+      },
+      { runOperator, notifier },
+    );
+
+    expect(outcome.action).toBe("skipped_review");
+    expect(outcome.decision?.reason).toBe("outlier_district_pending_delta");
+    expect(runOperator).not.toHaveBeenCalled();
+    expect(notifier.calls[0].message).toContain("outlier_district_pending_delta");
+    expect(notifier.calls[0].message).toContain("surat");
+  });
+
   it("prefers previousPendingOverride over the candidate trends baseline", async () => {
     const notifier = makeNotifier();
     const runOperator = vi.fn();

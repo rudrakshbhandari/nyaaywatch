@@ -5,7 +5,7 @@ import { SUPPORTED_STATE_CODES } from "../geographies.js";
 import { listReviewedHighCourtProfilesForScheduledFetch, getReviewedSupremeCourtProfileForScheduledFetch } from "../dev/scheduled-fetch-targets.js";
 import { runOperatorInvocation, type OperatorInvocation } from "../dev/operator-ops.js";
 import { PgWarehouseStore, type RunRecord, type ScopeType } from "../storage/postgres.js";
-import { runAutoPublish, type AutoPublishAction } from "./auto-publish-runner.js";
+import { extractDistrictPendingMap, runAutoPublish, type AutoPublishAction } from "./auto-publish-runner.js";
 
 const LOOKBACK_DAYS = 3;
 
@@ -124,8 +124,13 @@ export async function runPublishPendingSweep(
       // sweep, runs after the first need to be evaluated against the run we just
       // published, not against whatever was the latest publication when this run
       // was first captured. Track the running pending value here and feed it into
-      // the gate as previousPendingOverride.
+      // the gate as previousPendingOverride. The same applies to district maps
+      // used by the concentrated-district gate for lower courts.
       let runningPreviousPending: number | undefined;
+      let runningPreviousDistrictPending =
+        scope.scopeType === "lower_court_state"
+          ? await loadPreviousDistrictPending(store, scope.scopeCode, scope.scopeType)
+          : undefined;
 
       for (const candidate of candidates) {
         try {
@@ -142,12 +147,17 @@ export async function runPublishPendingSweep(
               pendingField: scope.pendingField,
               note: "Daily publish-pending sweep",
               previousPendingOverride: runningPreviousPending,
+              previousDistrictPending: runningPreviousDistrictPending,
             },
             { rawEnv },
           );
 
           if (outcome.action === "published" && outcome.decision?.currentPending !== undefined) {
             runningPreviousPending = outcome.decision.currentPending;
+            const publishedDistricts = extractDistrictPendingMap(inspectResult);
+            if (publishedDistricts) {
+              runningPreviousDistrictPending = publishedDistricts;
+            }
           }
 
           const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
@@ -205,4 +215,16 @@ export function assertPublishPendingSweepSucceeded(summary: PublishPendingSummar
 
   const failed = summary.results.filter((r) => !r.ok).map((r) => `${r.scopeLabel} (${r.runId})`);
   throw new Error(`Publish-pending sweep failed for ${summary.failedCount} run(s): ${failed.join(", ")}`);
+}
+
+async function loadPreviousDistrictPending(
+  store: PgWarehouseStore,
+  scopeCode: string,
+  scopeType: ScopeType,
+): Promise<Record<string, number> | undefined> {
+  const latest = await store.getLatestPublishedSnapshot(scopeCode, scopeType);
+  if (!latest) {
+    return undefined;
+  }
+  return extractDistrictPendingMap({ payload: latest.payload });
 }

@@ -27,6 +27,12 @@ export interface AutoPublishRequest {
    * captured. Pass that value here to short-circuit the candidate's trends.
    */
   previousPendingOverride?: number;
+  /**
+   * Previous published district backlog map keyed by districtId. Required for
+   * the lower-court concentrated-district gate; omit for High Court / Supreme
+   * Court scopes that have no district surface.
+   */
+  previousDistrictPending?: Record<string, number>;
 }
 
 export interface AutoPublishRunnerDeps {
@@ -57,6 +63,8 @@ export async function runAutoPublish(
     qualityState: inputs.qualityState,
     currentPending: inputs.currentPending,
     previousPending,
+    currentDistrictPending: inputs.currentDistrictPending,
+    previousDistrictPending: request.previousDistrictPending,
   });
 
   if (!decision.publish) {
@@ -92,6 +100,36 @@ interface ExtractedGateInputs {
   qualityState?: string;
   currentPending?: number;
   previousPending?: number;
+  currentDistrictPending?: Record<string, number>;
+}
+
+export function extractDistrictPendingMap(result: unknown): Record<string, number> | undefined {
+  if (!result || typeof result !== "object") {
+    return undefined;
+  }
+  const obj = result as Record<string, unknown>;
+  const candidate = obj.candidate as Record<string, unknown> | null | undefined;
+  const payload = candidate ?? (obj.payload as Record<string, unknown> | undefined) ?? obj;
+  const districts = Array.isArray(payload.districts) ? (payload.districts as Array<Record<string, unknown>>) : [];
+  if (districts.length === 0) {
+    return undefined;
+  }
+
+  const map: Record<string, number> = {};
+  for (const district of districts) {
+    const districtId =
+      typeof district.districtId === "string"
+        ? district.districtId
+        : typeof district.districtCode === "string"
+          ? district.districtCode
+          : undefined;
+    const pendingRaw = district.backlogCases ?? district.pendingCases;
+    if (!districtId || typeof pendingRaw !== "number" || !Number.isFinite(pendingRaw)) {
+      continue;
+    }
+    map[districtId] = pendingRaw;
+  }
+  return Object.keys(map).length > 0 ? map : undefined;
 }
 
 function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | "pendingCases"): ExtractedGateInputs {
@@ -123,6 +161,7 @@ function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | 
     qualityState,
     currentPending,
     previousPending: typeof previousPending === "number" ? previousPending : undefined,
+    currentDistrictPending: extractDistrictPendingMap(obj),
   };
 }
 
@@ -140,7 +179,15 @@ function formatReviewMessage(request: AutoPublishRequest, runId: string, decisio
     lines.push(`Previous published pending: ${decision.previousPending}`);
   }
   if (decision.deltaFraction !== undefined) {
-    lines.push(`Delta fraction: ${(decision.deltaFraction * 100).toFixed(1)}% (threshold ${(decision.deltaThreshold * 100).toFixed(0)}%)`);
+    lines.push(
+      `Delta fraction: ${(decision.deltaFraction * 100).toFixed(1)}% (threshold ${(decision.deltaThreshold * 100).toFixed(0)}%)`,
+    );
+  }
+  if (decision.districtDelta) {
+    const d = decision.districtDelta;
+    lines.push(
+      `District: ${d.districtId} ${d.previousPending} -> ${d.currentPending} (${(d.deltaFraction * 100).toFixed(1)}%, ${(d.stateDeltaShare * 100).toFixed(0)}% of state delta)`,
+    );
   }
   lines.push(
     "",
