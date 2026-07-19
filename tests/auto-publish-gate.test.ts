@@ -121,4 +121,73 @@ describe("evaluateAutoPublish", () => {
     });
     expect(decision.publish).toBe(true);
   });
+
+  it("blocks when a large district appears only on the current snapshot", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 1_050_000,
+      previousPending: 1_000_000,
+      previousDistrictPending: {
+        ahmedabad: 1_000_000,
+      },
+      currentDistrictPending: {
+        ahmedabad: 1_000_000,
+        "new-district": 50_000,
+      },
+    });
+    expect(decision).toMatchObject({
+      publish: false,
+      reason: "outlier_district_pending_delta",
+    });
+    expect(decision.districtDelta).toMatchObject({
+      districtId: "new-district",
+      previousPending: 0,
+      currentPending: 50_000,
+    });
+  });
+
+  it("blocks when a large district disappears from the current snapshot", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 950_000,
+      previousPending: 1_000_000,
+      previousDistrictPending: {
+        ahmedabad: 950_000,
+        "old-district": 50_000,
+      },
+      currentDistrictPending: {
+        ahmedabad: 950_000,
+      },
+    });
+    expect(decision).toMatchObject({
+      publish: false,
+      reason: "outlier_district_pending_delta",
+    });
+    expect(decision.districtDelta).toMatchObject({
+      districtId: "old-district",
+      previousPending: 50_000,
+      currentPending: 0,
+    });
+  });
+
+  it("blocks a large district rename even when state pending is unchanged", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 1_000_000,
+      previousPending: 1_000_000,
+      previousDistrictPending: {
+        "old-label": 80_000,
+        ahmedabad: 920_000,
+      },
+      currentDistrictPending: {
+        "new-label": 80_000,
+        ahmedabad: 920_000,
+      },
+    });
+    expect(decision).toMatchObject({
+      publish: false,
+      reason: "outlier_district_pending_delta",
+    });
+    expect(["old-label", "new-label"]).toContain(decision.districtDelta?.districtId);
+  });
 });

@@ -151,34 +151,38 @@ function findConcentratedDistrictDelta(options: {
     return undefined;
   }
 
+  // Walk the union so NJDG add / rename / drop events are compared even when
+  // the district ID exists on only one side of the publication boundary.
+  const districtIds = new Set([...Object.keys(previousMap), ...Object.keys(currentMap)]);
   const stateAbsDelta = Math.abs(options.currentPending - options.previousPending);
-  if (stateAbsDelta <= 0) {
-    return undefined;
-  }
 
   let worst: DistrictPendingDelta | undefined;
 
-  for (const [districtId, previousPending] of Object.entries(previousMap)) {
-    const currentPending = currentMap[districtId];
-    if (
-      typeof currentPending !== "number" ||
-      !Number.isFinite(currentPending) ||
-      !Number.isFinite(previousPending) ||
-      previousPending <= 0
-    ) {
+  for (const districtId of districtIds) {
+    const previousPending = previousMap[districtId] ?? 0;
+    const currentPending = currentMap[districtId] ?? 0;
+    if (!Number.isFinite(previousPending) || !Number.isFinite(currentPending)) {
+      continue;
+    }
+    if (previousPending <= 0 && currentPending <= 0) {
       continue;
     }
 
     const districtAbsDelta = Math.abs(currentPending - previousPending);
-    const districtDeltaFraction = districtAbsDelta / previousPending;
-    if (
-      districtDeltaFraction <= options.districtDeltaThreshold ||
-      districtAbsDelta < options.districtAbsDeltaFloor
-    ) {
+    if (districtAbsDelta < options.districtAbsDeltaFloor) {
       continue;
     }
 
-    const stateDeltaShare = districtAbsDelta / stateAbsDelta;
+    // Appearing from nothing is a full swing for gate purposes.
+    const districtDeltaFraction =
+      previousPending > 0 ? districtAbsDelta / previousPending : 1;
+    if (districtDeltaFraction <= options.districtDeltaThreshold) {
+      continue;
+    }
+
+    // When state pending is flat (e.g. a rename), still treat a large unmatched
+    // district as owning the whole local swing so it requires review.
+    const stateDeltaShare = stateAbsDelta > 0 ? districtAbsDelta / stateAbsDelta : 1;
     if (stateDeltaShare < options.districtStateShareThreshold) {
       continue;
     }
