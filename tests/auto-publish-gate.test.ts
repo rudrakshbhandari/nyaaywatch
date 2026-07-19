@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { DEFAULT_AUTO_PUBLISH_DELTA_THRESHOLD, evaluateAutoPublish } from "../src/ops/auto-publish-gate.js";
+import {
+  DEFAULT_AUTO_PUBLISH_DELTA_THRESHOLD,
+  evaluateAutoPublish,
+} from "../src/ops/auto-publish-gate.js";
 
 describe("evaluateAutoPublish", () => {
   it("refuses to publish when quality is not complete", () => {
@@ -54,5 +57,137 @@ describe("evaluateAutoPublish", () => {
   it("uses default threshold when none provided", () => {
     const decision = evaluateAutoPublish({ qualityState: "complete", currentPending: 1000 });
     expect(decision.deltaThreshold).toBe(DEFAULT_AUTO_PUBLISH_DELTA_THRESHOLD);
+  });
+
+  it("blocks sub-20% state moves that are still large in absolute terms", () => {
+    // Mirrors Gujarat Jul 9 → Jul 12: +8.8% / +168k under the primary threshold.
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 2_074_967,
+      previousPending: 1_906_719,
+    });
+    expect(decision).toMatchObject({ publish: false, reason: "outlier_pending_delta" });
+    expect(decision.deltaFraction).toBeCloseTo(0.088, 2);
+  });
+
+  it("blocks when one district concentrates a large pending swing", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 2_074_967,
+      previousPending: 1_906_719,
+      // Force the absolute secondary off so we exercise the district gate alone.
+      absDeltaThreshold: Number.POSITIVE_INFINITY,
+      previousDistrictPending: {
+        surat: 213_373,
+        ahmedabad: 716_718,
+      },
+      currentDistrictPending: {
+        surat: 340_968,
+        ahmedabad: 726_237,
+      },
+    });
+    expect(decision).toMatchObject({
+      publish: false,
+      reason: "outlier_district_pending_delta",
+    });
+    expect(decision.districtDelta).toMatchObject({
+      districtId: "surat",
+      previousPending: 213_373,
+      currentPending: 340_968,
+    });
+    expect(decision.districtDelta?.deltaFraction).toBeCloseTo(0.598, 2);
+    expect(decision.districtDelta?.stateDeltaShare).toBeGreaterThan(0.5);
+  });
+
+  it("publishes when district swings are diffuse across many courts", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 1_050_000,
+      previousPending: 1_000_000,
+      previousDistrictPending: {
+        a: 200_000,
+        b: 200_000,
+        c: 200_000,
+        d: 200_000,
+        e: 200_000,
+      },
+      currentDistrictPending: {
+        a: 210_000,
+        b: 210_000,
+        c: 210_000,
+        d: 210_000,
+        e: 210_000,
+      },
+    });
+    expect(decision.publish).toBe(true);
+  });
+
+  it("blocks when a large district appears only on the current snapshot", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 1_050_000,
+      previousPending: 1_000_000,
+      previousDistrictPending: {
+        ahmedabad: 1_000_000,
+      },
+      currentDistrictPending: {
+        ahmedabad: 1_000_000,
+        "new-district": 50_000,
+      },
+    });
+    expect(decision).toMatchObject({
+      publish: false,
+      reason: "outlier_district_pending_delta",
+    });
+    expect(decision.districtDelta).toMatchObject({
+      districtId: "new-district",
+      previousPending: 0,
+      currentPending: 50_000,
+    });
+  });
+
+  it("blocks when a large district disappears from the current snapshot", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 950_000,
+      previousPending: 1_000_000,
+      previousDistrictPending: {
+        ahmedabad: 950_000,
+        "old-district": 50_000,
+      },
+      currentDistrictPending: {
+        ahmedabad: 950_000,
+      },
+    });
+    expect(decision).toMatchObject({
+      publish: false,
+      reason: "outlier_district_pending_delta",
+    });
+    expect(decision.districtDelta).toMatchObject({
+      districtId: "old-district",
+      previousPending: 50_000,
+      currentPending: 0,
+    });
+  });
+
+  it("blocks a large district rename even when state pending is unchanged", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 1_000_000,
+      previousPending: 1_000_000,
+      previousDistrictPending: {
+        "old-label": 80_000,
+        ahmedabad: 920_000,
+      },
+      currentDistrictPending: {
+        "new-label": 80_000,
+        ahmedabad: 920_000,
+      },
+    });
+    expect(decision).toMatchObject({
+      publish: false,
+      reason: "outlier_district_pending_delta",
+    });
+    expect(["old-label", "new-label"]).toContain(decision.districtDelta?.districtId);
   });
 });
