@@ -24,7 +24,9 @@
   <img alt="Snapshot based" src="https://img.shields.io/badge/data-reviewed%20snapshots-0c0a08" />
 </p>
 
-NyaayWatch publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, all 25 High Courts, and the lower courts in every state and Union Territory. It is drawn from public NJDG data with methodology disclosure, source attribution, and reproducible evidence boundaries.
+NyaayWatch is building an evidence-first public accountability layer for India. Its first production vertical publishes reviewed, versioned snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, all 25 High Courts, and the lower courts in every state and Union Territory. The current vertical is drawn from public NJDG data with methodology disclosure, source attribution, and reproducible evidence boundaries; broader government coverage is a future roadmap, not a current public claim.
+
+The judiciary is the first vertical, not the long-term boundary. See the [Government Accountability Roadmap](docs/GOVERNMENT_ACCOUNTABILITY_ROADMAP.md) for the product north star and the planned first legislative pilot.
 
 Open-source project links: [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [License](LICENSE) · [LinkedIn](https://www.linkedin.com/company/132634238/)
 
@@ -290,6 +292,7 @@ Design and product:
 - [National product architecture](docs/NATIONAL_PRODUCT_ARCHITECTURE.md)
 - [Long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md)
 - [Metric strategy](docs/METRIC_STRATEGY.md)
+- [Government accountability roadmap](docs/GOVERNMENT_ACCOUNTABILITY_ROADMAP.md)
 
 Operations and release:
 
@@ -310,7 +313,7 @@ Per-state and per-court readiness reviews, source reviews, methodology drafts, a
 
 ## Non-Goals
 
-Case-level search, PDF parsing, judge rankings, predictive forecasting, AI legal analysis, real-time claims.
+Current alpha non-goals: case-level search, PDF parsing, judge rankings, predictive forecasting, AI legal analysis, real-time claims, and any public claim that non-judicial branches are already covered.
 
 ## Voice
 

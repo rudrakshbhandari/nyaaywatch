@@ -1,6 +1,6 @@
 # National Product Architecture
 
-Product architecture for NyaayWatch as a national judicial observability layer across all court tiers.
+Product architecture for NyaayWatch’s first vertical: national judicial observability across all court tiers, inside a longer-term government accountability product.
 
 This document answers one strategic question:
 
@@ -13,10 +13,17 @@ It is intentionally product-level, not implementation-level. Use:
 - `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` for the current public-source inventory
 - `docs/MULTI_STATE_EXPANSION_GATES.md` for public expansion gates
 - `docs/archive/ACCELERATED_EXPANSION_PLAN.md` for rollout sequencing (archived; expansion complete)
+- `docs/GOVERNMENT_ACCOUNTABILITY_ROADMAP.md` for the broader product north star and non-judicial roadmap
+
+## Relationship To The Broader North Star
+
+This document defines the judiciary vertical because that is the current production scope. It should not be read as the final boundary of NyaayWatch.
+
+The broader product is an evidence-first accountability layer for India’s government. The judiciary is the first completed vertical and supplies the initial publication, provenance, and trust primitives. Legislative and executive modules must be added as separate, source-reviewed verticals with their own schemas and methodologies.
 
 ## Bottom Line
 
-NyaayWatch should become **one national judicial observability product for India**.
+NyaayWatch should become **one national public accountability product for India**, beginning with judicial observability.
 
 It should not become:
 
@@ -32,21 +39,27 @@ The correct model is:
 
 In plain terms:
 
-- Supreme Court, High Courts, and district/subordinate courts should live inside the same product shell
-- each tier can have its own source pipeline, normalization rules, and methodology notes
-- cross-tier comparisons should be added only where the methodology is actually defensible
+- the judiciary, legislature, and executive should eventually live inside the same product shell
+- each branch and tier can have its own source pipeline, normalization rules, and methodology notes
+- cross-branch and cross-tier comparisons should be added only where the methodology is actually defensible
 
 ## Product Thesis
 
-NyaayWatch should be the public front door for understanding how the Indian judicial system is moving, from the apex court down to state and district layers.
+The first product experience is the public front door for understanding how the Indian judicial system is moving, from the apex court down to state and district layers. The longer-term product should extend that evidence-first experience to other government branches without collapsing their meanings into one score.
 
 The final product should let a user answer:
 
-- what is happening at the Supreme Court right now in the latest published snapshot?
+- what is happening at the Supreme Court in the latest published snapshot?
 - what is happening across High Courts?
 - what is happening in district and subordinate courts, state by state and district by district?
 - where are the largest backlog, delay, and disposal signals in the system?
 - how do those signals change over time within a tier?
+
+The broader north star adds:
+
+- what has Parliament introduced, debated, passed, or left pending?
+- what public administrative work or spending can be supported by dated official evidence?
+- which public institutions show a meaningful, reproducible change that deserves inspection?
 
 The product should stay:
 
@@ -347,9 +360,9 @@ This source shape is a strong argument for one product with tier-aware modules r
 
 NyaayWatch should explicitly commit to this product direction:
 
-- one national judicial observability layer
+- one national public accountability layer
 - one top-down product experience
 - one trust model
-- multiple tier-specific pipelines and methodology tracks
+- multiple branch-, institution-, and tier-specific pipelines and methodology tracks
 
 That is the scalable path to covering the country without weakening rigor.
