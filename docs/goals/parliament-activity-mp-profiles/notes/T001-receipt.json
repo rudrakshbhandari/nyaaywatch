@@ -1,0 +1,22 @@
+{
+  "result": "done",
+  "summary": "Completed the formal Digital Sansad and Parliament Digital Library review, mapped NyaayWatch's existing capture/snapshot/provenance/publish/replay/rollback seams, and selected Lok Sabha 18 Session 5 plus official MP 5814 as a bounded pilot target. Attendance, sponsor attribution, modern question-row endpoint confirmation, and public reuse permission remain explicit gates.",
+  "evidence": [
+    "docs/goals/parliament-activity-mp-profiles/notes/T001-source-review.md",
+    "README.md",
+    "src/domain/njdg-capture-schema.ts",
+    "src/domain/snapshot-candidate-schema.ts",
+    "src/services/published-snapshot-service.ts",
+    "src/storage/postgres.ts",
+    "src/dev/operator-ops.ts",
+    "docs/PUBLIC_DATA_EXPOSURE_POLICY.md",
+    "docs/STORAGE_AND_OPERATIONS.md",
+    "https://sansad.in/ls/legislation/bills",
+    "https://sansad.in/ls/questions/questions-and-answers",
+    "https://sansad.in/api_ls/business/getAllLoksabhaAndSession?locale=en",
+    "https://sansad.in/api_ls/member/5814?locale=en",
+    "https://sansad.in/api_ls/member/positionHeld?mpCode=5814&locale=en",
+    "https://eparlib.sansad.in/help/copyright-policy.jsp",
+    "https://sansad.in/rs/privacyPolicy"
+  ]
+}

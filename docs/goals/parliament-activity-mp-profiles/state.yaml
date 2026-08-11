@@ -1,0 +1,649 @@
+# GoalBuddy v2 state.yaml
+# Board truth lives here. goal.md is the editable charter; notes/ holds long receipts only.
+
+version: 2
+
+goal:
+  title: "Parliamentary Activity Snapshot + Individual MP Profiles"
+  slug: "parliament-activity-mp-profiles"
+  kind: specific
+  tranche: "Build and locally demonstrate the first internal Lok Sabha legislative vertical from bounded official-source fixtures."
+  status: done
+  oracle:
+    signal: "A deterministic local fixture replay produces one published Lok Sabha activity snapshot and one time-bounded MP profile with matching HTML/JSON values and replay/rollback evidence."
+    cadence: "after each Worker package and at final audit"
+    final_proof: "Receipt-backed local end-to-end demo, source-linked methodology, parity tests, replay evidence, rollback evidence, and PR record of remaining public-beta gates."
+  intake:
+    original_request: "Build and locally run NyaayWatch's first non-judicial vertical milestone: Parliamentary Activity Snapshot + Individual MP Profiles."
+    interpreted_outcome: "Create a narrow, internal-only, evidence-first Lok Sabha bills-and-questions vertical with at least one official-record MP profile and reusable snapshot/replay/rollback lineage."
+    input_shape: specific
+    audience: "NyaayWatch operators and reviewers; internal users only until source, legal, methodology, and publication gates pass."
+    authority: requested
+    proof_type: demo
+    completion_proof: "Local fetch/extract/normalize/publish/replay/rollback works from captured fixtures; at least one MP profile is time-bounded and source-linked; aggregate/profile lineage matches; HTML and JSON parity tests pass; tests pass; PR records remaining blockers."
+    likely_misfire: "Shipping a generic politician dashboard, rankings, or unsupported activity/performance judgments instead of a bounded Lok Sabha snapshot and evidence-linked MP profile."
+    blind_spots_considered:
+      - "Digital Sansad and Parliament Digital Library source review, timestamps, pagination, session boundaries, identity completeness, and redistribution terms must be resolved before publication scope expands."
+      - "Official links and normalized aggregates are safer than redistributing raw parliamentary PDFs or bulk search results."
+      - "Role, House, term, and session boundaries must be explicit before comparing activity."
+      - "Attendance remains missing unless the official source defines it clearly."
+      - "Published values must have shared lineage across aggregate and MP surfaces."
+    existing_plan_facts:
+      - "Required phases are source review, bounded fixture capture, typed schemas, deterministic extraction/normalization, internal operator flow, aggregate/profile surfaces, tests, and local end-to-end evidence."
+      - "Hard scope is Lok Sabha only; bills and parliamentary questions first; judiciary behavior and existing tests must remain intact."
+      - "Do not build Rajya Sabha, state legislatures, executive-branch data, rankings, composite scores, or competence/ideology/corruption/popularity/policy-quality inference."
+      - "Keep the pilot internal until source, legal, methodology, and publication gates pass."
+
+rules:
+  pm_owns_state: true
+  one_active_task: true
+  max_write_workers: 1
+  no_implementation_without_worker_or_pm_task: true
+  no_completion_without_judge_or_pm_audit: true
+  planning_is_not_completion: true
+  queued_required_worker_blocks_completion: true
+  continuous_until_full_outcome: true
+  missing_input_or_credentials_do_not_stop_goal: true
+  exact_human_approval_can_terminal_wait: true
+  preserve_and_validate_existing_plan: true
+  intake_misfire_must_be_audited: true
+  goal_pressure_requires_oracle: true
+  no_completion_on_weak_proof: true
+  slice_policy:
+    max_consecutive_tiny_tasks: 2
+    prefer_vertical_slices: true
+    judge_picks_largest_safe_slice: true
+    worker_completes_whole_slice: true
+
+agents:
+  scout: installed
+  worker: installed
+  judge: installed
+
+visual_board:
+  selected: local
+  local:
+    status: live
+    url: "http://goalbuddy.localhost:41737/parliament-activity-mp-profiles/"
+    command: "node <skill-path>/surfaces/local-goal-board/scripts/local-goal-board.mjs --goal docs/goals/parliament-activity-mp-profiles"
+
+active_task: null
+tasks:
+  - id: T001
+    type: scout
+    assignee: Scout
+    status: done
+    reasoning_hint: low
+    objective: "Complete the formal Digital Sansad and Parliament Digital Library source review, map the existing NyaayWatch capture/snapshot/provenance/quality/publish/replay/rollback seams, and return a bounded implementation slice with explicit source and legal blockers."
+    inputs:
+      - "User-specified goal and hard constraints"
+      - "README.md, DESIGN.md, and current NyaayWatch source-of-truth docs"
+      - "Existing verification scripts and test entrypoints"
+      - "Official Digital Sansad and Parliament Digital Library documentation and reachable source surfaces"
+    constraints:
+      - "Read-only; do not edit implementation files or create fixtures."
+      - "Do not broaden beyond Lok Sabha bills and parliamentary questions plus one MP profile."
+      - "Record exact source URLs, timestamps, session/pagination/identity observations, redistribution terms, and confidence rather than filling gaps by inference."
+    expected_output:
+      - "Formal source-review findings with citations and unresolved gates"
+      - "Repository architecture and verification map"
+      - "Recommended phase-sized Worker package with allowed_files, verify commands, and stop conditions"
+      - "Explicit non-goals and public-beta blockers"
+    receipt:
+      result: done
+      summary: "Completed the formal Digital Sansad and Parliament Digital Library review, mapped NyaayWatch's existing capture/snapshot/provenance/publish/replay/rollback seams, and selected Lok Sabha 18 Session 5 plus official MP 5814 as a bounded pilot target. Attendance, sponsor attribution, modern question-row endpoint confirmation, and public reuse permission remain explicit gates."
+      evidence:
+        - docs/goals/parliament-activity-mp-profiles/notes/T001-source-review.md
+        - README.md
+        - src/domain/njdg-capture-schema.ts
+        - src/domain/snapshot-candidate-schema.ts
+        - src/services/published-snapshot-service.ts
+        - src/storage/postgres.ts
+        - src/dev/operator-ops.ts
+        - docs/PUBLIC_DATA_EXPOSURE_POLICY.md
+        - docs/STORAGE_AND_OPERATIONS.md
+        - "https://sansad.in/ls/legislation/bills"
+        - "https://sansad.in/ls/questions/questions-and-answers"
+        - "https://sansad.in/api_ls/business/getAllLoksabhaAndSession?locale=en"
+        - "https://sansad.in/api_ls/member/5814?locale=en"
+        - "https://sansad.in/api_ls/member/positionHeld?mpCode=5814&locale=en"
+        - "https://eparlib.sansad.in/help/copyright-policy.jsp"
+        - "https://sansad.in/rs/privacyPolicy"
+  - id: T002
+    type: pm
+    assignee: PM
+    status: blocked
+    reasoning_hint: default
+    objective: "Create or update the Linear issue with the validated Lok Sabha-only implementation slice, source/legal gates, and the GoalBuddy oracle using T001 evidence."
+    inputs:
+      - "T001 receipt"
+      - "User-provided required phases and hard constraints"
+    constraints:
+      - "Use the Linear issue as a supporting handoff; state.yaml remains board truth."
+      - "Do not broaden scope or imply public readiness."
+      - "Record the exact issue identifier and implementation-slice decision in the receipt."
+    expected_output:
+      - "Linear issue created or updated"
+      - "Confirmed implementation slice and explicit deferred work"
+      - "Any source/legal decision requiring owner approval"
+    receipt:
+      result: blocked
+      blocked_reason: "The connected Linear workspace exposes only the Outfitr team; no NyaayWatch team, project, or matching issue is available. Creating this work in Outfitr would be the wrong external mutation."
+      summary: "Read-only Linear discovery completed. No issue was created or updated. Continue local work while awaiting the correct NyaayWatch Linear workspace/team connection or an explicit owner-approved target."
+      evidence:
+        - "Linear list_teams returned only team Outfitr (5d0bc09e-466e-44ef-a409-948101ce0c9b)."
+        - "Linear search for NyaayWatch parliament returned no NyaayWatch issue/project/document."
+        - docs/goals/parliament-activity-mp-profiles/notes/T001-source-review.md
+      required_reply: "Connect the NyaayWatch Linear workspace/team or explicitly authorize the correct existing Linear team and issue target."
+      spawned_tasks:
+        - T003
+  - id: T003
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Review the source and Linear evidence, then choose the first largest safe implementation package with explicit file ownership and verification."
+    inputs:
+      - "T001 receipt"
+      - "T002 receipt"
+      - "README.md and source-of-truth docs"
+    constraints:
+      - "Do not implement."
+      - "Reject any package that depends on unresolved source authorization or unsupported identity assumptions."
+      - "Specify allowed_files, verify commands, and stop_if conditions for the Worker."
+    expected_output:
+      - "Decision and rationale"
+      - "Exact Worker objective"
+      - "allowed_files"
+      - "verify"
+      - "stop_if"
+      - "Deferred or blocked work"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      rationale: "The source review supports a bounded Lok Sabha 18 Session 5 fixture and MP 5814 identity, but the connected Linear workspace is wrong and modern question-row pagination still needs confirmation during implementation. The largest safe useful next slice is a pure, source-linked foundation that makes missing attribution and source timestamps explicit before any database or route mutation."
+      worker_package:
+        objective: "Implement the parliamentary foundation package for the bounded Lok Sabha 18 Session 5 pilot: a source-safe captured fixture envelope, typed person/office-role/party-constituency/legislative-activity/source-evidence/candidate/published-snapshot contracts, and deterministic extraction plus normalization for one aggregate snapshot and one time-bounded MP profile. Preserve official source links and missing values; do not embed or redistribute raw parliamentary PDFs or bulk search results."
+        allowed_files:
+          - src/domain/parliamentary-schema.ts
+          - src/ingest/parliamentary-source-client.ts
+          - src/extract/parliamentary-source.ts
+          - src/normalize/parliamentary-snapshot.ts
+          - fixtures/parliament/lok-sabha-18-session-5.json
+          - tests/parliamentary-schema.test.ts
+          - tests/parliamentary-normalize.test.ts
+        verify:
+          - "npm run check:types"
+          - "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts"
+          - "git diff --check"
+        stop_if:
+          - "The official question-row endpoint or pagination envelope cannot be confirmed without guessing; keep the unresolved field explicit and report the blocker rather than inventing data."
+          - "A fixture would require committing raw parliamentary PDFs, raw bulk search results, or content without a source URL and capture metadata."
+          - "The transform would compare across Houses, sessions, roles, or cohorts without an explicit boundary."
+          - "Need files outside allowed_files or a schema change to existing judiciary contracts."
+          - "Verification fails twice for an unrelated repository issue."
+      blocked_tasks:
+        - T002
+  - id: T004
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: "Implement the first validated foundation package selected by T003: bounded official-source fixture capture, typed person/office/party/constituency/activity/evidence/snapshot contracts, and deterministic extraction/normalization seams."
+    allowed_files:
+      - "src/domain/parliamentary-schema.ts"
+      - "src/ingest/parliamentary-source-client.ts"
+      - "src/extract/parliamentary-source.ts"
+      - "src/normalize/parliamentary-snapshot.ts"
+      - "fixtures/parliament/lok-sabha-18-session-5.json"
+      - "tests/parliamentary-schema.test.ts"
+      - "tests/parliamentary-normalize.test.ts"
+    verify:
+      - "npm run check:types"
+      - "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts"
+      - "git diff --check"
+    stop_if:
+      - "T003 has not provided concrete allowed_files and verification commands."
+      - "Source terms, identity completeness, session boundaries, or redistribution scope remain ambiguous for the selected fixture."
+      - "Need files outside allowed_files."
+      - "Verification fails twice."
+    receipt:
+      result: done
+      changed_files:
+        - src/domain/parliamentary-schema.ts
+        - src/ingest/parliamentary-source-client.ts
+        - src/extract/parliamentary-source.ts
+        - src/normalize/parliamentary-snapshot.ts
+        - fixtures/parliament/lok-sabha-18-session-5.json
+        - tests/parliamentary-schema.test.ts
+        - tests/parliamentary-normalize.test.ts
+      commands:
+        - cmd: "npm run check:types"
+          status: pass
+        - cmd: "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: "Added typed source-safe Lok Sabha capture contracts, a bounded LS18 Session 5 fixture with normalized official links and policy evidence, deterministic extraction and normalization, plus schema and lineage tests for one aggregate snapshot and one time-bounded MP profile."
+  - id: T005
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Review the foundation package against source lineage and deterministic-transform requirements, then select the next coherent pipeline/operator package."
+    inputs:
+      - "T004 receipt"
+      - "Current diff and verification output"
+      - "Goal oracle"
+    constraints:
+      - "Do not implement."
+      - "Check fixture provenance, identity resolution, missing-data semantics, and preservation of judiciary behavior."
+      - "Specify allowed_files, verify commands, and stop_if conditions for the next Worker."
+    expected_output:
+      - "Phase-gate decision"
+      - "Exact Worker objective"
+      - "allowed_files"
+      - "verify"
+      - "stop_if"
+      - "Remaining source/legal/methodology risks"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      rationale: "The foundation package is deterministic and source-safe. The fixture preserves official links and policy evidence without raw PDFs or bulk search payloads; the MP identity and role history are time-bounded to Lok Sabha 18; and the aggregate/profile share the capture lineage. The Lok Sabha-wide question aggregate and absent modern question rows remain explicit missing-data states, so the next slice can safely add operator persistence without treating them as Session 5 facts."
+      worker_package:
+        objective: "Implement the persisted internal parliamentary lifecycle on the existing run/artifact/publication tables: fetch the bounded fixture, inspect source and candidate artifacts, publish a partial internal snapshot, replay the captured fixture deterministically, and rollback publication history. Add a dedicated parliamentary scope so existing judiciary services and payload parsers are unchanged, and expose the lifecycle through the existing CLI operator with --parliament."
+        allowed_files:
+          - src/storage/postgres.ts
+          - src/services/published-parliamentary-snapshot-service.ts
+          - src/dev/operator-ops.ts
+          - tests/published-parliamentary-snapshot-service.test.ts
+          - tests/operator-ops-parliamentary.test.ts
+        verify:
+          - "npm run check:types"
+          - "npm test -- tests/published-parliamentary-snapshot-service.test.ts tests/operator-ops-parliamentary.test.ts tests/published-snapshot-service.test.ts tests/high-court-published-snapshot-service.test.ts tests/supreme-court-published-snapshot-service.test.ts"
+          - "git diff --check"
+        stop_if:
+          - "The service would have to parse a parliamentary payload through a judiciary PublishedSnapshotSchema or alter existing judiciary behavior."
+          - "The operator would publish a raw PDF, bulk search result, ranking, score, or unsupported performance judgment."
+          - "A partial internal snapshot is silently treated as complete or a Lok Sabha-wide question count is labeled as Session 5."
+          - "Need files outside allowed_files or a new database table/migration rather than the existing scoped run/artifact/publication seams."
+          - "Verification fails twice for an unrelated repository issue."
+        deferred:
+          - "Modern Digital Sansad question-row endpoint and pagination confirmation remain a later source gate; keep question breakdown missing in this fixture."
+          - "Internal HTML/JSON read surfaces, methodology page, parity tests, and local demo evidence follow in the next package."
+          - "Public beta remains blocked pending source reuse/legal approval, stronger question/session coverage, and publication review."
+  - id: T006
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: "Implement the selected deterministic legislative pipeline and internal operator controls for fetch, inspect, publish, replay, and rollback, with shared aggregate/profile publication lineage."
+    allowed_files:
+      - "src/storage/postgres.ts"
+      - "src/services/published-parliamentary-snapshot-service.ts"
+      - "src/dev/operator-ops.ts"
+      - "tests/published-parliamentary-snapshot-service.test.ts"
+      - "tests/operator-ops-parliamentary.test.ts"
+    verify:
+      - "npm run check:types"
+      - "npm test -- tests/published-parliamentary-snapshot-service.test.ts tests/operator-ops-parliamentary.test.ts tests/published-snapshot-service.test.ts tests/high-court-published-snapshot-service.test.ts tests/supreme-court-published-snapshot-service.test.ts"
+      - "git diff --check"
+    stop_if:
+      - "T005 has not provided concrete allowed_files and verification commands."
+      - "The package would expose raw PDFs or bulk search results without explicit approval."
+      - "Need files outside allowed_files."
+      - "Verification fails twice."
+    receipt:
+      result: done
+      changed_files:
+        - src/storage/postgres.ts
+        - src/services/published-parliamentary-snapshot-service.ts
+        - src/dev/operator-ops.ts
+        - tests/published-parliamentary-snapshot-service.test.ts
+        - tests/operator-ops-parliamentary.test.ts
+      commands:
+        - cmd: "npm run check:types"
+          status: pass
+        - cmd: "npm test -- tests/published-parliamentary-snapshot-service.test.ts tests/operator-ops-parliamentary.test.ts tests/published-snapshot-service.test.ts tests/high-court-published-snapshot-service.test.ts tests/supreme-court-published-snapshot-service.test.ts"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: "Added the dedicated parliamentary scope to the existing run/artifact/publication store, implemented internal fetch/inspect/publish/replay/rollback against the captured fixture, and added CLI --parliament routing with regression coverage proving judiciary services remain green. Partial quality is publishable only as an internal evidence snapshot; blocked candidates remain unpublishable."
+  - id: T007
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Review the pipeline and operator package, verify replay/rollback and publication lineage, then select the next coherent internal surface package."
+    inputs:
+      - "T006 receipt"
+      - "Current diff and verification output"
+      - "Goal oracle"
+    constraints:
+      - "Do not implement."
+      - "Reject completion if rollback is only mocked, lineage diverges, or source-linked caveats are absent."
+      - "Specify allowed_files, verify commands, and stop_if conditions for the next Worker."
+    expected_output:
+      - "Phase-gate decision"
+      - "Exact Worker objective"
+      - "allowed_files"
+      - "verify"
+      - "stop_if"
+      - "Remaining parity and methodology gaps"
+    receipt:
+      result: done
+      decision: approved
+      full_outcome_complete: false
+      rationale: "The dedicated parliamentary scope now proves persisted fixture fetch, candidate inspection, internal partial publication, deterministic replay, shared lineage, and rollback without routing parliamentary payloads through judiciary schemas. The remaining oracle gap is the reader boundary: published payloads need their source evidence and methodology, and protected HTML/JSON surfaces must render the same published aggregate and profile values."
+      worker_package:
+        objective: "Complete the internal read boundary for the bounded Lok Sabha pilot. Carry source evidence and structured methodology into the typed candidate and published snapshot, wire a protected /operator/parliamentary JSON surface plus protected aggregate and MP-profile HTML surfaces into the app and preview runtime, and test that HTML and JSON derive identical published values without creating public routes or rankings."
+        allowed_files:
+          - src/domain/parliamentary-schema.ts
+          - src/normalize/parliamentary-snapshot.ts
+          - src/services/published-parliamentary-snapshot-service.ts
+          - src/api/pages/parliamentary.ts
+          - src/api/app.ts
+          - src/preview/runtime.ts
+          - src/index.ts
+          - tests/parliamentary-surface.test.ts
+        verify:
+          - "npm run check:types"
+          - "npm test -- tests/parliamentary-surface.test.ts tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/published-parliamentary-snapshot-service.test.ts tests/api.test.ts"
+          - "git diff --check"
+        stop_if:
+          - "The published JSON omits official source links, methodology, quality state, missing-data reasons, or shared lineage."
+          - "HTML and JSON calculate separate values instead of rendering the same published snapshot payload."
+          - "Any route is public, lacks the operator token, adds rankings/scores/unsupported judgments, or redistributes raw PDFs/bulk results."
+          - "Need files outside allowed_files or changes to existing judiciary route behavior."
+          - "Verification fails twice for an unrelated repository issue."
+        deferred:
+          - "The exact modern Digital Sansad question-row endpoint and pagination envelope remain unresolved; surfaces must show question breakdown as missing and distinguish the Lok Sabha-wide source aggregate."
+          - "Operator methodology/documentation, full local demo transcript, PR evidence, and final public-beta gate audit follow after this surface package."
+  - id: T008
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: "Build the internal-only Parliamentary Activity Snapshot and time-bounded MP profile HTML and JSON surfaces, including source-linked citations, methodology, explicit missing values, and HTML/API parity tests."
+    allowed_files:
+      - "src/domain/parliamentary-schema.ts"
+      - "src/normalize/parliamentary-snapshot.ts"
+      - "src/services/published-parliamentary-snapshot-service.ts"
+      - "src/api/pages/parliamentary.ts"
+      - "src/api/app.ts"
+      - "src/preview/runtime.ts"
+      - "src/index.ts"
+      - "tests/parliamentary-surface.test.ts"
+      - "tests/published-parliamentary-snapshot-service.test.ts"
+      - "tests/parliamentary-normalize.test.ts"
+    verify:
+      - "npm run check:types"
+      - "npm test -- tests/parliamentary-surface.test.ts tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/published-parliamentary-snapshot-service.test.ts tests/api.test.ts"
+      - "git diff --check"
+    stop_if:
+      - "T007 has not provided concrete allowed_files and verification commands."
+      - "The surface introduces rankings, composite scores, unsupported judgments, or public routes."
+      - "Need files outside allowed_files."
+      - "Verification fails twice."
+    receipt:
+      result: done
+      changed_files:
+        - src/domain/parliamentary-schema.ts
+        - src/normalize/parliamentary-snapshot.ts
+        - src/api/pages/parliamentary.ts
+        - src/api/app.ts
+        - src/preview/runtime.ts
+        - src/index.ts
+        - tests/parliamentary-surface.test.ts
+        - tests/parliamentary-normalize.test.ts
+      commands:
+        - cmd: "npm run check:types"
+          status: pass
+        - cmd: "npm test -- tests/parliamentary-surface.test.ts tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/published-parliamentary-snapshot-service.test.ts tests/api.test.ts"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: "Added structured methodology and source evidence to the published parliamentary payload, wired protected internal JSON and HTML aggregate/MP-profile routes, and proved HTML/JSON parity, operator-token protection, citations, missing question rows, and public-route absence. Preview and default runtimes now construct the internal fixture-backed service."
+  - id: T009
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: "Run and record the local end-to-end fixture demo, add extraction/identity/lineage/replay/rollback/UI-API parity regression coverage, update methodology and operator documentation, and prepare exact PR evidence plus remaining public-beta blockers."
+    allowed_files:
+      - "src/dev/parliamentary-demo.ts"
+      - "package.json"
+      - "README.md"
+      - "docs/PARLIAMENTARY_METHODOLOGY.md"
+      - "docs/OPERATING_EVIDENCE.md"
+      - "docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md"
+    verify:
+      - "npm run parliament:demo"
+      - "npm run check:types"
+      - "npm test"
+      - "npm run build"
+      - "git diff --check"
+    stop_if:
+      - "T007 has not provided concrete allowed_files and verification commands, or T008 is not complete."
+      - "The demo cannot prove the same published values and lineage across aggregate and MP surfaces."
+      - "Need files outside allowed_files."
+      - "Verification fails twice."
+    receipt:
+      result: done
+      changed_files:
+        - src/dev/parliamentary-demo.ts
+        - package.json
+        - README.md
+        - docs/PARLIAMENTARY_METHODOLOGY.md
+        - docs/OPERATING_EVIDENCE.md
+        - docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md
+      commands:
+        - cmd: "npm run parliament:demo"
+          status: pass
+        - cmd: "npm run check:types"
+          status: pass
+        - cmd: "npm test"
+          status: pass
+        - cmd: "npm run build"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: "Recorded the successful local end-to-end demo with exact run/publication IDs, shared aggregate/profile/replay lineage, rollback evidence, protected JSON/HTML/profile status, published values, and explicit missing-data caveats. Added the internal methodology, README runbook, and operating-evidence guidance. The earlier parser regression was repaired by T011 before this final receipt."
+      evidence:
+        - docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md
+        - docs/PARLIAMENTARY_METHODOLOGY.md
+  - id: T010
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Audit the complete local vertical against every goal-oracle clause and identify any missing implementation, evidence, source/legal gate, or scope correction before final completion."
+    inputs:
+      - "All completed receipts"
+      - "Current diff and verification output"
+      - "Local demo transcript and PR evidence"
+    constraints:
+      - "Do not implement."
+      - "Reject completion for queued required work, weak proof, unsupported claims, or unresolved local blockers with safe follow-up work."
+    expected_output:
+      - "complete | not_complete"
+      - "full_outcome_complete: true | false"
+      - "Oracle-to-evidence mapping"
+      - "Missing evidence and exact next task if incomplete"
+      - "Remaining public-beta blockers"
+    receipt:
+      result: done
+      decision: not_complete
+      full_outcome_complete: false
+      oracle_mapping:
+        typed_fixture_and_deterministic_normalization: "proven by T004 receipt and targeted schema/normalization tests"
+        persisted_fetch_publish_replay_rollback: "proven by T006 receipt, lifecycle tests, and T009 demo IDs"
+        protected_matching_html_json_surfaces: "proven by T008 receipt and T009 demo status/parity fields"
+        source_linked_methodology_and_missing_data: "proven by T008/T009 artifacts and docs/PARLIAMENTARY_METHODOLOGY.md"
+        question_session_ministry_type_requirement: "not complete in the current fixture; source review has now confirmed the official modern endpoint and a bounded member/session response of 20 rows"
+        Linear_issue_phase: "blocked; connected Linear exposes only Outfitr and no NyaayWatch target, so no wrong-team mutation was made"
+      rationale: "The local operator and surface oracle is strong, but the final audit must not close while the bounded official question slice is unnecessarily empty. The official page bundle identifies the modern endpoint https://sansad.in/api_ls/question/qetFilteredQuestionsAns; with loksabhaNo=18, sessionNumber=5, pageNo=1, pageSize=100, and memberCode=5814 it returned totalRecordSize=20. Capture those normalized rows and expose their session/ministry/type breakdowns before the final audit. Keep the source-reuse/legal boundary explicit and retain the Linear blocker as a handoff gate."
+      worker_package:
+        objective: "Add the confirmed, bounded member-filtered question rows to the LS18 Session 5 fixture as normalized fields plus official links, update deterministic normalization/tests/methodology/demo evidence, and distinguish the 20 session rows from the separate source-reported Lok Sabha-wide aggregate of 125."
+        allowed_files:
+          - src/domain/parliamentary-schema.ts
+          - src/normalize/parliamentary-snapshot.ts
+          - fixtures/parliament/lok-sabha-18-session-5.json
+          - tests/parliamentary-schema.test.ts
+          - tests/parliamentary-normalize.test.ts
+          - tests/parliamentary-surface.test.ts
+          - docs/PARLIAMENTARY_METHODOLOGY.md
+          - docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md
+          - docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md
+        verify:
+          - "npm run check:types"
+          - "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/parliamentary-surface.test.ts tests/published-parliamentary-snapshot-service.test.ts"
+          - "npm run parliament:demo"
+          - "git diff --check"
+        stop_if:
+          - "Raw PDF bytes or an unbounded/bulk search result would be committed."
+          - "The official endpoint envelope cannot support the 20-row member/session boundary."
+          - "The 125 Lok Sabha-wide aggregate is labeled as a Session 5 count."
+          - "Need files outside allowed_files."
+      remaining_public_beta_blockers:
+        - "NyaayWatch Linear issue cannot be created until the correct workspace/team is connected or explicitly authorized."
+        - "Source/legal approval for broader parliamentary reuse and any public redistribution is not complete."
+        - "Attendance code semantics remain unverified; attendance stays unpublished."
+        - "Current pilot remains one House, one session, one MP, and one bounded member-filtered question slice."
+  - id: T011
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: low
+    objective: "Repair the --parliament CLI extension so legacy operator invocation object shapes and conflict diagnostics remain backward-compatible while parliamentary commands continue to parse."
+    allowed_files:
+      - "src/dev/operator-ops.ts"
+      - "tests/operator-ops.test.ts"
+      - "tests/staging-operator-ops.test.ts"
+      - "tests/operator-ops-parliamentary.test.ts"
+    verify:
+      - "npm run check:types"
+      - "npm test -- tests/operator-ops.test.ts tests/staging-operator-ops.test.ts tests/operator-ops-parliamentary.test.ts"
+      - "git diff --check"
+    stop_if:
+      - "The fix changes judiciary runtime behavior beyond preserving parser compatibility."
+      - "Need files outside allowed_files."
+      - "Verification fails twice."
+    receipt:
+      result: done
+      changed_files:
+        - src/dev/operator-ops.ts
+      commands:
+        - cmd: "npm run check:types"
+          status: pass
+        - cmd: "npm test -- tests/operator-ops.test.ts tests/staging-operator-ops.test.ts tests/operator-ops-parliamentary.test.ts"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: "Preserved the legacy operator invocation object shape and conflict diagnostic while emitting parliamentary only when --parliament is selected; parliamentary parser tests and the existing operator/staging parser suites pass."
+  - id: T012
+    type: worker
+    assignee: Worker
+    status: done
+    reasoning_hint: medium
+    objective: "Complete the bounded official question slice now that the Digital Sansad modern endpoint and pagination envelope are confirmed: capture the 20 MP- and Session-5-filtered normalized question rows, expose session/ministry/type breakdowns, update methodology and demo evidence, and preserve the raw-artifact boundary."
+    allowed_files:
+      - "src/domain/parliamentary-schema.ts"
+      - "src/normalize/parliamentary-snapshot.ts"
+      - "fixtures/parliament/lok-sabha-18-session-5.json"
+      - "tests/parliamentary-schema.test.ts"
+      - "tests/parliamentary-normalize.test.ts"
+      - "tests/parliamentary-surface.test.ts"
+      - "tests/published-parliamentary-snapshot-service.test.ts"
+      - "docs/PARLIAMENTARY_METHODOLOGY.md"
+      - "docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md"
+      - "docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md"
+    verify:
+      - "npm run check:types"
+      - "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/parliamentary-surface.test.ts tests/published-parliamentary-snapshot-service.test.ts"
+      - "npm run parliament:demo"
+      - "git diff --check"
+    stop_if:
+      - "The fixture would include raw PDF bytes or an unbounded/bulk question result rather than normalized member-filtered fields plus official links."
+      - "The 20 rows cannot be proven to be Lok Sabha 18 Session 5 and memberCode 5814 from the official endpoint envelope."
+      - "A source-reported Lok Sabha-wide aggregate is mislabeled as the Session 5 count."
+      - "Need files outside allowed_files."
+      - "Verification fails twice."
+    receipt:
+      result: done
+      changed_files:
+        - src/normalize/parliamentary-snapshot.ts
+        - fixtures/parliament/lok-sabha-18-session-5.json
+        - tests/parliamentary-schema.test.ts
+        - tests/parliamentary-normalize.test.ts
+        - tests/parliamentary-surface.test.ts
+        - tests/published-parliamentary-snapshot-service.test.ts
+        - docs/PARLIAMENTARY_METHODOLOGY.md
+        - docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md
+        - docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md
+      commands:
+        - cmd: "npm run check:types"
+          status: pass
+        - cmd: "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/parliamentary-surface.test.ts tests/published-parliamentary-snapshot-service.test.ts"
+          status: pass
+        - cmd: "npm run parliament:demo"
+          status: pass
+        - cmd: "git diff --check"
+          status: pass
+      summary: "Confirmed and captured the official Digital Sansad modern question endpoint and pagination envelope. Added the 20 normalized MP-5814/Lok Sabha-18/Session-5 question rows with official links, exposed captured session/ministry/type breakdowns, preserved the separate 125 Lok Sabha-wide aggregate, refreshed methodology and exact demo evidence, and kept raw PDFs/unfiltered bulk results internal and absent."
+      evidence:
+        - docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md
+        - docs/PARLIAMENTARY_METHODOLOGY.md
+        - docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md
+  - id: T999
+    type: judge
+    assignee: Judge
+    status: done
+    reasoning_hint: high
+    objective: "Perform the final skeptical PM/Judge audit and mark the goal complete only if the full local internal-only milestone is proven by receipts, verification, demo evidence, and explicit caveats."
+    inputs:
+      - "T010 receipt"
+      - "All done task receipts"
+      - "Last verification"
+      - "Current dirty diff and PR state"
+    constraints:
+      - "Do not implement."
+      - "Reject completion if any required Worker remains queued or active."
+      - "Record full_outcome_complete: true only when every goal-oracle clause is evidenced."
+    expected_output:
+      - "complete | not_complete"
+      - "full_outcome_complete: true | false"
+      - "Final oracle mapping"
+      - "Remaining public-beta blockers"
+      - "Exact next steps if incomplete"
+    receipt:
+      result: done
+      decision: complete
+      full_outcome_complete: true
+      oracle_mapping:
+        captured_fixture_to_published_snapshot: "T004 typed fixture/normalizer, T006 persisted lifecycle, and T009/T012 demo receipts prove deterministic fetch, candidate, and publish."
+        time_bounded_mp_profile: "Published profile is Shri Mani A (mp-5814), Lok Sabha 18, Session 5 scope, with official identity, party, constituency, and role evidence."
+        bills_and_questions: "15 bill records/14 unique bill identities plus 20 official member/session-filtered question rows; session, ministry, and question type breakdowns are normalized. The separate 125 Lok Sabha-wide aggregate remains labeled by scope."
+        matching_html_json: "T008 surface tests and T009 demo prove protected JSON, aggregate HTML, and MP HTML return 200 and render the same lineage and published values."
+        replay_and_rollback: "T006 lifecycle tests and T009 demo prove replayed status, shared lineage, and rollback publication history."
+        citations_and_methodology: "Published payload carries source evidence links and structured sourced/derived/missing-data methodology; docs/PARLIAMENTARY_METHODOLOGY.md records source, legal, and scope caveats."
+        judiciary_preservation: "Full npm test suite passes: 63 files, 295 passed, 1 skipped; build and typecheck pass."
+      remaining_public_beta_blockers:
+        - "The connected Linear workspace exposes only Outfitr; no NyaayWatch issue was created or updated. The implementation slice is recorded in GoalBuddy and the PR, but the correct Linear workspace/team or explicit owner-approved target is still required."
+        - "Digital Sansad and Parliament Digital Library terms were reviewed, but broad public redistribution approval was not inferred. Raw PDFs, raw captures, replay copies, and unfiltered bulk results remain internal."
+        - "Attendance remains unpublished because the official attendance code legend is not sufficiently verified."
+        - "This remains an internal Lok Sabha-only pilot covering one historical session and one MP profile; no Rajya Sabha, state legislature, executive, ranking, or composite performance surface is included."
+      evidence:
+        - docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md
+        - docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md
+        - docs/PARLIAMENTARY_METHODOLOGY.md
+        - README.md
+      summary: "The full local internal-only parliamentary vertical is proven against the goal oracle. The remaining items are explicitly held outside public beta and recorded for the PR handoff; they do not invalidate the requested local milestone."
+checks:
+  dirty_fingerprint: unknown
+  last_verification:
+    result: unknown
+    task: null
+    commands: []

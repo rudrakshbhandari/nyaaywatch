@@ -45,6 +45,7 @@ import { renderSupremeCourtOverviewPage } from "./pages/supreme-court-overview.j
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
+import { PublishedParliamentarySnapshotService } from "../services/published-parliamentary-snapshot-service.js";
 import { NewsletterService } from "../services/newsletter-service.js";
 import { buildPublicHighCourtPageContext, buildPublicHighCourtRoutes } from "./public-high-court.js";
 import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
@@ -58,6 +59,7 @@ import {
   renderSubscribeAlreadyConfirmed,
   renderUnsubscribed,
 } from "./pages/subscribe.js";
+import { buildParliamentaryJsonPayload, renderParliamentarySnapshotPage } from "./pages/parliamentary.js";
 
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
 type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
@@ -78,6 +80,7 @@ export function createApp(
   highCourtServices: HighCourtServiceMap = {},
   supremeCourtService?: PublishedSupremeCourtSnapshotService,
   pool?: Pool,
+  parliamentaryService?: PublishedParliamentarySnapshotService,
 ) {
   const newsletterService = pool ? new NewsletterService(pool, config) : null;
   const serviceMap = normalizeServiceMap(config, service, publicServices);
@@ -1185,6 +1188,68 @@ export function createApp(
   );
 
   if (config.ENABLE_OPERATOR_ROUTES) {
+    if (parliamentaryService) {
+      app.get(
+        "/operator/parliamentary",
+        operatorOnly(config),
+        asyncRoute(async (_request, response) => {
+          const snapshot = await parliamentaryService.getPublishedSnapshot();
+          if (!snapshot) {
+            response.status(404).json({ error: "No parliamentary snapshot is published." });
+            return;
+          }
+          response.json(buildParliamentaryJsonPayload(snapshot.payload));
+        }),
+      );
+
+      app.get(
+        "/operator/parliamentary/html",
+        operatorOnly(config),
+        asyncRoute(async (_request, response) => {
+          const snapshot = await parliamentaryService.getPublishedSnapshot();
+          if (!snapshot) {
+            response.status(404).send("No parliamentary snapshot is published.");
+            return;
+          }
+          response.type("html").send(renderParliamentarySnapshotPage(snapshot.payload));
+        }),
+      );
+
+      app.get(
+        "/operator/parliamentary/html/mp/:personId",
+        operatorOnly(config),
+        asyncRoute(async (request, response) => {
+          const snapshot = await parliamentaryService.getPublishedSnapshot();
+          if (!snapshot) {
+            response.status(404).send("No parliamentary snapshot is published.");
+            return;
+          }
+          const personId = readRouteParam(request.params.personId);
+          if (!snapshot.payload.profiles.some((profile) => profile.person.personId === personId)) {
+            response.status(404).send("MP profile not found.");
+            return;
+          }
+          response.type("html").send(renderParliamentarySnapshotPage(snapshot.payload, personId));
+        }),
+      );
+
+      app.get(
+        "/operator/parliamentary/runs",
+        operatorOnly(config),
+        asyncRoute(async (_request, response) => {
+          response.json({ runs: await parliamentaryService.listRuns() });
+        }),
+      );
+
+      app.get(
+        "/operator/parliamentary/publications",
+        operatorOnly(config),
+        asyncRoute(async (_request, response) => {
+          response.json({ publications: await parliamentaryService.listPublicationHistory() });
+        }),
+      );
+    }
+
     app.get(
       "/operator/supreme-court",
       operatorOnly(config),

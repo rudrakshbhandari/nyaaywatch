@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { DataType, newDb } from "pg-mem";
 import type { Pool } from "pg";
 import { randomUUID } from "node:crypto";
@@ -10,11 +11,13 @@ import { buildPreviewSupremeCourtCaptureBundle } from "../dev/supreme-court-fixt
 import { getStateProfile, listStateProfiles, type SupportedStateCode } from "../geographies.js";
 import { listHighCourtProfiles, type SupportedHighCourtCode } from "../high-courts.js";
 import { createHighCourtSourceClient } from "../ingest/high-court-source-client.js";
+import { FixtureParliamentarySourceClient } from "../ingest/parliamentary-source-client.js";
 import type { SupremeCourtCaptureBundle } from "../domain/supreme-court-capture-schema.js";
 import type { SupremeCourtSourceClient } from "../ingest/supreme-court-source-client.js";
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
+import { PublishedParliamentarySnapshotService } from "../services/published-parliamentary-snapshot-service.js";
 import { InMemoryArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
@@ -88,8 +91,15 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
     artifactStore,
     createPreviewSupremeCourtSourceClient(),
   );
+  const parliamentaryService = new PublishedParliamentarySnapshotService(
+    config,
+    store,
+    artifactStore,
+    new FixtureParliamentarySourceClient(join(process.cwd(), "fixtures/parliament")),
+  );
   const existing = await service.getPublishedSnapshot();
   const existingSupremeCourt = await supremeCourtService.getPublishedSnapshot();
+  const existingParliamentary = await parliamentaryService.getPublishedSnapshot();
 
   if (!existing) {
     const captured = await service.captureRun("Preview fixture capture.");
@@ -101,8 +111,13 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
     await supremeCourtService.publishRun(captured.run.id, "Preview Supreme Court published snapshot.");
   }
 
+  if (!existingParliamentary) {
+    const captured = await parliamentaryService.captureRun("Preview parliamentary fixture capture.");
+    await parliamentaryService.publishRun(captured.run.id, "Preview parliamentary published snapshot.");
+  }
+
   return {
-    app: createApp(config, service, publicServices, highCourtServices, supremeCourtService, pool),
+    app: createApp(config, service, publicServices, highCourtServices, supremeCourtService, pool, parliamentaryService),
     config,
     async close() {
       await pool.end();

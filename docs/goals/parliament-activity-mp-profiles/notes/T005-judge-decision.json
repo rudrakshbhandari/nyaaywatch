@@ -1,0 +1,33 @@
+{
+  "result": "done",
+  "decision": "approved",
+  "full_outcome_complete": false,
+  "rationale": "The foundation package is deterministic and source-safe. The fixture preserves official links and policy evidence without raw PDFs or bulk search payloads; the MP identity and role history are time-bounded to Lok Sabha 18; and the aggregate/profile share the capture lineage. The Lok Sabha-wide question aggregate and absent modern question rows remain explicit missing-data states, so the next slice can safely add operator persistence without treating them as Session 5 facts.",
+  "worker_package": {
+    "objective": "Implement the persisted internal parliamentary lifecycle on the existing run/artifact/publication tables: fetch the bounded fixture, inspect source and candidate artifacts, publish a partial internal snapshot, replay the captured fixture deterministically, and rollback publication history. Add a dedicated parliamentary scope so existing judiciary services and payload parsers are unchanged, and expose the lifecycle through the existing CLI operator with --parliament.",
+    "allowed_files": [
+      "src/storage/postgres.ts",
+      "src/services/published-parliamentary-snapshot-service.ts",
+      "src/dev/operator-ops.ts",
+      "tests/published-parliamentary-snapshot-service.test.ts",
+      "tests/operator-ops-parliamentary.test.ts"
+    ],
+    "verify": [
+      "npm run check:types",
+      "npm test -- tests/published-parliamentary-snapshot-service.test.ts tests/operator-ops-parliamentary.test.ts tests/published-snapshot-service.test.ts tests/high-court-published-snapshot-service.test.ts tests/supreme-court-published-snapshot-service.test.ts",
+      "git diff --check"
+    ],
+    "stop_if": [
+      "The service would have to parse a parliamentary payload through a judiciary PublishedSnapshotSchema or alter existing judiciary behavior.",
+      "The operator would publish a raw PDF, bulk search result, ranking, score, or unsupported performance judgment.",
+      "A partial internal snapshot is silently treated as complete or a Lok Sabha-wide question count is labeled as Session 5.",
+      "Need files outside allowed_files or a new database table/migration rather than the existing scoped run/artifact/publication seams.",
+      "Verification fails twice for an unrelated repository issue."
+    ],
+    "deferred": [
+      "Modern Digital Sansad question-row endpoint and pagination confirmation remain a later source gate; keep question breakdown missing in this fixture.",
+      "Internal HTML/JSON read surfaces, methodology page, parity tests, and local demo evidence follow in the next package.",
+      "Public beta remains blocked pending source reuse/legal approval, stronger question/session coverage, and publication review."
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "result": "done",
+  "decision": "approved",
+  "full_outcome_complete": false,
+  "rationale": "The dedicated parliamentary scope now proves persisted fixture fetch, candidate inspection, internal partial publication, deterministic replay, shared lineage, and rollback without routing parliamentary payloads through judiciary schemas. The remaining oracle gap is the reader boundary: published payloads need their source evidence and methodology, and protected HTML/JSON surfaces must render the same published aggregate and profile values.",
+  "worker_package": {
+    "objective": "Complete the internal read boundary for the bounded Lok Sabha pilot. Carry source evidence and structured methodology into the typed candidate and published snapshot, wire a protected /operator/parliamentary JSON surface plus protected aggregate and MP-profile HTML surfaces into the app and preview runtime, and test that HTML and JSON derive identical published values without creating public routes or rankings.",
+    "allowed_files": [
+      "src/domain/parliamentary-schema.ts",
+      "src/normalize/parliamentary-snapshot.ts",
+      "src/services/published-parliamentary-snapshot-service.ts",
+      "src/api/pages/parliamentary.ts",
+      "src/api/app.ts",
+      "src/preview/runtime.ts",
+      "src/index.ts",
+      "tests/parliamentary-surface.test.ts"
+    ],
+    "verify": [
+      "npm run check:types",
+      "npm test -- tests/parliamentary-surface.test.ts tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/published-parliamentary-snapshot-service.test.ts tests/api.test.ts",
+      "git diff --check"
+    ],
+    "stop_if": [
+      "The published JSON omits official source links, methodology, quality state, missing-data reasons, or shared lineage.",
+      "HTML and JSON calculate separate values instead of rendering the same published snapshot payload.",
+      "Any route is public, lacks the operator token, adds rankings/scores/unsupported judgments, or redistributes raw PDFs/bulk results.",
+      "Need files outside allowed_files or changes to existing judiciary route behavior.",
+      "Verification fails twice for an unrelated repository issue."
+    ],
+    "deferred": [
+      "The exact modern Digital Sansad question-row endpoint and pagination envelope remain unresolved; surfaces must show question breakdown as missing and distinguish the Lok Sabha-wide source aggregate.",
+      "Operator methodology/documentation, full local demo transcript, PR evidence, and final public-beta gate audit follow after this surface package."
+    ]
+  }
+}
