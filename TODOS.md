@@ -24,7 +24,8 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
   - 2026-08-08: Added `docs/GOVERNMENT_ACCOUNTABILITY_ROADMAP.md`, updated the README and national product architecture, and preserved the current judiciary-only public claim.
 - [x] Complete an initial desk source review for a narrow legislative pilot.
   - 2026-08-08: Recommended a Lok Sabha-first Parliamentary Activity Snapshot using Digital Sansad bills/questions surfaces and Parliament Digital Library metadata. Formal source, terms, and redistribution approval remain gates before implementation.
-- [ ] Freeze the v0 Parliamentary Activity Snapshot scope, schema, and methodology.
+- [ ] Freeze the v0 Parliamentary Activity Snapshot + MP Profiles scope, schema, and methodology.
+- [ ] Define time-bounded person, office, party, constituency, House, and role identity semantics before displaying individual politician activity.
 - [ ] Capture and replay a bounded official-source fixture set before building public routes.
 - [ ] Decide whether raw parliamentary documents can be retained or redistributed; default to normalized aggregates plus official links until explicitly approved.
 - [ ] After the legislative pilot is proven, select one bounded executive-branch source class for a separate source review.

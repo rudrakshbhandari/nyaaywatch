@@ -313,7 +313,7 @@ Per-state and per-court readiness reviews, source reviews, methodology drafts, a
 
 ## Non-Goals
 
-Current alpha non-goals: case-level search, PDF parsing, judge rankings, predictive forecasting, AI legal analysis, real-time claims, and any public claim that non-judicial branches are already covered.
+Current alpha non-goals: case-level search, PDF parsing, judge or politician rankings, composite politician performance scores, predictive forecasting, AI legal analysis, real-time claims, and any public claim that non-judicial branches are already covered.
 
 ## Voice
 

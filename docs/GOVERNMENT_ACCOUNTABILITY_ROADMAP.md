@@ -27,13 +27,14 @@ The next strategic problem is no longer court coverage. It is extending the same
 The long-term platform should share these primitives across branches:
 
 1. Institution and jurisdiction registry
-2. Source review and capture contracts
-3. Dated evidence snapshots
-4. Explicit sourced-versus-derived fields
-5. Versioned methodology
-6. Quality, freshness, and publication gates
-7. Evidence packs, citations, and public read models
-8. Issue-led watchrooms and change-over-time views
+2. Person, office, and time-bounded role registry
+3. Source review and capture contracts
+4. Dated evidence snapshots
+5. Explicit sourced-versus-derived fields
+6. Versioned methodology
+7. Quality, freshness, and publication gates
+8. Evidence packs, citations, and public read models
+9. Issue-led watchrooms and change-over-time views
 
 Each branch should retain its own normalized schema and methodology. A shared shell does not mean a shared metric model.
 
@@ -41,18 +42,35 @@ The public product should avoid a single national “government score” or a mi
 
 ## First Non-Judicial Pilot Candidate
 
-### Recommended vertical: legislative accountability
+### Recommended vertical: legislative accountability and officeholder profiles
 
-Start with a narrow Lok Sabha-first pilot called **Parliamentary Activity Snapshot**. Keep Rajya Sabha and state legislatures as later expansion decisions after the first source and publication cycle is proven.
+Start with a narrow Lok Sabha-first pilot called **Parliamentary Activity Snapshot + MP Profiles**. Keep Rajya Sabha and state legislatures as later expansion decisions after the first source and publication cycle is proven.
 
 Initial candidate questions:
 
 - What bills were introduced, passed, pending, negatived, withdrawn, or referred to a committee in a defined session window?
 - Which ministries and policy areas appear in the legislative pipeline?
 - How much parliamentary question activity is recorded by ministry, session, question type, or member?
+- What official legislative activity is recorded for an individual Member of Parliament over a defined term or session?
 - What changed between two published parliamentary snapshots?
 
-The first version should publish aggregate activity and durable links, not member performance scores, political judgments, or a claim that legislative activity equals policy quality.
+The first version should publish aggregate activity and individual, evidence-linked activity profiles—not member performance scores, political judgments, or a claim that legislative activity equals policy quality.
+
+### Individual politician profile contract
+
+Politicians should be first-class accountability entities, but profiles must describe recorded public activity rather than infer personal quality.
+
+The first MP profile may include, where the official source is complete and reproducible:
+
+- person identity, party, constituency, House, term, and time-bounded office history
+- bills introduced, sponsored, or otherwise officially attributed to the member
+- parliamentary questions by session, ministry, and question type
+- recorded debate or participation metadata
+- committee membership and documented committee activity
+- attendance only where an official source defines the measure clearly
+- citations and links to the underlying official records
+
+The product must not turn these fields into a composite politician score. Any comparison should be bounded to an explicit House, session, role, or cohort and should show the underlying counts and caveats.
 
 ## Initial Source Review
 
@@ -71,6 +89,8 @@ This is an initial desk review, not source approval. Before implementation, the 
 - deterministic fixture capture and replay
 - whether public outputs should contain only derived aggregates plus official links
 - parity between Lok Sabha source labels and the proposed public schema
+- person identity resolution across spelling variants, constituencies, party changes, and terms
+- whether member-attributed activity is complete enough to show as a profile rather than a partial record
 
 The official library’s own guidance indicates that search results cannot automatically be reproduced in publications without permission. That makes a normalized, citation-linked public read model safer than redistributing raw documents or bulk search output in v0.
 
@@ -101,8 +121,9 @@ Target: following milestone
 - complete the formal Lok Sabha source review
 - capture a bounded historical fixture set
 - define the Parliamentary Activity Snapshot schema and methodology
+- define a time-bounded person, office, and role schema for MP profiles
 - build internal fetch, inspect, replay, and rollback before public routes
-- publish one narrow reviewed beta only after source and redistribution gates pass
+- publish one narrow reviewed beta with at least one evidence-linked MP profile only after source and redistribution gates pass
 
 ### Stage 3: Add a second government branch
 
@@ -134,6 +155,7 @@ NyaayWatch should not become:
 
 - a political scorecard
 - a party or politician ranking product
+- a composite politician performance score based on activity counts
 - a real-time claim engine built on unstable source pages
 - a raw government-document mirror
 - an AI-generated interpretation layer without reproducible evidence
@@ -148,6 +170,7 @@ The first government-wide roadmap milestone is complete when:
 - the broader north star is reflected in the product docs
 - the judiciary is explicitly identified as the first shipped vertical
 - the Lok Sabha-first pilot has a reviewed source inventory and legal/exposure decision
-- a bounded schema and methodology exist
+- a bounded legislative and MP-profile schema and methodology exist
 - at least one captured fixture can be deterministically replayed
+- at least one individual MP profile can be reconstructed from time-bounded official evidence
 - no public route or claim implies that the pilot is already live before its publication gates pass
