@@ -1,0 +1,19 @@
+{
+  "result": "done",
+  "changed_files": [
+    "src/domain/parliamentary-schema.ts",
+    "src/normalize/parliamentary-snapshot.ts",
+    "src/api/pages/parliamentary.ts",
+    "src/api/app.ts",
+    "src/preview/runtime.ts",
+    "src/index.ts",
+    "tests/parliamentary-surface.test.ts",
+    "tests/parliamentary-normalize.test.ts"
+  ],
+  "commands": [
+    {"cmd": "npm run check:types", "status": "pass"},
+    {"cmd": "npm test -- tests/parliamentary-surface.test.ts tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/published-parliamentary-snapshot-service.test.ts tests/api.test.ts", "status": "pass"},
+    {"cmd": "git diff --check", "status": "pass"}
+  ],
+  "summary": "Added structured methodology and source evidence to the published parliamentary payload, wired protected internal JSON and HTML aggregate/MP-profile routes, and proved HTML/JSON parity, operator-token protection, citations, missing question rows, and public-route absence. Preview and default runtimes now construct the internal fixture-backed service."
+}

@@ -1,0 +1,46 @@
+{
+  "result": "done",
+  "decision": "not_complete",
+  "full_outcome_complete": false,
+  "oracle_mapping": {
+    "typed_fixture_and_deterministic_normalization": "proven by T004 receipt and targeted schema/normalization tests",
+    "persisted_fetch_publish_replay_rollback": "proven by T006 receipt, lifecycle tests, and T009 demo IDs",
+    "protected_matching_html_json_surfaces": "proven by T008 receipt and T009 demo status/parity fields",
+    "source_linked_methodology_and_missing_data": "proven by T008/T009 artifacts and docs/PARLIAMENTARY_METHODOLOGY.md",
+    "question_session_ministry_type_requirement": "not complete in the current fixture; source review has now confirmed the official modern endpoint and a bounded member/session response of 20 rows",
+    "Linear_issue_phase": "blocked; connected Linear exposes only Outfitr and no NyaayWatch target, so no wrong-team mutation was made"
+  },
+  "rationale": "The local operator and surface oracle is strong, but the final audit must not close while the bounded official question slice is unnecessarily empty. The official page bundle identifies the modern endpoint https://sansad.in/api_ls/question/qetFilteredQuestionsAns; with loksabhaNo=18, sessionNumber=5, pageNo=1, pageSize=100, and memberCode=5814 it returned totalRecordSize=20. Capture those normalized rows and expose their session/ministry/type breakdowns before the final audit. Keep the source-reuse/legal boundary explicit and retain the Linear blocker as a handoff gate.",
+  "worker_package": {
+    "objective": "Add the confirmed, bounded member-filtered question rows to the LS18 Session 5 fixture as normalized fields plus official links, update deterministic normalization/tests/methodology/demo evidence, and distinguish the 20 session rows from the separate source-reported Lok Sabha-wide aggregate of 125.",
+    "allowed_files": [
+      "src/domain/parliamentary-schema.ts",
+      "src/normalize/parliamentary-snapshot.ts",
+      "fixtures/parliament/lok-sabha-18-session-5.json",
+      "tests/parliamentary-schema.test.ts",
+      "tests/parliamentary-normalize.test.ts",
+      "tests/parliamentary-surface.test.ts",
+      "docs/PARLIAMENTARY_METHODOLOGY.md",
+      "docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md",
+      "docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md"
+    ],
+    "verify": [
+      "npm run check:types",
+      "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/parliamentary-surface.test.ts tests/published-parliamentary-snapshot-service.test.ts",
+      "npm run parliament:demo",
+      "git diff --check"
+    ],
+    "stop_if": [
+      "Raw PDF bytes or an unbounded/bulk search result would be committed.",
+      "The official endpoint envelope cannot support the 20-row member/session boundary.",
+      "The 125 Lok Sabha-wide aggregate is labeled as a Session 5 count.",
+      "Need files outside allowed_files."
+    ]
+  },
+  "remaining_public_beta_blockers": [
+    "NyaayWatch Linear issue cannot be created until the correct workspace/team is connected or explicitly authorized.",
+    "Source/legal approval for broader parliamentary reuse and any public redistribution is not complete.",
+    "Attendance code semantics remain unverified; attendance stays unpublished.",
+    "Current pilot remains one House, one session, one MP, and one bounded member-filtered question slice."
+  ]
+}
