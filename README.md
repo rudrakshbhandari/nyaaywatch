@@ -66,6 +66,12 @@ Each court family ships paired overview, `/data`, `/methodology`, and `/api` pag
 - Anomalies are flagged signals, not verdicts.
 - Raw upstream artifacts are never exposed publicly.
 
+## Internal Parliamentary Pilot
+
+The first non-judicial vertical is an internal-only Lok Sabha 18 Session 5 fixture for parliamentary bills, questions, participation metadata, and one time-bounded MP profile. It is deliberately separate from the public court routes and does not create rankings or politician performance scores.
+
+Run the deterministic local demo with `npm run parliament:demo`. With the application operator routes enabled, the read surfaces are protected by `x-operator-token` at `/operator/parliamentary` (JSON), `/operator/parliamentary/html` (aggregate HTML), and `/operator/parliamentary/html/mp/mp-5814` (MP HTML). See [the parliamentary pilot methodology](docs/PARLIAMENTARY_METHODOLOGY.md) for source links, caveats, and the internal publication boundary.
+
 ## Architecture
 
 ```mermaid
@@ -171,6 +177,14 @@ npm run operator:inspect -- <run-id>
 npm run operator:publish -- <run-id> "Publish completed snapshot"
 npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
+
+# Bounded internal parliamentary fixture lifecycle
+npm run operator:fetch -- --parliament "Lok Sabha fixture fetch"
+npm run operator:inspect -- --parliament <run-id>
+npm run operator:publish -- --parliament <run-id> "Publish internal parliamentary snapshot"
+npm run operator:replay -- --parliament <run-id>
+npm run operator:rollback -- --parliament <publication-id>
+npm run parliament:demo
 ```
 
 For live remote operation against `https://nyaaywatch.in`:

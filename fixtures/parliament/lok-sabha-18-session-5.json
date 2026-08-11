@@ -1,0 +1,212 @@
+{
+  "captureId": "parliament-ls18-s5-20260811T033035Z",
+  "capturedAt": "2026-08-11T03:30:35.000Z",
+  "house": "lok_sabha",
+  "lokSabhaNumber": 18,
+  "sessionNumber": 5,
+  "sessionStartDate": "2025-07-21",
+  "sessionEndDate": "2025-08-21",
+  "sourceResultTotals": {
+    "billRecords": 15,
+    "questionRecords": 20
+  },
+  "sourceEvidence": [
+    {
+      "evidenceId": "ds-bills-18-5",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad Lok Sabha bills result",
+      "url": "https://sansad.in/api_rs/legislation/getBills?loksabha=18&sessionNo=5&house=Lok%20Sabha&page=1&size=20&locale=en&sortOn=billIntroducedDate&sortBy=desc",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": null,
+      "locator": "_metadata.totalElements=15; page=1; size=20",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "Fixture stores normalized bill records and official links only; it does not store bill PDF bytes."
+    },
+    {
+      "evidenceId": "ds-committee-aggregate-5814",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad member committee participation",
+      "url": "https://sansad.in/api_ls/committee/participation?mpsno=5814&loksabha=18",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": null,
+      "locator": "participation=2",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "Aggregate participation endpoint; not a committee roster or activity ledger."
+    },
+    {
+      "evidenceId": "ds-debate-aggregate-5814",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad member debate participation",
+      "url": "https://sansad.in/api_ls/debate/participation?mpsno=5814&loksabha=18&house=LS",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": null,
+      "locator": "participation=4",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "Aggregate participation endpoint; no qualitative interpretation is made."
+    },
+    {
+      "evidenceId": "ds-member-5814",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad member record",
+      "url": "https://sansad.in/api_ls/member/5814?locale=en",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": "2026-08-11T03:30:35.000Z",
+      "locator": "mpsno=5814; loksabhaExpr=18",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "Identity, party, constituency, House, and term labels are copied as sourced facts."
+    },
+    {
+      "evidenceId": "ds-member-position-5814",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad member position history",
+      "url": "https://sansad.in/api_ls/member/positionHeld?mpCode=5814&locale=en",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": null,
+      "locator": "Member; Committee on Labour, Textiles and Skill Development; 26-Sep-2024 onwards",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "Role dates remain nullable where the source exposes only a month or open-ended period label."
+    },
+    {
+      "evidenceId": "ds-question-aggregate-5814",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad member question participation",
+      "url": "https://sansad.in/api_ls/question/participation?mpsno=5814&loksabha=18",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": null,
+      "locator": "participation=125; scope=loksabha=18",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "The observed endpoint is Lok Sabha-wide for the member, not session-specific."
+    },
+    {
+      "evidenceId": "ds-session-18-5",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad Lok Sabha session register",
+      "url": "https://sansad.in/api_ls/business/getAllLoksabhaAndSession?locale=en",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": "2025-07-21/2025-08-21",
+      "locator": "Lok Sabha 18; Session 5; 21/07/2025 to 21/08/2025",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "Session boundary comes from the official session register."
+    },
+    {
+      "evidenceId": "ds-questions-18-5-member-5814",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad filtered Lok Sabha question result",
+      "url": "https://sansad.in/api_ls/question/qetFilteredQuestionsAns?loksabhaNo=18&sessionNumber=5&pageNo=1&locale=en&pageSize=100&memberCode=5814",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": "2025-07-21/2025-08-21",
+      "locator": "totalRecordSize=20; pageNo=1; pageSize=100; memberCode=5814; loksabhaNo=18; sessionNumber=5",
+      "permittedUse": "normalized_aggregate_with_link",
+      "note": "Fixture stores 20 normalized member-filtered rows and official links only; it does not store question PDF bytes or an unbounded result."
+    },
+    {
+      "evidenceId": "ds-terms",
+      "sourceSystem": "digital_sansad",
+      "sourceName": "Digital Sansad privacy and terms page",
+      "url": "https://sansad.in/rs/privacyPolicy",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": null,
+      "locator": "content reproduction and linking terms",
+      "permittedUse": "internal_fixture_only",
+      "note": "Raw parliamentary content is not redistributed by this pilot."
+    },
+    {
+      "evidenceId": "pdl-copyright-policy",
+      "sourceSystem": "parliament_digital_library",
+      "sourceName": "Parliament Digital Library copyright policy",
+      "url": "https://eparlib.sansad.in/help/copyright-policy.jsp",
+      "retrievedAt": "2026-08-11T03:30:35.000Z",
+      "sourceTimestamp": null,
+      "locator": "non-commercial research/private study/criticism/review/news reporting terms",
+      "permittedUse": "internal_fixture_only",
+      "note": "Policy review supports retaining official links and keeping raw source artifacts internal pending permission."
+    }
+  ],
+  "person": {
+    "personId": "mp-5814",
+    "sourceMemberCode": "5814",
+    "fullName": "Shri Mani A",
+    "house": "lok_sabha",
+    "lokSabhaNumber": 18,
+    "party": {
+      "name": "Dravida Munnetra Kazhagam",
+      "abbreviation": "DMK",
+      "evidenceIds": ["ds-member-5814"]
+    },
+    "constituency": {
+      "name": "Dharmapuri",
+      "stateOrUnionTerritory": "Tamil Nadu",
+      "evidenceIds": ["ds-member-5814"]
+    },
+    "status": "sitting",
+    "termLabels": ["18th Lok Sabha"],
+    "evidenceIds": ["ds-member-5814"]
+  },
+  "roles": [
+    {
+      "roleId": "mp-5814-member-18",
+      "roleType": "member",
+      "title": "Member, 18th Lok Sabha",
+      "fromDate": null,
+      "toDate": null,
+      "sourcePeriod": "June 2024",
+      "evidenceIds": ["ds-member-position-5814"]
+    },
+    {
+      "roleId": "mp-5814-committee-labour-2024",
+      "roleType": "committee_member",
+      "title": "Committee on Labour, Textiles and Skill Development",
+      "fromDate": "2024-09-26",
+      "toDate": null,
+      "sourcePeriod": "26-Sep-2024 onwards",
+      "evidenceIds": ["ds-member-position-5814"]
+    }
+  ],
+  "bills": [
+    {"billId":"ls18-s5-bill-110","billNumber":"110","title":"THE PROMOTION AND REGULATION OF ONLINE GAMING BILL, 2025","billType":"Government","billCategory":"Financial Bill","ministry":"ELECTRONICS AND INFORMATION TECHNOLOGY","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-20","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/gaming%20eng8202025121602PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-111","billNumber":"111","title":"THE CONSTITUTION (ONE HUNDRED AND THIRTIETH AMENDMENT) BILL, 2025","billType":"Government","billCategory":"Constitutional Amendment Bill","ministry":"HOME AFFAIRS","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-20","introducedByMemberId":null,"status":"Pending","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/130th%20eng820202532515PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-112","billNumber":"112","title":"THE JAMMU AND KASHMIR REORGANISATION (AMENDMENT) BILL, 2025","billType":"Government","billCategory":"Ordinary Bill","ministry":"HOME AFFAIRS","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-20","introducedByMemberId":null,"status":"Pending","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/jammu%20eng820202532719PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-113","billNumber":"113","title":"THE GOVERNMENT OF UNION TERRITORIES (AMENDMENT) BILL, 2025","billType":"Government","billCategory":"Ordinary Bill","ministry":"HOME AFFAIRS","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-20","introducedByMemberId":null,"status":"Pending","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/ut%20eng820202532910PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-108","billNumber":"108","title":"THE JAN VISHWAS (AMENDMENT OF PROVISIONS) BILL, 2025","billType":"Government","billCategory":"Ordinary Bill","ministry":"COMMERCE AND INDUSTRY","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-18","introducedByMemberId":null,"status":"Withdrawn","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/jan%20eng8182025121958PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-109","billNumber":"109","title":"THE INDIAN INSTITUTES OF MANAGEMENT (AMENDMENT) BILL, 2025","billType":"Government","billCategory":"Financial Bill","ministry":"EDUCATION","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-18","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/iim%20eng8182025122705PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-107-a","billNumber":"107","title":"THE INSOLVENCY AND BANKRUPTCY CODE (AMENDMENT) BILL, 2026","billType":"Government","billCategory":"Ordinary Bill","ministry":"CORPORATE AFFAIRS","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-12","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/INSOLVENCY%20as%20intro812202584142PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-107-b","billNumber":"107","title":"THE INSOLVENCY AND BANKRUPTCY CODE (AMENDMENT) BILL, 2026","billType":"Government","billCategory":"Ordinary Bill","ministry":"CORPORATE AFFAIRS","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-12","introducedByMemberId":null,"status":"Passed","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/INSOLVENCY%20as%20intro812202584142PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-104","billNumber":"104","title":"THE INCOME-TAX BILL, 2025","billType":"Government","billCategory":"Money Bill","ministry":"FINANCE","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-11","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/income%20tax%202811202521448PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-105","billNumber":"105","title":"THE TAXATION LAWS (AMENDMENT) BILL, 2025","billType":"Government","billCategory":"Money Bill","ministry":"FINANCE","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-11","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/taxation%20eng811202522604PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-106","billNumber":"106","title":"THE MINES AND MINERALS (DEVELOPMENT AND REGULATION) AMENDMENT BILL, 2025","billType":"Government","billCategory":"Financial Bill","ministry":"MINES","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-11","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/mines%20eng811202522259PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-101","billNumber":"101","title":"THE MANIPUR GOODS AND SERVICES TAX (AMENDMENT) BILL, 2025","billType":"Government","billCategory":"Money Bill","ministry":"FINANCE","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-07","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/101%20eng872025122331PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-103","billNumber":"103","title":"The Manipur Appropriation (No.2) Bill,2025","billType":"Government","billCategory":"Money Bill","ministry":"FINANCE","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-08-07","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/Manipur%20introduced87202523319PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-76","billNumber":"76","title":"THE NATIONAL SPORTS GOVERNANCE BILL, 2025","billType":"Government","billCategory":"Financial Bill","ministry":"YOUTH AFFAIRS AND SPORTS","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-07-23","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/sports7232025123349PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]},
+    {"billId":"ls18-s5-bill-77","billNumber":"77","title":"THE NATIONAL ANTI-DOPING (AMENDMENT) BILL, 2025","billType":"Government","billCategory":"Ordinary Bill","ministry":"YOUTH AFFAIRS AND SPORTS","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"introducedDate":"2025-07-23","introducedByMemberId":null,"status":"Assented","officialUrl":"https://sansad.in/getFile/BillsTexts/LSBillTexts/Asintroduced/doping7232025123417PM.pdf?source=legislation","evidenceIds":["ds-bills-18-5"]}
+  ],
+  "questions": [
+    {"questionId":"ls18-s5-mp5814-q-4647","questionNumber":"4647","subject":"Khadi Institutions in Tamil Nadu","ministry":"MICRO, SMALL AND MEDIUM ENTERPRISES","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-21","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU4647_bhmg2k.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-4421","questionNumber":"4421","subject":"National Broadband Mission in Rural Areas in Tamil Nadu","ministry":"COMMUNICATIONS","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-20","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU4421_wr9eIR.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-3986","questionNumber":"3986","subject":"Projects under PRASHAD Scheme in Tamil Nadu","ministry":"TOURISM","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-18","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU3986_OxH4Hy.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-3787","questionNumber":"3787","subject":"National Social Assistance Programme","ministry":"RURAL DEVELOPMENT","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-12","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU3787_JOv1hY.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-3236","questionNumber":"3236","subject":"Denial of Prescribed Medicines to CGHS Beneficiaries","ministry":"HEALTH AND FAMILY WELFARE","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-08","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU3236_FDEBHo.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-3110","questionNumber":"3110","subject":"New NHs in Tamil Nadu","ministry":"ROAD TRANSPORT AND HIGHWAYS","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-07","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU3110_S2I1IW.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-2772","questionNumber":"2772","subject":"Modernisation and Digitisation of Storage Infrastructure in Tamil Nadu","ministry":"CONSUMER AFFAIRS, FOOD AND PUBLIC DISTRIBUTION","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-06","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU2772_gR0csF.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-2586","questionNumber":"2586","subject":"Farmers registered under e-NAM","ministry":"AGRICULTURE AND FARMERS WELFARE","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-05","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU2586_i6TAuD.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-2328","questionNumber":"2328","subject":"Loan Sanctioned under PMMY in Tamil Nadu","ministry":"FINANCE","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-04","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU2328_4M7zXj.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-2133","questionNumber":"2133","subject":"Maternal and Child Health Indicators in Tamil Nadu","ministry":"HEALTH AND FAMILY WELFARE","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-08-01","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU2133_L3Oacr.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-2024","questionNumber":"2024","subject":"Status of SBM-G in Tamil Nadu","ministry":"JAL SHAKTI","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-31","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU2024_vYndqQ.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-1751","questionNumber":"1751","subject":"IT Hardware Manufacturing Units","ministry":"ELECTRONICS AND INFORMATION TECHNOLOGY","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-30","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU1751_6aOFaG.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-1522","questionNumber":"1522","subject":"Progress under DILRMP","ministry":"RURAL DEVELOPMENT","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-29","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU1522_moVGDV.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-1284","questionNumber":"1284","subject":"Social Security Benefits for Workers in Unorganised Sector","ministry":"LABOUR AND EMPLOYMENT","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-28","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU1284_eXgfS5.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-1040","questionNumber":"1040","subject":"Mission Indradhanush 5.0 Campaign in Tamil Nadu","ministry":"HEALTH AND FAMILY WELFARE","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-25","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU1040_lPY7f2.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-696","questionNumber":"696","subject":"Irrigation Coverage in Tamil Nadu","ministry":"JAL SHAKTI","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-24","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU696_dg6FxQ.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-603","questionNumber":"603","subject":"PMGDISHA","ministry":"ELECTRONICS AND INFORMATION TECHNOLOGY","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-23","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU603_bSi6eD.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-458","questionNumber":"458","subject":"Objectives of PLI Scheme","ministry":"COMMERCE AND INDUSTRY","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-22","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU458_RWvTnn.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-282","questionNumber":"282","subject":"Difficulties faced by Farmers for Transportation of their Produce","ministry":"AGRICULTURE AND FARMERS WELFARE","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-22","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU282_ozyUCs.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]},
+    {"questionId":"ls18-s5-mp5814-q-70","questionNumber":"70","subject":"Functioning ITIs in Tamil Nadu","ministry":"SKILL DEVELOPMENT AND ENTREPRENEURSHIP","questionType":"UNSTARRED","house":"lok_sabha","lokSabhaNumber":18,"sessionNumber":5,"askedDate":"2025-07-21","memberId":"mp-5814","officialUrl":"https://sansad.in/getFile/lsapps/loksabhaquestions/annex/185/AU70_Oj9T1o.pdf?source=lsapps","evidenceIds":["ds-questions-18-5-member-5814"]}
+  ],
+  "participation": {
+    "questionCount": 125,
+    "questionCountScope": "lok_sabha",
+    "debateCount": 4,
+    "billParticipationCount": 0,
+    "committeeParticipationCount": 2,
+    "evidenceIds": ["ds-question-aggregate-5814", "ds-debate-aggregate-5814", "ds-committee-aggregate-5814"]
+  }
+}

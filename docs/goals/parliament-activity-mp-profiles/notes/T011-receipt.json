@@ -1,0 +1,12 @@
+{
+  "result": "done",
+  "changed_files": [
+    "src/dev/operator-ops.ts"
+  ],
+  "commands": [
+    {"cmd": "npm run check:types", "status": "pass"},
+    {"cmd": "npm test -- tests/operator-ops.test.ts tests/staging-operator-ops.test.ts tests/operator-ops-parliamentary.test.ts", "status": "pass"},
+    {"cmd": "git diff --check", "status": "pass"}
+  ],
+  "summary": "Preserved the legacy operator invocation object shape and conflict diagnostic while emitting parliamentary only when --parliament is selected; parliamentary parser tests and the existing operator/staging parser suites pass."
+}

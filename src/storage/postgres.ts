@@ -9,12 +9,16 @@ import {
   SupremeCourtPublishedSnapshotSchema,
   type SupremeCourtPublishedSnapshot,
 } from "../domain/supreme-court-snapshot-schema.js";
+import {
+  ParliamentaryPublishedSnapshotSchema,
+  type ParliamentaryPublishedSnapshot,
+} from "../domain/parliamentary-schema.js";
 import { getStateProfileByCode } from "../geographies.js";
 import { toIsoString } from "../lib/time.js";
 
 type Queryable = Pick<Pool, "query"> | PoolClient;
 
-export type ScopeType = "lower_court_state" | "high_court" | "supreme_court";
+export type ScopeType = "lower_court_state" | "high_court" | "supreme_court" | "parliamentary";
 
 export interface RunRecord {
   id: string;
@@ -76,6 +80,18 @@ export interface SupremeCourtPublishedSnapshotRecord {
   stateCode: string;
   payloadVersion: number;
   payload: SupremeCourtPublishedSnapshot;
+  checksumSha256: string;
+  createdAt: string;
+}
+
+export interface ParliamentaryPublishedSnapshotRecord {
+  id: string;
+  runId: string;
+  scopeType: ScopeType;
+  scopeCode: string;
+  stateCode: string;
+  payloadVersion: number;
+  payload: ParliamentaryPublishedSnapshot;
   checksumSha256: string;
   createdAt: string;
 }
@@ -153,6 +169,17 @@ interface SupremeCourtPublishedSnapshotInsert {
   scopeCode?: string;
   payloadVersion: number;
   payload: SupremeCourtPublishedSnapshot;
+  checksumSha256: string;
+}
+
+interface ParliamentaryPublishedSnapshotInsert {
+  id: string;
+  runId: string;
+  stateCode: string;
+  scopeType?: ScopeType;
+  scopeCode?: string;
+  payloadVersion: number;
+  payload: ParliamentaryPublishedSnapshot;
   checksumSha256: string;
 }
 
@@ -328,6 +355,28 @@ export class PgWarehouseStore {
     return mapSupremeCourtPublishedSnapshot(result.rows[0]);
   }
 
+  async insertParliamentaryPublishedSnapshot(input: ParliamentaryPublishedSnapshotInsert): Promise<ParliamentaryPublishedSnapshotRecord> {
+    const identity = resolveScopeIdentity(input.stateCode, input.scopeType, input.scopeCode);
+    const result = await this.db.query(
+      `INSERT INTO published_snapshots (
+        id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)
+      RETURNING *`,
+      [
+        input.id,
+        input.runId,
+        identity.scopeType,
+        identity.scopeCode,
+        input.stateCode,
+        input.payloadVersion,
+        JSON.stringify(input.payload),
+        input.checksumSha256,
+      ],
+    );
+
+    return mapParliamentaryPublishedSnapshot(result.rows[0]);
+  }
+
   async insertPublication(input: PublicationInsert): Promise<PublicationRecord> {
     const identity = resolveScopeIdentity(input.stateCode, input.scopeType, input.scopeCode);
     const result = await this.db.query(
@@ -477,6 +526,32 @@ export class PgWarehouseStore {
     );
     return result.rows[0] ? mapSupremeCourtPublishedSnapshot(result.rows[0]) : null;
   }
+
+  async getParliamentarySnapshotForRun(runId: string): Promise<ParliamentaryPublishedSnapshotRecord | null> {
+    const result = await this.db.query(
+      "SELECT * FROM published_snapshots WHERE run_id = $1 ORDER BY created_at DESC LIMIT 1",
+      [runId],
+    );
+    return result.rows[0] ? mapParliamentaryPublishedSnapshot(result.rows[0]) : null;
+  }
+
+  async getParliamentaryPublishedSnapshotById(snapshotId: string): Promise<ParliamentaryPublishedSnapshotRecord | null> {
+    const result = await this.db.query("SELECT * FROM published_snapshots WHERE id = $1", [snapshotId]);
+    return result.rows[0] ? mapParliamentaryPublishedSnapshot(result.rows[0]) : null;
+  }
+
+  async getLatestParliamentaryPublishedSnapshot(scopeCode: string): Promise<ParliamentaryPublishedSnapshotRecord | null> {
+    const result = await this.db.query(
+      `SELECT ps.*
+      FROM publication_history ph
+      JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
+      WHERE ph.scope_type = $1 AND ph.scope_code = $2
+      ORDER BY ph.created_at DESC
+      LIMIT 1`,
+      ["parliamentary", scopeCode],
+    );
+    return result.rows[0] ? mapParliamentaryPublishedSnapshot(result.rows[0]) : null;
+  }
 }
 
 function mapRun(row: QueryResultRow): RunRecord {
@@ -589,6 +664,23 @@ function mapSupremeCourtPublishedSnapshot(row: QueryResultRow): SupremeCourtPubl
   };
 }
 
+function mapParliamentaryPublishedSnapshot(row: QueryResultRow): ParliamentaryPublishedSnapshotRecord {
+  const payload = typeof row.payload === "string" ? JSON.parse(row.payload) : row.payload;
+  const scopeType = parseScopeType(row.scope_type, row.state_code);
+  const scopeCode = row.scope_code ?? row.state_code;
+  return {
+    id: row.id,
+    runId: row.run_id,
+    scopeType,
+    scopeCode,
+    stateCode: row.state_code,
+    payloadVersion: Number(row.payload_version),
+    payload: ParliamentaryPublishedSnapshotSchema.parse(payload),
+    checksumSha256: row.checksum_sha256,
+    createdAt: toIsoString(row.created_at),
+  };
+}
+
 function mapPublication(row: QueryResultRow): PublicationRecord {
   const scopeType = parseScopeType(row.scope_type, row.state_code);
   const scopeCode = row.scope_code ?? row.state_code;
@@ -625,7 +717,7 @@ function inferScopeType(stateCode: string): ScopeType {
 }
 
 function parseScopeType(value: unknown, stateCode: string): ScopeType {
-  if (value === "lower_court_state" || value === "high_court" || value === "supreme_court") {
+  if (value === "lower_court_state" || value === "high_court" || value === "supreme_court" || value === "parliamentary") {
     return value;
   }
 

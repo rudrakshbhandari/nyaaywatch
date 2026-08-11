@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { createApp } from "./api/app.js";
 import { loadConfig, type AppConfig } from "./config/env.js";
 import { runMigrations } from "./db/migrate.js";
@@ -6,11 +7,13 @@ import { listHighCourtProfiles, type SupportedHighCourtCode } from "./high-court
 import { NjdgStateSourceClient } from "./ingest/himachal-source-client.js";
 import { createHighCourtSourceClient } from "./ingest/high-court-source-client.js";
 import { createSupremeCourtSourceClient } from "./ingest/supreme-court-source-client.js";
+import { FixtureParliamentarySourceClient } from "./ingest/parliamentary-source-client.js";
 import { logError, logInfo } from "./lib/logger.js";
 import { createPreviewRuntime, type AppRuntime } from "./preview/runtime.js";
 import { PublishedHighCourtSnapshotService } from "./services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "./services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "./services/published-snapshot-service.js";
+import { PublishedParliamentarySnapshotService } from "./services/published-parliamentary-snapshot-service.js";
 import { S3ArtifactStore } from "./storage/artifact-store.js";
 import { PgWarehouseStore } from "./storage/postgres.js";
 import { getSupremeCourtProfile } from "./supreme-court.js";
@@ -91,9 +94,15 @@ async function createRuntime(): Promise<AppRuntime> {
     artifactStore,
     createSupremeCourtSourceClient(),
   );
+  const parliamentaryService = new PublishedParliamentarySnapshotService(
+    config,
+    store,
+    artifactStore,
+    new FixtureParliamentarySourceClient(join(process.cwd(), "fixtures/parliament")),
+  );
 
   return {
-    app: createApp(config, service, publicServices, highCourtServices, supremeCourtService, pool),
+    app: createApp(config, service, publicServices, highCourtServices, supremeCourtService, pool, parliamentaryService),
     config,
     async close() {
       await pool.end();

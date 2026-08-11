@@ -1,14 +1,17 @@
+import { join } from "node:path";
 import { Pool } from "pg";
 
 import { loadConfig } from "../config/env.js";
 import { getStateProfile } from "../geographies.js";
 import { getHighCourtProfile, getHighCourtProfileBySlug, listHighCourtProfiles } from "../high-courts.js";
 import { NjdgStateSourceClient } from "../ingest/himachal-source-client.js";
+import { FixtureParliamentarySourceClient } from "../ingest/parliamentary-source-client.js";
 import { createHighCourtSourceClient } from "../ingest/high-court-source-client.js";
 import { createSupremeCourtSourceClient } from "../ingest/supreme-court-source-client.js";
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
+import { PublishedParliamentarySnapshotService } from "../services/published-parliamentary-snapshot-service.js";
 import { S3ArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
@@ -22,6 +25,7 @@ export interface OperatorInvocation {
   stateCode?: string;
   highCourtCode?: string;
   supremeCourt?: boolean;
+  parliamentary?: boolean;
   command: OperatorCommand;
   targetId?: string;
   note?: string;
@@ -31,16 +35,18 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
   const stateCode = readFlag(args, "--state");
   const highCourtCode = resolveHighCourtCode(readFlag(args, "--high-court"));
   const supremeCourt = hasFlag(args, "--supreme-court");
+  const parliamentary = hasFlag(args, "--parliament");
   const positionals = ([
     ["--state", true],
     ["--high-court", true],
     ["--supreme-court", false],
+    ["--parliament", false],
   ] as Array<[string, boolean]>).reduce((currentArgs, [flag, takesValue]) => stripFlag(currentArgs, flag, takesValue), args);
   const [rawCommand, rawTargetId, ...rest] = positionals;
 
   if (!rawCommand) {
     throw new Error(
-      "Usage: operator [--state <STATE_CODE> | --high-court <court-slug>] fetch [note] | inspect <run-id> | publications | publish <run-id> [note] | replay <run-id> [note] | rollback <publication-id> [note]",
+      "Usage: operator [--state <STATE_CODE> | --high-court <court-slug> | --supreme-court | --parliament] fetch [note] | inspect <run-id> | publications | publish <run-id> [note] | replay <run-id> [note] | rollback <publication-id> [note]",
     );
   }
 
@@ -48,17 +54,27 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
     throw new Error(`Unsupported operator command: ${rawCommand}`);
   }
 
-  if ([Boolean(stateCode), Boolean(highCourtCode), supremeCourt].filter(Boolean).length > 1) {
+  if ([Boolean(stateCode), Boolean(highCourtCode), supremeCourt, parliamentary].filter(Boolean).length > 1) {
+    if (parliamentary) {
+      throw new Error(
+        "Select either --state, --high-court, or --supreme-court, not multiple targets. Select one operator target including --parliament.",
+      );
+    }
+
     throw new Error("Select either --state, --high-court, or --supreme-court, not multiple targets.");
   }
 
   const command = rawCommand as OperatorCommand;
+  const targetFields = {
+    stateCode,
+    highCourtCode,
+    supremeCourt,
+    ...(parliamentary ? { parliamentary: true } : {}),
+  };
 
   if (command === "fetch") {
     return {
-      stateCode,
-      highCourtCode,
-      supremeCourt,
+      ...targetFields,
       command: "fetch",
       note: [rawTargetId, ...rest].join(" ").trim() || undefined,
     };
@@ -66,9 +82,7 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
 
   if (command === "publications") {
     return {
-      stateCode,
-      highCourtCode,
-      supremeCourt,
+      ...targetFields,
       command: "publications",
     };
   }
@@ -78,9 +92,7 @@ export function parseOperatorInvocation(args: string[]): OperatorInvocation {
   }
 
   return {
-    stateCode,
-    highCourtCode,
-    supremeCourt,
+    ...targetFields,
     command,
     targetId: rawTargetId,
     note: rest.join(" ").trim() || undefined,
@@ -101,6 +113,29 @@ export async function runOperatorInvocation(
   try {
     const store = PgWarehouseStore.fromPool(pool);
     const artifactStore = new S3ArtifactStore(config);
+    if (invocation.parliamentary) {
+      const parliamentaryService = new PublishedParliamentarySnapshotService(
+        config,
+        store,
+        artifactStore,
+        new FixtureParliamentarySourceClient(join(process.cwd(), "fixtures/parliament")),
+      );
+
+      switch (invocation.command) {
+        case "fetch":
+          return await parliamentaryService.captureRun(invocation.note);
+        case "publications":
+          return await parliamentaryService.listPublicationHistory();
+        case "inspect":
+          return await parliamentaryService.inspectRun(invocation.targetId!);
+        case "publish":
+          return await parliamentaryService.publishRun(invocation.targetId!, invocation.note);
+        case "replay":
+          return await parliamentaryService.replayRun(invocation.targetId!, invocation.note);
+        case "rollback":
+          return await parliamentaryService.rollbackPublication(invocation.targetId!, invocation.note);
+      }
+    }
     if (invocation.supremeCourt) {
       const supremeCourtService = new PublishedSupremeCourtSnapshotService(
         config,

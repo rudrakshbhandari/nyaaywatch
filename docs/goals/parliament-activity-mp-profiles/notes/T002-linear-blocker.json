@@ -1,0 +1,12 @@
+{
+  "result": "blocked",
+  "blocked_reason": "The connected Linear workspace exposes only the Outfitr team; no NyaayWatch team, project, or matching issue is available. Creating this work in Outfitr would be the wrong external mutation.",
+  "summary": "Read-only Linear discovery completed. No issue was created or updated. Continue local work while awaiting the correct NyaayWatch Linear workspace/team connection or an explicit owner-approved target.",
+  "evidence": [
+    "Linear list_teams returned only team Outfitr (5d0bc09e-466e-44ef-a409-948101ce0c9b).",
+    "Linear search for NyaayWatch parliament returned no NyaayWatch issue/project/document.",
+    "docs/goals/parliament-activity-mp-profiles/notes/T001-source-review.md"
+  ],
+  "required_reply": "Connect the NyaayWatch Linear workspace/team or explicitly authorize the correct existing Linear team and issue target.",
+  "spawned_tasks": ["T003"]
+}
