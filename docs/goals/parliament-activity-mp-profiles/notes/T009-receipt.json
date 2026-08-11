@@ -1,0 +1,20 @@
+{
+  "result": "done",
+  "changed_files": [
+    "src/dev/parliamentary-demo.ts",
+    "package.json",
+    "README.md",
+    "docs/PARLIAMENTARY_METHODOLOGY.md",
+    "docs/OPERATING_EVIDENCE.md",
+    "docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md"
+  ],
+  "commands": [
+    {"cmd": "npm run parliament:demo", "status": "pass"},
+    {"cmd": "npm run check:types", "status": "pass"},
+    {"cmd": "npm test", "status": "pass"},
+    {"cmd": "npm run build", "status": "pass"},
+    {"cmd": "git diff --check", "status": "pass"}
+  ],
+  "summary": "Recorded the successful local end-to-end demo with exact run/publication IDs, shared aggregate/profile/replay lineage, rollback evidence, protected JSON/HTML/profile status, published values, and explicit missing-data caveats. Added the internal methodology, README runbook, and operating-evidence guidance. The earlier parser regression was repaired by T011 before this final receipt.",
+  "evidence": ["docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md", "docs/PARLIAMENTARY_METHODOLOGY.md"]
+}

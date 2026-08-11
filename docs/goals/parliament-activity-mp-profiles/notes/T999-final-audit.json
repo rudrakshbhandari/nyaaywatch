@@ -1,0 +1,27 @@
+{
+  "result": "done",
+  "decision": "complete",
+  "full_outcome_complete": true,
+  "oracle_mapping": {
+    "captured_fixture_to_published_snapshot": "T004 typed fixture/normalizer, T006 persisted lifecycle, and T009/T012 demo receipts prove deterministic fetch, candidate, and publish.",
+    "time_bounded_mp_profile": "Published profile is Shri Mani A (mp-5814), Lok Sabha 18, Session 5 scope, with official identity, party, constituency, and role evidence.",
+    "bills_and_questions": "15 bill records/14 unique bill identities plus 20 official member/session-filtered question rows; session, ministry, and question type breakdowns are normalized. The separate 125 Lok Sabha-wide aggregate remains labeled by scope.",
+    "matching_html_json": "T008 surface tests and T009 demo prove protected JSON, aggregate HTML, and MP HTML return 200 and render the same lineage and published values.",
+    "replay_and_rollback": "T006 lifecycle tests and T009 demo prove replayed status, shared lineage, and rollback publication history.",
+    "citations_and_methodology": "Published payload carries source evidence links and structured sourced/derived/missing-data methodology; docs/PARLIAMENTARY_METHODOLOGY.md records source, legal, and scope caveats.",
+    "judiciary_preservation": "Full npm test suite passes: 63 files, 295 passed, 1 skipped; build and typecheck pass."
+  },
+  "remaining_public_beta_blockers": [
+    "The connected Linear workspace exposes only Outfitr; no NyaayWatch issue was created or updated. The implementation slice is recorded in GoalBuddy and the PR, but the correct Linear workspace/team or explicit owner-approved target is still required.",
+    "Digital Sansad and Parliament Digital Library terms were reviewed, but broad public redistribution approval was not inferred. Raw PDFs, raw captures, replay copies, and unfiltered bulk results remain internal.",
+    "Attendance remains unpublished because the official attendance code legend is not sufficiently verified.",
+    "This remains an internal Lok Sabha-only pilot covering one historical session and one MP profile; no Rajya Sabha, state legislature, executive, ranking, or composite performance surface is included."
+  ],
+  "evidence": [
+    "docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md",
+    "docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md",
+    "docs/PARLIAMENTARY_METHODOLOGY.md",
+    "README.md"
+  ],
+  "summary": "The full local internal-only parliamentary vertical is proven against the goal oracle. The remaining items are explicitly held outside public beta and recorded for the PR handoff; they do not invalidate the requested local milestone."
+}

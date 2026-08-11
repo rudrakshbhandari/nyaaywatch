@@ -1,0 +1,18 @@
+{
+  "result": "done",
+  "changed_files": [
+    "src/domain/parliamentary-schema.ts",
+    "src/ingest/parliamentary-source-client.ts",
+    "src/extract/parliamentary-source.ts",
+    "src/normalize/parliamentary-snapshot.ts",
+    "fixtures/parliament/lok-sabha-18-session-5.json",
+    "tests/parliamentary-schema.test.ts",
+    "tests/parliamentary-normalize.test.ts"
+  ],
+  "commands": [
+    {"cmd": "npm run check:types", "status": "pass"},
+    {"cmd": "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts", "status": "pass"},
+    {"cmd": "git diff --check", "status": "pass"}
+  ],
+  "summary": "Added typed source-safe Lok Sabha capture contracts, a bounded LS18 Session 5 fixture with normalized official links and policy evidence, deterministic extraction and normalization, plus schema and lineage tests for one aggregate snapshot and one time-bounded MP profile."
+}

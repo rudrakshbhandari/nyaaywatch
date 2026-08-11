@@ -1,0 +1,31 @@
+{
+  "result": "done",
+  "decision": "approved",
+  "full_outcome_complete": false,
+  "rationale": "The source review supports a bounded Lok Sabha 18 Session 5 fixture and MP 5814 identity, but the connected Linear workspace is wrong and modern question-row pagination still needs confirmation during implementation. The largest safe useful next slice is a pure, source-linked foundation that makes missing attribution and source timestamps explicit before any database or route mutation.",
+  "worker_package": {
+    "objective": "Implement the parliamentary foundation package for the bounded Lok Sabha 18 Session 5 pilot: a source-safe captured fixture envelope, typed person/office-role/party-constituency/legislative-activity/source-evidence/candidate/published-snapshot contracts, and deterministic extraction plus normalization for one aggregate snapshot and one time-bounded MP profile. Preserve official source links and missing values; do not embed or redistribute raw parliamentary PDFs or bulk search results.",
+    "allowed_files": [
+      "src/domain/parliamentary-schema.ts",
+      "src/ingest/parliamentary-source-client.ts",
+      "src/extract/parliamentary-source.ts",
+      "src/normalize/parliamentary-snapshot.ts",
+      "fixtures/parliament/lok-sabha-18-session-5.json",
+      "tests/parliamentary-schema.test.ts",
+      "tests/parliamentary-normalize.test.ts"
+    ],
+    "verify": [
+      "npm run check:types",
+      "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts",
+      "git diff --check"
+    ],
+    "stop_if": [
+      "The official question-row endpoint or pagination envelope cannot be confirmed without guessing; keep the unresolved field explicit and report the blocker rather than inventing data.",
+      "A fixture would require committing raw parliamentary PDFs, raw bulk search results, or content without a source URL and capture metadata.",
+      "The transform would compare across Houses, sessions, roles, or cohorts without an explicit boundary.",
+      "Need files outside allowed_files or a schema change to existing judiciary contracts.",
+      "Verification fails twice for an unrelated repository issue."
+    ]
+  },
+  "blocked_tasks": ["T002"]
+}

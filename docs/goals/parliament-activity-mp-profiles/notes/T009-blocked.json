@@ -1,0 +1,20 @@
+{
+  "result": "blocked",
+  "blocked_reason": "The full npm test gate exposed a backward-compatibility regression in src/dev/operator-ops.ts from the earlier --parliament extension: legacy tests reject the newly emitted false parliamentary field and changed conflict message. That file is outside T009's allowed_files, so T009 cannot truthfully close until a scoped follow-up repairs the parser compatibility.",
+  "changed_files": [
+    "src/dev/parliamentary-demo.ts",
+    "package.json",
+    "README.md",
+    "docs/PARLIAMENTARY_METHODOLOGY.md",
+    "docs/OPERATING_EVIDENCE.md"
+  ],
+  "commands": [
+    {"cmd": "npm run parliament:demo", "status": "pass"},
+    {"cmd": "npm run check:types", "status": "pass"},
+    {"cmd": "npm test", "status": "fail"},
+    {"cmd": "npm run build", "status": "pass"},
+    {"cmd": "git diff --check", "status": "pass"}
+  ],
+  "summary": "The local demo and build are green and the exact evidence package is written, but the full regression suite found a narrow parser-shape compatibility issue introduced by T006. Spawned T011 to repair it without widening this package's implementation scope.",
+  "spawned_tasks": ["T011"]
+}

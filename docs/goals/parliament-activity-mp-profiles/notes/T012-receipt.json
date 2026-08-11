@@ -1,0 +1,26 @@
+{
+  "result": "done",
+  "changed_files": [
+    "src/normalize/parliamentary-snapshot.ts",
+    "fixtures/parliament/lok-sabha-18-session-5.json",
+    "tests/parliamentary-schema.test.ts",
+    "tests/parliamentary-normalize.test.ts",
+    "tests/parliamentary-surface.test.ts",
+    "tests/published-parliamentary-snapshot-service.test.ts",
+    "docs/PARLIAMENTARY_METHODOLOGY.md",
+    "docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md",
+    "docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md"
+  ],
+  "commands": [
+    {"cmd": "npm run check:types", "status": "pass"},
+    {"cmd": "npm test -- tests/parliamentary-schema.test.ts tests/parliamentary-normalize.test.ts tests/parliamentary-surface.test.ts tests/published-parliamentary-snapshot-service.test.ts", "status": "pass"},
+    {"cmd": "npm run parliament:demo", "status": "pass"},
+    {"cmd": "git diff --check", "status": "pass"}
+  ],
+  "summary": "Confirmed and captured the official Digital Sansad modern question endpoint and pagination envelope. Added the 20 normalized MP-5814/Lok Sabha-18/Session-5 question rows with official links, exposed captured session/ministry/type breakdowns, preserved the separate 125 Lok Sabha-wide aggregate, refreshed methodology and exact demo evidence, and kept raw PDFs/unfiltered bulk results internal and absent.",
+  "evidence": [
+    "docs/goals/parliament-activity-mp-profiles/notes/T012-question-source.md",
+    "docs/PARLIAMENTARY_METHODOLOGY.md",
+    "docs/goals/parliament-activity-mp-profiles/notes/T009-demo.md"
+  ]
+}

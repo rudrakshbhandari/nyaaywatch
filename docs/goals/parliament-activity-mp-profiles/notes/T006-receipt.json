@@ -1,0 +1,16 @@
+{
+  "result": "done",
+  "changed_files": [
+    "src/storage/postgres.ts",
+    "src/services/published-parliamentary-snapshot-service.ts",
+    "src/dev/operator-ops.ts",
+    "tests/published-parliamentary-snapshot-service.test.ts",
+    "tests/operator-ops-parliamentary.test.ts"
+  ],
+  "commands": [
+    {"cmd": "npm run check:types", "status": "pass"},
+    {"cmd": "npm test -- tests/published-parliamentary-snapshot-service.test.ts tests/operator-ops-parliamentary.test.ts tests/published-snapshot-service.test.ts tests/high-court-published-snapshot-service.test.ts tests/supreme-court-published-snapshot-service.test.ts", "status": "pass"},
+    {"cmd": "git diff --check", "status": "pass"}
+  ],
+  "summary": "Added the dedicated parliamentary scope to the existing run/artifact/publication store, implemented internal fetch/inspect/publish/replay/rollback against the captured fixture, and added CLI --parliament routing with regression coverage proving judiciary services remain green. Partial quality is publishable only as an internal evidence snapshot; blocked candidates remain unpublishable."
+}

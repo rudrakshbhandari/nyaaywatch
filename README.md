@@ -91,6 +91,12 @@ The rules are deliberately plain:
 - The project makes no predictive, AI-forward, or legal-analysis claims.
 - Raw upstream artifacts are kept out of the public API and downloads.
 
+## Internal Parliamentary Pilot
+
+The first non-judicial vertical covers Lok Sabha 18 Session 5 bills, questions, participation metadata, and one time-bounded MP profile. It reports activity only: it does not rank MPs, parties, or constituencies or calculate a performance score. PR previews expose normalized fixture data at the routes below; production keeps these routes behind operator auth.
+
+Run the deterministic local demo with `npm run parliament:demo`. In normal environments, `x-operator-token` protects `/operator/parliamentary` (JSON), `/operator/parliamentary/html` (aggregate HTML), and `/operator/parliamentary/html/mp/mp-5814` (MP HTML). PR previews expose only these normalized fixture read surfaces. See [the parliamentary pilot methodology](docs/PARLIAMENTARY_METHODOLOGY.md) and [the source review](docs/PARLIAMENTARY_SOURCE_REVIEW.md) for links, caveats, and publication limits.
+
 ## Use the API
 
 The public API serves the same published snapshot that powers the site.
