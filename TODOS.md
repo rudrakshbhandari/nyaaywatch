@@ -18,6 +18,18 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ## Next Up
 
+### 0. Government-Wide North Star And First Pilot
+
+- [x] Re-anchor the product docs around government-wide public accountability, with the judiciary explicitly recorded as the first shipped vertical.
+  - 2026-08-08: Added `docs/GOVERNMENT_ACCOUNTABILITY_ROADMAP.md`, updated the README and national product architecture, and preserved the current judiciary-only public claim.
+- [x] Complete an initial desk source review for a narrow legislative pilot.
+  - 2026-08-08: Recommended a Lok Sabha-first Parliamentary Activity Snapshot using Digital Sansad bills/questions surfaces and Parliament Digital Library metadata. Formal source, terms, and redistribution approval remain gates before implementation.
+- [ ] Freeze the v0 Parliamentary Activity Snapshot + MP Profiles scope, schema, and methodology.
+- [ ] Define time-bounded person, office, party, constituency, House, and role identity semantics before displaying individual politician activity.
+- [ ] Capture and replay a bounded official-source fixture set before building public routes.
+- [ ] Decide whether raw parliamentary documents can be retained or redistributed; default to normalized aggregates plus official links until explicitly approved.
+- [ ] After the legislative pilot is proven, select one bounded executive-branch source class for a separate source review.
+
 ### 1. Public Alpha Operations And Alerting
 
 - [x] Wired `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` into a scheduled monitor with a real alert path. The staging reconcile helper now keeps `nyaaywatch-staging-public-alpha-ops-monitor` pointed at the live ECS task definition every deploy, the runtime emits `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` on failures, and CloudWatch alarm `nyaaywatch-staging-public-alpha-ops` fans out through the existing SNS topic.

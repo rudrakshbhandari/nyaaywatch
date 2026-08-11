@@ -1,6 +1,6 @@
 # Long-Term Data Strategy
 
-Decision document for how NyaayWatch should evolve its data inputs without breaking the current trust model.
+Decision document for how NyaayWatch’s judiciary vertical should evolve its data inputs without breaking the current trust model. The broader government-wide product roadmap lives in `docs/GOVERNMENT_ACCOUNTABILITY_ROADMAP.md`.
 
 This doc exists to answer three questions clearly:
 
