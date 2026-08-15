@@ -13,6 +13,7 @@ import {
   outputPathForResource,
   prepareOutputDirectory,
   extractPublicationIdentities,
+  buildStaticComparisonShell,
   type PublicResource,
   type PublicationIdentity,
   writePublicResource,
@@ -283,7 +284,17 @@ async function main(): Promise<void> {
     }
   }
 
-  const redirects = buildStaticRedirects(resources, outputRoot);
+  const comparisonShell = buildStaticComparisonShell(origin);
+  await writePublicResource(comparisonShell, outputRoot);
+  resources.push(comparisonShell);
+
+  const redirects = [
+    ...new Set([
+      ...buildStaticRedirects(resources, outputRoot),
+      "/compare/* /compare/index.html 200",
+      "/states/*/compare/* /compare/index.html 200",
+    ]),
+  ].sort();
   if (redirects.length > 0) {
     await writeFile(resolve(outputRoot, "_redirects"), `${redirects.join("\n")}\n`);
   }

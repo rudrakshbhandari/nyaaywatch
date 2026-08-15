@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildStaticRedirects,
+  buildStaticComparisonShell,
   extractInternalUrls,
   extractSitemapUrls,
   extractPublicationIdentities,
@@ -15,7 +16,7 @@ const origin = normalizeOrigin("https://nyaaywatch.in");
 describe("public static export helpers", () => {
   it("extracts same-origin links while excluding operator and token routes", () => {
     const urls = extractInternalUrls(
-      `<a href="/states/punjab">Punjab</a><a href="/districts?view=flagged">query view</a><a href="https://example.com">external</a><a href="/operator/runs">operator</a><a href="/cdn-cgi/l/email-protection">email</a><a href="/og/district/punjab.png">district social card</a><meta property="og:image" content="/og/home.png"><meta name="description" content="A public snapshot page">`,
+      `<a href="/states/punjab">Punjab</a><a href="/districts?view=flagged">query view</a><a href="https://example.com">external</a><a href="/operator/runs">operator</a><a href="/cdn-cgi/l/email-protection">email</a><a href="/og/district/punjab.png?v=2026-04-5">district social card</a><meta property="og:image" content="/og/home.png"><meta name="description" content="A public snapshot page">`,
       new URL("https://nyaaywatch.in/"),
       origin,
     );
@@ -51,6 +52,12 @@ describe("public static export helpers", () => {
     ]);
   });
 
+  it("provides a client-side comparison fallback for arbitrary district pairs", () => {
+    const shell = buildStaticComparisonShell(origin);
+    expect(new TextDecoder().decode(shell.body)).toContain("/v1/states/");
+    expect(shell.url.pathname).toBe("/compare/index");
+  });
+
   it("extracts stable publication identities from JSON resources", () => {
     const resource: PublicResource = {
       url: new URL("https://nyaaywatch.in/v1/stats/himachal"),
@@ -72,6 +79,18 @@ describe("public static export helpers", () => {
 
     expect(extractPublicationIdentities(resource)).toEqual([
       { scope: "state:HP", publishedAt: "2026-08-15T00:00:00.000Z" },
+    ]);
+  });
+
+  it("uses the latest row for district history CSV publication identity", () => {
+    const resource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/data/districts/kangra.csv"),
+      body: new TextEncoder().encode("snapshot_date,published_at\n2026-07-15T00:00:00.000Z,2026-07-20T00:00:00.000Z\n2026-08-15T00:00:00.000Z,2026-08-20T00:00:00.000Z\n"),
+      contentType: "text/csv",
+    };
+
+    expect(extractPublicationIdentities(resource)).toEqual([
+      { scope: "state:HP", publishedAt: "2026-08-20T00:00:00.000Z" },
     ]);
   });
 

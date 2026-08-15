@@ -124,6 +124,7 @@ export function renderDistrictsPage(
         label: "Showing",
         value: `${districts.length}/${snapshot.districts.length}`,
         note: `${VIEW_LABELS[options.view]}${options.search ? ` matching \u201C${options.search}\u201D` : ""}. Sorted by ${SORT_LABELS[options.sort].toLowerCase()}.`,
+        anchorId: "districts-showing",
       })}
     </section>
 
@@ -177,6 +178,7 @@ export function renderDistrictsPage(
       var rows = Array.prototype.slice.call(document.querySelectorAll("tr[data-district-id]"));
       var tableBody = document.querySelector(".districts-table tbody");
       var noResults = document.getElementById("districts-no-results");
+      var showingTile = document.getElementById("districts-showing");
       var validSorts = ["rank", "backlog", "disposal", "age", "gap"];
       var validViews = ["all", "flagged"];
       if (!input || !box || !form || !tableBody) return;
@@ -211,6 +213,12 @@ export function renderDistrictsPage(
         });
         rows.forEach(function(row) { row.hidden = visibleRows.indexOf(row) < 0; });
         if (noResults) noResults.hidden = visibleRows.length > 0;
+        if (showingTile) {
+          var value = showingTile.querySelector(".stat-tile__value");
+          var note = showingTile.querySelector(".stat-tile__note");
+          if (value) value.textContent = visibleRows.length + "/" + rows.length;
+          if (note) note.textContent = (options.view === "flagged" ? "Only districts to watch" : "All districts") + (options.q ? " matching \u201C" + options.q + "\u201D" : "") + ". Sorted by " + ({ rank: "biggest pressure signal", backlog: "most cases waiting", disposal: "slowest clearance pace", age: "longest typical wait", gap: "biggest file-clear gap" }[options.sort]) + ".";
+        }
       }
 
       form.addEventListener("submit", function(event) {

@@ -79,7 +79,11 @@ export function extractInternalUrls(body: string, pageUrl: URL, origin: URL): UR
       // variant to the same file, so crawling them would make whichever
       // variant finishes last overwrite the canonical page.
       if (url.search) {
-        continue;
+        if (url.pathname.startsWith("/og/") || /\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(url.pathname)) {
+          url.search = "";
+        } else {
+          continue;
+        }
       }
       urls.set(url.href, url);
     } catch {
@@ -148,6 +152,52 @@ export function buildStaticRedirects(resources: PublicResource[], outputRoot: st
     redirects.set(`${requestPath} /${relativeOutputPath} 200`, `${requestPath} /${relativeOutputPath} 200`);
   }
   return [...redirects.values()].sort();
+}
+
+export function buildStaticComparisonShell(origin: URL): PublicResource {
+  const body = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare districts — NyaayWatch</title>
+<style>body{margin:0;padding:40px 20px;background:#f4efe3;color:#0c0a08;font:16px system-ui,sans-serif}main{max-width:900px;margin:auto}article{border:1px solid #0c0a08;background:#fffaf0;padding:24px}h1{font-size:clamp(28px,5vw,52px);margin:0 0 24px}table{border-collapse:collapse;width:100%}th,td{border-top:1px solid #d8d0c2;padding:12px;text-align:left}th{width:40%;font-weight:600}</style></head>
+<body><main><article><p>Loading comparison…</p></article></main>
+<script>
+(async function(){
+  function escapeHtml(value){return String(value).replace(/[&<>\"]/g,function(character){return {"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;"}[character];});}
+  function show(title, message){document.querySelector("article").innerHTML="<h1>"+escapeHtml(title)+"</h1><p>"+escapeHtml(message)+"</p>";}
+  var pathname=window.location.pathname;
+  var stateMatch=pathname.match(/^\\/states\\/([^/]+)\\/compare\\//);
+  var compareMarker="/compare/";
+  var markerIndex=pathname.indexOf(compareMarker);
+  if(markerIndex<0){show("Comparison not found","Use a supported district comparison link.");return;}
+  var slug=pathname.slice(markerIndex+compareMarker.length);
+  var separator=slug.indexOf("-vs-");
+  if(separator<1){show("Comparison not found","Use a supported district comparison link.");return;}
+  var leftId=decodeURIComponent(slug.slice(0,separator));
+  var rightId=decodeURIComponent(slug.slice(separator+4));
+  var apiPath=stateMatch ? "/v1/states/"+stateMatch[1]+"/districts" : "/v1/districts";
+  try{
+    var response=await fetch(apiPath);
+    if(!response.ok) throw new Error("data unavailable");
+    var payload=await response.json();
+    var left=payload.districts.find(function(district){return district.districtId===leftId;});
+    var right=payload.districts.find(function(district){return district.districtId===rightId;});
+    if(!left||!right){show("Comparison not found","One or both districts are not in this published snapshot.");return;}
+    document.title=left.districtName+" vs "+right.districtName+" — NyaayWatch";
+    document.querySelector("article").innerHTML="<p>Published snapshot: "+escapeHtml(payload.snapshot.referenceDateAt.slice(0,10))+"</p><h1>"+escapeHtml(left.districtName)+" vs "+escapeHtml(right.districtName)+"</h1><table><tbody>"+
+      [
+        ["Cases waiting",left.backlogCases,right.backlogCases],
+        ["Cleared per 100",left.disposalRate,right.disposalRate],
+        ["Typical wait (days)",left.medianAgeDays,right.medianAgeDays],
+        ["File-clear gap",left.filingVsDisposalGap,right.filingVsDisposalGap],
+        ["Watch rank",left.rank,right.rank]
+      ].map(function(row){return "<tr><th>"+escapeHtml(row[0])+"</th><td>"+escapeHtml(row[1])+"</td><td>"+escapeHtml(row[2])+"</td></tr>";}).join("")+"</tbody></table>";
+  }catch(error){show("Comparison unavailable","This published snapshot could not be loaded.");}
+})();
+</script></body></html>`;
+  return {
+    url: new URL("/compare/index", origin),
+    body: new TextEncoder().encode(body),
+    contentType: "text/html; charset=utf-8",
+  };
 }
 
 export async function writePublicResource(resource: PublicResource, outputRoot: string): Promise<string> {
@@ -230,7 +280,9 @@ export function extractPublicationIdentities(resource: PublicResource): Publicat
 }
 
 function extractCsvPublicationIdentity(url: URL, body: string): PublicationIdentity[] {
-  const [headerLine, rowLine] = body.split(/\r?\n/, 2);
+  const [headerLine = "", ...dataLines] = body.split(/\r?\n/);
+  const nonEmptyDataLines = dataLines.filter((line) => line.length > 0);
+  const rowLine = headersContainStateCode(headerLine) ? nonEmptyDataLines[0] : nonEmptyDataLines.at(-1);
   if (!headerLine || !rowLine) {
     return [];
   }
@@ -242,12 +294,15 @@ function extractCsvPublicationIdentity(url: URL, body: string): PublicationIdent
   return publishedAt && scope ? [{ scope, publishedAt }] : [];
 }
 
+function headersContainStateCode(headerLine: string): boolean {
+  return headerLine.split(",").includes("state_code");
+}
+
 function scopeFromPath(pathname: string): string | null {
   const stateMatch = pathname.match(/^\/states\/([^/]+)(?:\/|$)/);
   if (stateMatch?.[1]) {
-    return getPublicStateProfileBySlug(stateMatch[1])?.stateCode
-      ? `state:${getPublicStateProfileBySlug(stateMatch[1])!.stateCode}`
-      : null;
+    const profile = getPublicStateProfileBySlug(stateMatch[1]);
+    return profile ? `state:${profile.stateCode}` : null;
   }
   if (
     pathname === "/districts" ||
