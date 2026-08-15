@@ -22,6 +22,7 @@ export type PublicResource = {
   url: URL;
   body: Uint8Array;
   contentType: string;
+  publicationIdentities?: PublicationIdentity[];
 };
 
 export type PublicationIdentity = {
@@ -182,7 +183,10 @@ export function buildStaticComparisonShell(origin: URL): PublicResource {
     var right=payload.districts.find(function(district){return district.districtId===rightId;});
     if(!left||!right){show("Comparison not found","One or both districts are not in this published snapshot.");return;}
     document.title=left.districtName+" vs "+right.districtName+" — NyaayWatch";
-    document.querySelector("article").innerHTML="<p>Published snapshot: "+escapeHtml(payload.snapshot.referenceDateAt.slice(0,10))+"</p><h1>"+escapeHtml(left.districtName)+" vs "+escapeHtml(right.districtName)+"</h1><table><tbody>"+
+    var evidenceBase=stateMatch ? "/states/"+stateMatch[1]+"/data/evidence/districts/" : "/data/evidence/districts/";
+    var methodologyPath=stateMatch ? "/states/"+stateMatch[1]+"/methodology" : "/methodology";
+    var evidenceLinks="<a href=\\\""+evidenceBase+encodeURIComponent(leftId)+".json\\\">"+escapeHtml(left.districtName)+" evidence</a> · <a href=\\\""+evidenceBase+encodeURIComponent(rightId)+".json\\\">"+escapeHtml(right.districtName)+" evidence</a>";
+    document.querySelector("article").innerHTML="<p>Published snapshot: "+escapeHtml(payload.snapshot.referenceDateAt.slice(0,10))+" · Quality: "+escapeHtml(payload.snapshot.qualityState)+"</p><h1>"+escapeHtml(left.districtName)+" vs "+escapeHtml(right.districtName)+"</h1><p>Source: "+escapeHtml(payload.snapshot.sourceAttribution)+" · Method: "+escapeHtml(payload.snapshot.methodologyVersion)+" · <a href=\\\""+methodologyPath+"\\\">methodology</a></p><p>These values are signals from the published snapshot, not findings about any court or official.</p><p>"+evidenceLinks+"</p><table><tbody>"+
       [
         ["Cases waiting",left.backlogCases,right.backlogCases],
         ["Cleared per 100",left.disposalRate,right.disposalRate],
@@ -194,7 +198,7 @@ export function buildStaticComparisonShell(origin: URL): PublicResource {
 })();
 </script></body></html>`;
   return {
-    url: new URL("/compare/index", origin),
+    url: new URL("/compare", origin),
     body: new TextEncoder().encode(body),
     contentType: "text/html; charset=utf-8",
   };
@@ -229,6 +233,9 @@ export async function prepareOutputDirectory(outputRoot: string): Promise<void> 
 }
 
 export function extractPublicationIdentities(resource: PublicResource): PublicationIdentity[] {
+  if (resource.publicationIdentities && resource.publicationIdentities.length > 0) {
+    return resource.publicationIdentities;
+  }
   const contentType = resource.contentType.toLowerCase();
   const text = new TextDecoder().decode(resource.body);
   if (contentType.includes("text/csv")) {

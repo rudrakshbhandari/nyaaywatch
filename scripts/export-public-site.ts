@@ -135,10 +135,20 @@ async function fetchResource(url: URL): Promise<PublicResource | null> {
         throw new Error(`${response.status} ${response.statusText}`);
       }
       const contentType = response.headers.get("content-type") ?? "application/octet-stream";
+      const publicationIdentitiesHeader = response.headers.get("x-nyaaywatch-publication-identities");
+      let publicationIdentities: PublicationIdentity[] | undefined;
+      if (publicationIdentitiesHeader) {
+        try {
+          publicationIdentities = JSON.parse(publicationIdentitiesHeader) as PublicationIdentity[];
+        } catch {
+          throw new Error(`Invalid publication identity header from ${url.href}`);
+        }
+      }
       return {
         url,
         body: new Uint8Array(await response.arrayBuffer()),
         contentType,
+        publicationIdentities,
       };
     } catch (error) {
       lastError = error;
@@ -158,6 +168,10 @@ function isOptionalAssetUrl(url: URL): boolean {
 
 function isHtml(resource: PublicResource): boolean {
   return resource.contentType.toLowerCase().includes("text/html");
+}
+
+function isPublicationDependentPath(pathname: string): boolean {
+  return !["/robots.txt", "/sitemap.xml", "/press", "/learn"].includes(pathname) && !pathname.startsWith("/press/");
 }
 
 function extractDistrictIds(resource: PublicResource): string[] {
@@ -248,7 +262,8 @@ async function main(): Promise<void> {
         continue;
       }
 
-      for (const identity of extractPublicationIdentities(resource)) {
+      const resourceIdentities = extractPublicationIdentities(resource);
+      for (const identity of resourceIdentities) {
         const previous = publicationIdentities.get(identity.scope);
         if (previous && previous.publishedAt !== identity.publishedAt) {
           throw new Error(
@@ -256,6 +271,10 @@ async function main(): Promise<void> {
           );
         }
         publicationIdentities.set(identity.scope, identity);
+      }
+
+      if (isPublicationDependentPath(resource.url.pathname) && resourceIdentities.length === 0) {
+        throw new Error(`Publication identity missing for ${resource.url.pathname}. Refusing to publish an unverifiable resource.`);
       }
 
       await writePublicResource(resource, outputRoot);
