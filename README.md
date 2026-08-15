@@ -128,6 +128,7 @@ flowchart TD
 - Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate.
 - Published snapshot read models drive every public surface; rollback is one operator call.
+- The free-hosting migration adds a deterministic static export of the published read surface for Cloudflare Pages; AWS remains the rollback origin until the migration gates in [docs/FREE_HOSTING_MIGRATION.md](docs/FREE_HOSTING_MIGRATION.md) pass.
 
 ## Repository Map
 
@@ -143,6 +144,7 @@ flowchart TD
 | `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
 | `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
 | `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
+| `src/export/`, `scripts/export-public-site.ts`, `scripts/verify-public-export.ts` | Static public-snapshot export and bundle boundary verification |
 | `infra/aws/` | AWS dev, preview, staging, production, schedule, and cutover scripts/templates |
 | `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
@@ -159,6 +161,13 @@ npm install
 npm run docker:up
 npm run dev:bootstrap
 npm run dev
+```
+
+To build a static public bundle from a reviewed origin:
+
+```bash
+npm run export:public -- --base-url=https://nyaaywatch.in --output-dir=dist-public
+npm run verify:public-export -- dist-public
 ```
 
 Defaults to `http://127.0.0.1:3000`. Local development uses PostgreSQL plus LocalStack S3; keep `AWS_REGION=ap-south-1` so the code path matches production. If `5432` or `4566` are already in use, override `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env` and keep `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` aligned.
@@ -222,6 +231,8 @@ The GitHub Actions `ops:njdg-missing-zero-outreach` schedule runs every Monday, 
 If the outreach send fails, the workflow opens or updates the durable `NJDG outreach failure` GitHub issue and publishes to the production SNS alert topic. A later successful run closes the issue and sends a recovery notification.
 
 The lower-court schedule covers everything in `listInternalFetchStateProfiles()`. The High Court schedule auto-includes any court whose `sourceReviewStatus` is `reviewed`. The in-stack ops monitor runs a low-blast-radius smoke target set by default and pages on route/parity drift, stale public snapshots, or internal fetch lag in those representative surfaces. The daily GitHub watchdog and manual `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` command still run the full all-public-target sweep unless `--target-set=smoke` is passed explicitly. Auto-publish publishes directly when quality and delta checks pass; it pages via SNS when the gate blocks for human review or when the publish step itself fails.
+
+The migration workflow `publish-public-static.yml` can export the current reviewed public origin to a Cloudflare Pages preview. It does not change DNS or retire AWS; see [docs/FREE_HOSTING_MIGRATION.md](docs/FREE_HOSTING_MIGRATION.md) for required variables and cutover gates.
 
 ## Public API
 

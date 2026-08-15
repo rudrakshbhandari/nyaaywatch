@@ -21,6 +21,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/src/index.js",
+    "export:public": "tsx scripts/export-public-site.ts",
+    "verify:public-export": "tsx scripts/verify-public-export.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
