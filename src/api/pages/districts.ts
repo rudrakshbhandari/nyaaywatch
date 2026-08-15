@@ -165,14 +165,69 @@ export function renderDistrictsPage(
       ],
     })}
 
-    ${districts.length > 0 ? renderTable(districts, context) : renderNoResults(options, context)}
+    ${renderTable(snapshot.districts, context, new Set(districts.map((district) => district.districtId)), snapshot.stats.flaggedDistricts)}
+    ${renderNoResults(options, context, districts.length === 0)}
 
     <script>
     (function() {
       var DISTRICTS = ${districtSuggestions};
       var input = document.getElementById("your-district-input");
       var box = document.getElementById("your-district-suggestions");
-      if (!input || !box) return;
+      var form = document.querySelector(".controls__form");
+      var rows = Array.prototype.slice.call(document.querySelectorAll("tr[data-district-id]"));
+      var tableBody = document.querySelector(".districts-table tbody");
+      var noResults = document.getElementById("districts-no-results");
+      var validSorts = ["rank", "backlog", "disposal", "age", "gap"];
+      var validViews = ["all", "flagged"];
+      if (!input || !box || !form || !tableBody) return;
+
+      function optionsFromLocation() {
+        var params = new URLSearchParams(window.location.search);
+        var sort = validSorts.indexOf(params.get("sort")) >= 0 ? params.get("sort") : "rank";
+        var view = validViews.indexOf(params.get("view")) >= 0 ? params.get("view") : "all";
+        return { q: (params.get("q") || "").trim().toLowerCase(), sort: sort, view: view };
+      }
+
+      function compare(left, right, sort) {
+        if (sort === "backlog") return Number(right.dataset.backlog) - Number(left.dataset.backlog) || Number(left.dataset.rank) - Number(right.dataset.rank);
+        if (sort === "disposal") return Number(right.dataset.disposalAvailable) - Number(left.dataset.disposalAvailable) || Number(left.dataset.disposal) - Number(right.dataset.disposal) || Number(left.dataset.rank) - Number(right.dataset.rank);
+        if (sort === "age") return Number(right.dataset.age) - Number(left.dataset.age) || Number(left.dataset.rank) - Number(right.dataset.rank);
+        if (sort === "gap") return Number(right.dataset.gapAvailable) - Number(left.dataset.gapAvailable) || Number(right.dataset.gap) - Number(left.dataset.gap) || Number(left.dataset.rank) - Number(right.dataset.rank);
+        return Number(left.dataset.rank) - Number(right.dataset.rank);
+      }
+
+      function applyQuery() {
+        var options = optionsFromLocation();
+        form.elements.q.value = options.q;
+        form.elements.view.value = options.view;
+        form.elements.sort.value = options.sort;
+        var visibleRows = rows.filter(function(row) {
+          var matchesView = options.view === "all" || row.dataset.flagged === "true";
+          var matchesSearch = !options.q || row.dataset.search.includes(options.q);
+          return matchesView && matchesSearch;
+        });
+        rows.slice().sort(function(left, right) { return compare(left, right, options.sort); }).forEach(function(row) {
+          tableBody.appendChild(row);
+        });
+        rows.forEach(function(row) { row.hidden = visibleRows.indexOf(row) < 0; });
+        if (noResults) noResults.hidden = visibleRows.length > 0;
+      }
+
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+        var data = new FormData(form);
+        var params = new URLSearchParams();
+        ["q", "view", "sort"].forEach(function(key) {
+          var value = String(data.get(key) || "");
+          if (value && !(key === "view" && value === "all") && !(key === "sort" && value === "rank")) params.set(key, value);
+        });
+        var next = new URL(window.location.href);
+        next.search = params.toString();
+        window.history.pushState({}, "", next.href);
+        applyQuery();
+      });
+      window.addEventListener("popstate", applyQuery);
+
       input.addEventListener("input", function() {
         var q = input.value.toLowerCase().trim();
         box.textContent = "";
@@ -199,6 +254,7 @@ export function renderDistrictsPage(
           box.style.display = "none";
         }
       });
+      applyQuery();
     })();
     </script>
   `;
@@ -264,25 +320,34 @@ function renderControls(options: DistrictsPageOptions, context: PublicPageContex
   `;
 }
 
-function renderTable(districts: DistrictSnapshot[], context: PublicPageContext): string {
+function renderTable(
+  districts: DistrictSnapshot[],
+  context: PublicPageContext,
+  visibleDistrictIds: Set<string>,
+  flaggedCount: number,
+): string {
   const rows = districts
     .map(
-      (district) => `
-        <tr>
+      (district) => {
+        const activity = monthlyActivityInputs(district);
+        const isFlagged = district.rank <= flaggedCount;
+        return `
+        <tr data-district-id="${escapeHtml(district.districtId)}" data-search="${escapeHtml(`${district.districtName} ${district.summary}`.toLowerCase())}" data-flagged="${isFlagged ? "true" : "false"}" data-rank="${district.rank}" data-backlog="${district.backlogCases}" data-disposal="${district.disposalRate}" data-disposal-available="${canComputeClearancePace(activity) ? "1" : "0"}" data-age="${district.medianAgeDays}" data-gap="${district.filingVsDisposalGap}" data-gap-available="${canComputeClearancePace(activity) ? "1" : "0"}"${visibleDistrictIds.has(district.districtId) ? "" : " hidden"}>
           <td>
             <a class="district-row__name" href="${context.routes.district(district.districtId)}">${escapeHtml(district.districtName)}</a>
             <p class="district-row__summary">${escapeHtml(district.summary)}</p>
           </td>
           <td class="num accent">#${district.rank}</td>
           <td class="num">${district.backlogCases.toLocaleString("en-IN")}</td>
-          <td class="num">${formatClearancePer100(monthlyActivityInputs(district), 1)}</td>
+          <td class="num">${formatClearancePer100(activity, 1)}</td>
           <td class="num">${Math.round(district.medianAgeDays / 30)} mo</td>
           <td class="num">${district.oldCaseBurden.fivePlusYearsShare.toFixed(1)}%</td>
           <td class="num">${district.watchlistPersistence.flaggedInLastSix}/${district.watchlistPersistence.lastSixWindow}</td>
-          <td class="num flag">${formatFileClearGap(monthlyActivityInputs(district))}</td>
+          <td class="num flag">${formatFileClearGap(activity)}</td>
           <td class="district-row__reason">${escapeHtml(district.flagReason)}</td>
         </tr>
-      `,
+      `;
+      },
     )
     .join("");
 
@@ -310,7 +375,7 @@ function renderTable(districts: DistrictSnapshot[], context: PublicPageContext):
   `;
 }
 
-function renderNoResults(options: DistrictsPageOptions, context: PublicPageContext): string {
+function renderNoResults(options: DistrictsPageOptions, context: PublicPageContext, visible: boolean): string {
   const hasSearch = options.search.trim().length > 0;
   const isWatchlistOnly = options.view === "flagged";
 
@@ -324,7 +389,7 @@ function renderNoResults(options: DistrictsPageOptions, context: PublicPageConte
   }
 
   return `
-    <article class="card no-results">
+    <article class="card no-results" id="districts-no-results"${visible ? "" : " hidden"}>
       <p class="card__eyebrow">NO RESULTS</p>
       <h3>Nothing to show here.</h3>
       <p>${hint}</p>

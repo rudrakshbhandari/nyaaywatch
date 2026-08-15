@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 
 type ExportManifest = {
   resourceCount: number;
+  publicationIdentities: Array<{ scope: string; publishedAt: string }>;
   resources: Array<{ path: string; contentType: string; outputPath: string }>;
 };
 
@@ -18,6 +19,16 @@ async function main(): Promise<void> {
   }
   if (manifest.resourceCount !== manifest.resources.length) {
     throw new Error("Static export manifest resource count does not match its resource list.");
+  }
+  if (!Array.isArray(manifest.publicationIdentities) || manifest.publicationIdentities.length === 0) {
+    throw new Error("Static export manifest has no publication identities.");
+  }
+  const publicationScopes = new Set<string>();
+  for (const identity of manifest.publicationIdentities) {
+    if (!identity.scope || !identity.publishedAt || publicationScopes.has(identity.scope)) {
+      throw new Error("Static export manifest has invalid or duplicate publication identities.");
+    }
+    publicationScopes.add(identity.scope);
   }
 
   await access(resolve(outputRoot, "index.html"));

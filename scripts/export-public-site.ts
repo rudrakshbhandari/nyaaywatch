@@ -2,6 +2,8 @@
 
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { listPublicStateProfiles } from "../src/geographies.js";
+import { listPublicHighCourtProfiles } from "../src/high-courts.js";
 import {
   DEFAULT_SEED_PATHS,
   buildStaticRedirects,
@@ -10,13 +12,58 @@ import {
   normalizeOrigin,
   outputPathForResource,
   prepareOutputDirectory,
+  extractPublicationIdentities,
   type PublicResource,
+  type PublicationIdentity,
   writePublicResource,
 } from "../src/export/public-site.js";
+import { buildPublicHighCourtRoutes } from "../src/api/public-high-court.js";
+import { buildPublicStateRoutes } from "../src/api/public-state.js";
+import { buildPublicSupremeCourtRoutes } from "../src/api/public-supreme-court.js";
 
 const DEFAULT_TIMEOUT_MS = 30_000;
-const DEFAULT_MAX_PAGES = 3_000;
+const DEFAULT_MAX_PAGES = 15_000;
 const FETCH_CONCURRENCY = 16;
+
+function buildPublicRouteInventory(): string[] {
+  const paths = new Set([
+    "/",
+    "/press",
+    "/learn",
+    "/watch",
+    "/watch/backlog-concentration",
+    "/watch/old-case-burden",
+    "/watch/persistent-pressure",
+  ]);
+
+  for (const profile of listPublicStateProfiles()) {
+    const routes = buildPublicStateRoutes(profile);
+    [
+      routes.home,
+      routes.districts,
+      routes.movers,
+      routes.data,
+      routes.stateEvidencePack,
+      routes.districtsCsv,
+      routes.methodology,
+      routes.api,
+      routes.statsApi,
+      routes.districtsApi,
+      routes.trendsApi,
+      `/states/${profile.stateSlug}/feed.xml`,
+      `/embed/state/${profile.stateSlug}`,
+    ].forEach((path) => paths.add(path));
+  }
+
+  for (const profile of listPublicHighCourtProfiles()) {
+    const routes = buildPublicHighCourtRoutes(profile);
+    [routes.home, routes.methodology, routes.api, routes.data, routes.statsApi, routes.trendsApi].forEach((path) => paths.add(path));
+  }
+
+  const supremeRoutes = buildPublicSupremeCourtRoutes();
+  [supremeRoutes.home, supremeRoutes.methodology, supremeRoutes.api, supremeRoutes.data, supremeRoutes.statsApi, supremeRoutes.trendsApi].forEach((path) => paths.add(path));
+  return [...paths].sort();
+}
 
 type CliOptions = {
   baseUrl: string;
@@ -105,11 +152,58 @@ async function fetchResource(url: URL): Promise<PublicResource | null> {
 }
 
 function isOptionalAssetUrl(url: URL): boolean {
-  return url.pathname.startsWith("/og/") || /\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(url.pathname);
+  return !url.pathname.startsWith("/og/district/") && /\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(url.pathname);
 }
 
 function isHtml(resource: PublicResource): boolean {
   return resource.contentType.toLowerCase().includes("text/html");
+}
+
+function extractDistrictIds(resource: PublicResource): string[] {
+  if (!resource.contentType.toLowerCase().includes("json")) {
+    return [];
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(new TextDecoder().decode(resource.body));
+  } catch {
+    return [];
+  }
+
+  const ids = new Set<string>();
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+    if (!value || typeof value !== "object") {
+      return;
+    }
+    const record = value as Record<string, unknown>;
+    if (typeof record.districtId === "string" && record.districtId.length > 0) {
+      ids.add(record.districtId);
+    }
+    Object.values(record).forEach(visit);
+  };
+  visit(parsed);
+  return [...ids].sort();
+}
+
+function buildDistrictRouteInventory(resource: PublicResource): string[] {
+  const districtIds = extractDistrictIds(resource);
+  if (districtIds.length === 0) {
+    return [];
+  }
+
+  const stateApiMatch = resource.url.pathname.match(/^\/v1\/states\/([^/]+)\/districts$/);
+  const prefix = stateApiMatch ? `/states/${stateApiMatch[1]}` : "";
+  return districtIds.flatMap((districtId) => [
+    `${prefix}/districts/${districtId}`,
+    `${prefix}/data/districts/${districtId}.csv`,
+    `${prefix}/data/evidence/districts/${districtId}.json`,
+    ...(prefix ? [] : [`/embed/district/${districtId}`]),
+  ]);
 }
 
 async function main(): Promise<void> {
@@ -118,10 +212,11 @@ async function main(): Promise<void> {
   const outputRoot = resolve(options.outputDir);
   await prepareOutputDirectory(outputRoot);
 
-  const queue: URL[] = DEFAULT_SEED_PATHS.map((path) => new URL(path, origin));
+  const queue: URL[] = [...new Set([...DEFAULT_SEED_PATHS, ...buildPublicRouteInventory()])].map((path) => new URL(path, origin));
   const queued = new Set(queue.map((url) => url.href));
   const visited = new Set<string>();
   const resources: PublicResource[] = [];
+  const publicationIdentities = new Map<string, PublicationIdentity>();
 
   while (queue.length > 0) {
     if (visited.size >= options.maxPages) {
@@ -143,7 +238,6 @@ async function main(): Promise<void> {
         if (!resource) {
           return null;
         }
-        await writePublicResource(resource, outputRoot);
         return resource;
       }),
     );
@@ -152,10 +246,29 @@ async function main(): Promise<void> {
       if (!resource) {
         continue;
       }
+
+      for (const identity of extractPublicationIdentities(resource)) {
+        const previous = publicationIdentities.get(identity.scope);
+        if (previous && previous.publishedAt !== identity.publishedAt) {
+          throw new Error(
+            `Publication changed during crawl for ${identity.scope}: ${previous.publishedAt} -> ${identity.publishedAt}. Retry against one immutable publication.`,
+          );
+        }
+        publicationIdentities.set(identity.scope, identity);
+      }
+
+      await writePublicResource(resource, outputRoot);
       resources.push(resource);
       console.log(`${resources.length}\t${resource.url.pathname}\t${resource.contentType.split(";", 1)[0]}`);
 
       const body = new TextDecoder().decode(resource.body);
+      for (const path of buildDistrictRouteInventory(resource)) {
+        const discoveredUrl = new URL(path, origin);
+        if (!queued.has(discoveredUrl.href)) {
+          queued.add(discoveredUrl.href);
+          queue.push(discoveredUrl);
+        }
+      }
       const discoveredUrls = isHtml(resource)
         ? extractInternalUrls(body, resource.url, origin)
         : resource.url.pathname.endsWith("sitemap.xml")
@@ -181,6 +294,7 @@ async function main(): Promise<void> {
         generatedAt: new Date().toISOString(),
         sourceOrigin: origin.origin,
         resourceCount: resources.length,
+        publicationIdentities: [...publicationIdentities.values()].sort((left, right) => left.scope.localeCompare(right.scope)),
         resources: resources.map((resource) => ({
           path: resource.url.pathname,
           contentType: resource.contentType,

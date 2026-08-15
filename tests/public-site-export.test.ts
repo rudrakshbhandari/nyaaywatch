@@ -3,8 +3,10 @@ import {
   buildStaticRedirects,
   extractInternalUrls,
   extractSitemapUrls,
+  extractPublicationIdentities,
   normalizeOrigin,
   outputPathForResource,
+  prepareOutputDirectory,
   type PublicResource,
 } from "../src/export/public-site.js";
 
@@ -13,12 +15,12 @@ const origin = normalizeOrigin("https://nyaaywatch.in");
 describe("public static export helpers", () => {
   it("extracts same-origin links while excluding operator and token routes", () => {
     const urls = extractInternalUrls(
-      `<a href="/states/punjab">Punjab</a><a href="https://example.com">external</a><a href="/operator/runs">operator</a><a href="/cdn-cgi/l/email-protection">email</a><a href="/og/district/punjab.png">missing social card</a><meta property="og:image" content="/og/home.png"><meta name="description" content="A public snapshot page">`,
+      `<a href="/states/punjab">Punjab</a><a href="/districts?view=flagged">query view</a><a href="https://example.com">external</a><a href="/operator/runs">operator</a><a href="/cdn-cgi/l/email-protection">email</a><a href="/og/district/punjab.png">district social card</a><meta property="og:image" content="/og/home.png"><meta name="description" content="A public snapshot page">`,
       new URL("https://nyaaywatch.in/"),
       origin,
     );
 
-    expect(urls.map((url) => url.pathname)).toEqual(["/og/home.png", "/states/punjab"]);
+    expect(urls.map((url) => url.pathname)).toEqual(["/og/district/punjab.png", "/og/home.png", "/states/punjab"]);
   });
 
   it("extracts sitemap locations deterministically", () => {
@@ -47,5 +49,34 @@ describe("public static export helpers", () => {
     expect(buildStaticRedirects(resources, "/tmp/nyaaywatch-static-export")).toEqual([
       "/v1/stats/himachal /v1/stats/himachal.json 200",
     ]);
+  });
+
+  it("extracts stable publication identities from JSON resources", () => {
+    const resource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/v1/stats/himachal"),
+      body: new TextEncoder().encode(JSON.stringify({ snapshot: { stateCode: "HP", publishedAt: "2026-08-15T00:00:00.000Z" } })),
+      contentType: "application/json",
+    };
+
+    expect(extractPublicationIdentities(resource)).toEqual([
+      { scope: "state:HP", publishedAt: "2026-08-15T00:00:00.000Z" },
+    ]);
+  });
+
+  it("extracts publication identities from CSV resources", () => {
+    const resource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/data/districts.csv"),
+      body: new TextEncoder().encode("published_at,state_code\n2026-08-15T00:00:00.000Z,HP\n"),
+      contentType: "text/csv",
+    };
+
+    expect(extractPublicationIdentities(resource)).toEqual([
+      { scope: "state:HP", publishedAt: "2026-08-15T00:00:00.000Z" },
+    ]);
+  });
+
+  it("rejects protected directories and their descendants", async () => {
+    await expect(prepareOutputDirectory("src/export")).rejects.toThrow("unsafe export directory");
+    await expect(prepareOutputDirectory("tests/output")).rejects.toThrow("unsafe export directory");
   });
 });

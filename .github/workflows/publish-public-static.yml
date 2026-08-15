@@ -39,7 +39,7 @@ jobs:
         run: npm ci
 
       - name: Export reviewed public snapshot
-        run: npm run export:public -- --base-url "$PUBLIC_BASE_URL" --output-dir dist-public --max-pages 4000
+        run: npm run export:public -- --base-url "$PUBLIC_BASE_URL" --output-dir dist-public --max-pages 15000
 
       - name: Verify static export boundary
         run: npm run verify:public-export -- dist-public

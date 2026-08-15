@@ -25,7 +25,9 @@ The target does not expose raw upstream artifacts or operator routes publicly.
 
 ## Current implementation
 
-`npm run export:public -- --base-url=https://nyaaywatch.in` crawls the live public sitemap and linked public resources, writes extensionless HTML routes as `index.html` directories, writes JSON APIs as `.json` files, and creates Cloudflare Pages rewrites for extensionless API paths.
+`npm run export:public -- --base-url=https://nyaaywatch.in` uses an explicit inventory for configured state, High Court, Supreme Court, RSS, API, and embed routes, then follows public links for district detail and OG assets. Query-driven district views are applied in the browser so they do not collide with canonical static files. Extensionless HTML routes are written as `index.html` directories, JSON APIs as `.json` files, and Cloudflare Pages rewrites are created for extensionless API paths.
+
+The exporter records the publication timestamp for every scope exposed by the public JSON resources and fails if a scope changes publication during the crawl. The manifest verifier requires those identities before deployment, so an overlapping publication cannot silently produce a mixed static bundle.
 
 `npm run verify:public-export -- dist-public` checks that the export has a root page, that every manifest resource exists, and that operator or health routes did not enter the public bundle.
 

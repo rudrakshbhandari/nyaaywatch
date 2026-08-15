@@ -1,5 +1,6 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
+import { getPublicStateProfileBySlug } from "../geographies.js";
 
 export const DEFAULT_SEED_PATHS = [
   "/sitemap.xml",
@@ -21,6 +22,11 @@ export type PublicResource = {
   url: URL;
   body: Uint8Array;
   contentType: string;
+};
+
+export type PublicationIdentity = {
+  scope: string;
+  publishedAt: string;
 };
 
 export function normalizeOrigin(value: string): URL {
@@ -46,7 +52,6 @@ export function isCrawlablePublicUrl(url: URL, origin: URL): boolean {
     path !== "/operator" &&
     path !== "/health" &&
     !path.startsWith("/cdn-cgi/") &&
-    !path.startsWith("/og/district/") &&
     !path.startsWith("/subscribe/confirm/") &&
     !path.startsWith("/unsubscribe/")
   );
@@ -68,6 +73,12 @@ export function extractInternalUrls(body: string, pageUrl: URL, origin: URL): UR
       const url = new URL(rawValue, pageUrl);
       url.hash = "";
       if (!isCrawlablePublicUrl(url, origin)) {
+        continue;
+      }
+      // Query strings are runtime view state. Static hosting maps every query
+      // variant to the same file, so crawling them would make whichever
+      // variant finishes last overwrite the canonical page.
+      if (url.search) {
         continue;
       }
       urls.set(url.href, url);
@@ -155,13 +166,97 @@ export async function prepareOutputDirectory(outputRoot: string): Promise<void> 
   const resolvedOutputRoot = resolve(outputRoot);
   const currentWorkingDirectory = resolve(process.cwd());
   const relativeOutputRoot = relative(currentWorkingDirectory, resolvedOutputRoot);
+  const protectedRoot = relativeOutputRoot.split("/")[0];
   if (
     !relativeOutputRoot ||
     relativeOutputRoot.startsWith("..") ||
-    [".git", "src", "tests"].includes(relativeOutputRoot)
+    [".git", "src", "tests"].includes(protectedRoot)
   ) {
     throw new Error(`Refusing to clean unsafe export directory: ${outputRoot}`);
   }
   await rm(resolvedOutputRoot, { recursive: true, force: true });
   await mkdir(resolvedOutputRoot, { recursive: true });
+}
+
+export function extractPublicationIdentities(resource: PublicResource): PublicationIdentity[] {
+  const contentType = resource.contentType.toLowerCase();
+  const text = new TextDecoder().decode(resource.body);
+  if (contentType.includes("text/csv")) {
+    return extractCsvPublicationIdentity(resource.url, text);
+  }
+  if (contentType.includes("text/html")) {
+    const publishedAt = text.match(/"datePublished"\s*:\s*"([^"\\]+)"/)?.[1];
+    const scope = scopeFromPath(resource.url.pathname);
+    return publishedAt && scope ? [{ scope, publishedAt }] : [];
+  }
+  if (!contentType.includes("json")) {
+    return [];
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return [];
+  }
+
+  const identities = new Map<string, PublicationIdentity>();
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) {
+      value.forEach(visit);
+      return;
+    }
+    if (!value || typeof value !== "object") {
+      return;
+    }
+
+    const record = value as Record<string, unknown>;
+    if (typeof record.publishedAt === "string") {
+      const scope =
+        typeof record.stateCode === "string"
+          ? `state:${record.stateCode}`
+          : typeof record.courtCode === "string"
+            ? `court:${record.courtCode}`
+            : null;
+      if (scope) {
+        identities.set(scope, { scope, publishedAt: record.publishedAt });
+      }
+    }
+
+    Object.values(record).forEach(visit);
+  };
+  visit(parsed);
+  return [...identities.values()].sort((left, right) => left.scope.localeCompare(right.scope));
+}
+
+function extractCsvPublicationIdentity(url: URL, body: string): PublicationIdentity[] {
+  const [headerLine, rowLine] = body.split(/\r?\n/, 2);
+  if (!headerLine || !rowLine) {
+    return [];
+  }
+  const headers = headerLine.split(",");
+  const values = rowLine.split(",");
+  const publishedAt = values[headers.indexOf("published_at")]?.replace(/^"|"$/g, "");
+  const stateCode = values[headers.indexOf("state_code")]?.replace(/^"|"$/g, "");
+  const scope = stateCode ? `state:${stateCode}` : scopeFromPath(url.pathname);
+  return publishedAt && scope ? [{ scope, publishedAt }] : [];
+}
+
+function scopeFromPath(pathname: string): string | null {
+  const stateMatch = pathname.match(/^\/states\/([^/]+)(?:\/|$)/);
+  if (stateMatch?.[1]) {
+    return getPublicStateProfileBySlug(stateMatch[1])?.stateCode
+      ? `state:${getPublicStateProfileBySlug(stateMatch[1])!.stateCode}`
+      : null;
+  }
+  if (
+    pathname === "/districts" ||
+    pathname.startsWith("/districts/") ||
+    pathname.startsWith("/data/") ||
+    pathname.startsWith("/v1/") ||
+    pathname.startsWith("/embed/")
+  ) {
+    return "state:HP";
+  }
+  return null;
 }
