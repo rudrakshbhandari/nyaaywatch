@@ -60,13 +60,11 @@ export class PublishedHighCourtSnapshotService {
   async getPublishedSnapshot(): Promise<HighCourtPublishedSnapshotRecord | null> {
     const scope = `court:${this.profile.courtCode}`;
     const requestPublication = getRequestPublication<HighCourtPublishedSnapshotRecord>(scope);
-    if (requestPublication) {
+    if (requestPublication !== undefined) {
       return requestPublication;
     }
     const record = await this.store.getLatestHighCourtPublishedSnapshot(this.profile.courtCode, "high_court");
-    if (record) {
-      rememberRequestPublication(scope, record);
-    }
+    rememberRequestPublication(scope, record);
     return record;
   }
 

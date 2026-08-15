@@ -273,7 +273,10 @@ async function main(): Promise<void> {
         publicationIdentities.set(identity.scope, identity);
       }
 
-      if (isPublicationDependentPath(resource.url.pathname) && resourceIdentities.length === 0) {
+      if (
+        isPublicationDependentPath(resource.url.pathname) &&
+        (resourceIdentities.length === 0 || resourceIdentities.some((identity) => identity.publishedAt === null))
+      ) {
         throw new Error(`Publication identity missing for ${resource.url.pathname}. Refusing to publish an unverifiable resource.`);
       }
 
@@ -324,7 +327,9 @@ async function main(): Promise<void> {
         generatedAt: new Date().toISOString(),
         sourceOrigin: origin.origin,
         resourceCount: resources.length,
-        publicationIdentities: [...publicationIdentities.values()].sort((left, right) => left.scope.localeCompare(right.scope)),
+        publicationIdentities: [...publicationIdentities.values()]
+          .filter((identity): identity is PublicationIdentity => identity.publishedAt !== null)
+          .sort((left, right) => left.scope.localeCompare(right.scope)),
         resources: resources.map((resource) => ({
           path: resource.url.pathname,
           contentType: resource.contentType,

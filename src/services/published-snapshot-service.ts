@@ -118,13 +118,11 @@ export class PublishedSnapshotService {
   async getPublishedSnapshot(): Promise<PublishedSnapshotRecord | null> {
     const scope = `state:${this.profile.stateCode}`;
     const requestPublication = getRequestPublication<PublishedSnapshotRecord>(scope);
-    if (requestPublication) {
+    if (requestPublication !== undefined) {
       return requestPublication;
     }
     const record = await this.store.getLatestPublishedSnapshot(this.profile.stateCode);
-    if (record) {
-      rememberRequestPublication(scope, record);
-    }
+    rememberRequestPublication(scope, record);
     return record;
   }
 

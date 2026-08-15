@@ -27,7 +27,7 @@ export type PublicResource = {
 
 export type PublicationIdentity = {
   scope: string;
-  publishedAt: string;
+  publishedAt: string | null;
 };
 
 export function normalizeOrigin(value: string): URL {
@@ -186,7 +186,7 @@ export function buildStaticComparisonShell(origin: URL): PublicResource {
     var evidenceBase=stateMatch ? "/states/"+stateMatch[1]+"/data/evidence/districts/" : "/data/evidence/districts/";
     var methodologyPath=stateMatch ? "/states/"+stateMatch[1]+"/methodology" : "/methodology";
     var evidenceLinks="<a href=\\\""+evidenceBase+encodeURIComponent(leftId)+".json\\\">"+escapeHtml(left.districtName)+" evidence</a> · <a href=\\\""+evidenceBase+encodeURIComponent(rightId)+".json\\\">"+escapeHtml(right.districtName)+" evidence</a>";
-    document.querySelector("article").innerHTML="<p>Published snapshot: "+escapeHtml(payload.snapshot.referenceDateAt.slice(0,10))+" · Quality: "+escapeHtml(payload.snapshot.qualityState)+"</p><h1>"+escapeHtml(left.districtName)+" vs "+escapeHtml(right.districtName)+"</h1><p>Source: "+escapeHtml(payload.snapshot.sourceAttribution)+" · Method: "+escapeHtml(payload.snapshot.methodologyVersion)+" · <a href=\\\""+methodologyPath+"\\\">methodology</a></p><p>These values are signals from the published snapshot, not findings about any court or official.</p><p>"+evidenceLinks+"</p><table><tbody>"+
+    document.querySelector("article").innerHTML="<p>Published snapshot: "+escapeHtml(payload.snapshot.referenceDateAt.slice(0,10))+" · Quality: "+escapeHtml(payload.snapshot.qualityState)+"</p><h1>"+escapeHtml(left.districtName)+" vs "+escapeHtml(right.districtName)+"</h1><p>Source: "+escapeHtml(payload.snapshot.sourceAttribution)+" · Method: "+escapeHtml(payload.snapshot.methodologyVersion)+" · <a href=\\\""+methodologyPath+"\\\">methodology</a></p><p>These values are signals from the published snapshot, not findings about any court or official.</p><p>"+evidenceLinks+"</p><table><thead><tr><th>Metric</th><th>"+escapeHtml(left.districtName)+"</th><th>"+escapeHtml(right.districtName)+"</th></tr></thead><tbody>"+
       [
         ["Cases waiting",left.backlogCases,right.backlogCases],
         ["Cleared per 100",left.disposalRate,right.disposalRate],

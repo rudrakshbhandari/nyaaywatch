@@ -54,9 +54,11 @@ describe("public static export helpers", () => {
 
   it("provides a client-side comparison fallback for arbitrary district pairs", () => {
     const shell = buildStaticComparisonShell(origin);
-    expect(new TextDecoder().decode(shell.body)).toContain("/v1/states/");
+    const body = new TextDecoder().decode(shell.body);
+    expect(body).toContain("/v1/states/");
     expect(shell.url.pathname).toBe("/compare");
-    expect(new TextDecoder().decode(shell.body)).toContain("methodology");
+    expect(body).toContain("methodology");
+    expect(body).toContain("<thead><tr><th>Metric</th><th>");
   });
 
   it("extracts stable publication identities from JSON resources", () => {
@@ -101,6 +103,17 @@ describe("public static export helpers", () => {
       body: new Uint8Array([137, 80, 78, 71]),
       contentType: "image/png",
       publicationIdentities: [{ scope: "state:HP", publishedAt: "2026-08-20T00:00:00.000Z" }],
+    };
+
+    expect(extractPublicationIdentities(resource)).toEqual(resource.publicationIdentities);
+  });
+
+  it("preserves explicitly absent response-header identities for crawl validation", () => {
+    const resource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/states/punjab"),
+      body: new TextEncoder().encode("<html></html>"),
+      contentType: "text/html",
+      publicationIdentities: [{ scope: "state:PB", publishedAt: null }],
     };
 
     expect(extractPublicationIdentities(resource)).toEqual(resource.publicationIdentities);
