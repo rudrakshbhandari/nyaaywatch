@@ -163,7 +163,7 @@ async function fetchResource(url: URL): Promise<PublicResource | null> {
 }
 
 function isOptionalAssetUrl(url: URL): boolean {
-  return !url.pathname.startsWith("/og/district/") && /\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(url.pathname);
+  return /\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i.test(url.pathname);
 }
 
 function isHtml(resource: PublicResource): boolean {
@@ -171,7 +171,11 @@ function isHtml(resource: PublicResource): boolean {
 }
 
 function isPublicationDependentPath(pathname: string): boolean {
-  return !["/robots.txt", "/sitemap.xml", "/press", "/learn"].includes(pathname) && !pathname.startsWith("/press/");
+  return (
+    !["/robots.txt", "/sitemap.xml", "/press", "/learn"].includes(pathname) &&
+    !pathname.startsWith("/press/") &&
+    !pathname.endsWith("/api")
+  );
 }
 
 function extractDistrictIds(resource: PublicResource): string[] {
