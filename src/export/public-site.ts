@@ -220,13 +220,13 @@ export async function prepareOutputDirectory(outputRoot: string): Promise<void> 
   const resolvedOutputRoot = resolve(outputRoot);
   const currentWorkingDirectory = resolve(process.cwd());
   const relativeOutputRoot = relative(currentWorkingDirectory, resolvedOutputRoot);
-  const protectedRoot = relativeOutputRoot.split("/")[0];
+  const disposableExportDirectory = relativeOutputRoot === "dist-public" || relativeOutputRoot.startsWith("dist-public/");
   if (
     !relativeOutputRoot ||
     relativeOutputRoot.startsWith("..") ||
-    [".git", "src", "tests"].includes(protectedRoot)
+    !disposableExportDirectory
   ) {
-    throw new Error(`Refusing to clean unsafe export directory: ${outputRoot}`);
+    throw new Error(`Refusing to clean unsafe export directory outside approved dist-public path: ${outputRoot}`);
   }
   await rm(resolvedOutputRoot, { recursive: true, force: true });
   await mkdir(resolvedOutputRoot, { recursive: true });

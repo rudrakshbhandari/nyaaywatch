@@ -26,6 +26,7 @@ import {
 import { sha256 } from "../lib/hash.js";
 import type { NjdgStateProfile } from "../geographies.js";
 import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
+import { getRequestPublication, rememberRequestPublication } from "../lib/publication-request-context.js";
 
 const RAW_CAPTURE_ARTIFACT_TYPE = "raw-njdg-html-bundle";
 const SNAPSHOT_CANDIDATE_ARTIFACT_TYPE = "snapshot-candidate-json";
@@ -115,7 +116,16 @@ export class PublishedSnapshotService {
   }
 
   async getPublishedSnapshot(): Promise<PublishedSnapshotRecord | null> {
-    return this.store.getLatestPublishedSnapshot(this.profile.stateCode);
+    const scope = `state:${this.profile.stateCode}`;
+    const requestPublication = getRequestPublication<PublishedSnapshotRecord>(scope);
+    if (requestPublication) {
+      return requestPublication;
+    }
+    const record = await this.store.getLatestPublishedSnapshot(this.profile.stateCode);
+    if (record) {
+      rememberRequestPublication(scope, record);
+    }
+    return record;
   }
 
   async getStats(): Promise<{ snapshot: PublishedSnapshot["snapshot"]; stats: PublishedSnapshot["stats"] } | null> {

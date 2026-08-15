@@ -16,6 +16,7 @@ import {
   materializeHighCourtPublishedSnapshot,
 } from "../normalize/high-court-snapshot-candidate.js";
 import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
+import { getRequestPublication, rememberRequestPublication } from "../lib/publication-request-context.js";
 import type { ArtifactStore } from "../storage/artifact-store.js";
 import {
   PgWarehouseStore,
@@ -57,7 +58,16 @@ export class PublishedHighCourtSnapshotService {
   }
 
   async getPublishedSnapshot(): Promise<HighCourtPublishedSnapshotRecord | null> {
-    return this.store.getLatestHighCourtPublishedSnapshot(this.profile.courtCode, "high_court");
+    const scope = `court:${this.profile.courtCode}`;
+    const requestPublication = getRequestPublication<HighCourtPublishedSnapshotRecord>(scope);
+    if (requestPublication) {
+      return requestPublication;
+    }
+    const record = await this.store.getLatestHighCourtPublishedSnapshot(this.profile.courtCode, "high_court");
+    if (record) {
+      rememberRequestPublication(scope, record);
+    }
+    return record;
   }
 
   async getStats(): Promise<{ snapshot: HighCourtPublishedSnapshot["snapshot"]; stats: HighCourtPublishedSnapshot["stats"] } | null> {

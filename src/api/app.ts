@@ -51,6 +51,7 @@ import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
 import { buildPublicPageContext, buildPublicStateRoutes } from "./public-state.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
 import { renderRssFeed } from "./pages/rss.js";
+import { getRequestPublicationIdentities, runPublicationRequest } from "../lib/publication-request-context.js";
 import {
   renderSubscribePage,
   renderSubscribeConfirmPending,
@@ -62,7 +63,6 @@ import {
 type PublicServiceMap = Partial<Record<SupportedStateCode, PublishedSnapshotService>>;
 type HighCourtServiceMap = Partial<Record<SupportedHighCourtCode, PublishedHighCourtSnapshotService>>;
 type SupremeCourtService = PublishedSupremeCourtSnapshotService | undefined;
-type PublicPublicationIdentity = { scope: string; publishedAt: string };
 
 const DEFAULT_PUBLIC_STATE_CODE: SupportedStateCode = "HP";
 const LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE = "Lower-Court Geography Not Found";
@@ -121,25 +121,19 @@ export function createApp(
     next();
   });
 
-  app.use(
-    asyncRoute(async (request, response, next) => {
-      if (request.method !== "GET") {
-        next();
-        return;
-      }
-
-      const identities = await getPublicationIdentitiesForPath(
-        request.path,
-        serviceMap,
-        highCourtServices,
-        supremeCourtService,
-      );
-      if (identities.length > 0) {
-        response.setHeader("X-NyaayWatch-Publication-Identities", JSON.stringify(identities));
-      }
+  app.use((request, response, next) => {
+    runPublicationRequest(() => {
+      const originalSend = response.send.bind(response);
+      response.send = ((body: unknown) => {
+        const identities = getRequestPublicationIdentities();
+        if (identities.length > 0) {
+          response.setHeader("X-NyaayWatch-Publication-Identities", JSON.stringify(identities));
+        }
+        return originalSend(body);
+      }) as typeof response.send;
       next();
-    }),
-  );
+    });
+  });
 
   app.get("/health", (_request, response) => {
     response.json({ ok: true, region: config.AWS_REGION, stateCode: config.STATE_CODE });
@@ -2077,86 +2071,6 @@ function shouldRedirectToCanonicalHost(config: AppConfig, requestHost: string) {
   }
 
   return config.LEGACY_HOSTS.includes(requestHost) && requestHost !== config.CANONICAL_HOST;
-}
-
-async function getPublicationIdentitiesForPath(
-  pathname: string,
-  publicServices: PublicServiceMap,
-  highCourtServices: HighCourtServiceMap,
-  supremeCourtService: SupremeCourtService,
-): Promise<PublicPublicationIdentity[]> {
-  const lowerIdentity = async (scope: string, snapshotService: PublishedSnapshotService | undefined) => {
-    const record = await snapshotService?.getPublishedSnapshot();
-    return record ? [{ scope, publishedAt: record.payload.snapshot.publishedAt }] : [];
-  };
-  const highCourtIdentity = async (profile: HighCourtProfile) => {
-    const record = await highCourtServices[profile.courtCode]?.getPublishedSnapshot();
-    return record ? [{ scope: `court:${profile.courtCode}`, publishedAt: record.payload.snapshot.publishedAt }] : [];
-  };
-  const supremeIdentity = async () => {
-    const record = await supremeCourtService?.getPublishedSnapshot();
-    return record ? [{ scope: "court:SCI", publishedAt: record.payload.snapshot.publishedAt }] : [];
-  };
-  const allLowerIdentities = () =>
-    Promise.all(
-      Object.entries(publicServices).map(([stateCode, snapshotService]) =>
-        lowerIdentity(`state:${stateCode}`, snapshotService),
-      ),
-    ).then((groups) => groups.flat());
-  const allHighCourtIdentities = () =>
-    Promise.all(listPublicHighCourtProfiles().map((profile) => highCourtIdentity(profile))).then((groups) => groups.flat());
-
-  const stateMatch = pathname.match(/^\/(?:states|v1\/states)\/([^/]+)/);
-  if (stateMatch?.[1]) {
-    const profile = stateMatch[1] === "himachal" ? getStateProfile("HP") : getPublicStateProfileBySlug(stateMatch[1]);
-    return profile ? lowerIdentity(`state:${profile.stateCode}`, publicServices[profile.stateCode]) : [];
-  }
-
-  const stateOgMatch = pathname.match(/^\/og\/state\/([^/.]+)(?:-square)?\.png$/);
-  if (stateOgMatch?.[1]) {
-    const profile = stateOgMatch[1] === "himachal" ? getStateProfile("HP") : getPublicStateProfileBySlug(stateOgMatch[1]);
-    return profile ? lowerIdentity(`state:${profile.stateCode}`, publicServices[profile.stateCode]) : [];
-  }
-
-  const stateEmbedMatch = pathname.match(/^\/embed\/state\/([^/]+)$/);
-  if (stateEmbedMatch?.[1]) {
-    const profile = stateEmbedMatch[1] === "himachal" ? getStateProfile("HP") : getPublicStateProfileBySlug(stateEmbedMatch[1]);
-    return profile ? lowerIdentity(`state:${profile.stateCode}`, publicServices[profile.stateCode]) : [];
-  }
-
-  const highCourtMatch = pathname.match(/^\/(?:high-courts|v1\/high-courts|og\/high-court)\/([^/.]+)/);
-  if (highCourtMatch?.[1]) {
-    const profile = getPublicHighCourtProfileBySlug(highCourtMatch[1]);
-    return profile ? highCourtIdentity(profile) : [];
-  }
-
-  if (pathname === "/supreme-court" || pathname.startsWith("/v1/supreme-court") || pathname === "/og/supreme-court.png") {
-    return supremeIdentity();
-  }
-
-  if (pathname === "/" || pathname === "/high-courts" || pathname.startsWith("/watch") || pathname === "/og/national.png") {
-    const [lower, high, supreme] = await Promise.all([allLowerIdentities(), allHighCourtIdentities(), supremeIdentity()]);
-    return [...lower, ...high, ...supreme];
-  }
-
-  if (pathname.startsWith("/og/home") || pathname.startsWith("/og/district/") || pathname.startsWith("/embed/district/") || pathname === "/embed/state/himachal") {
-    return lowerIdentity("state:HP", publicServices.HP);
-  }
-
-  if (
-    pathname === "/districts" ||
-    pathname.startsWith("/districts/") ||
-    pathname.startsWith("/compare/") ||
-    pathname.startsWith("/data") ||
-    pathname.startsWith("/methodology") ||
-    pathname.startsWith("/movers") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/v1/")
-  ) {
-    return lowerIdentity("state:HP", publicServices.HP);
-  }
-
-  return [];
 }
 
 function asyncRoute(

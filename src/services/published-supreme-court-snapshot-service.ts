@@ -16,6 +16,7 @@ import {
   materializeSupremeCourtPublishedSnapshot,
 } from "../normalize/supreme-court-snapshot-candidate.js";
 import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
+import { getRequestPublication, rememberRequestPublication } from "../lib/publication-request-context.js";
 import type { ArtifactStore } from "../storage/artifact-store.js";
 import {
   PgWarehouseStore,
@@ -57,7 +58,16 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   async getPublishedSnapshot(): Promise<SupremeCourtPublishedSnapshotRecord | null> {
-    return this.store.getLatestSupremeCourtPublishedSnapshot(this.profile.courtCode, "supreme_court");
+    const scope = `court:${this.profile.courtCode}`;
+    const requestPublication = getRequestPublication<SupremeCourtPublishedSnapshotRecord>(scope);
+    if (requestPublication) {
+      return requestPublication;
+    }
+    const record = await this.store.getLatestSupremeCourtPublishedSnapshot(this.profile.courtCode, "supreme_court");
+    if (record) {
+      rememberRequestPublication(scope, record);
+    }
+    return record;
   }
 
   async getStats(): Promise<{ snapshot: SupremeCourtPublishedSnapshot["snapshot"]; stats: SupremeCourtPublishedSnapshot["stats"] } | null> {

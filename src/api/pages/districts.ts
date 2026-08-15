@@ -178,6 +178,7 @@ export function renderDistrictsPage(
       var rows = Array.prototype.slice.call(document.querySelectorAll("tr[data-district-id]"));
       var tableBody = document.querySelector(".districts-table tbody");
       var noResults = document.getElementById("districts-no-results");
+      var noResultsHint = document.getElementById("districts-no-results-hint");
       var showingTile = document.getElementById("districts-showing");
       var validSorts = ["rank", "backlog", "disposal", "age", "gap"];
       var validViews = ["all", "flagged"];
@@ -213,6 +214,11 @@ export function renderDistrictsPage(
         });
         rows.forEach(function(row) { row.hidden = visibleRows.indexOf(row) < 0; });
         if (noResults) noResults.hidden = visibleRows.length > 0;
+        if (noResultsHint && visibleRows.length === 0) {
+          if (options.q && options.view === "flagged") noResultsHint.textContent = "No listed district matches \u201C" + options.q + "\u201D. Try broadening the search or switching to all districts.";
+          else if (options.q) noResultsHint.textContent = "No district matches \u201C" + options.q + "\u201D. Check the spelling or try a partial name.";
+          else noResultsHint.textContent = "No districts appear in the current view. Switch to all districts to see the full list.";
+        }
         if (showingTile) {
           var value = showingTile.querySelector(".stat-tile__value");
           var note = showingTile.querySelector(".stat-tile__note");
@@ -400,7 +406,7 @@ function renderNoResults(options: DistrictsPageOptions, context: PublicPageConte
     <article class="card no-results" id="districts-no-results"${visible ? "" : " hidden"}>
       <p class="card__eyebrow">NO RESULTS</p>
       <h3>Nothing to show here.</h3>
-      <p>${hint}</p>
+      <p id="districts-no-results-hint">${hint}</p>
       <p><a class="btn btn--ghost btn--small" href="${context.routes.districts}">Reset filters</a></p>
     </article>
   `;
