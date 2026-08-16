@@ -139,5 +139,5 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 ### 4. Free Hosting Migration
 
 - [ ] Keep AWS as the public origin until the gates in `docs/FREE_HOSTING_MIGRATION.md` pass. PR `#366` adds the static export, Pages preview workflow, and publication-identity crawl checks. Cloudflare R2 still needs dashboard enablement. DNS cutover stays blocked.
-- [x] Exporter pins publication identity on JSON, CSV, metric HTML, OG, and feeds; skips unpublished configured geographies; writes Cloudflare-valid `/states/:state/compare/*` rewrites; and keeps the crawl manifest outside the public bundle.
+- [x] Exporter pins publication identity on JSON, CSV, metric HTML, OG, and feeds (including a matching per-resource scope for movers); skips unpublished configured geographies; writes exact-path `_redirects` before comparison splats; and keeps the crawl manifest outside the public bundle.
 - [x] Static export disables newsletter POST: `/subscribe` is a public notice, and confirm/unsubscribe token routes are excluded from the bundle. AWS still serves the working form until cutover.

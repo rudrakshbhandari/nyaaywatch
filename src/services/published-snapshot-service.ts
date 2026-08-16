@@ -181,6 +181,11 @@ export class PublishedSnapshotService {
   }
 
   async listMovers(): Promise<DistrictMoversResult | null> {
+    const record = await this.getPublishedSnapshot();
+    if (!record) {
+      return null;
+    }
+
     const history = await this.loadHistoricalSnapshots();
     if (history.length < 2) return null;
     const current = history[history.length - 1]!;

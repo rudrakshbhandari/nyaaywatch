@@ -231,6 +231,10 @@ describe("HTTP routes", () => {
     expect(moversPage.text).toContain("Copy citation");
     expect(moversPage.text).toContain("/data/evidence/state.json");
     expect(moversPage.text).toContain("Evidence JSON");
+    const moversIdentities = JSON.parse(String(moversPage.headers["x-nyaaywatch-publication-identities"] ?? "[]")) as Array<{
+      scope: string;
+    }>;
+    expect(moversIdentities.some((identity) => identity.scope === "state:HP")).toBe(true);
 
     const watchIndex = await request(app).get("/watch");
     expect(watchIndex.status).toBe(200);

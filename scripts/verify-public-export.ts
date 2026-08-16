@@ -2,7 +2,7 @@
 
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { exportManifestPath, STATIC_COMPARISON_REWRITES } from "../src/export/public-site.js";
+import { exportManifestPath, STATIC_COMPARISON_REWRITES, assertCloudflareRedirectBudget } from "../src/export/public-site.js";
 
 type ExportManifest = {
   resourceCount: number;
@@ -65,6 +65,11 @@ async function main(): Promise<void> {
   }
 
   const redirects = await readFile(resolve(outputRoot, "_redirects"), "utf8");
+  const redirectLines = redirects
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith("#"));
+  assertCloudflareRedirectBudget(redirectLines);
   if (redirects.includes("/states/*/compare/*")) {
     throw new Error("Static export _redirects still uses a two-splat comparison rewrite that Cloudflare Pages will drop.");
   }

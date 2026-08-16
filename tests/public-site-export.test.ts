@@ -8,6 +8,7 @@ import {
   extractSitemapUrls,
   extractPublicationIdentities,
   assertExportResourceIdentities,
+  assertCloudflareRedirectBudget,
   exportManifestPath,
   isSkippableUnpublishedPublicUrl,
   mergeStaticHostingRewrites,
@@ -15,6 +16,7 @@ import {
   outputPathForResource,
   prepareOutputDirectory,
   recordPublicationIdentities,
+  requiredPublicationScope,
   resourceRequiresPublicationIdentity,
   STATIC_COMPARISON_REWRITES,
   type PublicResource,
@@ -276,9 +278,36 @@ describe("public static export helpers", () => {
       "/compare/* /compare/index.html 200",
       "/states/:state/compare/* /compare/index.html 200",
     ]);
-    const redirects = mergeStaticHostingRewrites([]);
-    expect(redirects).toContain("/states/:state/compare/* /compare/index.html 200");
+    const redirects = mergeStaticHostingRewrites([
+      "/v1/trends /v1/trends.json 200",
+      "/v1/supreme-court/stats /v1/supreme-court/stats.json 200",
+    ]);
+    expect(redirects.slice(0, 2)).toEqual([
+      "/v1/supreme-court/stats /v1/supreme-court/stats.json 200",
+      "/v1/trends /v1/trends.json 200",
+    ]);
+    expect(redirects.slice(-2)).toEqual([
+      "/compare/* /compare/index.html 200",
+      "/states/:state/compare/* /compare/index.html 200",
+    ]);
     expect(redirects.some((line) => line.includes("/states/*/compare/*"))).toBe(false);
+    expect(() =>
+      assertCloudflareRedirectBudget(["/compare/* /compare/index.html 200", "/v1/trends /v1/trends.json 200"]),
+    ).toThrow("static rewrite after a dynamic rule");
+  });
+
+  it("rejects movers HTML that is pinned only to another geography", () => {
+    expect(requiredPublicationScope("/movers")).toBe("state:HP");
+    expect(requiredPublicationScope("/states/punjab/movers")).toBe("state:PB");
+    const recorded = new Map();
+    expect(() =>
+      assertExportResourceIdentities(recorded, {
+        url: new URL("https://nyaaywatch.in/movers"),
+        body: new TextEncoder().encode("<html><title>Movers</title></html>"),
+        contentType: "text/html",
+        publicationIdentities: [{ scope: "state:PB", publishedAt: "2026-08-15T00:00:00.000Z" }],
+      }),
+    ).toThrow("expected state:HP");
   });
 
   it("writes the export manifest beside the public bundle, not inside it", () => {

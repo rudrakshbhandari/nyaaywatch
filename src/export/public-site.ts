@@ -1,6 +1,7 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { getPublicStateProfileBySlug } from "../geographies.js";
+import { getPublicHighCourtProfileBySlug } from "../high-courts.js";
 
 export const DEFAULT_SEED_PATHS = [
   "/sitemap.xml",
@@ -143,8 +144,35 @@ export const STATIC_COMPARISON_REWRITES = [
   "/states/:state/compare/* /compare/index.html 200",
 ] as const;
 
+export const CLOUDFLARE_PAGES_MAX_DYNAMIC_REWRITES = 100;
+
+export function isDynamicRedirectRule(rule: string): boolean {
+  const source = rule.trim().split(/\s+/)[0] ?? "";
+  return source.includes("*") || /\/:[A-Za-z]/.test(source);
+}
+
 export function mergeStaticHostingRewrites(resourceRedirects: string[]): string[] {
-  return [...new Set([...resourceRedirects, ...STATIC_COMPARISON_REWRITES])].sort();
+  const unique = [...new Set([...resourceRedirects, ...STATIC_COMPARISON_REWRITES])];
+  const staticRules = unique.filter((rule) => !isDynamicRedirectRule(rule)).sort();
+  const dynamicRules = unique.filter((rule) => isDynamicRedirectRule(rule)).sort();
+  const merged = [...staticRules, ...dynamicRules];
+  assertCloudflareRedirectBudget(merged);
+  return merged;
+}
+
+export function assertCloudflareRedirectBudget(rules: string[]): void {
+  const firstDynamicIndex = rules.findIndex((rule) => isDynamicRedirectRule(rule));
+  if (firstDynamicIndex >= 0 && rules.slice(firstDynamicIndex).some((rule) => !isDynamicRedirectRule(rule))) {
+    throw new Error(
+      "Cloudflare Pages _redirects has a static rewrite after a dynamic rule; later exact-path APIs will be dropped.",
+    );
+  }
+  const dynamicCount = rules.filter((rule) => isDynamicRedirectRule(rule)).length;
+  if (dynamicCount > CLOUDFLARE_PAGES_MAX_DYNAMIC_REWRITES) {
+    throw new Error(
+      `Cloudflare Pages _redirects has ${dynamicCount} dynamic rules; Pages stops after ${CLOUDFLARE_PAGES_MAX_DYNAMIC_REWRITES}.`,
+    );
+  }
 }
 
 export function exportManifestPath(outputRoot: string): string {
@@ -337,9 +365,18 @@ export function assertExportResourceIdentities(
 ): PublicationIdentity[] {
   const identities = extractPublicationIdentities(resource);
   recordPublicationIdentities(recorded, identities);
-  if (resourceRequiresPublicationIdentity(resource) && identities.length === 0) {
+  if (!resourceRequiresPublicationIdentity(resource)) {
+    return identities;
+  }
+  if (identities.length === 0) {
     throw new Error(
       `Publication identity missing for ${resource.url.pathname}. Refusing to publish an unverifiable resource.`,
+    );
+  }
+  const requiredScope = requiredPublicationScope(resource.url.pathname);
+  if (requiredScope && !identities.some((identity) => identity.scope === requiredScope)) {
+    throw new Error(
+      `Publication identity missing for ${resource.url.pathname} (expected ${requiredScope}). Refusing to publish a resource pinned only to other scopes.`,
     );
   }
   return identities;
@@ -437,19 +474,67 @@ function headersContainStateCode(headerLine: string): boolean {
 }
 
 function scopeFromPath(pathname: string): string | null {
+  return requiredPublicationScope(pathname);
+}
+
+export function requiredPublicationScope(pathname: string): string | null {
   const stateMatch = pathname.match(/^\/(?:og\/)?states\/([^/]+)(?:\/|$)/);
   if (stateMatch?.[1]) {
     const profile = getPublicStateProfileBySlug(stateMatch[1]);
     return profile ? `state:${profile.stateCode}` : null;
   }
+
+  const v1StateMatch = pathname.match(/^\/v1\/states\/([^/]+)(?:\/|$)/);
+  if (v1StateMatch?.[1]) {
+    const profile = getPublicStateProfileBySlug(v1StateMatch[1]);
+    return profile ? `state:${profile.stateCode}` : null;
+  }
+
+  const embedStateMatch = pathname.match(/^\/embed\/state\/([^/]+)/);
+  if (embedStateMatch?.[1]) {
+    const profile = getPublicStateProfileBySlug(embedStateMatch[1]);
+    return profile ? `state:${profile.stateCode}` : null;
+  }
+
+  const ogStateMatch = pathname.match(/^\/og\/state\/([^/]+?)(?:-square)?\.png$/);
+  if (ogStateMatch?.[1]) {
+    const profile = getPublicStateProfileBySlug(ogStateMatch[1]);
+    return profile ? `state:${profile.stateCode}` : null;
+  }
+
+  const highCourtMatch = pathname.match(/^\/(?:og\/high-court\/|v1\/high-courts\/|high-courts\/)([^/.]+)(?:\/|$|\.png$)/);
+  if (highCourtMatch?.[1]) {
+    const profile = getPublicHighCourtProfileBySlug(highCourtMatch[1]);
+    return profile ? `court:${profile.courtCode}` : null;
+  }
+
   if (
+    pathname === "/supreme-court" ||
+    pathname.startsWith("/supreme-court/") ||
+    pathname.startsWith("/v1/supreme-court/") ||
+    pathname === "/og/supreme-court.png"
+  ) {
+    return "court:SCI";
+  }
+
+  if (
+    pathname === "/movers" ||
     pathname === "/districts" ||
     pathname.startsWith("/districts/") ||
+    pathname === "/data" ||
     pathname.startsWith("/data/") ||
-    pathname.startsWith("/v1/") ||
-    pathname.startsWith("/embed/")
+    pathname === "/methodology" ||
+    pathname === "/og/home.png" ||
+    pathname.startsWith("/og/district/") ||
+    pathname.startsWith("/embed/district/") ||
+    pathname.startsWith("/v1/stats/") ||
+    pathname === "/v1/districts" ||
+    pathname.startsWith("/v1/districts/") ||
+    pathname === "/v1/trends" ||
+    pathname.startsWith("/v1/trends/")
   ) {
     return "state:HP";
   }
+
   return null;
 }

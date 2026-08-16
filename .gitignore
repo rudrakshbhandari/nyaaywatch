@@ -2,6 +2,7 @@
 .env
 .wrangler/
 dist-public/
+dist-public.manifest.json
 .env.*
 !.env.example
 node_modules/
