@@ -14,6 +14,7 @@ import {
   prepareOutputDirectory,
   assertExportResourceIdentities,
   buildStaticComparisonShell,
+  buildStaticSubscribeNotice,
   type PublicResource,
   type PublicationIdentity,
   writePublicResource,
@@ -289,6 +290,10 @@ async function main(): Promise<void> {
   const comparisonShell = buildStaticComparisonShell(origin);
   await writePublicResource(comparisonShell, outputRoot);
   resources.push(comparisonShell);
+
+  const subscribeNotice = buildStaticSubscribeNotice(origin);
+  await writePublicResource(subscribeNotice, outputRoot);
+  resources.push(subscribeNotice);
 
   const redirects = [
     ...new Set([

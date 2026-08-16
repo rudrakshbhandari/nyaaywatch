@@ -32,14 +32,31 @@ async function main(): Promise<void> {
   }
 
   await access(resolve(outputRoot, "index.html"));
+  await access(resolve(outputRoot, "subscribe/index.html"));
+  let sawSubscribeNotice = false;
   for (const resource of manifest.resources) {
     if (resource.path.startsWith("/operator") || resource.path === "/health") {
       throw new Error(`Operator or health route leaked into static export: ${resource.path}`);
+    }
+    if (resource.path.startsWith("/subscribe/confirm") || resource.path.startsWith("/unsubscribe")) {
+      throw new Error(`Newsletter token route leaked into static export: ${resource.path}`);
     }
     if (resource.outputPath.includes("..")) {
       throw new Error(`Unsafe static output path: ${resource.outputPath}`);
     }
     await access(resolve(outputRoot, resource.outputPath));
+    if (resource.contentType.toLowerCase().includes("text/html")) {
+      const html = await readFile(resolve(outputRoot, resource.outputPath), "utf8");
+      if (/method=["']post["'][^>]*action=["']\/subscribe["']/i.test(html) || /action=["']\/subscribe["'][^>]*method=["']post["']/i.test(html)) {
+        throw new Error(`Static export still contains a newsletter POST form at ${resource.path}.`);
+      }
+    }
+    if (resource.path === "/subscribe") {
+      sawSubscribeNotice = true;
+    }
+  }
+  if (!sawSubscribeNotice) {
+    throw new Error("Static export is missing the /subscribe notice page.");
   }
 
   console.log(`Verified ${manifest.resourceCount} static public resources in ${outputRoot}`);

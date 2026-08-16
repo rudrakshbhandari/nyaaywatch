@@ -138,5 +138,6 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 
 ### 4. Free Hosting Migration
 
-- [ ] Keep AWS as the public origin until the gates in `docs/FREE_HOSTING_MIGRATION.md` pass. PR `#366` adds the static export, Pages preview workflow, and publication-identity crawl checks; R2, newsletter POST behavior, and DNS cutover remain blocked.
+- [ ] Keep AWS as the public origin until the gates in `docs/FREE_HOSTING_MIGRATION.md` pass. PR `#366` adds the static export, Pages preview workflow, and publication-identity crawl checks. Cloudflare R2 still needs dashboard enablement. DNS cutover stays blocked.
 - [x] Exporter now pins publication identity from JSON/CSV resources, records unpublished scopes, and does not require HTML/OG/API-reference pages to mint an identity header.
+- [x] Static export disables newsletter POST: `/subscribe` is a public notice, and confirm/unsubscribe token routes are excluded from the bundle. AWS still serves the working form until cutover.

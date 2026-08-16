@@ -53,7 +53,9 @@ export function isCrawlablePublicUrl(url: URL, origin: URL): boolean {
     path !== "/operator" &&
     path !== "/health" &&
     !path.startsWith("/cdn-cgi/") &&
-    !path.startsWith("/subscribe/confirm/") &&
+    path !== "/subscribe" &&
+    !path.startsWith("/subscribe/") &&
+    path !== "/unsubscribe" &&
     !path.startsWith("/unsubscribe/")
   );
 }
@@ -153,6 +155,23 @@ export function buildStaticRedirects(resources: PublicResource[], outputRoot: st
     redirects.set(`${requestPath} /${relativeOutputPath} 200`, `${requestPath} /${relativeOutputPath} 200`);
   }
   return [...redirects.values()].sort();
+}
+
+export function buildStaticSubscribeNotice(origin: URL): PublicResource {
+  const body = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Subscribe — NyaayWatch</title>
+<style>body{margin:0;padding:40px 20px;background:#f4efe3;color:#0c0a08;font:16px system-ui,sans-serif}main{max-width:720px;margin:auto}h1{font-size:clamp(28px,5vw,52px);margin:0 0 16px}p{line-height:1.5}</style></head>
+<body><main>
+<p>SUBSCRIBE</p>
+<h1>Email updates aren't available here yet.</h1>
+<p>This page can't take sign-ups. You can still read the numbers on the home page, or see how the figures are built on the methodology page.</p>
+<p><a href="/">Home</a> · <a href="/methodology">Methodology</a></p>
+</main></body></html>`;
+  return {
+    url: new URL("/subscribe", origin),
+    body: new TextEncoder().encode(body),
+    contentType: "text/html; charset=utf-8",
+  };
 }
 
 export function buildStaticComparisonShell(origin: URL): PublicResource {

@@ -55,7 +55,7 @@ Each court family ships paired overview, `/data`, `/methodology`, and `/api` pag
 | Embeds | `/embed/district/:id`, `/embed/state/:slug` | Frameable district and state widgets |
 | Press assets | `/press`, `/press/logo-light.svg`, `/press/logo-dark.svg` | Brand assets, citations, and public communication material |
 | Social cards | `/og/home.png`, `/og/national.png`, `/og/state/:slug.png`, `/og/district/:id.png`, `/og/high-court/:slug.png`, `/og/supreme-court.png` | Generated Open Graph cards for sharing |
-| Subscriptions | `/subscribe`, `/subscribe/confirm/:token`, `/unsubscribe/:token` | Plain-text email updates for new lower-court snapshots when newsletter email is configured |
+| Subscriptions | `/subscribe`, `/subscribe/confirm/:token`, `/unsubscribe/:token` | Plain-text email updates for new lower-court snapshots on the AWS origin when newsletter email is configured. The static Pages bundle ships `/subscribe` as a notice that sign-ups are unavailable; confirm and unsubscribe token routes are not exported. |
 | Feeds and discovery | `/states/:slug/feed.xml`, `/sitemap.xml`, `/robots.txt` | RSS, crawler discovery, and operator-route exclusion |
 
 ## Product Guardrails

@@ -29,6 +29,8 @@ The target does not expose raw upstream artifacts or operator routes publicly.
 
 District comparison URLs use one client-side fallback page and wildcard rewrites; the exporter does not create a separate file for every district pair.
 
+The static bundle does not export newsletter POST or token routes. It writes a `/subscribe` notice that sign-ups are unavailable, because Cloudflare Pages cannot preserve `POST /subscribe`, `/subscribe/confirm/:token`, or `/unsubscribe/:token`. The AWS origin keeps the working form until DNS cutover.
+
 The exporter records the publication timestamp for every scope exposed by the public JSON and CSV resources and fails if a scope changes publication during the crawl, including an unpublished scope that later gains a first publication. HTML, OG, and API-reference pages are compared when they carry an identity, but they do not have to mint one: only district-detail HTML currently emits JSON-LD `datePublished`, and the origin no longer sends a publication-identity header. The manifest verifier still requires those JSON/CSV identities before deployment, so an overlapping publication cannot silently produce a mixed static bundle.
 
 `npm run verify:public-export -- dist-public` checks that the export has a root page, that every manifest resource exists, and that operator or health routes did not enter the public bundle.
@@ -38,7 +40,7 @@ The manual/scheduled workflow in `.github/workflows/publish-public-static.yml` d
 ## Provider roles
 
 - Cloudflare Pages: public static delivery and CDN.
-- Cloudflare R2 or another private S3-compatible bucket: raw evidence and immutable snapshot artifacts after the storage mirror is verified.
+- Cloudflare R2 or another private S3-compatible bucket: raw evidence and immutable snapshot artifacts after the storage mirror is verified. R2 is not enabled on the current Cloudflare account (`Please enable R2 through the Cloudflare Dashboard`, API code `10042`). Do not create buckets until that dashboard toggle and a budget alert exist.
 - GitHub Actions: scheduled fetch, validation, export, and deployment jobs. Secrets must be stored as GitHub environment secrets and never printed.
 - Neon or another scale-to-zero PostgreSQL provider: only for the operator warehouse if the static bundle cannot yet replace the read model.
 
@@ -69,7 +71,7 @@ Do not move `nyaaywatch.in` to Pages until all gates pass:
 5. Rollback to the AWS origin is tested through DNS/Cloudflare before the cutover.
 6. A private evidence object is confirmed inaccessible from the public Pages origin.
 7. At least two scheduled export cycles complete successfully.
-8. The newsletter subscribe/confirm/unsubscribe workflow is migrated to a provider-backed endpoint or explicitly disabled with a truthful public notice; static HTML alone does not preserve POST behavior.
+8. The newsletter subscribe/confirm/unsubscribe workflow is migrated to a provider-backed endpoint or explicitly disabled with a truthful public notice; static HTML alone does not preserve POST behavior. The static exporter now ships the disabled-notice path. A provider-backed endpoint is still required before DNS cutover if email digests should keep working on `nyaaywatch.in`.
 
 Only after these gates pass should the AWS public service be scaled down. RDS and the artifact store must remain recoverable until the first post-cutover publication and rollback window are complete.
 

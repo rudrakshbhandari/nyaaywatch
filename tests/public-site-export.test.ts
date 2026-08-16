@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildStaticRedirects,
   buildStaticComparisonShell,
+  buildStaticSubscribeNotice,
+  isCrawlablePublicUrl,
   extractInternalUrls,
   extractSitemapUrls,
   extractPublicationIdentities,
@@ -25,6 +27,19 @@ describe("public static export helpers", () => {
     );
 
     expect(urls.map((url) => url.pathname)).toEqual(["/og/district/punjab.png", "/og/home.png", "/states/punjab"]);
+  });
+
+  it("does not crawl newsletter POST or token routes", () => {
+    expect(isCrawlablePublicUrl(new URL("https://nyaaywatch.in/subscribe"), origin)).toBe(false);
+    expect(isCrawlablePublicUrl(new URL("https://nyaaywatch.in/subscribe/confirm/token"), origin)).toBe(false);
+    expect(isCrawlablePublicUrl(new URL("https://nyaaywatch.in/unsubscribe/token"), origin)).toBe(false);
+    expect(
+      extractInternalUrls(
+        `<a href="/subscribe">Subscribe</a><a href="/unsubscribe/secret">Unsub</a><a href="/states/punjab">Punjab</a>`,
+        new URL("https://nyaaywatch.in/"),
+        origin,
+      ).map((url) => url.pathname),
+    ).toEqual(["/states/punjab"]);
   });
 
   it("extracts sitemap locations deterministically", () => {
@@ -63,6 +78,17 @@ describe("public static export helpers", () => {
     expect(outputPathForResource(shell.url, shell.contentType)).toBe("compare/index.html");
     expect(body).toContain("methodology");
     expect(body).toContain("<thead><tr><th>Metric</th><th>");
+  });
+
+  it("replaces newsletter sign-up with a static notice instead of a POST form", () => {
+    const notice = buildStaticSubscribeNotice(origin);
+    const body = new TextDecoder().decode(notice.body);
+    expect(notice.url.pathname).toBe("/subscribe");
+    expect(outputPathForResource(notice.url, notice.contentType)).toBe("subscribe/index.html");
+    expect(body).toContain("Email updates aren't available here yet.");
+    expect(body).not.toMatch(/method=["']post["']/i);
+    expect(body).not.toContain('action="/subscribe"');
+    expect(body).toContain("/methodology");
   });
 
   it("extracts stable publication identities from JSON resources", () => {
