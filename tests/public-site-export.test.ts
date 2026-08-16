@@ -5,9 +5,12 @@ import {
   extractInternalUrls,
   extractSitemapUrls,
   extractPublicationIdentities,
+  assertExportResourceIdentities,
   normalizeOrigin,
   outputPathForResource,
   prepareOutputDirectory,
+  recordPublicationIdentities,
+  resourceRequiresPublicationIdentity,
   type PublicResource,
 } from "../src/export/public-site.js";
 
@@ -57,6 +60,7 @@ describe("public static export helpers", () => {
     const body = new TextDecoder().decode(shell.body);
     expect(body).toContain("/v1/states/");
     expect(shell.url.pathname).toBe("/compare");
+    expect(outputPathForResource(shell.url, shell.contentType)).toBe("compare/index.html");
     expect(body).toContain("methodology");
     expect(body).toContain("<thead><tr><th>Metric</th><th>");
   });
@@ -122,5 +126,64 @@ describe("public static export helpers", () => {
   it("rejects protected directories and their descendants", async () => {
     await expect(prepareOutputDirectory("src/export")).rejects.toThrow("unsafe export directory");
     await expect(prepareOutputDirectory("tests/output")).rejects.toThrow("unsafe export directory");
+  });
+
+  it("requires publication identity only for JSON and CSV data resources", () => {
+    const jsonResource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/v1/stats/himachal"),
+      body: new Uint8Array(),
+      contentType: "application/json",
+    };
+    const htmlResource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/"),
+      body: new Uint8Array(),
+      contentType: "text/html; charset=utf-8",
+    };
+    const ogResource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/og/home.png"),
+      body: new Uint8Array(),
+      contentType: "image/png",
+    };
+    const apiReference: PublicResource = {
+      url: new URL("https://nyaaywatch.in/supreme-court/api"),
+      body: new Uint8Array(),
+      contentType: "text/html",
+    };
+
+    expect(resourceRequiresPublicationIdentity(jsonResource)).toBe(true);
+    expect(resourceRequiresPublicationIdentity(htmlResource)).toBe(false);
+    expect(resourceRequiresPublicationIdentity(ogResource)).toBe(false);
+    expect(resourceRequiresPublicationIdentity(apiReference)).toBe(false);
+  });
+
+  it("records unpublished scopes and rejects a later first publication", () => {
+    const recorded = new Map();
+    recordPublicationIdentities(recorded, [{ scope: "state:PB", publishedAt: null }]);
+    expect(() =>
+      recordPublicationIdentities(recorded, [{ scope: "state:PB", publishedAt: "2026-08-20T00:00:00.000Z" }]),
+    ).toThrow("Publication changed during crawl for state:PB");
+  });
+
+  it("accepts HTML and OG resources without identities once JSON identities are recorded", () => {
+    const recorded = new Map();
+    assertExportResourceIdentities(recorded, {
+      url: new URL("https://nyaaywatch.in/v1/stats/himachal"),
+      body: new TextEncoder().encode(JSON.stringify({ snapshot: { stateCode: "HP", publishedAt: "2026-08-15T00:00:00.000Z" } })),
+      contentType: "application/json",
+    });
+    expect(() =>
+      assertExportResourceIdentities(recorded, {
+        url: new URL("https://nyaaywatch.in/"),
+        body: new TextEncoder().encode("<html><title>NyaayWatch</title></html>"),
+        contentType: "text/html",
+      }),
+    ).not.toThrow();
+    expect(() =>
+      assertExportResourceIdentities(recorded, {
+        url: new URL("https://nyaaywatch.in/og/home.png"),
+        body: new Uint8Array([137, 80, 78, 71]),
+        contentType: "image/png",
+      }),
+    ).not.toThrow();
   });
 });

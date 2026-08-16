@@ -29,7 +29,7 @@ The target does not expose raw upstream artifacts or operator routes publicly.
 
 District comparison URLs use one client-side fallback page and wildcard rewrites; the exporter does not create a separate file for every district pair.
 
-The exporter records the publication timestamp for every scope exposed by the public JSON resources and fails if a scope changes publication during the crawl. The manifest verifier requires those identities before deployment, so an overlapping publication cannot silently produce a mixed static bundle.
+The exporter records the publication timestamp for every scope exposed by the public JSON and CSV resources and fails if a scope changes publication during the crawl, including an unpublished scope that later gains a first publication. HTML, OG, and API-reference pages are compared when they carry an identity, but they do not have to mint one: only district-detail HTML currently emits JSON-LD `datePublished`, and the origin no longer sends a publication-identity header. The manifest verifier still requires those JSON/CSV identities before deployment, so an overlapping publication cannot silently produce a mixed static bundle.
 
 `npm run verify:public-export -- dist-public` checks that the export has a root page, that every manifest resource exists, and that operator or health routes did not enter the public bundle.
 

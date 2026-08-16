@@ -12,7 +12,7 @@ import {
   normalizeOrigin,
   outputPathForResource,
   prepareOutputDirectory,
-  extractPublicationIdentities,
+  assertExportResourceIdentities,
   buildStaticComparisonShell,
   type PublicResource,
   type PublicationIdentity,
@@ -170,14 +170,6 @@ function isHtml(resource: PublicResource): boolean {
   return resource.contentType.toLowerCase().includes("text/html");
 }
 
-function isPublicationDependentPath(pathname: string): boolean {
-  return (
-    !["/robots.txt", "/sitemap.xml", "/press", "/learn"].includes(pathname) &&
-    !pathname.startsWith("/press/") &&
-    !pathname.endsWith("/api")
-  );
-}
-
 function extractDistrictIds(resource: PublicResource): string[] {
   if (!resource.contentType.toLowerCase().includes("json")) {
     return [];
@@ -266,23 +258,7 @@ async function main(): Promise<void> {
         continue;
       }
 
-      const resourceIdentities = extractPublicationIdentities(resource);
-      for (const identity of resourceIdentities) {
-        const previous = publicationIdentities.get(identity.scope);
-        if (previous && previous.publishedAt !== identity.publishedAt) {
-          throw new Error(
-            `Publication changed during crawl for ${identity.scope}: ${previous.publishedAt} -> ${identity.publishedAt}. Retry against one immutable publication.`,
-          );
-        }
-        publicationIdentities.set(identity.scope, identity);
-      }
-
-      if (
-        isPublicationDependentPath(resource.url.pathname) &&
-        (resourceIdentities.length === 0 || resourceIdentities.some((identity) => identity.publishedAt === null))
-      ) {
-        throw new Error(`Publication identity missing for ${resource.url.pathname}. Refusing to publish an unverifiable resource.`);
-      }
+      assertExportResourceIdentities(publicationIdentities, resource);
 
       await writePublicResource(resource, outputRoot);
       resources.push(resource);

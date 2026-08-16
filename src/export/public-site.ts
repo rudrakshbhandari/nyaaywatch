@@ -232,6 +232,52 @@ export async function prepareOutputDirectory(outputRoot: string): Promise<void> 
   await mkdir(resolvedOutputRoot, { recursive: true });
 }
 
+export function resourceRequiresPublicationIdentity(resource: PublicResource): boolean {
+  const pathname = resource.url.pathname;
+  if (
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml" ||
+    pathname === "/press" ||
+    pathname === "/learn" ||
+    pathname.startsWith("/press/") ||
+    pathname.endsWith("/api")
+  ) {
+    return false;
+  }
+
+  const contentType = resource.contentType.toLowerCase();
+  return contentType.includes("json") || contentType.includes("csv");
+}
+
+export function recordPublicationIdentities(
+  recorded: Map<string, PublicationIdentity>,
+  identities: PublicationIdentity[],
+): void {
+  for (const identity of identities) {
+    const previous = recorded.get(identity.scope);
+    if (previous && previous.publishedAt !== identity.publishedAt) {
+      throw new Error(
+        `Publication changed during crawl for ${identity.scope}: ${previous.publishedAt} -> ${identity.publishedAt}. Retry against one immutable publication.`,
+      );
+    }
+    recorded.set(identity.scope, identity);
+  }
+}
+
+export function assertExportResourceIdentities(
+  recorded: Map<string, PublicationIdentity>,
+  resource: PublicResource,
+): PublicationIdentity[] {
+  const identities = extractPublicationIdentities(resource);
+  recordPublicationIdentities(recorded, identities);
+  if (resourceRequiresPublicationIdentity(resource) && identities.length === 0) {
+    throw new Error(
+      `Publication identity missing for ${resource.url.pathname}. Refusing to publish an unverifiable resource.`,
+    );
+  }
+  return identities;
+}
+
 export function extractPublicationIdentities(resource: PublicResource): PublicationIdentity[] {
   if (resource.publicationIdentities && resource.publicationIdentities.length > 0) {
     return resource.publicationIdentities;

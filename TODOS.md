@@ -135,3 +135,8 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 - [x] All currently supported states are publicly live on `https://nyaaywatch.in`; there is no remaining approved-state internal or public rollout queue in the current roadmap.
 - [x] The repo now has a public-alpha ops sweep via `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`, which verifies every public state and surfaces parity failures, stale public snapshots, and daily-fetch lag explicitly.
 - [x] `TODOS.md` now tracks the actual post-MVP backlog instead of duplicating rollout history.
+
+### 4. Free Hosting Migration
+
+- [ ] Keep AWS as the public origin until the gates in `docs/FREE_HOSTING_MIGRATION.md` pass. PR `#366` adds the static export, Pages preview workflow, and publication-identity crawl checks; R2, newsletter POST behavior, and DNS cutover remain blocked.
+- [x] Exporter now pins publication identity from JSON/CSV resources, records unpublished scopes, and does not require HTML/OG/API-reference pages to mint an identity header.
