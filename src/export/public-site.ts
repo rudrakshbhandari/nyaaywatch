@@ -1,5 +1,5 @@
 import { mkdir, rm, writeFile } from "node:fs/promises";
-import { dirname, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import { getPublicStateProfileBySlug } from "../geographies.js";
 
 export const DEFAULT_SEED_PATHS = [
@@ -138,6 +138,42 @@ export function outputPathForResource(url: URL, contentType: string): string {
   return normalizedPath || "index";
 }
 
+export const STATIC_COMPARISON_REWRITES = [
+  "/compare/* /compare/index.html 200",
+  "/states/:state/compare/* /compare/index.html 200",
+] as const;
+
+export function mergeStaticHostingRewrites(resourceRedirects: string[]): string[] {
+  return [...new Set([...resourceRedirects, ...STATIC_COMPARISON_REWRITES])].sort();
+}
+
+export function exportManifestPath(outputRoot: string): string {
+  const resolvedOutputRoot = resolve(outputRoot);
+  return join(dirname(resolvedOutputRoot), `${basename(resolvedOutputRoot)}.manifest.json`);
+}
+
+export function isSkippableUnpublishedPublicUrl(url: URL): boolean {
+  const path = url.pathname;
+  if (path === "/" || path === "/supreme-court" || path.startsWith("/supreme-court/")) {
+    return false;
+  }
+
+  return (
+    /^\/states\/[^/]+$/.test(path) ||
+    /^\/states\/[^/]+\/(districts|movers|data|methodology|api)$/.test(path) ||
+    /^\/states\/[^/]+\/feed\.xml$/.test(path) ||
+    /^\/states\/[^/]+\/data\/evidence\/state\.json$/.test(path) ||
+    /^\/states\/[^/]+\/data\/districts\.csv$/.test(path) ||
+    /^\/embed\/state\/[^/]+$/.test(path) ||
+    /^\/v1\/states\/[^/]+\/(stats|districts|trends)$/.test(path) ||
+    /^\/high-courts\/[^/]+$/.test(path) ||
+    /^\/high-courts\/[^/]+\/(data|methodology|api)$/.test(path) ||
+    /^\/v1\/high-courts\/[^/]+\/(stats|trends)$/.test(path) ||
+    path === "/watch" ||
+    path.startsWith("/watch/")
+  );
+}
+
 export function buildStaticRedirects(resources: PublicResource[], outputRoot: string): string[] {
   const redirects = new Map<string, string>();
   for (const resource of resources) {
@@ -258,14 +294,26 @@ export function resourceRequiresPublicationIdentity(resource: PublicResource): b
     pathname === "/sitemap.xml" ||
     pathname === "/press" ||
     pathname === "/learn" ||
+    pathname === "/subscribe" ||
+    pathname === "/compare" ||
     pathname.startsWith("/press/") ||
+    pathname.startsWith("/learn/") ||
     pathname.endsWith("/api")
   ) {
     return false;
   }
 
   const contentType = resource.contentType.toLowerCase();
-  return contentType.includes("json") || contentType.includes("csv");
+  if (contentType.includes("json") || contentType.includes("csv") || contentType.includes("text/html")) {
+    return true;
+  }
+  if (pathname.startsWith("/og/")) {
+    return true;
+  }
+  if (contentType.includes("xml")) {
+    return true;
+  }
+  return false;
 }
 
 export function recordPublicationIdentities(
@@ -334,14 +382,18 @@ export function extractPublicationIdentities(resource: PublicResource): Publicat
 
     const record = value as Record<string, unknown>;
     if (typeof record.publishedAt === "string") {
-      const scope =
-        typeof record.stateCode === "string"
-          ? `state:${record.stateCode}`
-          : typeof record.courtCode === "string"
-            ? `court:${record.courtCode}`
-            : null;
+      const scope = scopeFromCodes(record.stateCode, record.courtCode);
       if (scope) {
         identities.set(scope, { scope, publishedAt: record.publishedAt });
+      }
+    }
+
+    const geography = asRecord(record.geography);
+    const snapshot = asRecord(record.snapshot);
+    if (geography && snapshot && typeof snapshot.publishedAt === "string") {
+      const scope = scopeFromCodes(geography.stateCode, geography.courtCode);
+      if (scope) {
+        identities.set(scope, { scope, publishedAt: snapshot.publishedAt });
       }
     }
 
@@ -349,6 +401,20 @@ export function extractPublicationIdentities(resource: PublicResource): Publicat
   };
   visit(parsed);
   return [...identities.values()].sort((left, right) => left.scope.localeCompare(right.scope));
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : null;
+}
+
+function scopeFromCodes(stateCode: unknown, courtCode: unknown): string | null {
+  if (typeof stateCode === "string") {
+    return `state:${stateCode}`;
+  }
+  if (typeof courtCode === "string") {
+    return `court:${courtCode}`;
+  }
+  return null;
 }
 
 function extractCsvPublicationIdentity(url: URL, body: string): PublicationIdentity[] {
@@ -371,7 +437,7 @@ function headersContainStateCode(headerLine: string): boolean {
 }
 
 function scopeFromPath(pathname: string): string | null {
-  const stateMatch = pathname.match(/^\/states\/([^/]+)(?:\/|$)/);
+  const stateMatch = pathname.match(/^\/(?:og\/)?states\/([^/]+)(?:\/|$)/);
   if (stateMatch?.[1]) {
     const profile = getPublicStateProfileBySlug(stateMatch[1]);
     return profile ? `state:${profile.stateCode}` : null;

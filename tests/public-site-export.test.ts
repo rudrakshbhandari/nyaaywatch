@@ -8,11 +8,15 @@ import {
   extractSitemapUrls,
   extractPublicationIdentities,
   assertExportResourceIdentities,
+  exportManifestPath,
+  isSkippableUnpublishedPublicUrl,
+  mergeStaticHostingRewrites,
   normalizeOrigin,
   outputPathForResource,
   prepareOutputDirectory,
   recordPublicationIdentities,
   resourceRequiresPublicationIdentity,
+  STATIC_COMPARISON_REWRITES,
   type PublicResource,
 } from "../src/export/public-site.js";
 
@@ -21,12 +25,12 @@ const origin = normalizeOrigin("https://nyaaywatch.in");
 describe("public static export helpers", () => {
   it("extracts same-origin links while excluding operator and token routes", () => {
     const urls = extractInternalUrls(
-      `<a href="/states/punjab">Punjab</a><a href="/districts?view=flagged">query view</a><a href="https://example.com">external</a><a href="/operator/runs">operator</a><a href="/cdn-cgi/l/email-protection">email</a><a href="/og/district/punjab.png?v=2026-04-5">district social card</a><meta property="og:image" content="/og/home.png"><meta name="description" content="A public snapshot page">`,
+      `<a href="/states/punjab">Punjab</a><a href="/districts?view=flagged">query view</a><a href="https://example.com">external</a><a href="/operator/runs">operator</a><a href="/cdn-cgi/l/email-protection">email</a><a href="/og/states/punjab/district/amritsar.png?v=2026-04-5">district social card</a><meta property="og:image" content="/og/home.png"><meta name="description" content="A public snapshot page">`,
       new URL("https://nyaaywatch.in/"),
       origin,
     );
 
-    expect(urls.map((url) => url.pathname)).toEqual(["/og/district/punjab.png", "/og/home.png", "/states/punjab"]);
+    expect(urls.map((url) => url.pathname)).toEqual(["/og/home.png", "/og/states/punjab/district/amritsar.png", "/states/punjab"]);
   });
 
   it("does not crawl newsletter POST or token routes", () => {
@@ -89,6 +93,23 @@ describe("public static export helpers", () => {
     expect(body).not.toMatch(/method=["']post["']/i);
     expect(body).not.toContain('action="/subscribe"');
     expect(body).toContain("/methodology");
+  });
+
+  it("extracts publication identities from evidence packs that split stateCode and publishedAt", () => {
+    const resource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/states/punjab/data/evidence/state.json"),
+      body: new TextEncoder().encode(
+        JSON.stringify({
+          geography: { stateCode: "PB", stateName: "Punjab" },
+          snapshot: { publishedAt: "2026-08-15T00:00:00.000Z" },
+        }),
+      ),
+      contentType: "application/json",
+    };
+
+    expect(extractPublicationIdentities(resource)).toEqual([
+      { scope: "state:PB", publishedAt: "2026-08-15T00:00:00.000Z" },
+    ]);
   });
 
   it("extracts stable publication identities from JSON resources", () => {
@@ -154,7 +175,7 @@ describe("public static export helpers", () => {
     await expect(prepareOutputDirectory("tests/output")).rejects.toThrow("unsafe export directory");
   });
 
-  it("requires publication identity only for JSON and CSV data resources", () => {
+  it("requires publication identity for JSON, CSV, HTML, OG, and feeds", () => {
     const jsonResource: PublicResource = {
       url: new URL("https://nyaaywatch.in/v1/stats/himachal"),
       body: new Uint8Array(),
@@ -170,16 +191,28 @@ describe("public static export helpers", () => {
       body: new Uint8Array(),
       contentType: "image/png",
     };
+    const feedResource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/states/punjab/feed.xml"),
+      body: new Uint8Array(),
+      contentType: "application/rss+xml",
+    };
     const apiReference: PublicResource = {
       url: new URL("https://nyaaywatch.in/supreme-court/api"),
       body: new Uint8Array(),
       contentType: "text/html",
     };
+    const pressResource: PublicResource = {
+      url: new URL("https://nyaaywatch.in/press"),
+      body: new Uint8Array(),
+      contentType: "text/html",
+    };
 
     expect(resourceRequiresPublicationIdentity(jsonResource)).toBe(true);
-    expect(resourceRequiresPublicationIdentity(htmlResource)).toBe(false);
-    expect(resourceRequiresPublicationIdentity(ogResource)).toBe(false);
+    expect(resourceRequiresPublicationIdentity(htmlResource)).toBe(true);
+    expect(resourceRequiresPublicationIdentity(ogResource)).toBe(true);
+    expect(resourceRequiresPublicationIdentity(feedResource)).toBe(true);
     expect(resourceRequiresPublicationIdentity(apiReference)).toBe(false);
+    expect(resourceRequiresPublicationIdentity(pressResource)).toBe(false);
   });
 
   it("records unpublished scopes and rejects a later first publication", () => {
@@ -190,7 +223,7 @@ describe("public static export helpers", () => {
     ).toThrow("Publication changed during crawl for state:PB");
   });
 
-  it("accepts HTML and OG resources without identities once JSON identities are recorded", () => {
+  it("rejects HTML and OG resources that do not carry a publication identity", () => {
     const recorded = new Map();
     assertExportResourceIdentities(recorded, {
       url: new URL("https://nyaaywatch.in/v1/stats/himachal"),
@@ -203,13 +236,62 @@ describe("public static export helpers", () => {
         body: new TextEncoder().encode("<html><title>NyaayWatch</title></html>"),
         contentType: "text/html",
       }),
-    ).not.toThrow();
+    ).toThrow("Publication identity missing for /");
     expect(() =>
       assertExportResourceIdentities(recorded, {
         url: new URL("https://nyaaywatch.in/og/home.png"),
         body: new Uint8Array([137, 80, 78, 71]),
         contentType: "image/png",
       }),
+    ).toThrow("Publication identity missing for /og/home.png");
+  });
+
+  it("pins HTML identities to the same publication as JSON for that scope", () => {
+    const recorded = new Map();
+    assertExportResourceIdentities(recorded, {
+      url: new URL("https://nyaaywatch.in/v1/states/punjab/stats"),
+      body: new TextEncoder().encode(JSON.stringify({ snapshot: { stateCode: "PB", publishedAt: "2026-08-15T00:00:00.000Z" } })),
+      contentType: "application/json",
+    });
+    expect(() =>
+      assertExportResourceIdentities(recorded, {
+        url: new URL("https://nyaaywatch.in/states/punjab"),
+        body: new TextEncoder().encode("<html></html>"),
+        contentType: "text/html",
+        publicationIdentities: [{ scope: "state:PB", publishedAt: "2026-08-15T00:00:00.000Z" }],
+      }),
     ).not.toThrow();
+    expect(() =>
+      assertExportResourceIdentities(recorded, {
+        url: new URL("https://nyaaywatch.in/og/states/punjab/district/amritsar.png"),
+        body: new Uint8Array([137, 80, 78, 71]),
+        contentType: "image/png",
+        publicationIdentities: [{ scope: "state:PB", publishedAt: "2026-08-16T00:00:00.000Z" }],
+      }),
+    ).toThrow("Publication changed during crawl for state:PB");
+  });
+
+  it("emits Cloudflare-valid comparison rewrites with a single trailing splat", () => {
+    expect([...STATIC_COMPARISON_REWRITES]).toEqual([
+      "/compare/* /compare/index.html 200",
+      "/states/:state/compare/* /compare/index.html 200",
+    ]);
+    const redirects = mergeStaticHostingRewrites([]);
+    expect(redirects).toContain("/states/:state/compare/* /compare/index.html 200");
+    expect(redirects.some((line) => line.includes("/states/*/compare/*"))).toBe(false);
+  });
+
+  it("writes the export manifest beside the public bundle, not inside it", () => {
+    expect(exportManifestPath("dist-public").endsWith("dist-public.manifest.json")).toBe(true);
+    expect(exportManifestPath("dist-public").includes("dist-public/export-manifest.json")).toBe(false);
+  });
+
+  it("treats unpublished configured geographies as skippable empty states", () => {
+    expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/states/punjab"))).toBe(true);
+    expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/v1/states/punjab/stats"))).toBe(true);
+    expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/high-courts/delhi"))).toBe(true);
+    expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/"))).toBe(false);
+    expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/supreme-court"))).toBe(false);
+    expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/states/punjab/districts/amritsar"))).toBe(false);
   });
 });

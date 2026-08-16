@@ -9,6 +9,9 @@ import {
   buildStaticRedirects,
   extractInternalUrls,
   extractSitemapUrls,
+  mergeStaticHostingRewrites,
+  exportManifestPath,
+  isSkippableUnpublishedPublicUrl,
   normalizeOrigin,
   outputPathForResource,
   prepareOutputDirectory,
@@ -128,6 +131,13 @@ async function fetchResource(url: URL): Promise<PublicResource | null> {
           const querylessUrl = new URL(url.href);
           querylessUrl.search = "";
           return fetchResource(querylessUrl);
+        }
+        if (
+          (response.status === 404 || response.status === 503) &&
+          isSkippableUnpublishedPublicUrl(url)
+        ) {
+          console.warn(`Skipping unpublished public route ${url.pathname} (${response.status})`);
+          return null;
         }
         if (response.status === 404 && isOptionalAssetUrl(url)) {
           console.warn(`Skipping missing optional asset ${url.pathname}`);
@@ -295,18 +305,12 @@ async function main(): Promise<void> {
   await writePublicResource(subscribeNotice, outputRoot);
   resources.push(subscribeNotice);
 
-  const redirects = [
-    ...new Set([
-      ...buildStaticRedirects(resources, outputRoot),
-      "/compare/* /compare/index.html 200",
-      "/states/*/compare/* /compare/index.html 200",
-    ]),
-  ].sort();
+  const redirects = mergeStaticHostingRewrites(buildStaticRedirects(resources, outputRoot));
   if (redirects.length > 0) {
     await writeFile(resolve(outputRoot, "_redirects"), `${redirects.join("\n")}\n`);
   }
   await writeFile(
-    resolve(outputRoot, "export-manifest.json"),
+    exportManifestPath(outputRoot),
     `${JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
@@ -326,6 +330,7 @@ async function main(): Promise<void> {
     )}\n`,
   );
   console.log(`Exported ${resources.length} public resources to ${outputRoot}`);
+  console.log(`Wrote crawl manifest to ${exportManifestPath(outputRoot)}`);
 }
 
 main().catch((error: unknown) => {

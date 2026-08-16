@@ -473,6 +473,10 @@ describe("HTTP routes", () => {
       expect(districtOg.status).toBe(200);
       expect(districtOg.headers["content-type"]).toMatch(/image\/png/);
 
+      const stateScopedDistrictOg = await request(app).get("/og/states/himachal-pradesh/district/kangra.png");
+      expect(stateScopedDistrictOg.status).toBe(200);
+      expect(stateScopedDistrictOg.headers["content-type"]).toMatch(/image\/png/);
+
       const nationalOg = await request(app).get("/og/national.png");
       expect(nationalOg.status).toBe(200);
       expect(nationalOg.headers["content-type"]).toMatch(/image\/png/);

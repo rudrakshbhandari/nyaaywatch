@@ -2,6 +2,7 @@
 
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { exportManifestPath, STATIC_COMPARISON_REWRITES } from "../src/export/public-site.js";
 
 type ExportManifest = {
   resourceCount: number;
@@ -11,8 +12,12 @@ type ExportManifest = {
 
 async function main(): Promise<void> {
   const outputRoot = resolve(process.argv[2] ?? "dist-public");
-  const manifestPath = resolve(outputRoot, "export-manifest.json");
+  const manifestPath = exportManifestPath(outputRoot);
   const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as ExportManifest;
+
+  if (await pathExists(resolve(outputRoot, "export-manifest.json"))) {
+    throw new Error("Static export must not publish export-manifest.json inside the public bundle.");
+  }
 
   if (!Number.isInteger(manifest.resourceCount) || manifest.resourceCount < 1) {
     throw new Error("Static export manifest has no resources.");
@@ -59,7 +64,26 @@ async function main(): Promise<void> {
     throw new Error("Static export is missing the /subscribe notice page.");
   }
 
+  const redirects = await readFile(resolve(outputRoot, "_redirects"), "utf8");
+  if (redirects.includes("/states/*/compare/*")) {
+    throw new Error("Static export _redirects still uses a two-splat comparison rewrite that Cloudflare Pages will drop.");
+  }
+  for (const rewrite of STATIC_COMPARISON_REWRITES) {
+    if (!redirects.split("\n").includes(rewrite)) {
+      throw new Error(`Static export _redirects is missing ${rewrite}`);
+    }
+  }
+
   console.log(`Verified ${manifest.resourceCount} static public resources in ${outputRoot}`);
+}
+
+async function pathExists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 main().catch((error: unknown) => {

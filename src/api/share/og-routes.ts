@@ -3,7 +3,8 @@
  *
  * Routes:
  *   GET /og/state/:stateSlug.png       — state/district homepage card
- *   GET /og/district/:districtId.png   — individual district card
+ *   GET /og/district/:districtId.png   — default-state (Himachal) district card
+ *   GET /og/states/:stateSlug/district/:districtId.png — state-scoped district card
  *   GET /og/national.png               — national homepage card
  *   GET /og/high-court/:courtSlug.png  — high court overview card
  *   GET /og/supreme-court.png          — supreme court overview card
@@ -13,7 +14,7 @@
  * combination within a single process lifetime.
  */
 
-import { Router } from "express";
+import { Router, type Response } from "express";
 import type { SupportedStateCode } from "../../geographies.js";
 import type { SupportedHighCourtCode } from "../../high-courts.js";
 import { getPublicStateProfileBySlug } from "../../geographies.js";
@@ -47,6 +48,43 @@ function logOgRouteError(route: string, err: unknown) {
     route,
     error: err instanceof Error ? err.message : String(err),
   });
+}
+
+async function sendDistrictOgCard(
+  res: Response,
+  service: PublishedSnapshotService | undefined,
+  districtId: string,
+  cachePrefix: string,
+): Promise<void> {
+  if (!service) {
+    res.status(404).end();
+    return;
+  }
+
+  const detail = await service.getDistrictDetail(districtId);
+  if (!detail) {
+    res.status(404).end();
+    return;
+  }
+
+  const { district, snapshot } = detail;
+  const typicalWaitMonths = Math.round(district.medianAgeDays / 30);
+  const data: DistrictOgCardData = {
+    stateName: snapshot.stateName,
+    districtName: district.districtName,
+    rank: district.rank,
+    totalDistricts: 0,
+    summary: district.summary,
+    backlogCases: district.backlogCases,
+    typicalWaitMonths,
+    clearanceRate: district.disposalRate,
+    sourceDateLabel: formatDate(snapshot.referenceDateAt),
+  };
+  const png = await renderDistrictOgCard(data, `${cachePrefix}:${districtId}:${snapshot.publishedAt}`);
+
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
+  res.send(png);
 }
 
 export function registerOgRoutes(
@@ -122,34 +160,20 @@ export function registerOgRoutes(
   });
 
   // ── District OG card ─────────────────────────────────────────────────────
+  router.get("/states/:stateSlug/district/:districtId.png", async (req, res) => {
+    try {
+      const profile = getPublicStateProfileBySlug(req.params.stateSlug ?? "");
+      if (!profile) { res.status(404).end(); return; }
+      await sendDistrictOgCard(res, publicServices[profile.stateCode], req.params.districtId ?? "", `district:${profile.stateCode}`);
+    } catch (err) {
+      logOgRouteError("/og/states/:stateSlug/district/:districtId.png", err);
+      res.status(500).end();
+    }
+  });
+
   router.get("/district/:districtId.png", async (req, res) => {
     try {
-      const districtId = req.params.districtId ?? "";
-      const service = publicServices[DEFAULT_STATE_CODE];
-      if (!service) { res.status(404).end(); return; }
-
-      const detail = await service.getDistrictDetail(districtId);
-      if (!detail) { res.status(404).end(); return; }
-
-      const { district, snapshot } = detail;
-      const typicalWaitMonths = Math.round(district.medianAgeDays / 30);
-      const data: DistrictOgCardData = {
-        stateName: snapshot.stateName,
-        districtName: district.districtName,
-        rank: district.rank,
-        totalDistricts: 0,
-        summary: district.summary,
-        backlogCases: district.backlogCases,
-        typicalWaitMonths,
-        clearanceRate: district.disposalRate,
-        sourceDateLabel: formatDate(snapshot.referenceDateAt),
-      };
-      const cacheKey = `district:${districtId}:${snapshot.publishedAt}`;
-      const png = await renderDistrictOgCard(data, cacheKey);
-
-      res.setHeader("Content-Type", "image/png");
-      res.setHeader("Cache-Control", "public, max-age=3600, stale-while-revalidate=86400");
-      res.send(png);
+      await sendDistrictOgCard(res, publicServices[DEFAULT_STATE_CODE], req.params.districtId ?? "", "district");
     } catch (err) {
       logOgRouteError("/og/district/:districtId.png", err);
       res.status(500).end();

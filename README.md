@@ -54,7 +54,7 @@ Each court family ships paired overview, `/data`, `/methodology`, and `/api` pag
 | Evidence packs | `/data/evidence/...`, `/states/:slug/data/evidence/...` | Safe public JSON bundles for lower-court state and district metrics |
 | Embeds | `/embed/district/:id`, `/embed/state/:slug` | Frameable district and state widgets |
 | Press assets | `/press`, `/press/logo-light.svg`, `/press/logo-dark.svg` | Brand assets, citations, and public communication material |
-| Social cards | `/og/home.png`, `/og/national.png`, `/og/state/:slug.png`, `/og/district/:id.png`, `/og/high-court/:slug.png`, `/og/supreme-court.png` | Generated Open Graph cards for sharing |
+| Social cards | `/og/home.png`, `/og/national.png`, `/og/state/:slug.png`, `/og/district/:id.png`, `/og/states/:slug/district/:id.png`, `/og/high-court/:slug.png`, `/og/supreme-court.png` | Generated Open Graph cards for sharing |
 | Subscriptions | `/subscribe`, `/subscribe/confirm/:token`, `/unsubscribe/:token` | Plain-text email updates for new lower-court snapshots on the AWS origin when newsletter email is configured. The static Pages bundle ships `/subscribe` as a notice that sign-ups are unavailable; confirm and unsubscribe token routes are not exported. |
 | Feeds and discovery | `/states/:slug/feed.xml`, `/sitemap.xml`, `/robots.txt` | RSS, crawler discovery, and operator-route exclusion |
 
@@ -169,6 +169,8 @@ To build a static public bundle from a reviewed origin:
 npm run export:public -- --base-url=https://nyaaywatch.in --output-dir=dist-public
 npm run verify:public-export -- dist-public
 ```
+
+The verifier reads `dist-public.manifest.json` beside the output directory. That sidecar is not deployed to Pages.
 
 Defaults to `http://127.0.0.1:3000`. Local development uses PostgreSQL plus LocalStack S3; keep `AWS_REGION=ap-south-1` so the code path matches production. If `5432` or `4566` are already in use, override `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env` and keep `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` aligned.
 
