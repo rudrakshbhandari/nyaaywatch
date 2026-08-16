@@ -8,6 +8,7 @@ import {
   extractSitemapUrls,
   extractPublicationIdentities,
   assertExportResourceIdentities,
+  assertExportedSitemapCoverage,
   assertCloudflareRedirectBudget,
   exportManifestPath,
   isSkippableUnpublishedPublicUrl,
@@ -335,5 +336,15 @@ describe("public static export helpers", () => {
         publicationIdentities: [{ scope: "state:GA", publishedAt: null }],
       }),
     ).toBe(true);
+  });
+
+  it("fails verification when a sitemap location is missing from the export", () => {
+    expect(() =>
+      assertExportedSitemapCoverage(
+        `<urlset><url><loc>https://nyaaywatch.in/states/punjab</loc></url><url><loc>https://nyaaywatch.in/high-courts/delhi</loc></url></urlset>`,
+        origin,
+        ["/states/punjab"],
+      ),
+    ).toThrow("missing sitemap URL /high-courts/delhi");
   });
 });

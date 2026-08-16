@@ -2,10 +2,11 @@
 
 import { access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { exportManifestPath, STATIC_COMPARISON_REWRITES, assertCloudflareRedirectBudget } from "../src/export/public-site.js";
+import { exportManifestPath, STATIC_COMPARISON_REWRITES, assertCloudflareRedirectBudget, assertExportedSitemapCoverage, normalizeOrigin } from "../src/export/public-site.js";
 
 type ExportManifest = {
   resourceCount: number;
+  sourceOrigin?: string;
   publicationIdentities: Array<{ scope: string; publishedAt: string }>;
   resources: Array<{ path: string; contentType: string; outputPath: string }>;
 };
@@ -78,6 +79,13 @@ async function main(): Promise<void> {
       throw new Error(`Static export _redirects is missing ${rewrite}`);
     }
   }
+
+  const sitemapXml = await readFile(resolve(outputRoot, "sitemap.xml"), "utf8");
+  assertExportedSitemapCoverage(
+    sitemapXml,
+    normalizeOrigin(manifest.sourceOrigin ?? "https://nyaaywatch.in"),
+    manifest.resources.map((resource) => resource.path),
+  );
 
   console.log(`Verified ${manifest.resourceCount} static public resources in ${outputRoot}`);
 }

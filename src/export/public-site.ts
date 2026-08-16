@@ -97,6 +97,15 @@ export function extractInternalUrls(body: string, pageUrl: URL, origin: URL): UR
   return [...urls.values()].sort((left, right) => left.href.localeCompare(right.href));
 }
 
+export function assertExportedSitemapCoverage(sitemapBody: string, origin: URL, exportedPaths: Iterable<string>): void {
+  const exported = new Set(exportedPaths);
+  for (const loc of extractSitemapUrls(sitemapBody, origin)) {
+    if (!exported.has(loc.pathname)) {
+      throw new Error(`Static export is missing sitemap URL ${loc.pathname}.`);
+    }
+  }
+}
+
 export function extractSitemapUrls(body: string, origin: URL): URL[] {
   const urls = new Map<string, URL>();
   for (const match of body.matchAll(SITEMAP_LOCATION_PATTERN)) {
@@ -145,6 +154,7 @@ export const STATIC_COMPARISON_REWRITES = [
 ] as const;
 
 export const CLOUDFLARE_PAGES_MAX_DYNAMIC_REWRITES = 100;
+export const CLOUDFLARE_PAGES_MAX_STATIC_REWRITES = 2000;
 
 export function isDynamicRedirectRule(rule: string): boolean {
   const source = rule.trim().split(/\s+/)[0] ?? "";
@@ -165,6 +175,12 @@ export function assertCloudflareRedirectBudget(rules: string[]): void {
   if (firstDynamicIndex >= 0 && rules.slice(firstDynamicIndex).some((rule) => !isDynamicRedirectRule(rule))) {
     throw new Error(
       "Cloudflare Pages _redirects has a static rewrite after a dynamic rule; later exact-path APIs will be dropped.",
+    );
+  }
+  const staticCount = rules.filter((rule) => !isDynamicRedirectRule(rule)).length;
+  if (staticCount > CLOUDFLARE_PAGES_MAX_STATIC_REWRITES) {
+    throw new Error(
+      `Cloudflare Pages _redirects has ${staticCount} static rules; Pages stops after ${CLOUDFLARE_PAGES_MAX_STATIC_REWRITES}.`,
     );
   }
   const dynamicCount = rules.filter((rule) => isDynamicRedirectRule(rule)).length;

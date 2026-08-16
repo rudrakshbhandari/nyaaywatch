@@ -13,6 +13,7 @@ import {
   exportManifestPath,
   isSkippableUnpublishedPublicUrl,
   isUnpublishedPinnedResource,
+  assertExportedSitemapCoverage,
   normalizeOrigin,
   outputPathForResource,
   prepareOutputDirectory,
@@ -116,7 +117,7 @@ function parseOptions(argv: string[]): CliOptions {
   return options;
 }
 
-async function fetchResource(url: URL): Promise<PublicResource | null> {
+async function fetchResource(url: URL, requiredSitemapPaths: Set<string>): Promise<PublicResource | null> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= 3; attempt += 1) {
     const controller = new AbortController();
@@ -131,16 +132,18 @@ async function fetchResource(url: URL): Promise<PublicResource | null> {
         if (response.status === 404 && url.search) {
           const querylessUrl = new URL(url.href);
           querylessUrl.search = "";
-          return fetchResource(querylessUrl);
+          return fetchResource(querylessUrl, requiredSitemapPaths);
         }
+        const requiredBySitemap = requiredSitemapPaths.has(url.pathname);
         if (
           (response.status === 404 || response.status === 503) &&
-          isSkippableUnpublishedPublicUrl(url)
+          isSkippableUnpublishedPublicUrl(url) &&
+          !requiredBySitemap
         ) {
           console.warn(`Skipping unpublished public route ${url.pathname} (${response.status})`);
           return null;
         }
-        if (response.status === 404 && isOptionalAssetUrl(url)) {
+        if (response.status === 404 && isOptionalAssetUrl(url) && !requiredBySitemap) {
           console.warn(`Skipping missing optional asset ${url.pathname}`);
           return null;
         }
@@ -235,11 +238,64 @@ async function main(): Promise<void> {
   const outputRoot = resolve(options.outputDir);
   await prepareOutputDirectory(outputRoot);
 
-  const queue: URL[] = [...new Set([...DEFAULT_SEED_PATHS, ...buildPublicRouteInventory()])].map((path) => new URL(path, origin));
-  const queued = new Set(queue.map((url) => url.href));
-  const visited = new Set<string>();
+  const requiredSitemapPaths = new Set<string>();
+  const sitemapUrl = new URL("/sitemap.xml", origin);
+  const sitemapResource = await fetchResource(sitemapUrl, requiredSitemapPaths);
+  if (!sitemapResource) {
+    throw new Error("Failed to fetch /sitemap.xml");
+  }
+  const sitemapBody = new TextDecoder().decode(sitemapResource.body);
+  for (const loc of extractSitemapUrls(sitemapBody, origin)) {
+    requiredSitemapPaths.add(loc.pathname);
+  }
+
+  const queue: URL[] = [...new Set([...DEFAULT_SEED_PATHS, ...buildPublicRouteInventory()])]
+    .map((path) => new URL(path, origin))
+    .filter((url) => url.pathname !== "/sitemap.xml");
+  const queued = new Set([sitemapUrl.href, ...queue.map((url) => url.href)]);
+  const visited = new Set<string>([sitemapUrl.href]);
   const resources: PublicResource[] = [];
   const publicationIdentities = new Map<string, PublicationIdentity>();
+
+  const ingestResource = async (resource: PublicResource): Promise<void> => {
+    if (isUnpublishedPinnedResource(resource)) {
+      if (requiredSitemapPaths.has(resource.url.pathname)) {
+        throw new Error(`Sitemap URL ${resource.url.pathname} is unpublished in this crawl.`);
+      }
+      console.warn(`Skipping unpublished public route ${resource.url.pathname}`);
+      return;
+    }
+
+    assertExportResourceIdentities(publicationIdentities, resource);
+    await writePublicResource(resource, outputRoot);
+    resources.push(resource);
+    console.log(`${resources.length}\t${resource.url.pathname}\t${resource.contentType.split(";", 1)[0]}`);
+
+    const body = new TextDecoder().decode(resource.body);
+    for (const path of buildDistrictRouteInventory(resource)) {
+      const discoveredUrl = new URL(path, origin);
+      if (!queued.has(discoveredUrl.href)) {
+        queued.add(discoveredUrl.href);
+        queue.push(discoveredUrl);
+      }
+    }
+    const discoveredUrls = isHtml(resource)
+      ? extractInternalUrls(body, resource.url, origin)
+      : resource.url.pathname.endsWith("sitemap.xml")
+        ? extractSitemapUrls(body, origin)
+        : [];
+    for (const discoveredUrl of discoveredUrls) {
+      if (resource.url.pathname.endsWith("sitemap.xml")) {
+        requiredSitemapPaths.add(discoveredUrl.pathname);
+      }
+      if (!queued.has(discoveredUrl.href)) {
+        queued.add(discoveredUrl.href);
+        queue.push(discoveredUrl);
+      }
+    }
+  };
+
+  await ingestResource(sitemapResource);
 
   while (queue.length > 0) {
     if (visited.size >= options.maxPages) {
@@ -257,7 +313,7 @@ async function main(): Promise<void> {
 
     const batchResults = await Promise.all(
       batch.map(async (url) => {
-        const resource = await fetchResource(url);
+        const resource = await fetchResource(url, requiredSitemapPaths);
         if (!resource) {
           return null;
         }
@@ -269,37 +325,7 @@ async function main(): Promise<void> {
       if (!resource) {
         continue;
       }
-
-      if (isUnpublishedPinnedResource(resource)) {
-        console.warn(`Skipping unpublished public route ${resource.url.pathname}`);
-        continue;
-      }
-
-      assertExportResourceIdentities(publicationIdentities, resource);
-
-      await writePublicResource(resource, outputRoot);
-      resources.push(resource);
-      console.log(`${resources.length}\t${resource.url.pathname}\t${resource.contentType.split(";", 1)[0]}`);
-
-      const body = new TextDecoder().decode(resource.body);
-      for (const path of buildDistrictRouteInventory(resource)) {
-        const discoveredUrl = new URL(path, origin);
-        if (!queued.has(discoveredUrl.href)) {
-          queued.add(discoveredUrl.href);
-          queue.push(discoveredUrl);
-        }
-      }
-      const discoveredUrls = isHtml(resource)
-        ? extractInternalUrls(body, resource.url, origin)
-        : resource.url.pathname.endsWith("sitemap.xml")
-          ? extractSitemapUrls(body, origin)
-          : [];
-      for (const discoveredUrl of discoveredUrls) {
-        if (!queued.has(discoveredUrl.href)) {
-          queued.add(discoveredUrl.href);
-          queue.push(discoveredUrl);
-        }
-      }
+      await ingestResource(resource);
     }
   }
 
@@ -310,6 +336,12 @@ async function main(): Promise<void> {
   const subscribeNotice = buildStaticSubscribeNotice(origin);
   await writePublicResource(subscribeNotice, outputRoot);
   resources.push(subscribeNotice);
+
+  assertExportedSitemapCoverage(
+    sitemapBody,
+    origin,
+    resources.map((resource) => resource.url.pathname),
+  );
 
   const redirects = mergeStaticHostingRewrites(buildStaticRedirects(resources, outputRoot));
   if (redirects.length > 0) {
