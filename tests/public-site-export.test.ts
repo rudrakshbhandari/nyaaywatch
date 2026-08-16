@@ -11,6 +11,7 @@ import {
   assertCloudflareRedirectBudget,
   exportManifestPath,
   isSkippableUnpublishedPublicUrl,
+  isUnpublishedPinnedResource,
   mergeStaticHostingRewrites,
   normalizeOrigin,
   outputPathForResource,
@@ -318,9 +319,21 @@ describe("public static export helpers", () => {
   it("treats unpublished configured geographies as skippable empty states", () => {
     expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/states/punjab"))).toBe(true);
     expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/v1/states/punjab/stats"))).toBe(true);
+    expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/high-courts"))).toBe(true);
     expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/high-courts/delhi"))).toBe(true);
     expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/"))).toBe(false);
     expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/supreme-court"))).toBe(false);
     expect(isSkippableUnpublishedPublicUrl(new URL("https://nyaaywatch.in/states/punjab/districts/amritsar"))).toBe(false);
+  });
+
+  it("does not export a 200 page whose required scope is still unpublished", () => {
+    expect(
+      isUnpublishedPinnedResource({
+        url: new URL("https://nyaaywatch.in/states/goa/movers"),
+        body: new TextEncoder().encode("<html></html>"),
+        contentType: "text/html",
+        publicationIdentities: [{ scope: "state:GA", publishedAt: null }],
+      }),
+    ).toBe(true);
   });
 });

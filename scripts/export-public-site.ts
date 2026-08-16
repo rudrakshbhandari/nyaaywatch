@@ -12,6 +12,7 @@ import {
   mergeStaticHostingRewrites,
   exportManifestPath,
   isSkippableUnpublishedPublicUrl,
+  isUnpublishedPinnedResource,
   normalizeOrigin,
   outputPathForResource,
   prepareOutputDirectory,
@@ -266,6 +267,11 @@ async function main(): Promise<void> {
 
     for (const resource of batchResults) {
       if (!resource) {
+        continue;
+      }
+
+      if (isUnpublishedPinnedResource(resource)) {
+        console.warn(`Skipping unpublished public route ${resource.url.pathname}`);
         continue;
       }
 

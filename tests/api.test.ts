@@ -359,6 +359,7 @@ describe("HTTP routes", () => {
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/backlog-concentration</loc>");
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/old-case-burden</loc>");
     expect(sitemap.text).toContain("<loc>https://nyaaywatch.in/watch/persistent-pressure</loc>");
+    expect(sitemap.text).not.toContain("/states/goa");
   });
 
   it("serves the national homepage when an older lower-court snapshot is missing embedded state metadata", async () => {
@@ -1297,5 +1298,24 @@ describe("HTTP routes", () => {
     expect(ladakhStats.status).toBe(200);
     expect(ladakhStats.body.snapshot.stateCode).toBe("LA");
     expect(ladakhStats.body.stats.pendingCases).toBe(1659);
+  });
+
+  it("returns 503 for unpublished geography method, API, movers, and feed pages", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+    await seedTestSnapshot(context.service);
+    const app = createTestApp(context.config, context.service, context.publicServices, context.highCourtServices, context.supremeCourtService);
+
+    expect((await request(app).get("/states/goa/methodology")).status).toBe(503);
+    expect((await request(app).get("/states/goa/api")).status).toBe(503);
+    expect((await request(app).get("/states/goa/movers")).status).toBe(503);
+    expect((await request(app).get("/states/goa/feed.xml")).status).toBe(503);
+    expect((await request(app).get("/high-courts/delhi/methodology")).status).toBe(503);
+    expect((await request(app).get("/high-courts/delhi/api")).status).toBe(503);
+
+    const sitemap = await request(app).get("/sitemap.xml");
+    expect(sitemap.status).toBe(200);
+    expect(sitemap.text).not.toContain("/states/goa");
+    expect(sitemap.text).not.toContain("/high-courts/delhi");
   });
 });

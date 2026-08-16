@@ -95,6 +95,12 @@ describe("PublishedSnapshotService", () => {
     expect(history[0]?.isActive).toBe(true);
     expect(history[0]?.snapshot.id).toBe(seeded.snapshot.id);
     expect(history[1]?.publication.id).toBe(replayed.publication.id);
+
+    const movers = await context.service.listMovers();
+    expect(movers?.currentSnapshot.publishedAt).not.toBe(replayed.snapshot.payload.snapshot.publishedAt);
+    if (movers) {
+      expect(movers.currentSnapshot.publishedAt).toBe(activeSnapshot?.payload.snapshot.publishedAt);
+    }
   });
 
   it("derives district history, snapshot history, and CSV exports from published snapshots", async () => {

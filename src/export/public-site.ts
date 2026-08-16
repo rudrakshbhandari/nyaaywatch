@@ -198,7 +198,8 @@ export function isSkippableUnpublishedPublicUrl(url: URL): boolean {
     /^\/high-courts\/[^/]+\/(data|methodology|api)$/.test(path) ||
     /^\/v1\/high-courts\/[^/]+\/(stats|trends)$/.test(path) ||
     path === "/watch" ||
-    path.startsWith("/watch/")
+    path.startsWith("/watch/") ||
+    path === "/high-courts"
   );
 }
 
@@ -357,6 +358,19 @@ export function recordPublicationIdentities(
     }
     recorded.set(identity.scope, identity);
   }
+}
+
+export function isUnpublishedPinnedResource(resource: PublicResource): boolean {
+  if (!resourceRequiresPublicationIdentity(resource)) {
+    return false;
+  }
+  const requiredScope = requiredPublicationScope(resource.url.pathname);
+  if (!requiredScope) {
+    return false;
+  }
+  return extractPublicationIdentities(resource).some(
+    (identity) => identity.scope === requiredScope && identity.publishedAt === null,
+  );
 }
 
 export function assertExportResourceIdentities(

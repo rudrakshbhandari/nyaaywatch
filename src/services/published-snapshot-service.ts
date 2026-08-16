@@ -187,9 +187,16 @@ export class PublishedSnapshotService {
     }
 
     const history = await this.loadHistoricalSnapshots();
-    if (history.length < 2) return null;
-    const current = history[history.length - 1]!;
-    const previous = history[history.length - 2]!;
+    const current = record.payload;
+    const currentIndex = history.findIndex(
+      (snapshot) =>
+        snapshot.snapshot.publishedAt === current.snapshot.publishedAt &&
+        snapshot.snapshot.referenceDateAt === current.snapshot.referenceDateAt,
+    );
+    if (currentIndex < 1) {
+      return null;
+    }
+    const previous = history[currentIndex - 1]!;
     const prevMap = new Map(previous.districts.map((d) => [d.districtId, d]));
     const movers: DistrictMover[] = [];
     for (const d of current.districts) {
