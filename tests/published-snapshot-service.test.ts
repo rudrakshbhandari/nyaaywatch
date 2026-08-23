@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { runPublicationRequest } from "../src/lib/publication-request-context.js";
 import { createScopedTestService, createTestContext, insertHistoricalPublishedSnapshot, seedTestSnapshot } from "./helpers.js";
 
 describe("PublishedSnapshotService", () => {
@@ -95,6 +96,62 @@ describe("PublishedSnapshotService", () => {
     expect(history[0]?.isActive).toBe(true);
     expect(history[0]?.snapshot.id).toBe(seeded.snapshot.id);
     expect(history[1]?.publication.id).toBe(replayed.publication.id);
+
+    const movers = await context.service.listMovers();
+    expect(movers?.currentSnapshot.publishedAt).not.toBe(replayed.snapshot.payload.snapshot.publishedAt);
+    if (movers) {
+      expect(movers.currentSnapshot.publishedAt).toBe(activeSnapshot?.payload.snapshot.publishedAt);
+    }
+  });
+
+  it("builds movers from the active publication, not the newest historical snapshot", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+
+    await insertHistoricalPublishedSnapshot(context.pool, {
+      runId: "run_old_movers",
+      snapshotId: "snapshot_old_movers",
+      publicationId: "publication_old_movers",
+      sourceSnapshotAt: "2026-03-31T00:00:00.000Z",
+      publishedAt: "2026-04-01T09:00:00.000Z",
+      methodologyVersion: "2026.03-alpha",
+      districtOverrides: {
+        kangra: {
+          rank: 2,
+          backlogCases: 22880,
+          disposalRate: 87.1,
+          medianAgeDays: 460,
+          filingVsDisposalGap: 12.7,
+        },
+      },
+    });
+    const seeded = await seedTestSnapshot(context.service);
+    const replayed = await context.service.replayRun(seeded.run.id, "Replay for movers");
+    await context.service.rollbackPublication(seeded.publication.id, "Rollback to seeded snapshot");
+
+    const movers = await context.service.listMovers();
+    expect(movers).not.toBeNull();
+    expect(movers?.currentSnapshot.publishedAt).toBe(seeded.snapshot.payload.snapshot.publishedAt);
+    expect(movers?.currentSnapshot.publishedAt).not.toBe(replayed.snapshot.payload.snapshot.publishedAt);
+    expect(movers?.previousSnapshot.publishedAt).toBe("2026-04-01T09:00:00.000Z");
+  });
+
+  it("pins historical reads to the snapshot selected at request start", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+
+    const seeded = await seedTestSnapshot(context.service);
+    let historyLength = 0;
+
+    await runPublicationRequest(async () => {
+      expect((await context.service.getPublishedSnapshot())?.id).toBe(seeded.snapshot.id);
+      await context.service.replayRun(seeded.run.id, "Concurrent publication test");
+      await context.service.rollbackPublication(seeded.publication.id, "Concurrent rollback test");
+      historyLength = (await context.service.listPublicationHistory()).length;
+    });
+
+    expect(historyLength).toBe(1);
+    expect((await context.service.listPublicationHistory()).length).toBe(3);
   });
 
   it("derives district history, snapshot history, and CSV exports from published snapshots", async () => {

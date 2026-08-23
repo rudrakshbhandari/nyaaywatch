@@ -135,3 +135,9 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 - [x] All currently supported states are publicly live on `https://nyaaywatch.in`; there is no remaining approved-state internal or public rollout queue in the current roadmap.
 - [x] The repo now has a public-alpha ops sweep via `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`, which verifies every public state and surfaces parity failures, stale public snapshots, and daily-fetch lag explicitly.
 - [x] `TODOS.md` now tracks the actual post-MVP backlog instead of duplicating rollout history.
+
+### 4. Free Hosting Migration
+
+- [ ] Keep AWS as the public origin until the gates in `docs/FREE_HOSTING_MIGRATION.md` pass. PR `#366` adds the static export, Pages preview workflow, and publication-identity crawl checks. Cloudflare R2 still needs dashboard enablement. DNS cutover stays blocked.
+- [x] Exporter pins publication identity on JSON, CSV, metric HTML, OG, and feeds (including a matching per-resource scope for movers); movers use the latest publication as current, not history[-1]; unpublished method/API/movers/feed return 503; sitemap lists only published geographies and those `<loc>`s are required in the bundle; exact-path `_redirects` come before comparison splats; crawl manifest stays outside the public bundle.
+- [x] Static export disables newsletter POST: `/subscribe` is a public notice, and confirm/unsubscribe token routes are excluded from the bundle. AWS still serves the working form until cutover.

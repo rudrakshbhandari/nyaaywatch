@@ -26,6 +26,7 @@ import {
 import { sha256 } from "../lib/hash.js";
 import type { NjdgStateProfile } from "../geographies.js";
 import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
+import { getRequestPublication, rememberRequestPublication } from "../lib/publication-request-context.js";
 
 const RAW_CAPTURE_ARTIFACT_TYPE = "raw-njdg-html-bundle";
 const SNAPSHOT_CANDIDATE_ARTIFACT_TYPE = "snapshot-candidate-json";
@@ -115,7 +116,14 @@ export class PublishedSnapshotService {
   }
 
   async getPublishedSnapshot(): Promise<PublishedSnapshotRecord | null> {
-    return this.store.getLatestPublishedSnapshot(this.profile.stateCode);
+    const scope = `state:${this.profile.stateCode}`;
+    const requestPublication = getRequestPublication<PublishedSnapshotRecord>(scope);
+    if (requestPublication !== undefined) {
+      return requestPublication;
+    }
+    const record = await this.store.getLatestPublishedSnapshot(this.profile.stateCode);
+    rememberRequestPublication(scope, record);
+    return record;
   }
 
   async getStats(): Promise<{ snapshot: PublishedSnapshot["snapshot"]; stats: PublishedSnapshot["stats"] } | null> {
@@ -173,10 +181,22 @@ export class PublishedSnapshotService {
   }
 
   async listMovers(): Promise<DistrictMoversResult | null> {
+    const record = await this.getPublishedSnapshot();
+    if (!record) {
+      return null;
+    }
+
     const history = await this.loadHistoricalSnapshots();
-    if (history.length < 2) return null;
-    const current = history[history.length - 1]!;
-    const previous = history[history.length - 2]!;
+    const current = record.payload;
+    const currentIndex = history.findIndex(
+      (snapshot) =>
+        snapshot.snapshot.publishedAt === current.snapshot.publishedAt &&
+        snapshot.snapshot.referenceDateAt === current.snapshot.referenceDateAt,
+    );
+    if (currentIndex < 1) {
+      return null;
+    }
+    const previous = history[currentIndex - 1]!;
     const prevMap = new Map(previous.districts.map((d) => [d.districtId, d]));
     const movers: DistrictMover[] = [];
     for (const d of current.districts) {
@@ -213,7 +233,7 @@ export class PublishedSnapshotService {
   }
 
   async listPublicationHistory(): Promise<PublicationHistoryEntry[]> {
-    const publications = await this.store.listPublications(this.profile.stateCode);
+    const publications = await this.listRequestScopedPublications();
     const entries = await Promise.all(
       publications.map(async (publication, index) => {
         const snapshot = await this.store.getPublishedSnapshotById(publication.publishedSnapshotId);
@@ -726,7 +746,7 @@ export class PublishedSnapshotService {
   }
 
   private async loadHistoricalSnapshots(): Promise<PublishedSnapshot[]> {
-    const publications = await this.store.listPublications(this.profile.stateCode);
+    const publications = await this.listRequestScopedPublications();
     const snapshots: PublishedSnapshot[] = [];
     const seenSnapshotIds = new Set<string>();
 
@@ -748,6 +768,19 @@ export class PublishedSnapshotService {
         left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt)
       );
     });
+  }
+
+  private async listRequestScopedPublications(): Promise<PublicationRecord[]> {
+    const publications = await this.store.listPublications(this.profile.stateCode);
+    const requestPublication = getRequestPublication<PublishedSnapshotRecord>(`state:${this.profile.stateCode}`);
+    if (!requestPublication) {
+      return publications;
+    }
+
+    const activeIndex = requestPublication.publicationId
+      ? publications.findIndex((publication) => publication.id === requestPublication.publicationId)
+      : -1;
+    return activeIndex >= 0 ? publications.slice(activeIndex) : publications;
   }
 }
 

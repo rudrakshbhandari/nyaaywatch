@@ -16,6 +16,7 @@ import {
   materializeSupremeCourtPublishedSnapshot,
 } from "../normalize/supreme-court-snapshot-candidate.js";
 import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
+import { getRequestPublication, rememberRequestPublication } from "../lib/publication-request-context.js";
 import type { ArtifactStore } from "../storage/artifact-store.js";
 import {
   PgWarehouseStore,
@@ -57,7 +58,14 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   async getPublishedSnapshot(): Promise<SupremeCourtPublishedSnapshotRecord | null> {
-    return this.store.getLatestSupremeCourtPublishedSnapshot(this.profile.courtCode, "supreme_court");
+    const scope = `court:${this.profile.courtCode}`;
+    const requestPublication = getRequestPublication<SupremeCourtPublishedSnapshotRecord>(scope);
+    if (requestPublication !== undefined) {
+      return requestPublication;
+    }
+    const record = await this.store.getLatestSupremeCourtPublishedSnapshot(this.profile.courtCode, "supreme_court");
+    rememberRequestPublication(scope, record);
+    return record;
   }
 
   async getStats(): Promise<{ snapshot: SupremeCourtPublishedSnapshot["snapshot"]; stats: SupremeCourtPublishedSnapshot["stats"] } | null> {
@@ -79,7 +87,7 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   async listPublicationHistory(): Promise<SupremeCourtPublicationHistoryEntry[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode, "supreme_court");
+    const publications = await this.listRequestScopedPublications();
     const entries = await Promise.all(
       publications.map(async (publication, index) => {
         const snapshot = await this.store.getSupremeCourtPublishedSnapshotById(publication.publishedSnapshotId);
@@ -458,7 +466,7 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   private async loadHistoricalSnapshots(): Promise<SupremeCourtPublishedSnapshot[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode, "supreme_court");
+    const publications = await this.listRequestScopedPublications();
     const snapshots: SupremeCourtPublishedSnapshot[] = [];
     const seenSnapshotIds = new Set<string>();
 
@@ -480,6 +488,19 @@ export class PublishedSupremeCourtSnapshotService {
         left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt)
       );
     });
+  }
+
+  private async listRequestScopedPublications(): Promise<PublicationRecord[]> {
+    const publications = await this.store.listPublications(this.profile.courtCode, "supreme_court");
+    const requestPublication = getRequestPublication<SupremeCourtPublishedSnapshotRecord>(`court:${this.profile.courtCode}`);
+    if (!requestPublication) {
+      return publications;
+    }
+
+    const activeIndex = requestPublication.publicationId
+      ? publications.findIndex((publication) => publication.id === requestPublication.publicationId)
+      : -1;
+    return activeIndex >= 0 ? publications.slice(activeIndex) : publications;
   }
 }
 

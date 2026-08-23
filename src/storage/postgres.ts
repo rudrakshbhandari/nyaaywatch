@@ -54,6 +54,8 @@ export interface PublishedSnapshotRecord {
   payload: PublishedSnapshot;
   checksumSha256: string;
   createdAt: string;
+  publicationId?: string;
+  publicationCreatedAt?: string;
 }
 
 export interface HighCourtPublishedSnapshotRecord {
@@ -66,6 +68,8 @@ export interface HighCourtPublishedSnapshotRecord {
   payload: HighCourtPublishedSnapshot;
   checksumSha256: string;
   createdAt: string;
+  publicationId?: string;
+  publicationCreatedAt?: string;
 }
 
 export interface SupremeCourtPublishedSnapshotRecord {
@@ -78,6 +82,8 @@ export interface SupremeCourtPublishedSnapshotRecord {
   payload: SupremeCourtPublishedSnapshot;
   checksumSha256: string;
   createdAt: string;
+  publicationId?: string;
+  publicationCreatedAt?: string;
 }
 
 export interface PublicationRecord {
@@ -391,7 +397,7 @@ export class PgWarehouseStore {
 
   async getLatestPublishedSnapshot(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<PublishedSnapshotRecord | null> {
     const result = await this.db.query(
-      `SELECT ps.*
+      `SELECT ps.*, ph.id AS publication_id, ph.created_at AS publication_created_at
       FROM publication_history ph
       JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
       WHERE ph.scope_type = $1 AND ph.scope_code = $2
@@ -405,7 +411,7 @@ export class PgWarehouseStore {
 
   async getLatestHighCourtPublishedSnapshot(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<HighCourtPublishedSnapshotRecord | null> {
     const result = await this.db.query(
-      `SELECT ps.*
+      `SELECT ps.*, ph.id AS publication_id, ph.created_at AS publication_created_at
       FROM publication_history ph
       JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
       WHERE ph.scope_type = $1 AND ph.scope_code = $2
@@ -419,7 +425,7 @@ export class PgWarehouseStore {
 
   async getLatestSupremeCourtPublishedSnapshot(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<SupremeCourtPublishedSnapshotRecord | null> {
     const result = await this.db.query(
-      `SELECT ps.*
+      `SELECT ps.*, ph.id AS publication_id, ph.created_at AS publication_created_at
       FROM publication_history ph
       JOIN published_snapshots ps ON ps.id = ph.published_snapshot_id
       WHERE ph.scope_type = $1 AND ph.scope_code = $2
@@ -527,6 +533,8 @@ function mapPublishedSnapshot(row: QueryResultRow): PublishedSnapshotRecord {
     payload,
     checksumSha256: row.checksum_sha256,
     createdAt: toIsoString(row.created_at),
+    publicationId: row.publication_id ? String(row.publication_id) : undefined,
+    publicationCreatedAt: row.publication_created_at ? toIsoString(row.publication_created_at) : undefined,
   };
 }
 
@@ -569,6 +577,8 @@ function mapHighCourtPublishedSnapshot(row: QueryResultRow): HighCourtPublishedS
     payload: HighCourtPublishedSnapshotSchema.parse(payload),
     checksumSha256: row.checksum_sha256,
     createdAt: toIsoString(row.created_at),
+    publicationId: row.publication_id ? String(row.publication_id) : undefined,
+    publicationCreatedAt: row.publication_created_at ? toIsoString(row.publication_created_at) : undefined,
   };
 }
 
@@ -586,6 +596,8 @@ function mapSupremeCourtPublishedSnapshot(row: QueryResultRow): SupremeCourtPubl
     payload: SupremeCourtPublishedSnapshotSchema.parse(payload),
     checksumSha256: row.checksum_sha256,
     createdAt: toIsoString(row.created_at),
+    publicationId: row.publication_id ? String(row.publication_id) : undefined,
+    publicationCreatedAt: row.publication_created_at ? toIsoString(row.publication_created_at) : undefined,
   };
 }
 

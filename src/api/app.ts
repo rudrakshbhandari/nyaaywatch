@@ -51,6 +51,7 @@ import { buildPublicSupremeCourtPageContext } from "./public-supreme-court.js";
 import { buildPublicPageContext, buildPublicStateRoutes } from "./public-state.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
 import { renderRssFeed } from "./pages/rss.js";
+import { getRequestPublicationIdentities, runPublicationRequest } from "../lib/publication-request-context.js";
 import {
   renderSubscribePage,
   renderSubscribeConfirmPending,
@@ -120,6 +121,20 @@ export function createApp(
     next();
   });
 
+  app.use((request, response, next) => {
+    runPublicationRequest(() => {
+      const originalSend = response.send.bind(response);
+      response.send = ((body: unknown) => {
+        const identities = getRequestPublicationIdentities();
+        if (identities.length > 0) {
+          response.setHeader("X-NyaayWatch-Publication-Identities", JSON.stringify(identities));
+        }
+        return originalSend(body);
+      }) as typeof response.send;
+      next();
+    });
+  });
+
   app.get("/health", (_request, response) => {
     response.json({ ok: true, region: config.AWS_REGION, stateCode: config.STATE_CODE });
   });
@@ -177,31 +192,38 @@ export function createApp(
         origin + "/watch/backlog-concentration",
         origin + "/watch/old-case-burden",
         origin + "/watch/persistent-pressure",
-        origin + "/high-courts",
         origin + "/supreme-court",
       ];
 
       for (const profile of listPublicStateProfiles()) {
         const routes = buildPublicStateRoutes(profile);
+        const svc = serviceMap[profile.stateCode];
+        const detail = svc ? await svc.listDistricts() : null;
+        if (!detail) {
+          continue;
+        }
         urls.push(origin + routes.home);
         urls.push(origin + routes.districts);
         urls.push(origin + routes.methodology);
         urls.push(origin + routes.data);
         urls.push(origin + routes.api);
-        const svc = serviceMap[profile.stateCode];
-        if (svc) {
-          const detail = await svc.listDistricts();
-          if (detail) {
-            for (const d of detail.districts) {
-              urls.push(origin + routes.district(d.districtId));
-            }
-          }
+        for (const d of detail.districts) {
+          urls.push(origin + routes.district(d.districtId));
         }
       }
 
+      const publishedHighCourts: string[] = [];
       for (const profile of listPublicHighCourtProfiles()) {
-        const routes = buildPublicHighCourtRoutes(profile);
-        urls.push(origin + routes.home);
+        const service = highCourtServices[profile.courtCode];
+        const snapshot = service ? await service.getPublishedSnapshot() : null;
+        if (!snapshot) {
+          continue;
+        }
+        publishedHighCourts.push(origin + buildPublicHighCourtRoutes(profile).home);
+      }
+      if (publishedHighCourts.length > 0) {
+        urls.push(origin + "/high-courts");
+        urls.push(...publishedHighCourts);
       }
 
       const xml = [
@@ -591,6 +613,11 @@ export function createApp(
     asyncRoute(async (_request, response) => {
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
       const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Movers", LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY));
+        return;
+      }
       const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
       const result = await currentService.listMovers();
       if (!result) {
@@ -611,6 +638,11 @@ export function createApp(
         return;
       }
       const context = buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile));
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Movers", LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY));
+        return;
+      }
       const result = await resolved.service.listMovers();
       if (!result) {
         response.send(renderMoversUnavailable(context));
@@ -681,10 +713,14 @@ export function createApp(
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
       const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
       const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Methodology", "No published snapshot is available yet."));
+        return;
+      }
       const history = await currentService.listPublicationHistory();
       response.send(
         renderMethodologyPage(
-          snapshot?.payload.snapshot ?? null,
+          snapshot.payload.snapshot,
           history,
           buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
         ),
@@ -696,6 +732,12 @@ export function createApp(
     "/api",
     asyncRoute(async (_request, response) => {
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
+      const snapshot = await currentService.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("API", "No published snapshot is available yet."));
+        return;
+      }
       response.send(
         renderApiPage(
           buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
@@ -968,10 +1010,14 @@ export function createApp(
       }
 
       const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Methodology", LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY));
+        return;
+      }
       const history = await resolved.service.listPublicationHistory();
       response.send(
         renderMethodologyPage(
-          snapshot?.payload.snapshot ?? null,
+          snapshot.payload.snapshot,
           history,
           buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
         ),
@@ -985,6 +1031,12 @@ export function createApp(
       const resolved = resolvePublicStateRequest(request, publicServices);
       if (!resolved) {
         response.status(404).send(renderEmptyState(LOWER_COURT_GEOGRAPHY_NOT_FOUND_TITLE, LOWER_COURT_GEOGRAPHY_NOT_FOUND_BODY));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("API", LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY));
         return;
       }
 
@@ -1051,10 +1103,14 @@ export function createApp(
       }
 
       const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Supreme Court Method", "No published Supreme Court snapshot is available yet."));
+        return;
+      }
       const history = await resolved.service.listPublicationHistory();
       response.send(
         renderSupremeCourtMethodologyPage(
-          snapshot?.payload.snapshot ?? null,
+          snapshot.payload.snapshot,
           history,
           buildPublicSupremeCourtPageContext(resolved.profile),
         ),
@@ -1068,6 +1124,12 @@ export function createApp(
       const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
       if (!resolved) {
         response.status(404).send(renderEmptyState("Supreme Court", "No public Supreme Court page is available yet."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("Supreme Court API", "No published Supreme Court snapshot is available yet."));
         return;
       }
 
@@ -1155,11 +1217,15 @@ export function createApp(
       }
 
       const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("High Court Method", "No published High Court snapshot is available yet."));
+        return;
+      }
       const history = await resolved.service.listPublicationHistory();
       response.send(
         renderHighCourtMethodologyPage(
           resolved.profile,
-          snapshot?.payload.snapshot ?? null,
+          snapshot.payload.snapshot,
           history,
           buildPublicHighCourtPageContext(resolved.profile, await listAvailablePublicHighCourtProfiles(highCourtServices, resolved.profile)),
         ),
@@ -1173,6 +1239,12 @@ export function createApp(
       const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
       if (!resolved) {
         response.status(404).send(renderEmptyState("High Court Not Found", "This High Court is not available on the public site."));
+        return;
+      }
+
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(renderEmptyState("High Court API", "No published High Court snapshot is available yet."));
         return;
       }
 
@@ -1605,10 +1677,12 @@ export function createApp(
         return;
       }
 
-      const [entries, snapshot] = await Promise.all([
-        resolved.service.listPublicationHistory(),
-        resolved.service.getPublishedSnapshot(),
-      ]);
+      const snapshot = await resolved.service.getPublishedSnapshot();
+      if (!snapshot) {
+        response.status(503).send(LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY);
+        return;
+      }
+      const entries = await resolved.service.listPublicationHistory();
 
       const origin = config.CANONICAL_HOST ? `https://${config.CANONICAL_HOST}` : "https://nyaaywatch.in";
       const stateUrl = `${origin}/states/${resolved.profile.stateSlug}`;
@@ -1622,7 +1696,7 @@ export function createApp(
           link: stateUrl,
           feedUrl,
           entries,
-          currentSnapshot: snapshot?.payload ?? null,
+          currentSnapshot: snapshot.payload,
         }),
       );
     }),

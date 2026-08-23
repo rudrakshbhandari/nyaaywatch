@@ -16,6 +16,7 @@ import {
   materializeHighCourtPublishedSnapshot,
 } from "../normalize/high-court-snapshot-candidate.js";
 import { PublicCacheInvalidationService } from "./public-cache-invalidation.js";
+import { getRequestPublication, rememberRequestPublication } from "../lib/publication-request-context.js";
 import type { ArtifactStore } from "../storage/artifact-store.js";
 import {
   PgWarehouseStore,
@@ -57,7 +58,14 @@ export class PublishedHighCourtSnapshotService {
   }
 
   async getPublishedSnapshot(): Promise<HighCourtPublishedSnapshotRecord | null> {
-    return this.store.getLatestHighCourtPublishedSnapshot(this.profile.courtCode, "high_court");
+    const scope = `court:${this.profile.courtCode}`;
+    const requestPublication = getRequestPublication<HighCourtPublishedSnapshotRecord>(scope);
+    if (requestPublication !== undefined) {
+      return requestPublication;
+    }
+    const record = await this.store.getLatestHighCourtPublishedSnapshot(this.profile.courtCode, "high_court");
+    rememberRequestPublication(scope, record);
+    return record;
   }
 
   async getStats(): Promise<{ snapshot: HighCourtPublishedSnapshot["snapshot"]; stats: HighCourtPublishedSnapshot["stats"] } | null> {
@@ -79,7 +87,7 @@ export class PublishedHighCourtSnapshotService {
   }
 
   async listPublicationHistory(): Promise<HighCourtPublicationHistoryEntry[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode, "high_court");
+    const publications = await this.listRequestScopedPublications();
     const entries = await Promise.all(
       publications.map(async (publication, index) => {
         const snapshot = await this.store.getHighCourtPublishedSnapshotById(publication.publishedSnapshotId);
@@ -478,7 +486,7 @@ export class PublishedHighCourtSnapshotService {
   }
 
   private async loadHistoricalSnapshots(): Promise<HighCourtPublishedSnapshot[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode, "high_court");
+    const publications = await this.listRequestScopedPublications();
     const snapshots: HighCourtPublishedSnapshot[] = [];
     const seenSnapshotIds = new Set<string>();
 
@@ -500,6 +508,19 @@ export class PublishedHighCourtSnapshotService {
     // to carry forward the active value across rollbacks/corrections; trend building
     // re-sorts chronologically on its own.
     return snapshots;
+  }
+
+  private async listRequestScopedPublications(): Promise<PublicationRecord[]> {
+    const publications = await this.store.listPublications(this.profile.courtCode, "high_court");
+    const requestPublication = getRequestPublication<HighCourtPublishedSnapshotRecord>(`court:${this.profile.courtCode}`);
+    if (!requestPublication) {
+      return publications;
+    }
+
+    const activeIndex = requestPublication.publicationId
+      ? publications.findIndex((publication) => publication.id === requestPublication.publicationId)
+      : -1;
+    return activeIndex >= 0 ? publications.slice(activeIndex) : publications;
   }
 }
 
