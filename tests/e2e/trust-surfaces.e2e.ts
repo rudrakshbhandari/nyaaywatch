@@ -117,7 +117,7 @@ test.describe("public layout overflow", () => {
       expect(metric.right).toBeLessThanOrEqual(metric.tileRight + 1);
     }
 
-    await page.goto("/high-courts/kerala/api");
+    await page.goto("/high-courts/himachal/api");
     const contrast = await page.locator(".endpoint__verb").first().evaluate((node) => {
       const style = getComputedStyle(node);
       return contrastRatio(style.color, style.backgroundColor);
