@@ -233,7 +233,7 @@ export class PublishedSnapshotService {
   }
 
   async listPublicationHistory(): Promise<PublicationHistoryEntry[]> {
-    const publications = await this.store.listPublications(this.profile.stateCode);
+    const publications = await this.listRequestScopedPublications();
     const entries = await Promise.all(
       publications.map(async (publication, index) => {
         const snapshot = await this.store.getPublishedSnapshotById(publication.publishedSnapshotId);
@@ -746,7 +746,7 @@ export class PublishedSnapshotService {
   }
 
   private async loadHistoricalSnapshots(): Promise<PublishedSnapshot[]> {
-    const publications = await this.store.listPublications(this.profile.stateCode);
+    const publications = await this.listRequestScopedPublications();
     const snapshots: PublishedSnapshot[] = [];
     const seenSnapshotIds = new Set<string>();
 
@@ -768,6 +768,17 @@ export class PublishedSnapshotService {
         left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt)
       );
     });
+  }
+
+  private async listRequestScopedPublications(): Promise<PublicationRecord[]> {
+    const publications = await this.store.listPublications(this.profile.stateCode);
+    const requestPublication = getRequestPublication<PublishedSnapshotRecord>(`state:${this.profile.stateCode}`);
+    if (!requestPublication) {
+      return publications;
+    }
+
+    const activeIndex = publications.findIndex((publication) => publication.publishedSnapshotId === requestPublication.id);
+    return activeIndex >= 0 ? publications.slice(activeIndex) : publications;
   }
 }
 

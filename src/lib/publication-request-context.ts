@@ -6,6 +6,7 @@ export type RequestPublicationIdentity = {
 };
 
 type PublicationRecord = {
+  id: string;
   payload: { snapshot: { publishedAt: string } };
 };
 

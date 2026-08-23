@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { runPublicationRequest } from "../src/lib/publication-request-context.js";
 import { createScopedTestService, createTestContext, insertHistoricalPublishedSnapshot, seedTestSnapshot } from "./helpers.js";
 
 describe("PublishedSnapshotService", () => {
@@ -133,6 +134,23 @@ describe("PublishedSnapshotService", () => {
     expect(movers?.currentSnapshot.publishedAt).toBe(seeded.snapshot.payload.snapshot.publishedAt);
     expect(movers?.currentSnapshot.publishedAt).not.toBe(replayed.snapshot.payload.snapshot.publishedAt);
     expect(movers?.previousSnapshot.publishedAt).toBe("2026-04-01T09:00:00.000Z");
+  });
+
+  it("pins historical reads to the snapshot selected at request start", async () => {
+    const context = await createTestContext();
+    pools.push(context.pool);
+
+    const seeded = await seedTestSnapshot(context.service);
+    let historyLength = 0;
+
+    await runPublicationRequest(async () => {
+      expect((await context.service.getPublishedSnapshot())?.id).toBe(seeded.snapshot.id);
+      await context.service.replayRun(seeded.run.id, "Concurrent publication test");
+      historyLength = (await context.service.listPublicationHistory()).length;
+    });
+
+    expect(historyLength).toBe(1);
+    expect((await context.service.listPublicationHistory()).length).toBe(2);
   });
 
   it("derives district history, snapshot history, and CSV exports from published snapshots", async () => {

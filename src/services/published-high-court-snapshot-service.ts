@@ -87,7 +87,7 @@ export class PublishedHighCourtSnapshotService {
   }
 
   async listPublicationHistory(): Promise<HighCourtPublicationHistoryEntry[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode, "high_court");
+    const publications = await this.listRequestScopedPublications();
     const entries = await Promise.all(
       publications.map(async (publication, index) => {
         const snapshot = await this.store.getHighCourtPublishedSnapshotById(publication.publishedSnapshotId);
@@ -486,7 +486,7 @@ export class PublishedHighCourtSnapshotService {
   }
 
   private async loadHistoricalSnapshots(): Promise<HighCourtPublishedSnapshot[]> {
-    const publications = await this.store.listPublications(this.profile.courtCode, "high_court");
+    const publications = await this.listRequestScopedPublications();
     const snapshots: HighCourtPublishedSnapshot[] = [];
     const seenSnapshotIds = new Set<string>();
 
@@ -508,6 +508,17 @@ export class PublishedHighCourtSnapshotService {
     // to carry forward the active value across rollbacks/corrections; trend building
     // re-sorts chronologically on its own.
     return snapshots;
+  }
+
+  private async listRequestScopedPublications(): Promise<PublicationRecord[]> {
+    const publications = await this.store.listPublications(this.profile.courtCode, "high_court");
+    const requestPublication = getRequestPublication<HighCourtPublishedSnapshotRecord>(`court:${this.profile.courtCode}`);
+    if (!requestPublication) {
+      return publications;
+    }
+
+    const activeIndex = publications.findIndex((publication) => publication.publishedSnapshotId === requestPublication.id);
+    return activeIndex >= 0 ? publications.slice(activeIndex) : publications;
   }
 }
 
