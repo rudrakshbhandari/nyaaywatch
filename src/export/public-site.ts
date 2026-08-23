@@ -224,7 +224,8 @@ export function buildStaticRedirects(resources: PublicResource[], outputRoot: st
   for (const resource of resources) {
     const requestPath = resource.url.pathname;
     const outputPath = outputPathForResource(resource.url, resource.contentType);
-    if (resource.contentType.toLowerCase().includes(HTML_CONTENT_TYPE)) {
+    const isKnownComparisonPath = /^\/(?:states\/[^/]+\/)?compare\/[^/]+-vs-[^/]+$/.test(requestPath);
+    if (resource.contentType.toLowerCase().includes(HTML_CONTENT_TYPE) && !isKnownComparisonPath) {
       continue;
     }
     if (requestPath === `/${outputPath}`) {
@@ -257,9 +258,9 @@ export function buildStaticSubscribeNotice(origin: URL): PublicResource {
 
 export function buildStaticComparisonShell(origin: URL): PublicResource {
   const body = `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare districts — NyaayWatch</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Compare districts — NyaayWatch</title><meta name="description" content="Compare published district signals from NyaayWatch."><meta property="og:title" content="Compare districts — NyaayWatch"><meta property="og:description" content="Compare cases waiting, clearance, typical wait, and other published district signals."><meta property="og:type" content="website">
 <style>body{margin:0;padding:40px 20px;background:#f4efe3;color:#0c0a08;font:16px system-ui,sans-serif}main{max-width:900px;margin:auto}article{border:1px solid #0c0a08;background:#fffaf0;padding:24px}h1{font-size:clamp(28px,5vw,52px);margin:0 0 24px}table{border-collapse:collapse;width:100%}th,td{border-top:1px solid #d8d0c2;padding:12px;text-align:left}th{width:40%;font-weight:600}</style></head>
-<body><main><article><p>Loading comparison…</p></article></main>
+<body><main><article><h1>Compare districts</h1><p>Compare published cases waiting, clearance, typical wait, and other district signals.</p></article></main>
 <script>
 (async function(){
   function escapeHtml(value){return String(value).replace(/[&<>\"]/g,function(character){return {"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;"}[character];});}

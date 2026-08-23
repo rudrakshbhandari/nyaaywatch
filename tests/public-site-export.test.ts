@@ -71,9 +71,11 @@ describe("public static export helpers", () => {
       { url: new URL("https://nyaaywatch.in/v1/stats/himachal"), body: new Uint8Array(), contentType: "application/json" },
       { url: new URL("https://nyaaywatch.in/sitemap.xml"), body: new Uint8Array(), contentType: "application/xml" },
       { url: new URL("https://nyaaywatch.in/states/punjab"), body: new Uint8Array(), contentType: "text/html" },
+      { url: new URL("https://nyaaywatch.in/compare/kangra-vs-kullu"), body: new Uint8Array(), contentType: "text/html" },
     ];
 
     expect(buildStaticRedirects(resources, "/tmp/nyaaywatch-static-export")).toEqual([
+      "/compare/kangra-vs-kullu /compare/kangra-vs-kullu/index.html 200",
       "/v1/stats/himachal /v1/stats/himachal.json 200",
     ]);
   });
@@ -86,6 +88,7 @@ describe("public static export helpers", () => {
     expect(outputPathForResource(shell.url, shell.contentType)).toBe("compare/index.html");
     expect(body).toContain("methodology");
     expect(body).toContain("<thead><tr><th>Metric</th><th>");
+    expect(body).toContain('property="og:title"');
   });
 
   it("replaces newsletter sign-up with a static notice instead of a POST form", () => {
