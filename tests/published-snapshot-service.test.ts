@@ -146,11 +146,12 @@ describe("PublishedSnapshotService", () => {
     await runPublicationRequest(async () => {
       expect((await context.service.getPublishedSnapshot())?.id).toBe(seeded.snapshot.id);
       await context.service.replayRun(seeded.run.id, "Concurrent publication test");
+      await context.service.rollbackPublication(seeded.publication.id, "Concurrent rollback test");
       historyLength = (await context.service.listPublicationHistory()).length;
     });
 
     expect(historyLength).toBe(1);
-    expect((await context.service.listPublicationHistory()).length).toBe(2);
+    expect((await context.service.listPublicationHistory()).length).toBe(3);
   });
 
   it("derives district history, snapshot history, and CSV exports from published snapshots", async () => {

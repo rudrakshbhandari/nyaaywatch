@@ -517,7 +517,9 @@ export class PublishedHighCourtSnapshotService {
       return publications;
     }
 
-    const activeIndex = publications.findIndex((publication) => publication.publishedSnapshotId === requestPublication.id);
+    const activeIndex = requestPublication.publicationId
+      ? publications.findIndex((publication) => publication.id === requestPublication.publicationId)
+      : -1;
     return activeIndex >= 0 ? publications.slice(activeIndex) : publications;
   }
 }

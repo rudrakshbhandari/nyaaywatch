@@ -8,6 +8,8 @@ export type RequestPublicationIdentity = {
 type PublicationRecord = {
   id: string;
   payload: { snapshot: { publishedAt: string } };
+  publicationId?: string;
+  publicationCreatedAt?: string;
 };
 
 const storage = new AsyncLocalStorage<Map<string, PublicationRecord | null>>();
