@@ -64,7 +64,15 @@ function buildPublicRouteInventory(): string[] {
 
   for (const profile of listPublicHighCourtProfiles()) {
     const routes = buildPublicHighCourtRoutes(profile);
-    [routes.home, routes.methodology, routes.api, routes.data, routes.statsApi, routes.trendsApi].forEach((path) => paths.add(path));
+    [
+      routes.home,
+      routes.methodology,
+      routes.api,
+      routes.data,
+      routes.statsApi,
+      routes.trendsApi,
+      `/og/high-court/${profile.courtSlug}.png`,
+    ].forEach((path) => paths.add(path));
   }
 
   const supremeRoutes = buildPublicSupremeCourtRoutes();

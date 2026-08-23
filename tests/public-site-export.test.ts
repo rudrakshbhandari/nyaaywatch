@@ -230,6 +230,18 @@ describe("public static export helpers", () => {
     ).toThrow("Publication changed during crawl for state:PB");
   });
 
+  it("rejects a changed publication event even when the snapshot timestamp is unchanged", () => {
+    const recorded = new Map();
+    recordPublicationIdentities(recorded, [
+      { scope: "state:PB", publishedAt: "2026-08-20T00:00:00.000Z", publicationId: "publication-a" },
+    ]);
+    expect(() =>
+      recordPublicationIdentities(recorded, [
+        { scope: "state:PB", publishedAt: "2026-08-20T00:00:00.000Z", publicationId: "publication-b" },
+      ]),
+    ).toThrow("Publication changed during crawl for state:PB");
+  });
+
   it("rejects HTML and OG resources that do not carry a publication identity", () => {
     const recorded = new Map();
     assertExportResourceIdentities(recorded, {

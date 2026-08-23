@@ -29,6 +29,8 @@ export type PublicResource = {
 export type PublicationIdentity = {
   scope: string;
   publishedAt: string | null;
+  publicationId?: string;
+  publicationCreatedAt?: string;
 };
 
 export function normalizeOrigin(value: string): URL {
@@ -368,7 +370,12 @@ export function recordPublicationIdentities(
 ): void {
   for (const identity of identities) {
     const previous = recorded.get(identity.scope);
-    if (previous && previous.publishedAt !== identity.publishedAt) {
+    if (
+      previous &&
+      (previous.publishedAt !== identity.publishedAt ||
+        previous.publicationId !== identity.publicationId ||
+        previous.publicationCreatedAt !== identity.publicationCreatedAt)
+    ) {
       throw new Error(
         `Publication changed during crawl for ${identity.scope}: ${previous.publishedAt} -> ${identity.publishedAt}. Retry against one immutable publication.`,
       );
