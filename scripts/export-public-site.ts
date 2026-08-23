@@ -223,7 +223,12 @@ function buildDistrictRouteInventory(resource: PublicResource): string[] {
   }
 
   const stateApiMatch = resource.url.pathname.match(/^\/v1\/states\/([^/]+)\/districts$/);
-  const prefix = stateApiMatch ? `/states/${stateApiMatch[1]}` : "";
+  const statePathMatch = resource.url.pathname.match(/^\/states\/([^/]+)(?:\/|$)/);
+  const prefix = stateApiMatch
+    ? `/states/${stateApiMatch[1]}`
+    : statePathMatch
+      ? `/states/${statePathMatch[1]}`
+      : "";
   return districtIds.flatMap((districtId) => [
     `${prefix}/districts/${districtId}`,
     `${prefix}/data/districts/${districtId}.csv`,
