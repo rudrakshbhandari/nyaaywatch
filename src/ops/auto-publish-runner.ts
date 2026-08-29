@@ -9,6 +9,11 @@ export interface AutoPublishOutcome {
   decision?: AutoPublishDecision;
   publishRunId?: string;
   error?: string;
+  reviewAlert?: {
+    scopeLabel: string;
+    runId: string;
+    decision: AutoPublishDecision;
+  };
 }
 
 export interface AutoPublishRequest {
@@ -33,6 +38,7 @@ export interface AutoPublishRunnerDeps {
   runOperator?: typeof runOperatorInvocation;
   notifier?: AlarmNotifier;
   rawEnv?: NodeJS.ProcessEnv;
+  notifyOnReview?: boolean;
 }
 
 export async function runAutoPublish(
@@ -60,10 +66,14 @@ export async function runAutoPublish(
   });
 
   if (!decision.publish) {
-    const subject = `NyaayWatch review required: ${request.scopeLabel}`;
-    const message = formatReviewMessage(request, inputs.runId, decision);
-    await notifier.publish(subject, message);
-    return { action: "skipped_review", decision };
+    const reviewAlert = { scopeLabel: request.scopeLabel, runId: inputs.runId, decision };
+    if (deps.notifyOnReview !== false) {
+      await notifier.publish(
+        `NyaayWatch review required: ${request.scopeLabel}`,
+        formatReviewMessage(request.scopeLabel, inputs.runId, decision),
+      );
+    }
+    return { action: "skipped_review", decision, reviewAlert };
   }
 
   try {
@@ -126,9 +136,9 @@ function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | 
   };
 }
 
-function formatReviewMessage(request: AutoPublishRequest, runId: string, decision: AutoPublishDecision): string {
+export function formatReviewMessage(scopeLabel: string, runId: string, decision: AutoPublishDecision): string {
   const lines = [
-    `Scope: ${request.scopeLabel}`,
+    `Scope: ${scopeLabel}`,
     `Run: ${runId}`,
     `Reason: ${decision.reason ?? "unknown"}`,
     `Quality state: ${decision.qualityState}`,

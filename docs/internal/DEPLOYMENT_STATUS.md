@@ -346,6 +346,7 @@ Expected:
 - `npm run ops:verify-public-alpha` stays green across every public target by default and fails if any state, High Court, or Supreme Court surface has parity drift, a stale snapshot, or a latest successful internal fetch run old enough to imply the daily internal fetch cadence is slipping. Use `--target-set=smoke` only for low-blast-radius incident checks.
 - the CloudWatch alarm `nyaaywatch-production-public-alpha-ops` stays `OK`; if it flips to `ALARM`, inspect the matching `NYAAYWATCH_PUBLIC_ALPHA_OPS_ALERT=` line in `/ecs/nyaaywatch-production`
 - `.github/workflows/ops-watchdog.yml` now runs the public-alpha sweep plus `npm run ops:verify-internal-fetch-schedule` on a daily schedule, loading `OPERATOR_API_TOKEN` from the live `OperatorApiTokenSecretArn` stack output instead of scraping task-definition env, opening or updating a durable GitHub issue on failure, and publishing a first-incident SNS alert through `AlarmTopicArn`
+- The daily publish-pending sweep sends one SNS review digest per sweep for all blocked runs, rather than one email per blocked scope/run. The digest retains each scope, run ID, and gate reason; publish failures remain individually alerted.
 
 ## Operator Verification
 
