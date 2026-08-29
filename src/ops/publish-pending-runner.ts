@@ -197,13 +197,12 @@ export async function runPublishPendingSweep(
       }
     }
 
-    if (reviewAlerts.length > 0) {
-      const scopeCount = new Set(reviewAlerts.map((alert) => alert.scopeLabel)).size;
-      await notifier.publish(
-        `NyaayWatch review required: ${reviewAlerts.length} blocked runs across ${scopeCount} scopes`,
-        formatReviewDigest(reviewAlerts),
-      );
-    }
+    await publishReviewDigest(notifier, reviewAlerts);
+  } catch (error) {
+    // Preserve the old alerting guarantee when a later scope-level operation
+    // fails before the normal end-of-sweep flush is reached.
+    await publishReviewDigest(notifier, reviewAlerts);
+    throw error;
   } finally {
     await pool.end();
   }
@@ -230,6 +229,21 @@ export function formatReviewDigest(alerts: Array<NonNullable<AutoPublishOutcome[
       ].join("\n"),
     ),
   ].join("\n\n");
+}
+
+async function publishReviewDigest(
+  notifier: ReturnType<typeof createAlarmNotifier>,
+  alerts: Array<NonNullable<AutoPublishOutcome["reviewAlert"]>>,
+): Promise<void> {
+  if (alerts.length === 0) {
+    return;
+  }
+
+  const scopeCount = new Set(alerts.map((alert) => alert.scopeLabel)).size;
+  await notifier.publish(
+    `NyaayWatch review required: ${alerts.length} blocked runs across ${scopeCount} scopes`,
+    formatReviewDigest(alerts),
+  );
 }
 
 export function assertPublishPendingSweepSucceeded(summary: PublishPendingSummary) {
