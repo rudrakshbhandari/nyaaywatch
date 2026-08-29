@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { findUnpublishedCompleteRuns } from "../src/ops/publish-pending-runner.js";
+import { findUnpublishedCompleteRuns, formatReviewDigest } from "../src/ops/publish-pending-runner.js";
+import type { AutoPublishOutcome } from "../src/ops/auto-publish-runner.js";
 import type { RunRecord } from "../src/storage/postgres.js";
 
 function makeRun(overrides: Partial<RunRecord> & Pick<RunRecord, "id" | "status" | "createdAt">): RunRecord {
@@ -84,5 +85,44 @@ describe("findUnpublishedCompleteRuns", () => {
 
   it("returns empty when no runs match", () => {
     expect(findUnpublishedCompleteRuns([], since)).toEqual([]);
+  });
+});
+
+describe("formatReviewDigest", () => {
+  it("keeps every blocked run in one sweep-level alert", () => {
+    const alerts: Array<NonNullable<AutoPublishOutcome["reviewAlert"]>> = [
+      {
+        scopeLabel: "State (PB)",
+        runId: "run_pb_1",
+        decision: {
+          publish: false,
+          reason: "outlier_pending_delta",
+          qualityState: "complete",
+          currentPending: 20_000,
+          previousPending: 10_000,
+          deltaFraction: 1,
+          deltaThreshold: 0.2,
+        },
+      },
+      {
+        scopeLabel: "State (PB)",
+        runId: "run_pb_2",
+        decision: {
+          publish: false,
+          reason: "outlier_pending_delta",
+          qualityState: "complete",
+          currentPending: 21_000,
+          previousPending: 20_000,
+          deltaFraction: 0.05,
+          deltaThreshold: 0.2,
+        },
+      },
+    ];
+
+    const digest = formatReviewDigest(alerts);
+
+    expect(digest).toContain("blocked 2 run(s) across 1 scope(s)");
+    expect(digest).toContain("run_pb_1");
+    expect(digest).toContain("run_pb_2");
   });
 });

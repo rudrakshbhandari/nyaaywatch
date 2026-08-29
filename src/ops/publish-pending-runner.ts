@@ -5,7 +5,13 @@ import { SUPPORTED_STATE_CODES } from "../geographies.js";
 import { listReviewedHighCourtProfilesForScheduledFetch, getReviewedSupremeCourtProfileForScheduledFetch } from "../dev/scheduled-fetch-targets.js";
 import { runOperatorInvocation, type OperatorInvocation } from "../dev/operator-ops.js";
 import { PgWarehouseStore, type RunRecord, type ScopeType } from "../storage/postgres.js";
-import { runAutoPublish, type AutoPublishAction } from "./auto-publish-runner.js";
+import { createAlarmNotifier } from "./alarm-notifier.js";
+import {
+  formatReviewMessage,
+  runAutoPublish,
+  type AutoPublishAction,
+  type AutoPublishOutcome,
+} from "./auto-publish-runner.js";
 
 const LOOKBACK_DAYS = 3;
 
@@ -102,6 +108,8 @@ export async function runPublishPendingSweep(
   const config = loadConfig(rawEnv);
   const pool = new Pool({ connectionString: config.DATABASE_URL });
   const results: PublishPendingResult[] = [];
+  const reviewAlerts: Array<NonNullable<AutoPublishOutcome["reviewAlert"]>> = [];
+  const notifier = createAlarmNotifier(rawEnv);
   const scopes = buildSweepScopes();
   const since = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString();
 
@@ -143,8 +151,12 @@ export async function runPublishPendingSweep(
               note: "Daily publish-pending sweep",
               previousPendingOverride: runningPreviousPending,
             },
-            { rawEnv },
+            { rawEnv, notifier, notifyOnReview: false },
           );
+
+          if (outcome.reviewAlert) {
+            reviewAlerts.push(outcome.reviewAlert);
+          }
 
           if (outcome.action === "published" && outcome.decision?.currentPending !== undefined) {
             runningPreviousPending = outcome.decision.currentPending;
@@ -184,6 +196,14 @@ export async function runPublishPendingSweep(
         }
       }
     }
+
+    if (reviewAlerts.length > 0) {
+      const scopeCount = new Set(reviewAlerts.map((alert) => alert.scopeLabel)).size;
+      await notifier.publish(
+        `NyaayWatch review required: ${reviewAlerts.length} blocked runs across ${scopeCount} scopes`,
+        formatReviewDigest(reviewAlerts),
+      );
+    }
   } finally {
     await pool.end();
   }
@@ -196,6 +216,20 @@ export async function runPublishPendingSweep(
     failedCount: results.filter((r) => !r.ok).length,
     results,
   };
+}
+
+export function formatReviewDigest(alerts: Array<NonNullable<AutoPublishOutcome["reviewAlert"]>>): string {
+  return [
+    `The publish-pending sweep blocked ${alerts.length} run(s) across ${new Set(alerts.map((alert) => alert.scopeLabel)).size} scope(s).`,
+    "Review each run before publishing or discarding it.",
+    "",
+    ...alerts.map((alert, index) =>
+      [
+        `${index + 1}. ${alert.scopeLabel}`,
+        formatReviewMessage(alert.scopeLabel, alert.runId, alert.decision),
+      ].join("\n"),
+    ),
+  ].join("\n\n");
 }
 
 export function assertPublishPendingSweepSucceeded(summary: PublishPendingSummary) {

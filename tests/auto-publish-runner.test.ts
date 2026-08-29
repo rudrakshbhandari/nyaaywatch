@@ -75,6 +75,23 @@ describe("runAutoPublish", () => {
     expect(notifier.calls[0].message).toContain("outlier_pending_delta");
   });
 
+  it("can defer review notification while returning the complete alert context", async () => {
+    const notifier = makeNotifier();
+    const outcome = await runAutoPublish(
+      {
+        scopeLabel: "State (HP)",
+        selector: { stateCode: "HP" },
+        fetchResult: baseFetchResult("complete", 20000, 10000),
+        pendingField: "pendingCases",
+      },
+      { notifier, notifyOnReview: false },
+    );
+
+    expect(outcome.action).toBe("skipped_review");
+    expect(outcome.reviewAlert).toMatchObject({ scopeLabel: "State (HP)", runId: "run_abc" });
+    expect(notifier.calls).toHaveLength(0);
+  });
+
   it("notifies when quality is not complete", async () => {
     const notifier = makeNotifier();
     const runOperator = vi.fn();
