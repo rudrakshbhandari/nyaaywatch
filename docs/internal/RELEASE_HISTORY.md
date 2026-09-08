@@ -6,6 +6,26 @@ Use `npm run release:record` after each successful publish to keep this file ali
 
 <!-- release-history:entries -->
 
+<!-- release:publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff:start -->
+## publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff
+
+- Reviewed at: `2026-09-08T01:37:27.620Z`
+- Reviewer: `Codex scoped CG recovery`
+- Public URL: `https://nyaaywatch.in/states/chhattisgarh`
+- Action: `publish`
+- Reference date: `2026-09-07T02:42:55.076Z`
+- Reference date kind: `captured_at`
+- Published at: `2026-09-07T23:06:58.598Z`
+- Methodology version: `2026.04-alpha`
+- Quality state: `complete`
+- Published from run: `run_36f911f2-d1b4-467b-947a-8b4cc43f53b1`
+- Rollback target: `publication_46dcd795-7110-46b4-b2f6-a338d7ee052f`
+- Markdown evidence: `output/release-evidence/publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff.md`
+- JSON evidence: `output/release-evidence/publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff.json`
+- Note: Reviewed stored NJDG artifacts and canonical ECS operator result; recovered from Aug 26 source dip. See docs/internal/CG_REVIEW_RECOVERY_2026-09-07.md.
+
+<!-- release:publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff:end -->
+
 <!-- release:production-stack-observation-2026-04-29:start -->
 ## production-stack-observation-2026-04-29
 

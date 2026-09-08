@@ -33,6 +33,13 @@ export interface AutoPublishRunnerDeps {
   runOperator?: typeof runOperatorInvocation;
   notifier?: AlarmNotifier;
   rawEnv?: NodeJS.ProcessEnv;
+  /** Collect review alerts for a caller-owned digest; publish failures still notify immediately. */
+  onReview?: (review: AutoPublishReview) => void | Promise<void>;
+}
+
+export interface AutoPublishReview {
+  runId: string;
+  decision: AutoPublishDecision;
 }
 
 export async function runAutoPublish(
@@ -60,9 +67,13 @@ export async function runAutoPublish(
   });
 
   if (!decision.publish) {
-    const subject = `NyaayWatch review required: ${request.scopeLabel}`;
-    const message = formatReviewMessage(request, inputs.runId, decision);
-    await notifier.publish(subject, message);
+    if (deps.onReview) {
+      await deps.onReview({ runId: inputs.runId, decision });
+    } else {
+      const subject = `NyaayWatch review required: ${request.scopeLabel}`;
+      const message = formatReviewMessage(request, inputs.runId, decision);
+      await notifier.publish(subject, message);
+    }
     return { action: "skipped_review", decision };
   }
 
@@ -126,9 +137,8 @@ function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | 
   };
 }
 
-function formatReviewMessage(request: AutoPublishRequest, runId: string, decision: AutoPublishDecision): string {
+export function formatReviewDetails(runId: string, decision: AutoPublishDecision): string {
   const lines = [
-    `Scope: ${request.scopeLabel}`,
     `Run: ${runId}`,
     `Reason: ${decision.reason ?? "unknown"}`,
     `Quality state: ${decision.qualityState}`,
@@ -142,9 +152,14 @@ function formatReviewMessage(request: AutoPublishRequest, runId: string, decisio
   if (decision.deltaFraction !== undefined) {
     lines.push(`Delta fraction: ${(decision.deltaFraction * 100).toFixed(1)}% (threshold ${(decision.deltaThreshold * 100).toFixed(0)}%)`);
   }
-  lines.push(
+  return lines.join("\n");
+}
+
+function formatReviewMessage(request: AutoPublishRequest, runId: string, decision: AutoPublishDecision): string {
+  return [
+    `Scope: ${request.scopeLabel}`,
+    formatReviewDetails(runId, decision),
     "",
     "Inspect this run via the operator CLI and publish or discard manually once reviewed.",
-  );
-  return lines.join("\n");
+  ].join("\n");
 }
