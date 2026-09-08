@@ -126,7 +126,7 @@ flowchart TD
 - S3 stores raw scrape evidence, normalized snapshot candidates, release evidence, and outreach archives.
 - Publish requires an operator action or a passing auto-publish gate.
 - Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
-- A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate.
+- A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.
 
 ## Repository Map
