@@ -11,6 +11,7 @@ The September 7 stored NJDG HTML explicitly selects Chhattisgarh (`22~18`) and r
 - AWS account: `723951822728`; region: `ap-south-1`.
 - Reviewed run: `run_36f911f2-d1b4-467b-947a-8b4cc43f53b1`.
 - Publication: `publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff`.
+- Published snapshot: `snapshot_664b9b37-5c9f-4e3c-9ed8-e00d90bf0d91`.
 - Published at: `2026-09-07T23:06:58.598Z`.
 - Rollback target: `publication_46dcd795-7110-46b4-b2f6-a338d7ee052f`.
 - Reviewer: Codex scoped CG recovery, under the user's request to fix this alert.
