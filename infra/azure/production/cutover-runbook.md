@@ -30,7 +30,8 @@ DNS cutover changes the live origin.
    fetch or publish job is running.
 2. Run the PostgreSQL and artifact migration scripts again. Compare the source
    and target row counts, file counts, bytes, and application snapshot hashes.
-3. Start the Azure jobs and perform one manual fetch/publish smoke test. Check
+3. Apply Terraform with `enable_scheduled_jobs = true`, then start the Azure
+   jobs and perform one manual fetch/publish smoke test. Check
    the Azure logs and alarm webhook.
 4. Change the Cloudflare origin/DNS record for `nyaaywatch.in` to the verified
    Azure Container App endpoint. Keep the AWS origin configuration intact.

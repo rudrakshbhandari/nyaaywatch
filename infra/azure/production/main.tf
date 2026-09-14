@@ -365,7 +365,7 @@ resource "azurerm_container_app" "this" {
 }
 
 resource "azurerm_container_app_job" "scheduled" {
-  for_each = local.scheduled_jobs
+  for_each = var.enable_scheduled_jobs ? local.scheduled_jobs : {}
 
   name                         = "${local.name}-${each.value.name}"
   location                     = azurerm_resource_group.this.location
