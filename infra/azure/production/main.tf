@@ -5,26 +5,31 @@ locals {
   # current Asia/Kolkata cadence: 08:00, 08:10, 08:20, and 08:30 IST.
   scheduled_jobs = {
     weekday-internal-fetch = {
+      name    = "fetch"
       cron    = "30 2 * * *"
       command = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
       args    = []
     }
     supreme-court-internal-fetch = {
+      name    = "sc-fetch"
       cron    = "40 2 * * *"
       command = ["node", "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js"]
       args    = []
     }
     high-courts-internal-fetch = {
+      name    = "hc-fetch"
       cron    = "50 2 * * *"
       command = ["node", "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js"]
       args    = []
     }
     publish-pending-sweep = {
+      name    = "publish"
       cron    = "0 3 * * *"
       command = ["node", "dist/src/dev/ecs-publish-pending-entrypoint.js"]
       args    = []
     }
     public-alpha-ops-monitor = {
+      name    = "alpha-ops"
       cron    = "*/30 * * * *"
       command = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
       args    = ["https://nyaaywatch.in"]
@@ -362,7 +367,7 @@ resource "azurerm_container_app" "this" {
 resource "azurerm_container_app_job" "scheduled" {
   for_each = local.scheduled_jobs
 
-  name                         = "${local.name}-${each.key}"
+  name                         = "${local.name}-${each.value.name}"
   location                     = azurerm_resource_group.this.location
   resource_group_name          = azurerm_resource_group.this.name
   container_app_environment_id = azurerm_container_app_environment.this.id
