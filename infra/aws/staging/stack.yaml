@@ -69,6 +69,13 @@ Parameters:
     Type: String
     Default: ""
     Description: Optional canonical public base URL used for release verification and cache invalidation.
+  MigrationWriteFreeze:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Return 503 for mutating HTTP routes while a final database dump is taken.
   CloudflareZoneName:
     Type: String
     Default: ""
@@ -614,6 +621,8 @@ Resources:
               Value: !Ref RumIdentityPool
             - Name: ALARM_TOPIC_ARN
               Value: !Ref AlarmTopic
+            - Name: MIGRATION_WRITE_FREEZE
+              Value: !Ref MigrationWriteFreeze
           Secrets:
             - Name: DATABASE_URL
               ValueFrom: !If [HasExistingDatabaseUrlSecretArn, !Ref ExistingDatabaseUrlSecretArn, !Ref DatabaseUrlSecret]

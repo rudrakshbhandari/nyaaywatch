@@ -25,17 +25,21 @@ DNS cutover changes the live origin.
    `enable_scheduled_jobs=false`. Exercise the Azure Container App FQDN with `/health`, a public snapshot
    page, JSON data, and an operator-authenticated read-only inspection. Confirm
    that the Azure app can read the copied artifacts and connect to PostgreSQL.
-6. Do not enable Azure scheduled writers during rehearsal. The schedule remains
-   disabled on Azure and AWS until the final switch.
+6. Do not enable Azure scheduled writers during rehearsal. Keep the AWS
+   schedules active because AWS remains the live origin until the final freeze.
 
 ## Cutover freeze
 
-1. Announce a short write freeze. Deploy the AWS application with
-   `MIGRATION_WRITE_FREEZE=true`, verify mutating routes return 503, stop AWS
-   scheduled writers, and confirm no fetch or publish job is running.
+1. Announce a short write freeze. Run
+   `MIGRATION_WRITE_FREEZE=true infra/aws/staging/redeploy-service.sh
+   nyaaywatch-production <current-production-image>` (the stack parameter and
+   redeploy helper pass the flag into ECS), verify mutating routes return 503,
+   stop AWS scheduled writers, and confirm no fetch or publish job is running.
 2. Run the private relay/restore procedure and artifact migration script again. For the
    database restore, use the approved clean-restore path (`ALLOW_TARGET_OVERWRITE=true`)
-   only after confirming the write freeze and retaining the pre-restore backup. Compare the source
+   only after confirming the write freeze and retaining the pre-restore backup.
+   The restore relay honors this flag with `pg_restore --clean --if-exists`.
+   Compare the source
    and target row counts, file counts, bytes, and application snapshot hashes.
 3. Rerun both migration procedures. The artifact check permits target-only files
    created during rehearsal while requiring every AWS source artifact to be
