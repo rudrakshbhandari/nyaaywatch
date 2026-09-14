@@ -149,6 +149,7 @@ flowchart TD
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
 | `docs/` | Design, methodology, release, operations, source reviews, and coverage audit docs |
+
 See the [API reference](https://nyaaywatch.in/api) for the current contract and the [data page](https://nyaaywatch.in/data) for downloadable evidence.
 
 ## Quickstart
@@ -192,21 +193,6 @@ RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
 ```
 
 If Playwright browsers are not installed yet, run `npx playwright install` once. The test suite covers schemas and migrations, NJDG extraction, normalization, publication and rollback, API contracts, public copy, accessibility, browser flows, and operational checks.
-
-## Repository map
-
-| Path | What belongs there |
-| --- | --- |
-| `src/ingest/` | Fetch clients for official NJDG sources |
-| `src/extract/` | Deterministic parsing of captured source data |
-| `src/normalize/` | Snapshot transforms, metrics, and signals |
-| `src/domain/` | Zod schemas and typed contracts |
-| `src/storage/`, `src/db/` | PostgreSQL and S3 adapters, migrations |
-| `src/api/` | Public pages, JSON routes, evidence packs, feeds, and embeds |
-| `src/ops/`, `src/dev/` | Publish gates, operator tools, readiness, and release checks |
-| `infra/aws/`, `.github/workflows/` | AWS infrastructure and automation |
-| `fixtures/`, `tests/` | Source fixtures and regression coverage |
-| `docs/` | Product, methodology, operations, and source reviews |
 
 ## Contributing
 
