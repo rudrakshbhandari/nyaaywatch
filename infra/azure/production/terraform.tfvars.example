@@ -9,3 +9,4 @@ cloudflare_api_token    = null
 cloudflare_zone_name    = "nyaaywatch.in"
 public_base_url         = "https://nyaaywatch.in"
 enable_scheduled_jobs   = false
+enable_application      = false

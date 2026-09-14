@@ -10,19 +10,20 @@ DNS cutover changes the live origin.
 1. Configure the protected GitHub variables/secrets documented in
    `.github/workflows/azure-migration.yml`, including a verified Azure
    Communication Services sender and an Azure Monitor Action Group webhook.
-2. Run the workflow once with `apply=true`; record the image SHA, Terraform
-   outputs, Container App FQDN, PostgreSQL FQDN, storage account, and job names.
+2. Run the workflow once with `apply=true`, `enable_application=false`, and
+   `enable_scheduled_jobs=false`; record the Terraform outputs, PostgreSQL FQDN,
+   storage account, and state backend.
 3. Run `migrate-postgres.sh` against the AWS production database and the Azure
    database. Keep the AWS database untouched and retain the row-count output.
 4. Run `migrate-artifacts.sh` against the AWS production artifact bucket and
    Azure `artifacts` container. Retain its file count, byte count, and manifest
    verification output.
-5. Exercise the Azure Container App FQDN with `/health`, a public snapshot
+5. Reapply with `enable_application=true` and
+   `enable_scheduled_jobs=false`. Exercise the Azure Container App FQDN with `/health`, a public snapshot
    page, JSON data, and an operator-authenticated read-only inspection. Confirm
    that the Azure app can read the copied artifacts and connect to PostgreSQL.
-6. Trigger each Container Apps Job once from Azure and confirm successful
-   completion without enabling equivalent AWS and Azure writers at the same
-   time. The schedule remains disabled on AWS until the final switch.
+6. Do not enable Azure scheduled writers during rehearsal. The schedule remains
+   disabled on Azure and AWS until the final switch.
 
 ## Cutover freeze
 
@@ -30,12 +31,16 @@ DNS cutover changes the live origin.
    fetch or publish job is running.
 2. Run the PostgreSQL and artifact migration scripts again. Compare the source
    and target row counts, file counts, bytes, and application snapshot hashes.
-3. Apply Terraform with `enable_scheduled_jobs = true`, then start the Azure
-   jobs and perform one manual fetch/publish smoke test. Check
+3. Rerun both migration scripts. The artifact check permits target-only files
+   created during rehearsal while requiring every AWS source artifact to be
+   present and checksum-identical.
+4. Apply Terraform with `enable_application = true` and
+   `enable_scheduled_jobs = true`, then start the Azure jobs and perform one
+   manual fetch/publish smoke test. Check
    the Azure logs and alarm webhook.
-4. Change the Cloudflare origin/DNS record for `nyaaywatch.in` to the verified
+5. Change the Cloudflare origin/DNS record for `nyaaywatch.in` to the verified
    Azure Container App endpoint. Keep the AWS origin configuration intact.
-5. Verify through the public hostname from an external network: health,
+6. Verify through the public hostname from an external network: health,
    canonical redirect, one public state page, JSON data, newsletter subscribe
    confirmation path, and operator health/read-only inspection.
 

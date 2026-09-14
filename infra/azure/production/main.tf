@@ -260,7 +260,7 @@ resource "azurerm_container_app" "this" {
   }
 
   template {
-    min_replicas = 1
+    min_replicas = var.enable_application ? 1 : 0
     max_replicas = 2
 
     container {

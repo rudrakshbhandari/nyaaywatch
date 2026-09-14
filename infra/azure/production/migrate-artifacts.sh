@@ -52,12 +52,14 @@ verify_manifest="$work_dir/verify.sha256"
   find . -type f -print0 | sort -z | xargs -0 sha256sum
 ) > "$verify_manifest"
 
-if ! diff -u "$manifest" "$verify_manifest"; then
-  echo "Artifact verification failed: Azure contents differ from the AWS source." >&2
+missing_source_files="$(comm -23 "$manifest" "$verify_manifest")"
+if [[ -n "$missing_source_files" ]]; then
+  echo "Artifact verification failed: Azure is missing source artifacts:" >&2
+  printf '%s\n' "$missing_source_files" >&2
   exit 1
 fi
 
 verify_files="$(wc -l < "$verify_manifest" | tr -d ' ')"
 verify_bytes="$(find "$verify_dir" -type f -printf '%s\n' | awk '{sum += $1} END {print sum + 0}')"
-echo "Verified Azure inventory: ${verify_files} files, ${verify_bytes} bytes"
+echo "Verified Azure inventory: ${verify_files} files, ${verify_bytes} bytes (source is a verified subset; target-only files are retained)"
 echo "Artifact migration completed without modifying the AWS source or deleting Azure data."
