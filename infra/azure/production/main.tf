@@ -136,7 +136,10 @@ resource "azurerm_storage_account" "this" {
   account_replication_type        = "LRS"
   min_tls_version                 = "TLS1_2"
   allow_nested_items_to_be_public = false
-  shared_access_key_enabled       = false
+  # azurerm_storage_container currently uses the account key for its data-plane
+  # create/read path. The application still authenticates with managed identity;
+  # keep public access disabled and do not distribute this key to workloads.
+  shared_access_key_enabled       = true
   tags                            = local.tags
 }
 
