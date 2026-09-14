@@ -5,6 +5,7 @@ import {
   HeadBucketCommand,
   PutBucketTaggingCommand,
 } from "@aws-sdk/client-s3";
+import { createHash } from "node:crypto";
 import { Readable } from "node:stream";
 import { describe, expect, it, vi } from "vitest";
 
@@ -192,5 +193,40 @@ describe("AzureBlobArtifactStore", () => {
       OPERATOR_API_TOKEN: "operator-test-token",
       STATE_CODE: "HP",
     })).toThrow(/AZURE_STORAGE_ACCOUNT_URL/);
+  });
+
+  it("rejects a checksum-mismatched Azure replay before writing the destination", async () => {
+    const store = new AzureBlobArtifactStore(
+      loadConfig({
+        NODE_ENV: "test",
+        PORT: "3000",
+        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
+        AWS_REGION: "ap-south-1",
+        STORAGE_PROVIDER: "azure",
+        AZURE_STORAGE_ACCOUNT_URL: "https://nyaaywatchproduction.blob.core.windows.net",
+        AZURE_STORAGE_CONTAINER: "artifacts",
+        AZURE_CLIENT_ID: "11111111-1111-4111-8111-111111111111",
+        DEPLOY_ENV: "production",
+        OPERATOR_API_TOKEN: "operator-test-token",
+        STATE_CODE: "HP",
+      }),
+    );
+    const sourceBody = JSON.stringify({ source: "bytes" });
+    const checksum = createHash("sha256").update(sourceBody).digest("hex");
+    azureBlob.download.mockResolvedValueOnce({ readableStreamBody: Readable.from([Buffer.from(sourceBody)]) });
+    azureBlob.upload.mockClear();
+
+    await expect(store.copyObject("raw/source.json", "replay/source.json", { checksumsha256: "wrong" }))
+      .rejects.toThrow(/checksum mismatch/);
+    expect(azureBlob.upload).not.toHaveBeenCalled();
+
+    azureBlob.download.mockResolvedValueOnce({ readableStreamBody: Readable.from([Buffer.from(sourceBody)]) });
+    await expect(store.copyObject("raw/source.json", "replay/source.json", { checksumsha256: checksum }))
+      .resolves.toMatchObject({ checksumSha256: checksum, sizeBytes: Buffer.byteLength(sourceBody) });
+    expect(azureBlob.upload).toHaveBeenCalledWith(
+      sourceBody,
+      Buffer.byteLength(sourceBody),
+      expect.objectContaining({ metadata: { checksumsha256: checksum } }),
+    );
   });
 });

@@ -49,10 +49,11 @@ DNS cutover changes the live origin.
    `enable_scheduled_jobs = true`, then start the Azure jobs and perform one
    manual fetch/publish smoke test. Check
    the Azure logs and alarm webhook.
-5. Configure and verify a Cloudflare Origin Rule that rewrites the origin
-   hostname/SNI to the stable Azure Container App ingress FQDN while preserving
-   the public `nyaaywatch.in` Host header, then change the Cloudflare origin/DNS
-   record. Keep the AWS origin configuration intact.
+5. Configure and verify a Cloudflare Origin Rule that rewrites both the origin
+   Host header and TLS SNI to the stable Azure Container App ingress FQDN, then
+   change the Cloudflare origin/DNS record. The public hostname remains visible
+   to clients at the edge, while the Azure ingress receives its routable host.
+   Keep the AWS origin configuration intact.
 6. Verify through the public hostname from an external network: health,
    canonical redirect, one public state page, JSON data, newsletter subscribe
    confirmation path, and operator health/read-only inspection.

@@ -26,7 +26,9 @@ aws s3 sync "$SOURCE_S3_URI" "$source_dir" --only-show-errors
 manifest="$work_dir/source.sha256"
 (
   cd "$source_dir"
-  find . -type f -print0 | sort -z | xargs -0 sha256sum
+  find . -type f -print0 | sort -z | while IFS= read -r -d '' file; do
+    printf '%s\t%s\n' "$file" "$(sha256sum "$file" | awk '{print $1}')"
+  done
 ) > "$manifest"
 
 source_files="$(wc -l < "$manifest" | tr -d ' ')"
@@ -51,13 +53,15 @@ azcopy copy "$TARGET_BLOB_SAS_URL" "$verify_dir" \
 verify_manifest="$work_dir/verify.sha256"
 (
   cd "$verify_dir"
-  find . -type f -print0 | sort -z | xargs -0 sha256sum
+  find . -type f -print0 | sort -z | while IFS= read -r -d '' file; do
+    printf '%s\t%s\n' "$file" "$(sha256sum "$file" | awk '{print $1}')"
+  done
 ) > "$verify_manifest"
 
 sorted_manifest="$work_dir/source.sorted.sha256"
 sorted_verify_manifest="$work_dir/verify.sorted.sha256"
-LC_ALL=C sort -k2,2 "$manifest" > "$sorted_manifest"
-LC_ALL=C sort -k2,2 "$verify_manifest" > "$sorted_verify_manifest"
+LC_ALL=C sort "$manifest" > "$sorted_manifest"
+LC_ALL=C sort "$verify_manifest" > "$sorted_verify_manifest"
 missing_source_files="$(comm -23 "$sorted_manifest" "$sorted_verify_manifest")"
 if [[ -n "$missing_source_files" ]]; then
   echo "Artifact verification failed: Azure is missing source artifacts:" >&2
