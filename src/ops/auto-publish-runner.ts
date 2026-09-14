@@ -9,6 +9,8 @@ export interface AutoPublishOutcome {
   decision?: AutoPublishDecision;
   publishRunId?: string;
   error?: string;
+  warning?: string;
+  warningDeliveryError?: string;
 }
 
 export interface AutoPublishRequest {
@@ -33,6 +35,13 @@ export interface AutoPublishRunnerDeps {
   runOperator?: typeof runOperatorInvocation;
   notifier?: AlarmNotifier;
   rawEnv?: NodeJS.ProcessEnv;
+  /** Collect review alerts for a caller-owned digest; publish failures still notify immediately. */
+  onReview?: (review: AutoPublishReview) => void | Promise<void>;
+}
+
+export interface AutoPublishReview {
+  runId: string;
+  decision: AutoPublishDecision;
 }
 
 export async function runAutoPublish(
@@ -60,9 +69,13 @@ export async function runAutoPublish(
   });
 
   if (!decision.publish) {
-    const subject = `NyaayWatch review required: ${request.scopeLabel}`;
-    const message = formatReviewMessage(request, inputs.runId, decision);
-    await notifier.publish(subject, message);
+    if (deps.onReview) {
+      await deps.onReview({ runId: inputs.runId, decision });
+    } else {
+      const subject = `NyaayWatch review required: ${request.scopeLabel}`;
+      const message = formatReviewMessage(request, inputs.runId, decision);
+      await notifier.publish(subject, message);
+    }
     return { action: "skipped_review", decision };
   }
 
@@ -79,11 +92,54 @@ export async function runAutoPublish(
     return { action: "published", decision, publishRunId: inputs.runId };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    if (await hasPublishedRun(runOperator, request.selector, inputs.runId, rawEnv)) {
+      const warning = `Publication committed, but post-publish cache invalidation failed: ${message}`;
+      try {
+        await notifier.publish(
+          `NyaayWatch publish cache invalidation warning: ${request.scopeLabel}`,
+          `Run: ${inputs.runId}\n${warning}`,
+        );
+      } catch (notificationError) {
+        const warningDeliveryError = `Cache invalidation warning delivery failed: ${
+          notificationError instanceof Error ? notificationError.message : String(notificationError)
+        }`;
+        console.error(
+          `[auto-publish] Could not deliver cache invalidation warning for ${inputs.runId}: ${warningDeliveryError}`,
+        );
+        return { action: "published", decision, publishRunId: inputs.runId, warning, warningDeliveryError };
+      }
+      return { action: "published", decision, publishRunId: inputs.runId, warning };
+    }
+
     await notifier.publish(
       `NyaayWatch auto-publish failed: ${request.scopeLabel}`,
       `Run: ${inputs.runId}\nReason: ${message}`,
     );
     return { action: "publish_failed", decision, publishRunId: inputs.runId, error: message };
+  }
+}
+
+async function hasPublishedRun(
+  runOperator: typeof runOperatorInvocation,
+  selector: AutoPublishRequest["selector"],
+  runId: string,
+  rawEnv: NodeJS.ProcessEnv,
+): Promise<boolean> {
+  try {
+    const result = await runOperator({ ...selector, command: "publications" }, rawEnv);
+    const entries: unknown[] = Array.isArray(result)
+      ? result
+      : result && typeof result === "object" && Array.isArray((result as Record<string, unknown>).publications)
+        ? (result as Record<string, unknown>).publications as unknown[]
+        : [];
+    const latest = entries[0];
+    if (!latest || typeof latest !== "object") {
+      return false;
+    }
+    const run = (latest as Record<string, unknown>).run;
+    return Boolean(run && typeof run === "object" && (run as Record<string, unknown>).id === runId);
+  } catch {
+    return false;
   }
 }
 
@@ -126,9 +182,8 @@ function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | 
   };
 }
 
-function formatReviewMessage(request: AutoPublishRequest, runId: string, decision: AutoPublishDecision): string {
+export function formatReviewDetails(runId: string, decision: AutoPublishDecision): string {
   const lines = [
-    `Scope: ${request.scopeLabel}`,
     `Run: ${runId}`,
     `Reason: ${decision.reason ?? "unknown"}`,
     `Quality state: ${decision.qualityState}`,
@@ -142,9 +197,14 @@ function formatReviewMessage(request: AutoPublishRequest, runId: string, decisio
   if (decision.deltaFraction !== undefined) {
     lines.push(`Delta fraction: ${(decision.deltaFraction * 100).toFixed(1)}% (threshold ${(decision.deltaThreshold * 100).toFixed(0)}%)`);
   }
-  lines.push(
+  return lines.join("\n");
+}
+
+function formatReviewMessage(request: AutoPublishRequest, runId: string, decision: AutoPublishDecision): string {
+  return [
+    `Scope: ${request.scopeLabel}`,
+    formatReviewDetails(runId, decision),
     "",
     "Inspect this run via the operator CLI and publish or discard manually once reviewed.",
-  );
-  return lines.join("\n");
+  ].join("\n");
 }

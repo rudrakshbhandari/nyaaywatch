@@ -113,6 +113,46 @@ GET /states/:stateSlug/data/evidence/state.json
 GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
+```mermaid
+flowchart TD
+  scheduled["Scheduled internal fetches"] --> reviewed["Quality-complete runs"]
+  operator["Operator fetch or replay"] --> reviewed
+  reviewed --> gate{"Publish gate passes?"}
+  gate -->|yes| publish["Publish reviewed read model"]
+  gate -->|no| alert["SNS alert and human review"]
+  publish --> current["Current public snapshot"]
+  current --> rollback["Rollback stays one operator action"]
+  rollback --> current
+```
+
+- One AWS-hosted containerized app, fronted by Cloudflare.
+- PostgreSQL is the canonical store for runs, artifacts, subscriptions, and publication state.
+- S3 stores raw scrape evidence, normalized snapshot candidates, release evidence, and outreach archives.
+- Publish requires an operator action or a passing auto-publish gate.
+- Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
+- A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
+- Published snapshot read models drive every public surface; rollback is one operator call.
+
+## Repository Map
+
+| Path | Responsibility |
+| --- | --- |
+| `src/api/` | Express app, public routes, operator routes, HTML rendering, RSS, embeds, and OG card registration |
+| `src/api/design/`, `src/api/home/`, `src/api/pages/`, `src/api/share/` | Shared page shell, national homepage models, route renderers, and generated share images |
+| `src/domain/` | Zod schemas and typed contracts for captured, candidate, and published snapshots |
+| `src/ingest/`, `src/extract/`, `src/normalize/` | Pipeline stages from upstream NJDG capture to deterministic snapshot candidates |
+| `src/services/` | Published snapshot orchestration, newsletter delivery, and cache invalidation |
+| `src/storage/` | PostgreSQL and S3 adapters |
+| `src/db/` | SQL migrations and migration tooling |
+| `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
+| `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
+| `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
+| `infra/aws/` | AWS dev, preview, staging, production, schedule, and cutover scripts/templates |
+| `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
+| `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
+| `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
+| `docs/` | Design, methodology, release, operations, source reviews, and coverage audit docs |
+
 See the [API reference](https://nyaaywatch.in/api) for the current contract and the [data page](https://nyaaywatch.in/data) for downloadable evidence.
 
 ## Quickstart
@@ -156,21 +196,6 @@ RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
 ```
 
 If Playwright browsers are not installed yet, run `npx playwright install` once. The test suite covers schemas and migrations, NJDG extraction, normalization, publication and rollback, API contracts, public copy, accessibility, browser flows, and operational checks.
-
-## Repository map
-
-| Path | What belongs there |
-| --- | --- |
-| `src/ingest/` | Fetch clients for official NJDG sources |
-| `src/extract/` | Deterministic parsing of captured source data |
-| `src/normalize/` | Snapshot transforms, metrics, and signals |
-| `src/domain/` | Zod schemas and typed contracts |
-| `src/storage/`, `src/db/` | PostgreSQL and S3 adapters, migrations |
-| `src/api/` | Public pages, JSON routes, evidence packs, feeds, and embeds |
-| `src/ops/`, `src/dev/` | Publish gates, operator tools, readiness, and release checks |
-| `infra/aws/`, `.github/workflows/` | AWS infrastructure and automation |
-| `fixtures/`, `tests/` | Source fixtures and regression coverage |
-| `docs/` | Product, methodology, operations, and source reviews |
 
 ## Contributing
 
