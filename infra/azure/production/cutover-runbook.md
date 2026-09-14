@@ -15,9 +15,10 @@ DNS cutover changes the live origin.
    storage account, and state backend.
 3. Run the repository-provided private relay procedure: launch the temporary
    amd64 `infra/azure/production/relay.Dockerfile` image as an ECS Fargate task
-   in the AWS database VPC, upload the custom-format dump to the Azure Blob SAS
-   URL, and run the restore image as a manual Container Apps Job in the Azure
-   VNet. Keep the AWS database untouched and retain the row-count output.
+   in the AWS database VPC, upload the custom-format dump and source row-count
+   manifest to Azure Blob SAS URLs, and run the `restore.Dockerfile` image as a
+   manual Container Apps Job in the Azure VNet. Keep the AWS database untouched
+   and retain the row-count comparison output.
 4. Run `migrate-artifacts.sh` against the AWS production artifact bucket and
    Azure `artifacts` container. Retain its file count, byte count, and manifest
    verification output.

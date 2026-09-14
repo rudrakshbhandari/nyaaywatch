@@ -1,4 +1,5 @@
 import { assertPublicAlphaOperationsHealthy, verifyPublicAlphaOperations } from "./public-alpha-ops.js";
+import { createAlarmNotifier } from "../ops/alarm-notifier.js";
 import {
   buildPublicAlphaMonitorAlertPayload,
   buildPublicAlphaMonitorUsage,
@@ -34,9 +35,9 @@ async function main() {
     console.log(`${PUBLIC_ALPHA_OPS_RESULT_PREFIX}${JSON.stringify(summary)}`);
     assertPublicAlphaOperationsHealthy(summary);
   } catch (error) {
-    console.error(
-      `${PUBLIC_ALPHA_OPS_ALERT_PREFIX}${JSON.stringify(buildPublicAlphaMonitorAlertPayload(baseUrl, checkedAt, error, summary))}`,
-    );
+    const alertPayload = buildPublicAlphaMonitorAlertPayload(baseUrl, checkedAt, error, summary);
+    console.error(`${PUBLIC_ALPHA_OPS_ALERT_PREFIX}${JSON.stringify(alertPayload)}`);
+    await createAlarmNotifier().publish("NyaayWatch public alpha monitor failed", JSON.stringify(alertPayload));
     throw error;
   }
 }
