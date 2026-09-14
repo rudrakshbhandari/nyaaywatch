@@ -267,9 +267,9 @@ Operational notes:
 - Current active Jharkhand publication: `publication_5c30543e-2094-4616-aff3-b17ade4254a2`
 - Current active Jharkhand published snapshot: `snapshot_582d5802-ca16-47db-bb48-5662f8666c01`
 - Current Jharkhand source snapshot date: `2026-04-16`
-- Current active Chhattisgarh publication: `publication_2400d34a-2320-483e-866d-f529b4b81172`
-- Current active Chhattisgarh published snapshot: `snapshot_ef3bc9f9-4aaa-4d9a-92cd-c4bcf34e1310`
-- Current Chhattisgarh source snapshot date: `2026-04-18`
+- Current active Chhattisgarh publication: `publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff`
+- Current active Chhattisgarh published snapshot: `snapshot_664b9b37-5c9f-4e3c-9ed8-e00d90bf0d91`
+- Current Chhattisgarh source snapshot date: `2026-09-07`
 - Current active Goa publication: `publication_f55b59d8-e47a-4159-b166-ea89b8af29d4`
 - Current active Goa published snapshot: `snapshot_7ba88b90-2d9a-4a68-9d98-b4aa026348a1`
 - Current Goa source snapshot date: `2026-04-16`
@@ -359,6 +359,11 @@ Minimum manual verification:
 
 Latest confirmed operator validation:
 
+- Chhattisgarh reviewed recovery published on 2026-09-07 after the August 26 source dip trapped later candidates behind the 20% rebound gate:
+  - publication `publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff` activated snapshot `snapshot_664b9b37-5c9f-4e3c-9ed8-e00d90bf0d91`
+  - reference date `2026-09-07T02:42:55.076Z` (`captured_at`), published from `run_36f911f2-d1b4-467b-947a-8b4cc43f53b1`
+  - rollback target `publication_46dcd795-7110-46b4-b2f6-a338d7ee052f`
+  - evidence: `docs/internal/CG_REVIEW_RECOVERY_2026-09-07.md`
 - Jammu & Kashmir and Ladakh High Court internal proof completed on 2026-04-23 before public-beta promotion:
   - the common High Court operator namespace remained auth-protected under `/operator/high-courts/jammu-kashmir-and-ladakh/...`
   - live High Court fetch run `run_e036f9ac-f0d2-4e73-b7c3-8017a054d677` completed successfully

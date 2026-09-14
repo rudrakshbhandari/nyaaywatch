@@ -5,7 +5,8 @@ import { SUPPORTED_STATE_CODES } from "../geographies.js";
 import { listReviewedHighCourtProfilesForScheduledFetch, getReviewedSupremeCourtProfileForScheduledFetch } from "../dev/scheduled-fetch-targets.js";
 import { runOperatorInvocation, type OperatorInvocation } from "../dev/operator-ops.js";
 import { PgWarehouseStore, type RunRecord, type ScopeType } from "../storage/postgres.js";
-import { runAutoPublish, type AutoPublishAction } from "./auto-publish-runner.js";
+import { formatReviewDetails, runAutoPublish, type AutoPublishAction, type AutoPublishReview } from "./auto-publish-runner.js";
+import { createAlarmNotifier } from "./alarm-notifier.js";
 
 const LOOKBACK_DAYS = 3;
 
@@ -107,6 +108,7 @@ export async function runPublishPendingSweep(
 
   try {
     const store = PgWarehouseStore.fromPool(pool);
+    const notifier = createAlarmNotifier(rawEnv);
 
     for (const scope of scopes) {
       const runs = await store.listRuns(scope.scopeCode, scope.scopeType);
@@ -126,6 +128,7 @@ export async function runPublishPendingSweep(
       // was first captured. Track the running pending value here and feed it into
       // the gate as previousPendingOverride.
       let runningPreviousPending: number | undefined;
+      const heldReviews: AutoPublishReview[] = [];
 
       for (const candidate of candidates) {
         try {
@@ -143,14 +146,24 @@ export async function runPublishPendingSweep(
               note: "Daily publish-pending sweep",
               previousPendingOverride: runningPreviousPending,
             },
-            { rawEnv },
+            {
+              rawEnv,
+              notifier,
+              onReview: (review) => { heldReviews.push(review); },
+            },
           );
 
-          if (outcome.action === "published" && outcome.decision?.currentPending !== undefined) {
-            runningPreviousPending = outcome.decision.currentPending;
+          if (outcome.action === "published") {
+            // Candidates are chronological. A later successful publication
+            // supersedes earlier held runs, which no longer require review.
+            heldReviews.length = 0;
+            runningPreviousPending = outcome.decision?.currentPending;
           }
 
-          const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
+          const sweepFailed =
+            outcome.action === "publish_failed" ||
+            outcome.action === "gate_inputs_missing" ||
+            outcome.warningDeliveryError !== undefined;
           console.log(
             `Publish-pending outcome for ${scope.scopeLabel} run ${candidate.id}: ${outcome.action}${outcome.decision?.reason ? ` (${outcome.decision.reason})` : ""}`,
           );
@@ -169,6 +182,7 @@ export async function runPublishPendingSweep(
             ok: !sweepFailed,
             autoPublish: outcome.action,
             autoPublishReason: outcome.decision?.reason,
+            error: outcome.error ?? outcome.warningDeliveryError,
           });
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);
@@ -181,6 +195,32 @@ export async function runPublishPendingSweep(
             ok: false,
             error: message,
           });
+        }
+      }
+
+      if (heldReviews.length > 0) {
+        try {
+          await notifier.publish(
+            `NyaayWatch review required: ${scope.scopeLabel}`,
+            [
+              `Scope: ${scope.scopeLabel}`,
+              `Held runs requiring review: ${heldReviews.length}`,
+              "",
+              ...heldReviews.map((review) => formatReviewDetails(review.runId, review.decision) + "\n"),
+              "Inspect these runs via the operator CLI and publish or discard manually once reviewed.",
+              "Unresolved runs within the 3-day lookback are included in each daily sweep reminder.",
+            ].join("\n"),
+          );
+        } catch (error) {
+          const message = `Review digest notification failed: ${error instanceof Error ? error.message : String(error)}`;
+          console.error(`Publish-pending failed for ${scope.scopeLabel}: ${message}`);
+          const heldRunIds = new Set(heldReviews.map((review) => review.runId));
+          for (const result of results) {
+            if (result.scopeType === scope.scopeType && result.scopeCode === scope.scopeCode && heldRunIds.has(result.runId)) {
+              result.ok = false;
+              result.error = message;
+            }
+          }
         }
       }
     }
