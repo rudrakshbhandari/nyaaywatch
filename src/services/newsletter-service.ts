@@ -211,7 +211,10 @@ export class NewsletterService {
       recipients: { to: [{ address: opts.to }] },
       content: { subject: opts.subject, plainText: opts.text },
     });
-    await poller.pollUntilDone();
+    const result = await poller.pollUntilDone();
+    if (result.status !== "Succeeded") {
+      throw new Error(`Azure email operation finished with status ${result.status}.`);
+    }
   }
 
   private isConfigured(): boolean {

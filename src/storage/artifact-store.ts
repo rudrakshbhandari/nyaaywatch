@@ -253,7 +253,20 @@ export class AzureBlobArtifactStore implements ArtifactStore {
     metadata: Record<string, string> = {},
   ): Promise<StoredArtifact> {
     const source = await this.downloadBody(sourceKey);
-    return this.uploadJson(destinationKey, JSON.parse(source) as unknown, metadata);
+    verifyArtifactChecksum(sourceKey, source, metadata.checksumsha256);
+    const checksumSha256 = sha256(source);
+    const blob = this.container.getBlockBlobClient(destinationKey);
+    await blob.upload(source, Buffer.byteLength(source), {
+      blobHTTPHeaders: { blobContentType: "application/json" },
+      metadata: { ...metadata, checksumsha256: checksumSha256 },
+    });
+
+    return {
+      bucket: this.config.AZURE_STORAGE_CONTAINER!,
+      key: destinationKey,
+      checksumSha256,
+      sizeBytes: Buffer.byteLength(source),
+    };
   }
 
   async downloadJson<T>(key: string, options: DownloadJsonOptions = {}): Promise<T> {
