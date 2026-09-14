@@ -36,3 +36,20 @@ terraform plan -var-file=terraform.tfvars
 
 Never commit `terraform.tfvars` or a Terraform state file. Supply database and
 operator secrets through a protected CI variable or an untracked local file.
+
+## PostgreSQL transfer
+
+The target database must be provisioned and reachable through the Azure
+Container Apps VNet before transfer. The migration script keeps credentials in
+environment variables, refuses to overwrite a non-empty target by default,
+and compares every public-table row count after restore:
+
+```bash
+SOURCE_DATABASE_URL='postgresql://...' \
+TARGET_DATABASE_URL='postgresql://...' \
+./migrate-postgres.sh
+```
+
+`ALLOW_TARGET_OVERWRITE=true` is an explicit destructive exception and should
+only be used after a target backup and recorded cutover approval. The AWS
+source remains untouched by this operation.
