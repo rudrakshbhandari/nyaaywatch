@@ -65,9 +65,18 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
 
     expect((await request(context.app).get("/parliamentary")).status).toBe(404);
   });
+
+  it("allows normalized parliamentary pages through the throwaway preview flag", async () => {
+    const context = await createSurfaceContext({ PUBLIC_PARLIAMENTARY_PREVIEW: "true" });
+    pools.push(context.pool);
+
+    expect((await request(context.app).get("/operator/parliamentary")).status).toBe(200);
+    expect((await request(context.app).get("/operator/parliamentary/html")).status).toBe(200);
+    expect((await request(context.app).get("/operator/parliamentary/html/mp/mp-5814")).status).toBe(200);
+  });
 });
 
-async function createSurfaceContext() {
+async function createSurfaceContext(overrides: Record<string, string> = {}) {
   const db = newDb({ autoCreateForeignKeyIndices: true, noAstCoverageCheck: true });
   db.public.registerFunction({
     name: "version",
@@ -77,7 +86,7 @@ async function createSurfaceContext() {
   const adapter = db.adapters.createPg();
   const pool = new adapter.Pool() as Pool;
   await runMigrations(pool);
-  const config = createTestConfig();
+  const config = createTestConfig(overrides);
   const store = PgWarehouseStore.fromPool(pool);
   const artifactStore = new InMemoryArtifactStore();
   const lowerCourtService = new PublishedSnapshotService(
@@ -99,7 +108,7 @@ async function createSurfaceContext() {
   return { app, config, pool };
 }
 
-function createTestConfig(): AppConfig {
+function createTestConfig(overrides: Record<string, string> = {}): AppConfig {
   return loadConfig({
     NODE_ENV: "test",
     PORT: "3000",
@@ -112,5 +121,6 @@ function createTestConfig(): AppConfig {
     OPERATOR_API_TOKEN: "operator-test-token",
     ENABLE_OPERATOR_ROUTES: "true",
     STATE_CODE: "HP",
+    ...overrides,
   });
 }

@@ -27,6 +27,10 @@ const EnvSchema = z.object({
     .string()
     .optional()
     .transform((value) => value !== "false"),
+  PUBLIC_PARLIAMENTARY_PREVIEW: z
+    .string()
+    .optional()
+    .transform((value) => value === "true"),
   STATE_CODE: z.enum(SUPPORTED_STATE_CODES).default("HP"),
   CANONICAL_HOST: z.string().min(1).optional(),
   PUBLIC_BASE_URL: z.string().url().optional(),

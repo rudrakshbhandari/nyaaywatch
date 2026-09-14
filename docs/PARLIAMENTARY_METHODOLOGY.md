@@ -53,6 +53,6 @@ Primary source links:
 
 ## Publication and redistribution boundary
 
-The pilot is available only behind the operator token at `/operator/parliamentary`, `/operator/parliamentary/html`, and `/operator/parliamentary/html/mp/mp-5814`. Raw captures and replay copies remain internal artifacts. The public surfaces do not expose this vertical.
+The pilot is available behind the operator token at `/operator/parliamentary`, `/operator/parliamentary/html`, and `/operator/parliamentary/html/mp/mp-5814` in normal environments. Throwaway PR previews may expose these normalized fixture-backed read surfaces without a token for development review; they contain no raw captures or replay copies. Raw captures and replay copies remain internal artifacts, and production/public routes do not expose this vertical.
 
 The Digital Sansad terms and Parliament Digital Library policy were reviewed, but no broad approval for bulk redistribution of parliamentary source content was inferred. The pilot therefore publishes normalized aggregates, source metadata, and official links only. Public beta requires explicit source/legal review, question-row coverage, methodology review, and a publication decision.
