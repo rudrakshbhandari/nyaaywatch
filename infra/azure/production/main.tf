@@ -1,6 +1,36 @@
 locals {
   name = "${var.project_name}-${var.environment_name}"
 
+  # Azure Container Apps Job cron expressions are UTC. These preserve the
+  # current Asia/Kolkata cadence: 08:00, 08:10, 08:20, and 08:30 IST.
+  scheduled_jobs = {
+    weekday-internal-fetch = {
+      cron    = "30 2 * * *"
+      command = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
+      args    = []
+    }
+    supreme-court-internal-fetch = {
+      cron    = "40 2 * * *"
+      command = ["node", "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js"]
+      args    = []
+    }
+    high-courts-internal-fetch = {
+      cron    = "50 2 * * *"
+      command = ["node", "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js"]
+      args    = []
+    }
+    publish-pending-sweep = {
+      cron    = "0 3 * * *"
+      command = ["node", "dist/src/dev/ecs-publish-pending-entrypoint.js"]
+      args    = []
+    }
+    public-alpha-ops-monitor = {
+      cron    = "*/30 * * * *"
+      command = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
+      args    = ["https://nyaaywatch.in"]
+    }
+  }
+
   tags = {
     project = var.project_name
     env     = var.environment_name
@@ -252,6 +282,138 @@ resource "azurerm_container_app" "this" {
         content {
           name        = "CLOUDFLARE_API_TOKEN"
           secret_name = "cloudflare-api-token"
+        }
+      }
+
+      env {
+        name  = "PUBLIC_BASE_URL"
+        value = var.public_base_url
+      }
+
+      dynamic "env" {
+        for_each = var.cloudflare_zone_name == null ? [] : [var.cloudflare_zone_name]
+
+        content {
+          name  = "CLOUDFLARE_ZONE_NAME"
+          value = env.value
+        }
+      }
+    }
+  }
+
+  depends_on = [azurerm_role_assignment.acr_pull, azurerm_role_assignment.blob_contributor]
+}
+
+resource "azurerm_container_app_job" "scheduled" {
+  for_each = local.scheduled_jobs
+
+  name                         = "${local.name}-${each.key}"
+  location                     = azurerm_resource_group.this.location
+  resource_group_name          = azurerm_resource_group.this.name
+  container_app_environment_id = azurerm_container_app_environment.this.id
+  replica_timeout_in_seconds   = 3600
+  replica_retry_limit          = 1
+  tags                         = local.tags
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.container_app.id]
+  }
+
+  registry {
+    server   = azurerm_container_registry.this.login_server
+    identity = azurerm_user_assigned_identity.container_app.id
+  }
+
+  schedule_trigger_config {
+    cron_expression          = each.value.cron
+    parallelism              = 1
+    replica_completion_count = 1
+  }
+
+  secret {
+    name  = "database-url"
+    value = "postgresql://${azurerm_postgresql_flexible_server.this.administrator_login}:${urlencode(var.database_admin_password)}@${azurerm_postgresql_flexible_server.this.fqdn}:5432/${azurerm_postgresql_flexible_server_database.this.name}?sslmode=require"
+  }
+
+  secret {
+    name  = "operator-api-token"
+    value = var.operator_api_token
+  }
+
+  dynamic "secret" {
+    for_each = var.cloudflare_api_token == null ? [] : [var.cloudflare_api_token]
+
+    content {
+      name  = "cloudflare-api-token"
+      value = secret.value
+    }
+  }
+
+  template {
+    container {
+      name    = each.key
+      image   = var.container_image
+      cpu     = var.container_cpu
+      memory  = var.container_memory
+      command = each.value.command
+      args    = each.value.args
+
+      env {
+        name        = "DATABASE_URL"
+        secret_name = "database-url"
+      }
+
+      env {
+        name  = "STORAGE_PROVIDER"
+        value = "azure"
+      }
+
+      env {
+        name  = "AZURE_STORAGE_ACCOUNT_URL"
+        value = azurerm_storage_account.this.primary_blob_endpoint
+      }
+
+      env {
+        name  = "AZURE_STORAGE_CONTAINER"
+        value = azurerm_storage_container.artifacts.name
+      }
+
+      env {
+        name  = "DEPLOY_ENV"
+        value = var.environment_name
+      }
+
+      env {
+        name        = "OPERATOR_API_TOKEN"
+        secret_name = "operator-api-token"
+      }
+
+      env {
+        name  = "PUBLIC_BASE_URL"
+        value = var.public_base_url
+      }
+
+      env {
+        name  = "AWS_REGION"
+        value = "ap-south-1"
+      }
+
+      dynamic "env" {
+        for_each = var.cloudflare_api_token == null ? [] : [var.cloudflare_api_token]
+
+        content {
+          name        = "CLOUDFLARE_API_TOKEN"
+          secret_name = "cloudflare-api-token"
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.cloudflare_zone_name == null ? [] : [var.cloudflare_zone_name]
+
+        content {
+          name  = "CLOUDFLARE_ZONE_NAME"
+          value = env.value
         }
       }
     }

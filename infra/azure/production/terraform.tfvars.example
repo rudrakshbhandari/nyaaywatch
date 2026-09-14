@@ -6,3 +6,5 @@ container_image         = "nyaaywatch.azurecr.io/nyaaywatch:REPLACE_WITH_SHA"
 database_admin_password = "REPLACE_WITH_SECRET"
 operator_api_token      = "REPLACE_WITH_SECRET"
 cloudflare_api_token    = null
+cloudflare_zone_name    = "nyaaywatch.in"
+public_base_url         = "https://nyaaywatch.in"

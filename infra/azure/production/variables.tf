@@ -45,6 +45,18 @@ variable "cloudflare_api_token" {
   default     = null
 }
 
+variable "cloudflare_zone_name" {
+  description = "Cloudflare zone used for cache invalidation."
+  type        = string
+  default     = null
+}
+
+variable "public_base_url" {
+  description = "Canonical public URL used by the operations monitor and release helpers."
+  type        = string
+  default     = "https://nyaaywatch.in"
+}
+
 variable "container_cpu" {
   description = "Container Apps vCPU allocation."
   type        = number

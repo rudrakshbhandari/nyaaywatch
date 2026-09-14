@@ -37,8 +37,13 @@ type BucketTag = { Key: string; Value: string };
 
 export class S3ArtifactStore implements ArtifactStore {
   private readonly client: S3Client;
+  private readonly bucket: string;
 
   constructor(private readonly config: AppConfig) {
+    if (!config.S3_BUCKET) {
+      throw new Error("AWS storage requires S3_BUCKET.");
+    }
+    this.bucket = config.S3_BUCKET;
     this.client = new S3Client({
       region: config.AWS_REGION,
       endpoint: config.AWS_ENDPOINT_URL_S3,
@@ -55,14 +60,14 @@ export class S3ArtifactStore implements ArtifactStore {
 
   async ensureBucket(): Promise<void> {
     try {
-      await this.client.send(new HeadBucketCommand({ Bucket: this.config.S3_BUCKET }));
+      await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }));
       await this.applyBucketTags();
       return;
     } catch {
       try {
         await this.client.send(
           new CreateBucketCommand({
-            Bucket: this.config.S3_BUCKET,
+            Bucket: this.bucket,
             CreateBucketConfiguration: { LocationConstraint: this.config.AWS_REGION },
           }),
         );
@@ -85,7 +90,7 @@ export class S3ArtifactStore implements ArtifactStore {
 
     await this.client.send(
       new PutObjectCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Key: key,
         Body: body,
         ContentType: "application/json",
@@ -94,7 +99,7 @@ export class S3ArtifactStore implements ArtifactStore {
     );
 
     return {
-      bucket: this.config.S3_BUCKET,
+      bucket: this.bucket,
       key,
       checksumSha256,
       sizeBytes: Buffer.byteLength(body),
@@ -108,8 +113,8 @@ export class S3ArtifactStore implements ArtifactStore {
   ): Promise<StoredArtifact> {
     await this.client.send(
       new CopyObjectCommand({
-        Bucket: this.config.S3_BUCKET,
-        CopySource: `${this.config.S3_BUCKET}/${sourceKey}`,
+        Bucket: this.bucket,
+        CopySource: `${this.bucket}/${sourceKey}`,
         Key: destinationKey,
         MetadataDirective: "REPLACE",
         Metadata: metadata,
@@ -118,13 +123,13 @@ export class S3ArtifactStore implements ArtifactStore {
 
     const head = await this.client.send(
       new HeadObjectCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Key: destinationKey,
       }),
     );
 
     return {
-      bucket: this.config.S3_BUCKET,
+      bucket: this.bucket,
       key: destinationKey,
       checksumSha256: head.Metadata?.checksumsha256 ?? "",
       sizeBytes: Number(head.ContentLength ?? 0),
@@ -134,7 +139,7 @@ export class S3ArtifactStore implements ArtifactStore {
   async downloadJson<T>(key: string, options: DownloadJsonOptions = {}): Promise<T> {
     const response = await this.client.send(
       new GetObjectCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Key: key,
       }),
     );
@@ -162,7 +167,7 @@ export class S3ArtifactStore implements ArtifactStore {
 
     await this.client.send(
       new PutBucketTaggingCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Tagging: {
           TagSet: mergeBucketTags(existingTags, desiredTags),
         },
@@ -174,7 +179,7 @@ export class S3ArtifactStore implements ArtifactStore {
     try {
       const response = await this.client.send(
         new GetBucketTaggingCommand({
-          Bucket: this.config.S3_BUCKET,
+          Bucket: this.bucket,
         }),
       );
 

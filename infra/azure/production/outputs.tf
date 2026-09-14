@@ -21,3 +21,7 @@ output "storage_container_name" {
 output "postgres_fqdn" {
   value = azurerm_postgresql_flexible_server.this.fqdn
 }
+
+output "scheduled_job_names" {
+  value = sort([for job in azurerm_container_app_job.scheduled : job.name])
+}
