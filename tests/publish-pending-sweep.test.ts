@@ -157,6 +157,27 @@ describe("publish-pending sweep review digests", () => {
     expect(mocks.publishAlert.mock.calls[0][1]).not.toContain("Run: held");
   });
 
+  it("fails the sweep when the committed-publish warning cannot be delivered", async () => {
+    mocks.listRuns.mockResolvedValueOnce([run("committed", 9)]);
+    mocks.runOperator.mockImplementation(async ({ command }) => {
+      if (command === "publish") throw new Error("Cloudflare purge failed");
+      if (command === "publications") return [{ run: { id: "committed" } }];
+      return candidate("committed", 450000);
+    });
+    mocks.publishAlert.mockRejectedValue(new Error("SNS unavailable"));
+
+    const summary = await runPublishPendingSweep({});
+
+    expect(summary).toMatchObject({ candidatesFound: 1, publishedCount: 1, skippedCount: 0, failedCount: 1 });
+    expect(summary.results[0]).toMatchObject({
+      runId: "committed",
+      autoPublish: "published",
+      ok: false,
+      error: "Cache invalidation warning delivery failed: SNS unavailable",
+    });
+    expect(() => assertPublishPendingSweepSucceeded(summary)).toThrow("Publish-pending sweep failed for 1 run(s)");
+  });
+
   it("still reports collected holds when inspecting a later candidate fails", async () => {
     mocks.listRuns.mockResolvedValueOnce([run("inspect-fails", 9), run("held", 8)]);
     mocks.runOperator.mockImplementation(async ({ targetId }) => {

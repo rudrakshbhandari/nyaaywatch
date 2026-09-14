@@ -160,7 +160,10 @@ export async function runPublishPendingSweep(
             runningPreviousPending = outcome.decision?.currentPending;
           }
 
-          const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
+          const sweepFailed =
+            outcome.action === "publish_failed" ||
+            outcome.action === "gate_inputs_missing" ||
+            outcome.warningDeliveryError !== undefined;
           console.log(
             `Publish-pending outcome for ${scope.scopeLabel} run ${candidate.id}: ${outcome.action}${outcome.decision?.reason ? ` (${outcome.decision.reason})` : ""}`,
           );
@@ -179,6 +182,7 @@ export async function runPublishPendingSweep(
             ok: !sweepFailed,
             autoPublish: outcome.action,
             autoPublishReason: outcome.decision?.reason,
+            error: outcome.error ?? outcome.warningDeliveryError,
           });
         } catch (error) {
           const message = error instanceof Error ? error.message : String(error);

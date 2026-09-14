@@ -10,6 +10,7 @@ export interface AutoPublishOutcome {
   publishRunId?: string;
   error?: string;
   warning?: string;
+  warningDeliveryError?: string;
 }
 
 export interface AutoPublishRequest {
@@ -99,11 +100,13 @@ export async function runAutoPublish(
           `Run: ${inputs.runId}\n${warning}`,
         );
       } catch (notificationError) {
+        const warningDeliveryError = `Cache invalidation warning delivery failed: ${
+          notificationError instanceof Error ? notificationError.message : String(notificationError)
+        }`;
         console.error(
-          `[auto-publish] Could not deliver cache invalidation warning for ${inputs.runId}: ${
-            notificationError instanceof Error ? notificationError.message : String(notificationError)
-          }`,
+          `[auto-publish] Could not deliver cache invalidation warning for ${inputs.runId}: ${warningDeliveryError}`,
         );
+        return { action: "published", decision, publishRunId: inputs.runId, warning, warningDeliveryError };
       }
       return { action: "published", decision, publishRunId: inputs.runId, warning };
     }
