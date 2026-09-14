@@ -1,0 +1,77 @@
+name: Azure migration target
+
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Provision or update the Azure migration target"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  provision:
+    if: inputs.apply == true
+    runs-on: ubuntu-latest
+    concurrency:
+      group: nyaaywatch-azure-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_database_admin_password: ${{ secrets.AZURE_DATABASE_ADMIN_PASSWORD }}
+      TF_VAR_operator_api_token: ${{ secrets.AZURE_OPERATOR_API_TOKEN }}
+      TF_VAR_azure_communication_connection_string: ${{ secrets.AZURE_COMMUNICATION_CONNECTION_STRING }}
+      TF_VAR_azure_email_sender: ${{ vars.AZURE_EMAIL_SENDER }}
+      TF_VAR_alarm_webhook_url: ${{ secrets.AZURE_ALARM_WEBHOOK_URL }}
+      TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_cloudflare_zone_name: nyaaywatch.in
+      TF_VAR_public_base_url: https://nyaaywatch.in
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Initialize Terraform
+        run: terraform -chdir=infra/azure/production init -input=false
+
+      - name: Bootstrap Azure substrate with a public placeholder image
+        env:
+          TF_VAR_container_image: mcr.microsoft.com/azuredocs/containerapps-helloworld:latest
+        run: |
+          terraform -chdir=infra/azure/production apply -auto-approve -input=false \
+            -var-file=terraform.tfvars.example
+
+      - name: Build and publish the application image in ACR
+        run: |
+          registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
+          az acr build --registry "${registry%%.*}" --image "nyaaywatch:${GITHUB_SHA}" .
+
+      - name: Deploy the migration image and scheduled jobs
+        run: |
+          registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
+          export TF_VAR_container_image="${registry}/nyaaywatch:${GITHUB_SHA}"
+          terraform -chdir=infra/azure/production apply -auto-approve -input=false \
+            -var-file=terraform.tfvars.example
+
+      - name: Print migration target endpoints
+        run: terraform -chdir=infra/azure/production output

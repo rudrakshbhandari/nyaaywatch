@@ -213,7 +213,7 @@ export class AzureBlobArtifactStore implements ArtifactStore {
 
     this.container = new BlobServiceClient(
       config.AZURE_STORAGE_ACCOUNT_URL,
-      new DefaultAzureCredential(),
+      new DefaultAzureCredential({ managedIdentityClientId: config.AZURE_CLIENT_ID }),
     ).getContainerClient(config.AZURE_STORAGE_CONTAINER);
   }
 
