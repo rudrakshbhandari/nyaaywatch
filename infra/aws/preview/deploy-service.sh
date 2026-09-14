@@ -42,7 +42,9 @@ cat > "$tmpdir/source-configuration.json" <<EOF
       "Port": "3000",
       "RuntimeEnvironmentVariables": {
         "APP_MODE": "preview",
-        "PORT": "3000"
+        "PORT": "3000",
+        "ENABLE_OPERATOR_ROUTES": "true",
+        "PUBLIC_PARLIAMENTARY_PREVIEW": "true"
       }
     }
   }

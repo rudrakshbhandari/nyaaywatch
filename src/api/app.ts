@@ -1191,7 +1191,7 @@ export function createApp(
     if (parliamentaryService) {
       app.get(
         "/operator/parliamentary",
-        operatorOnly(config),
+        parliamentaryAccess(config),
         asyncRoute(async (_request, response) => {
           const snapshot = await parliamentaryService.getPublishedSnapshot();
           if (!snapshot) {
@@ -1204,7 +1204,7 @@ export function createApp(
 
       app.get(
         "/operator/parliamentary/html",
-        operatorOnly(config),
+        parliamentaryAccess(config),
         asyncRoute(async (_request, response) => {
           const snapshot = await parliamentaryService.getPublishedSnapshot();
           if (!snapshot) {
@@ -1217,7 +1217,7 @@ export function createApp(
 
       app.get(
         "/operator/parliamentary/html/mp/:personId",
-        operatorOnly(config),
+        parliamentaryAccess(config),
         asyncRoute(async (request, response) => {
           const snapshot = await parliamentaryService.getPublishedSnapshot();
           if (!snapshot) {
@@ -2169,6 +2169,14 @@ function operatorOnly(config: AppConfig) {
 
     next();
   };
+}
+
+function parliamentaryAccess(config: AppConfig) {
+  if (config.PUBLIC_PARLIAMENTARY_PREVIEW) {
+    return (_request: Request, _response: Response, next: NextFunction) => next();
+  }
+
+  return operatorOnly(config);
 }
 
 function readRouteParam(value: string | string[]): string {
