@@ -53,7 +53,7 @@ NyaayWatch publishes public, reviewed snapshots. Coverage means that a court or 
 | --- | --- | --- |
 | Supreme Court | [`/supreme-court`](https://nyaaywatch.in/supreme-court) and `/v1/supreme-court/...` | Aggregate public snapshot |
 | High Courts | [`/high-courts`](https://nyaaywatch.in/high-courts) and `/v1/high-courts/:slug/...` | All 25 High Court NJDG selectors |
-| Lower courts | [`/states/:slug`](https://nyaaywatch.in/states/:slug) and `/v1/states/:slug/...` | All 36 state and Union Territory NJDG selectors |
+| Lower courts | [`/states/:slug`](https://nyaaywatch.in/states/punjab) and `/v1/states/:slug/...` | All 36 state and Union Territory NJDG selectors |
 
 The home page is the national entry point, followed by explicit state, Union Territory, High Court, and Supreme Court routes.
 

@@ -348,6 +348,7 @@ describe("HTTP routes", () => {
     expect(pressPage.status).toBe(200);
     expect(pressPage.text).toContain("Citation-ready starting points.");
     expect(pressPage.text).toContain("currently published numbers");
+    expect(pressPage.text).toContain("/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID");
     expect(pressPage.text).toContain("/states/$STATE_SLUG/data/evidence/districts/$DISTRICT_ID.json");
     expect(pressPage.text).not.toContain("Himachal Pradesh");
     expect(pressPage.text).not.toContain("Kangra");
@@ -1186,6 +1187,13 @@ describe("HTTP routes", () => {
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/state.json");
     expect(punjabDistrictPage.text).toContain("Punjab");
+
+    const punjabDistrictEmbed = await request(app).get("/states/punjab/embed/district/ludhiana");
+    expect(punjabDistrictEmbed.status).toBe(200);
+    expect(punjabDistrictEmbed.headers["content-security-policy"]).toBe("frame-ancestors *");
+    expect(punjabDistrictEmbed.text).toContain("Ludhiana");
+    expect(punjabDistrictEmbed.text).toContain("PUNJAB");
+    expect(punjabDistrictEmbed.text).toContain("https://nyaaywatch.in/states/punjab/districts/ludhiana");
 
     const punjabDistrictPack = await request(app).get("/states/punjab/data/evidence/districts/ludhiana.json");
     expect(punjabDistrictPack.status).toBe(200);

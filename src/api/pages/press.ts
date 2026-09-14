@@ -91,15 +91,15 @@ export function renderPressPage(): string {
     <section class="press-section">
       ${renderSectionHead({ headline: "Embed a district or state widget.", lede: "Drop an iframe into Substack, WordPress, Ghost, or any CMS. The widget shows the currently published numbers and links back to the full evidence page." })}
       <div class="card">
-        <p class="press-embed__intro">Replace <code>YOUR_DISTRICT_ID</code> with a district ID from the <a href="/districts">districts page</a>. Replace <code>YOUR_STATE_SLUG</code> with a state or Union Territory slug.</p>
+        <p class="press-embed__intro">Replace <code>YOUR_STATE_SLUG</code> with a state or Union Territory slug and <code>YOUR_DISTRICT_ID</code> with a district ID from that geography's <a href="/districts">districts page</a>.</p>
         <div class="press-embed__variants">
           <div class="press-embed__variant">
             <p class="press-embed__variant-label">District widget</p>
-            <pre class="press-embed__code" id="embed-district">&lt;iframe src="${escapeHtml(SITE_ORIGIN)}/embed/district/YOUR_DISTRICT_ID"
+            <pre class="press-embed__code" id="embed-district">&lt;iframe src="${escapeHtml(SITE_ORIGIN)}/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID"
   width="420" height="220"
   frameborder="0" style="border:none;"
   title="NyaayWatch — selected district courts"&gt;&lt;/iframe&gt;</pre>
-            <button class="btn btn--ghost btn--small press-copy-btn" data-copy='<iframe src="${SITE_ORIGIN}/embed/district/YOUR_DISTRICT_ID" width="420" height="220" frameborder="0" style="border:none;" title="NyaayWatch — selected district courts"></iframe>'>Copy embed</button>
+            <button class="btn btn--ghost btn--small press-copy-btn" data-copy='<iframe src="${SITE_ORIGIN}/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID" width="420" height="220" frameborder="0" style="border:none;" title="NyaayWatch — selected district courts"></iframe>'>Copy embed</button>
           </div>
           <div class="press-embed__variant">
             <p class="press-embed__variant-label">State widget</p>
