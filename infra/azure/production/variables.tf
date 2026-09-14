@@ -57,6 +57,26 @@ variable "public_base_url" {
   default     = "https://nyaaywatch.in"
 }
 
+variable "azure_communication_connection_string" {
+  description = "Azure Communication Services email connection string. Keep in protected CI variables or an untracked tfvars file."
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "azure_email_sender" {
+  description = "Verified Azure Communication Services sender address."
+  type        = string
+  default     = null
+}
+
+variable "alarm_webhook_url" {
+  description = "Optional Azure Monitor Action Group or equivalent webhook endpoint for application alarms."
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
 variable "container_cpu" {
   description = "Container Apps vCPU allocation."
   type        = number

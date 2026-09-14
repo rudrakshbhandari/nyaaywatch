@@ -225,6 +225,24 @@ resource "azurerm_container_app" "this" {
     }
   }
 
+  dynamic "secret" {
+    for_each = var.azure_communication_connection_string == null ? [] : [var.azure_communication_connection_string]
+
+    content {
+      name  = "azure-communication-connection-string"
+      value = secret.value
+    }
+  }
+
+  dynamic "secret" {
+    for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+
+    content {
+      name  = "alarm-webhook-url"
+      value = secret.value
+    }
+  }
+
   ingress {
     external_enabled = true
     target_port      = 3000
@@ -269,6 +287,38 @@ resource "azurerm_container_app" "this" {
       env {
         name  = "DEPLOY_ENV"
         value = var.environment_name
+      }
+
+      env {
+        name  = "EMAIL_PROVIDER"
+        value = "azure"
+      }
+
+      dynamic "env" {
+        for_each = var.azure_communication_connection_string == null ? [] : [var.azure_communication_connection_string]
+
+        content {
+          name        = "AZURE_COMMUNICATION_CONNECTION_STRING"
+          secret_name = "azure-communication-connection-string"
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.azure_email_sender == null ? [] : [var.azure_email_sender]
+
+        content {
+          name  = "AZURE_EMAIL_SENDER"
+          value = env.value
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+
+        content {
+          name        = "ALARM_WEBHOOK_URL"
+          secret_name = "alarm-webhook-url"
+        }
       }
 
       env {
@@ -350,6 +400,24 @@ resource "azurerm_container_app_job" "scheduled" {
     }
   }
 
+  dynamic "secret" {
+    for_each = var.azure_communication_connection_string == null ? [] : [var.azure_communication_connection_string]
+
+    content {
+      name  = "azure-communication-connection-string"
+      value = secret.value
+    }
+  }
+
+  dynamic "secret" {
+    for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+
+    content {
+      name  = "alarm-webhook-url"
+      value = secret.value
+    }
+  }
+
   template {
     container {
       name    = each.key
@@ -382,6 +450,38 @@ resource "azurerm_container_app_job" "scheduled" {
       env {
         name  = "DEPLOY_ENV"
         value = var.environment_name
+      }
+
+      env {
+        name  = "EMAIL_PROVIDER"
+        value = "azure"
+      }
+
+      dynamic "env" {
+        for_each = var.azure_communication_connection_string == null ? [] : [var.azure_communication_connection_string]
+
+        content {
+          name        = "AZURE_COMMUNICATION_CONNECTION_STRING"
+          secret_name = "azure-communication-connection-string"
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.azure_email_sender == null ? [] : [var.azure_email_sender]
+
+        content {
+          name  = "AZURE_EMAIL_SENDER"
+          value = env.value
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+
+        content {
+          name        = "ALARM_WEBHOOK_URL"
+          secret_name = "alarm-webhook-url"
+        }
       }
 
       env {
