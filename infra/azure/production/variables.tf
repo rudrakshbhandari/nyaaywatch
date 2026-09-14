@@ -83,6 +83,12 @@ variable "enable_scheduled_jobs" {
   default     = false
 }
 
+variable "enable_application" {
+  description = "Run an application replica. Keep false until the target database and artifacts have been restored."
+  type        = bool
+  default     = false
+}
+
 variable "container_cpu" {
   description = "Container Apps vCPU allocation."
   type        = number

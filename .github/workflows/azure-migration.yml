@@ -13,6 +13,11 @@ on:
         required: true
         default: false
         type: boolean
+      enable_application:
+        description: "Start an Azure application replica; use only after restoring data and artifacts"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -42,6 +47,10 @@ jobs:
       TF_VAR_cloudflare_zone_name: nyaaywatch.in
       TF_VAR_public_base_url: https://nyaaywatch.in
       TF_VAR_enable_scheduled_jobs: ${{ inputs.enable_scheduled_jobs }}
+      TF_VAR_enable_application: ${{ inputs.enable_application }}
+      TF_VAR_project_name: nyaaywatch
+      TF_VAR_environment_name: production
+      TF_VAR_location: centralindia
 
     steps:
       - name: Checkout repository
@@ -81,7 +90,7 @@ jobs:
       - name: Initialize durable Terraform state
         env:
           STATE_RESOURCE_GROUP: nyaaywatch-terraform-state
-          STATE_STORAGE_ACCOUNT: nyaaytfstate377
+          STATE_STORAGE_ACCOUNT: nyaaywatchtfstate377
         run: |
           state_key="$(az storage account keys list --resource-group "$STATE_RESOURCE_GROUP" --account-name "$STATE_STORAGE_ACCOUNT" --query '[0].value' --output tsv)"
           terraform -chdir=infra/azure/production init -input=false \
@@ -99,8 +108,7 @@ jobs:
         env:
           TF_VAR_container_image: mcr.microsoft.com/azuredocs/containerapps-helloworld:latest
         run: |
-          terraform -chdir=infra/azure/production apply -auto-approve -input=false \
-            -var-file=terraform.tfvars.example
+          terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Build and publish the application image in ACR
         run: |
@@ -111,8 +119,7 @@ jobs:
         run: |
           registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
           export TF_VAR_container_image="${registry}/nyaaywatch:${GITHUB_SHA}"
-          terraform -chdir=infra/azure/production apply -auto-approve -input=false \
-            -var-file=terraform.tfvars.example
+          terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Print migration target endpoints
         run: terraform -chdir=infra/azure/production output
