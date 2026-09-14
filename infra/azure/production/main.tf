@@ -30,9 +30,9 @@ locals {
     }
     public-alpha-ops-monitor = {
       name    = "alpha-ops"
-      cron    = "*/30 * * * *"
+      cron    = "0 * * * *"
       command = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
-      args    = ["https://nyaaywatch.in"]
+      args    = ["--base-url", "https://nyaaywatch.in", "--target-set", "smoke"]
     }
   }
 
