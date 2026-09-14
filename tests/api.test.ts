@@ -164,6 +164,11 @@ describe("HTTP routes", () => {
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
     expect(himachalOverview.text).toContain("Follow the state trail.");
 
+    const himachalApi = await request(app).get("/states/himachal/api");
+    expect(himachalApi.status).toBe(200);
+    expect(himachalApi.text).toContain("/v1/stats/himachal");
+    expect(himachalApi.text).not.toContain("/v1/states/:stateSlug/stats");
+
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
     expect(districtsPage.text).toContain("Scan the districts under the most pressure.");

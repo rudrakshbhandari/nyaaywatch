@@ -19,6 +19,7 @@
 <p align="center">
   <img alt="Node 22 plus" src="https://img.shields.io/badge/node-22%2B-0c0a08" />
   <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-0c0a08" />
+  <img alt="Public alpha" src="https://img.shields.io/badge/status-public%20alpha-0c0a08" />
   <img alt="Reviewed snapshots" src="https://img.shields.io/badge/data-reviewed%20snapshots-0c0a08" />
 </p>
 
@@ -45,7 +46,7 @@ The project is built for people who need to inspect, explain, or cite court data
 - Inspect flagged pressure signals and the reasons behind them.
 - Download evidence packs, use the JSON API, subscribe to snapshot updates, or embed a district or state view.
 
-NyaayWatch publishes public, reviewed snapshots. Coverage means that a court or geography has a configured public snapshot surface. It does not mean case-level search, a live feed, or a claim that every court tier can be compared directly.
+NyaayWatch is a public alpha publishing reviewed snapshots. Coverage means that a court or geography has a configured public snapshot surface. It does not mean case-level search, a live feed, or a claim that every court tier can be compared directly.
 
 ## Current coverage
 

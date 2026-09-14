@@ -7,10 +7,10 @@ import { renderSectionHead } from "../design/ui.js";
  * required; the page is static narrative + route documentation. The CSV
  * downloads are linked from /data rather than duplicated here.
  */
-export function renderApiPage(context: PublicPageContext): string {
+export function renderApiPage(context: PublicPageContext, scope: "national" | "state"): string {
   const aggregateAdjective = context.lowerCourtCopy.aggregateAdjective;
   const documentedRoutes =
-    context.routes.api === "/api"
+    scope === "national"
       ? {
           stats: "/v1/states/:stateSlug/stats",
           districts: "/v1/states/:stateSlug/districts",

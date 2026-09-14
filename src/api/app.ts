@@ -720,6 +720,7 @@ export function createApp(
       response.send(
         renderApiPage(
           buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+          "national",
         ),
       );
     }),
@@ -1012,6 +1013,7 @@ export function createApp(
       response.send(
         renderApiPage(
           buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+          "state",
         ),
       );
     }),
