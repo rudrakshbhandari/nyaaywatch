@@ -25,6 +25,10 @@ The scheduled jobs use UTC equivalents of the current Asia/Kolkata cadence:
 - publish-pending sweep at 08:30 IST
 - public-alpha monitor every 30 minutes
 
+Scheduled jobs are disabled by default. Set `enable_scheduled_jobs = true`
+only during the approved cutover after the AWS writers are stopped; this
+prevents a rehearsal Azure apply from writing alongside production AWS.
+
 ## Plan-only validation
 
 ```bash
@@ -50,9 +54,9 @@ TARGET_DATABASE_URL='postgresql://...' \
 ./migrate-postgres.sh
 ```
 
-`ALLOW_TARGET_OVERWRITE=true` is an explicit destructive exception and should
-only be used after a target backup and recorded cutover approval. The AWS
-source remains untouched by this operation.
+`ALLOW_TARGET_OVERWRITE=true` is an explicit destructive exception. It enables
+`pg_restore --clean --if-exists`, so take a target backup and record cutover
+approval first. The AWS source remains untouched by this operation.
 
 ## Artifact transfer
 

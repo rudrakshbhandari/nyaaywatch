@@ -8,6 +8,11 @@ on:
         required: true
         default: false
         type: boolean
+      enable_scheduled_jobs:
+        description: "Enable Azure writers; use only after the documented cutover freeze"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -36,6 +41,7 @@ jobs:
       TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_cloudflare_zone_name: nyaaywatch.in
       TF_VAR_public_base_url: https://nyaaywatch.in
+      TF_VAR_enable_scheduled_jobs: ${{ inputs.enable_scheduled_jobs }}
 
     steps:
       - name: Checkout repository
@@ -51,8 +57,43 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Initialize Terraform
-        run: terraform -chdir=infra/azure/production init -input=false
+      - name: Bootstrap durable Terraform state storage
+        env:
+          STATE_RESOURCE_GROUP: nyaaywatch-terraform-state
+          STATE_STORAGE_ACCOUNT: nyaaywatchtfstate377
+        run: |
+          az group create --name "$STATE_RESOURCE_GROUP" --location centralindia --output none
+          az storage account create \
+            --name "$STATE_STORAGE_ACCOUNT" \
+            --resource-group "$STATE_RESOURCE_GROUP" \
+            --location centralindia \
+            --sku Standard_LRS \
+            --min-tls-version TLS1_2 \
+            --allow-blob-public-access false \
+            --output none
+          state_key="$(az storage account keys list --resource-group "$STATE_RESOURCE_GROUP" --account-name "$STATE_STORAGE_ACCOUNT" --query '[0].value' --output tsv)"
+          az storage container create \
+            --name terraform-state \
+            --account-name "$STATE_STORAGE_ACCOUNT" \
+            --account-key "$state_key" \
+            --output none
+
+      - name: Initialize durable Terraform state
+        env:
+          STATE_RESOURCE_GROUP: nyaaywatch-terraform-state
+          STATE_STORAGE_ACCOUNT: nyaaytfstate377
+        run: |
+          state_key="$(az storage account keys list --resource-group "$STATE_RESOURCE_GROUP" --account-name "$STATE_STORAGE_ACCOUNT" --query '[0].value' --output tsv)"
+          terraform -chdir=infra/azure/production init -input=false \
+            -backend-config="resource_group_name=${STATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${STATE_STORAGE_ACCOUNT}" \
+            -backend-config="container_name=terraform-state" \
+            -backend-config="key=nyaaywatch-production.tfstate" \
+            -backend-config="access_key=${state_key}" \
+            -backend-config="subscription_id=${ARM_SUBSCRIPTION_ID}" \
+            -backend-config="tenant_id=${ARM_TENANT_ID}" \
+            -backend-config="client_id=${ARM_CLIENT_ID}" \
+            -backend-config="use_oidc=true"
 
       - name: Bootstrap Azure substrate with a public placeholder image
         env:

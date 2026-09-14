@@ -77,6 +77,12 @@ variable "alarm_webhook_url" {
   default     = null
 }
 
+variable "enable_scheduled_jobs" {
+  description = "Create active Azure schedule jobs. Keep false until AWS writers are stopped and cutover is approved."
+  type        = bool
+  default     = false
+}
+
 variable "container_cpu" {
   description = "Container Apps vCPU allocation."
   type        = number

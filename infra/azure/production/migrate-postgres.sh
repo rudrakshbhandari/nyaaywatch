@@ -38,11 +38,18 @@ pg_dump \
   "$SOURCE_DATABASE_URL"
 
 echo "Restoring into the Azure PostgreSQL target..."
+restore_args=(
+  --exit-on-error
+  --no-owner
+  --no-acl
+  --jobs="${PG_RESTORE_JOBS:-4}"
+)
+if [[ "${ALLOW_TARGET_OVERWRITE:-false}" == "true" ]]; then
+  restore_args+=(--clean --if-exists)
+fi
+
 pg_restore \
-  --exit-on-error \
-  --no-owner \
-  --no-acl \
-  --jobs="${PG_RESTORE_JOBS:-4}" \
+  "${restore_args[@]}" \
   --dbname="$TARGET_DATABASE_URL" \
   "$dump_path"
 
