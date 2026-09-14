@@ -275,6 +275,11 @@ resource "azurerm_container_app" "this" {
       }
 
       env {
+        name  = "AZURE_CLIENT_ID"
+        value = azurerm_user_assigned_identity.container_app.client_id
+      }
+
+      env {
         name  = "AZURE_STORAGE_ACCOUNT_URL"
         value = azurerm_storage_account.this.primary_blob_endpoint
       }
@@ -435,6 +440,11 @@ resource "azurerm_container_app_job" "scheduled" {
       env {
         name  = "STORAGE_PROVIDER"
         value = "azure"
+      }
+
+      env {
+        name  = "AZURE_CLIENT_ID"
+        value = azurerm_user_assigned_identity.container_app.client_id
       }
 
       env {
