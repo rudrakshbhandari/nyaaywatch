@@ -107,6 +107,7 @@ resource "azurerm_postgresql_flexible_server" "this" {
   resource_group_name           = azurerm_resource_group.this.name
   location                      = azurerm_resource_group.this.location
   version                       = "16"
+  zone                          = "3"
   delegated_subnet_id           = azurerm_subnet.postgres.id
   private_dns_zone_id           = azurerm_private_dns_zone.postgres.id
   administrator_login           = "nyaaywatch"
@@ -139,8 +140,8 @@ resource "azurerm_storage_account" "this" {
   # azurerm_storage_container currently uses the account key for its data-plane
   # create/read path. The application still authenticates with managed identity;
   # keep public access disabled and do not distribute this key to workloads.
-  shared_access_key_enabled       = true
-  tags                            = local.tags
+  shared_access_key_enabled = true
+  tags                      = local.tags
 }
 
 resource "azurerm_storage_container" "artifacts" {
