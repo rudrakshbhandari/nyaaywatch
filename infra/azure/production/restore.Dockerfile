@@ -5,6 +5,6 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY infra/azure/production/restore-entrypoint.sh /usr/local/bin/restore-entrypoint.sh
-COPY infra/azure/production/relay-entrypoint.sh /usr/local/bin/relay-entrypoint.sh
 RUN chmod 0755 /usr/local/bin/restore-entrypoint.sh
-RUN chmod 0755 /usr/local/bin/relay-entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/restore-entrypoint.sh"]

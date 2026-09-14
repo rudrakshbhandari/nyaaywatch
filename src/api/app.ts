@@ -71,6 +71,16 @@ const LOWER_COURT_GEOGRAPHY_NOT_FOUND_TEXT = "Lower-court geography not found.";
 const LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_TITLE = "Lower-Court Geography Not Available Yet";
 const LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY = "No published snapshot is available for this lower-court geography yet.";
 
+export function createMigrationWriteFreezeMiddleware(enabled: boolean) {
+  return (request: Request, response: Response, next: NextFunction) => {
+    if (enabled && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+      response.status(503).json({ error: "Writes are temporarily paused for migration." });
+      return;
+    }
+    next();
+  };
+}
+
 export function createApp(
   config: AppConfig,
   service: PublishedSnapshotService,
@@ -85,13 +95,7 @@ export function createApp(
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.set("trust proxy", true);
-  app.use((request, response, next) => {
-    if (config.MIGRATION_WRITE_FREEZE && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
-      response.status(503).json({ error: "Writes are temporarily paused for migration." });
-      return;
-    }
-    next();
-  });
+  app.use(createMigrationWriteFreezeMiddleware(config.MIGRATION_WRITE_FREEZE));
   app.use((request, response, next) => {
     const requestHost = readRequestHost(request);
     if (!shouldRedirectToCanonicalHost(config, requestHost)) {
