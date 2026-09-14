@@ -91,7 +91,7 @@ export function renderPressPage(): string {
     <section class="press-section">
       ${renderSectionHead({ headline: "Embed a district or state widget.", lede: "Drop an iframe into Substack, WordPress, Ghost, or any CMS. The widget shows the currently published numbers and links back to the full evidence page." })}
       <div class="card">
-        <p class="press-embed__intro">Replace <code>YOUR_STATE_SLUG</code> with a state or Union Territory slug and <code>YOUR_DISTRICT_ID</code> with a district ID from that geography's <a href="/districts">districts page</a>.</p>
+        <p class="press-embed__intro">Replace <code>YOUR_STATE_SLUG</code> with a state or Union Territory slug and <code>YOUR_DISTRICT_ID</code> with a district ID from that geography's districts page. Start from the <a href="/">national coverage page</a> to choose the geography and open its district list.</p>
         <div class="press-embed__variants">
           <div class="press-embed__variant">
             <p class="press-embed__variant-label">District widget</p>

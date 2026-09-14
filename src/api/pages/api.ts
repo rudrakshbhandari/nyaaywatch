@@ -9,6 +9,16 @@ import { renderSectionHead } from "../design/ui.js";
  */
 export function renderApiPage(context: PublicPageContext, scope: "national" | "state"): string {
   const aggregateAdjective = context.lowerCourtCopy.aggregateAdjective;
+  const shellNavLinks =
+    scope === "national"
+      ? [
+          { id: "home", href: "/", label: "Home" },
+          { id: "supreme-court", href: "/supreme-court", label: "Supreme Court" },
+          { id: "high-courts", href: "/high-courts", label: "High Courts" },
+          { id: "learn", href: "/learn", label: "Learn" },
+          { id: "api", href: "/api", label: "API" },
+        ]
+      : context.navLinks;
   const documentedRoutes =
     scope === "national"
       ? {
@@ -237,10 +247,10 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
     title: "API — NyaayWatch",
     body,
     activeNav: "api",
-    brandHref: context.brandHref,
-    brandTag: context.brandTag,
-    navLinks: context.navLinks,
-    stateLinks: context.stateLinks,
+    brandHref: scope === "national" ? "/" : context.brandHref,
+    brandTag: scope === "national" ? "Judicial observability across tiers" : context.brandTag,
+    navLinks: shellNavLinks,
+    stateLinks: scope === "national" ? [] : context.stateLinks,
     footer: {
       sourceDateLabel: null,
       methodologyVersion: null,

@@ -311,6 +311,10 @@ describe("HTTP routes", () => {
     expect(apiPage.text).toContain("Selected state or Union Territory");
     expect(apiPage.text).not.toContain('"stateName": "Himachal Pradesh"');
     expect(apiPage.text).not.toContain('"districtId": "kangra"');
+    expect(apiPage.text).toContain('href="/high-courts"');
+    expect(apiPage.text).toContain('href="/supreme-court"');
+    expect(apiPage.text).not.toContain('href="/districts"');
+    expect(apiPage.text).not.toContain("Viewing Himachal Pradesh");
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);
@@ -354,6 +358,8 @@ describe("HTTP routes", () => {
     expect(pressPage.text).toContain("Citation-ready starting points.");
     expect(pressPage.text).toContain("currently published numbers");
     expect(pressPage.text).toContain("/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID");
+    expect(pressPage.text).toContain('href="/">national coverage page</a>');
+    expect(pressPage.text).not.toContain('href="/districts">districts page</a>');
     expect(pressPage.text).toContain("/states/$STATE_SLUG/data/evidence/districts/$DISTRICT_ID.json");
     expect(pressPage.text).not.toContain("Himachal Pradesh");
     expect(pressPage.text).not.toContain("Kangra");
