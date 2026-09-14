@@ -9,6 +9,22 @@ import { renderSectionHead } from "../design/ui.js";
  */
 export function renderApiPage(context: PublicPageContext): string {
   const aggregateAdjective = context.lowerCourtCopy.aggregateAdjective;
+  const documentedRoutes =
+    context.routes.api === "/api"
+      ? {
+          stats: "/v1/states/:stateSlug/stats",
+          districts: "/v1/states/:stateSlug/districts",
+          trends: "/v1/states/:stateSlug/trends",
+          stateEvidencePack: "/states/:stateSlug/data/evidence/state.json",
+          districtEvidencePack: "/states/:stateSlug/data/evidence/districts/:districtId.json",
+        }
+      : {
+          stats: context.routes.statsApi,
+          districts: context.routes.districtsApi,
+          trends: context.routes.trendsApi,
+          stateEvidencePack: context.routes.stateEvidencePack,
+          districtEvidencePack: context.routes.districtEvidencePack(":districtId"),
+        };
   const body = `
     ${renderSectionHead({
       eyebrow: "DEVELOPER ACCESS",
@@ -24,14 +40,14 @@ export function renderApiPage(context: PublicPageContext): string {
       <div class="card-grid card-grid--1">
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
-          <code class="endpoint__path">${context.routes.statsApi}</code>
+          <code class="endpoint__path">${documentedRoutes.stats}</code>
           <p>${context.lowerCourtCopy.aggregateAdjectiveTitle} backlog, disposal pace, wait estimate, and count of districts to watch for the active publication.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
   "snapshot": {
-    "stateCode": "HP",
-    "stateName": "Himachal Pradesh",
+    "stateCode": "STATE_CODE",
+    "stateName": "Selected state or Union Territory",
     "sourceSnapshotAt": "2025-03-15T00:00:00.000Z",
     "referenceDateAt": "2025-03-15T00:00:00.000Z",
     "referenceDateKind": "source_snapshot_at",
@@ -88,15 +104,15 @@ export function renderApiPage(context: PublicPageContext): string {
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
-          <code class="endpoint__path">${context.routes.districtsApi}</code>
+          <code class="endpoint__path">${documentedRoutes.districts}</code>
           <p>District-level rows with rankings, queue size, disposal pace, wait estimate, and flag explanations.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
   "districts": [
     {
-      "districtId": "kangra",
-      "districtName": "Kangra",
+      "districtId": "district-id",
+      "districtName": "Example district",
       "rank": 1,
       "backlogCases": 12453,
       "filedLastMonthCases": 1520,
@@ -115,11 +131,11 @@ export function renderApiPage(context: PublicPageContext): string {
         "lastSixWindow": 6
       },
       "flagReason": "High file-clear gap with growing backlog.",
-      "summary": "Kangra shows a widening backlog \u2026"
+      "summary": "Example district shows a widening backlog \u2026"
     },
     {
-      "districtId": "shimla",
-      "districtName": "Shimla",
+      "districtId": "district-id-2",
+      "districtName": "Example district 2",
       "rank": 2,
       "backlogCases": 10421,
       "filedLastMonthCases": 1210,
@@ -138,7 +154,7 @@ export function renderApiPage(context: PublicPageContext): string {
         "lastSixWindow": 6
       },
       "flagReason": "Backlog remains above the state median.",
-      "summary": "Shimla remains a high-volume district in this snapshot."
+      "summary": "Example district 2 remains a high-volume district in this snapshot."
     }
   ]
 }</pre>
@@ -146,7 +162,7 @@ export function renderApiPage(context: PublicPageContext): string {
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
-          <code class="endpoint__path">${context.routes.trendsApi}</code>
+          <code class="endpoint__path">${documentedRoutes.trends}</code>
           <p>Published snapshot history for the ${aggregateAdjective} trend surface.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
@@ -161,8 +177,8 @@ export function renderApiPage(context: PublicPageContext): string {
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <div class="endpoint__routes">
-            <code class="endpoint__path">${context.routes.stateEvidencePack}</code>
-            <code class="endpoint__path">${context.routes.districtEvidencePack(":districtId")}</code>
+            <code class="endpoint__path">${documentedRoutes.stateEvidencePack}</code>
+            <code class="endpoint__path">${documentedRoutes.districtEvidencePack}</code>
           </div>
           <p>Evidence packs for citation and reuse. They bundle public metrics with reference date, source date when available, methodology version, CSV/API links, plain citation text, caveats, and the public-data safety boundary.</p>
           <details class="code-sample-reveal">
@@ -171,10 +187,10 @@ export function renderApiPage(context: PublicPageContext): string {
   "packType": "district_evidence_pack",
   "version": "lower-court-evidence-pack.v1",
   "district": {
-    "id": "kangra",
-    "name": "Kangra",
-    "pageUrl": "https://nyaaywatch.in/districts/kangra",
-    "evidencePackUrl": "https://nyaaywatch.in/data/evidence/districts/kangra.json"
+    "id": "district-id",
+    "name": "Example district",
+    "pageUrl": "https://nyaaywatch.in/states/{stateSlug}/districts/district-id",
+    "evidencePackUrl": "https://nyaaywatch.in/states/{stateSlug}/data/evidence/districts/district-id.json"
   },
   "snapshot": {
     "sourceSnapshotAt": "2025-03-15T00:00:00.000Z",

@@ -19,7 +19,7 @@
 <p align="center">
   <img alt="Node 22 plus" src="https://img.shields.io/badge/node-22%2B-0c0a08" />
   <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-0c0a08" />
-  <img alt="Public alpha" src="https://img.shields.io/badge/status-public%20alpha-0c0a08" />
+  <img alt="Reviewed snapshots" src="https://img.shields.io/badge/data-reviewed%20snapshots-0c0a08" />
 </p>
 
 NyaayWatch turns public National Judicial Data Grid (NJDG) data into reviewed, versioned snapshots of pending cases, filings, clearances, case age, and court-level pressure signals. It covers the Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory selector geographies.
@@ -45,17 +45,17 @@ The project is built for people who need to inspect, explain, or cite court data
 - Inspect flagged pressure signals and the reasons behind them.
 - Download evidence packs, use the JSON API, subscribe to snapshot updates, or embed a district or state view.
 
-NyaayWatch is a public alpha. Coverage means that a court or geography has a configured public snapshot surface. It does not mean case-level search, a live feed, or a claim that every court tier can be compared directly.
+NyaayWatch publishes public, reviewed snapshots. Coverage means that a court or geography has a configured public snapshot surface. It does not mean case-level search, a live feed, or a claim that every court tier can be compared directly.
 
 ## Current coverage
 
 | Court layer | Public surface | Coverage |
 | --- | --- | --- |
-| Supreme Court | [`/supreme-court`](https://nyaaywatch.in/supreme-court) and `/v1/supreme-court/...` | Aggregate public beta snapshot |
+| Supreme Court | [`/supreme-court`](https://nyaaywatch.in/supreme-court) and `/v1/supreme-court/...` | Aggregate public snapshot |
 | High Courts | [`/high-courts`](https://nyaaywatch.in/high-courts) and `/v1/high-courts/:slug/...` | All 25 High Court NJDG selectors |
-| Lower courts | [`/states/:slug`](https://nyaaywatch.in/states/himachal) and `/v1/states/:slug/...` | All 36 state and Union Territory NJDG selectors |
+| Lower courts | [`/states/:slug`](https://nyaaywatch.in/states/:slug) and `/v1/states/:slug/...` | All 36 state and Union Territory NJDG selectors |
 
-The unscoped lower-court routes such as [`/districts`](https://nyaaywatch.in/districts), [`/data`](https://nyaaywatch.in/data), and [`/api`](https://nyaaywatch.in/api) remain Himachal Pradesh compatibility shortcuts. The canonical national entry point is the home page, followed by explicit state, Union Territory, High Court, and Supreme Court routes.
+The home page is the national entry point, followed by explicit state, Union Territory, High Court, and Supreme Court routes.
 
 ## The trust model
 
@@ -93,10 +93,12 @@ The rules are deliberately plain:
 The public API serves the same published snapshot that powers the site.
 
 ```bash
-curl https://nyaaywatch.in/v1/stats/himachal | jq
-curl https://nyaaywatch.in/v1/districts | jq '.districts[0]'
-curl https://nyaaywatch.in/v1/states/himachal/trends | jq
-curl https://nyaaywatch.in/v1/high-courts/himachal/trends | jq
+STATE_SLUG=your-state-slug
+COURT_SLUG=your-court-slug
+curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/stats" | jq
+curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/districts" | jq '.districts[0]'
+curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/trends" | jq
+curl "https://nyaaywatch.in/v1/high-courts/$COURT_SLUG/trends" | jq
 curl https://nyaaywatch.in/v1/supreme-court/stats | jq
 ```
 
@@ -189,7 +191,7 @@ Use one branch per task and Conventional Commit messages such as `docs(readme): 
 The fetch, inspect, publish, replay, and rollback lifecycle is available locally through the operator CLI:
 
 ```bash
-npm run operator:fetch -- "Manual Himachal fetch"
+npm run operator:fetch -- "Manual lower-court fetch"
 npm run operator:inspect -- <run-id>
 npm run operator:publish -- <run-id> "Publish completed snapshot"
 npm run operator:replay -- <run-id>

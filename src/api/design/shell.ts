@@ -60,7 +60,7 @@ export function renderPageShell(options: PageShellOptions): string {
   const nav = renderNav(options.activeNav ?? null, options.navLinks);
   const stateSwitcher = renderStateSwitcher(options.stateLinks ?? []);
   const ticker = options.ticker ? `<div class="ticker">${escapeHtml(options.ticker)}</div>` : "";
-  const footer = renderColophon(options.footer, options.brandTag ?? "Court transparency, Himachal Pradesh", options.navLinks);
+  const footer = renderColophon(options.footer, options.brandTag ?? "Court transparency across India", options.navLinks);
 
   const og = options.og;
   const ogMeta = og

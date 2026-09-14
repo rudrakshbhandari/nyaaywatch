@@ -130,6 +130,11 @@ describe("public copy guardrails", () => {
         expect(response.text).not.toContain("featured Himachal Pradesh snapshot");
       }
 
+      if (route.path === "/api" || route.path === "/press") {
+        expect(response.text).not.toContain('"stateName": "Himachal Pradesh"');
+        expect(response.text).not.toContain('"districtId": "kangra"');
+      }
+
       for (const pattern of disallowedPublicPhrases) {
         expect(response.text, `${route.path} should not match ${pattern}`).not.toMatch(pattern);
       }

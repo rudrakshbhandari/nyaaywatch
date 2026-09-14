@@ -301,8 +301,11 @@ describe("HTTP routes", () => {
 
     const apiPage = await request(app).get("/api");
     expect(apiPage.status).toBe(200);
-    expect(apiPage.text).toContain("/data/evidence/state.json");
-    expect(apiPage.text).toContain("/data/evidence/districts/:districtId.json");
+    expect(apiPage.text).toContain("/v1/states/:stateSlug/stats");
+    expect(apiPage.text).toContain("/states/:stateSlug/data/evidence/state.json");
+    expect(apiPage.text).toContain("Selected state or Union Territory");
+    expect(apiPage.text).not.toContain('"stateName": "Himachal Pradesh"');
+    expect(apiPage.text).not.toContain('"districtId": "kangra"');
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);
@@ -345,7 +348,9 @@ describe("HTTP routes", () => {
     expect(pressPage.status).toBe(200);
     expect(pressPage.text).toContain("Citation-ready starting points.");
     expect(pressPage.text).toContain("currently published numbers");
-    expect(pressPage.text).toContain("/data/evidence/districts/kangra.json");
+    expect(pressPage.text).toContain("/states/$STATE_SLUG/data/evidence/districts/$DISTRICT_ID.json");
+    expect(pressPage.text).not.toContain("Himachal Pradesh");
+    expect(pressPage.text).not.toContain("Kangra");
     expect(pressPage.text).not.toContain("live numbers");
 
     const sitemap = await request(app).get("/sitemap.xml");

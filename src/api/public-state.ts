@@ -75,7 +75,10 @@ export function buildPublicPageContext(
       active: profile.stateCode === currentProfile.stateCode,
     })),
     brandHref: routes.home,
-    brandTag: `Court transparency, ${currentProfile.stateName}`,
+    brandTag:
+      currentProfile.stateCode === DEFAULT_PUBLIC_STATE_CODE
+        ? "Court transparency across India"
+        : `Court transparency, ${currentProfile.stateName}`,
     lowerCourtCopy,
     publicScopeDescription: buildPublicScopeDescription(currentProfile, visibleProfiles),
   };
