@@ -1,0 +1,8 @@
+subscription_id         = "a550404e-fad3-4c52-b748-954998f1d8f9"
+project_name            = "nyaaywatch"
+environment_name        = "production"
+location                = "centralindia"
+container_image         = "nyaaywatch.azurecr.io/nyaaywatch:REPLACE_WITH_SHA"
+database_admin_password = "REPLACE_WITH_SECRET"
+operator_api_token      = "REPLACE_WITH_SECRET"
+cloudflare_api_token    = null
