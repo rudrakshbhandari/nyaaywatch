@@ -36,6 +36,7 @@ echo "Source inventory: ${source_files} files, ${source_bytes} bytes"
 echo "Uploading artifacts to Azure Blob"
 azcopy copy "$source_dir" "$TARGET_BLOB_SAS_URL" \
   --recursive=true \
+  --as-subdir=false \
   --overwrite=ifSourceNewer \
   --put-md5 \
   --check-md5=FailIfDifferent
@@ -43,6 +44,7 @@ azcopy copy "$source_dir" "$TARGET_BLOB_SAS_URL" \
 echo "Downloading Azure Blob copy for verification"
 azcopy copy "$TARGET_BLOB_SAS_URL" "$verify_dir" \
   --recursive=true \
+  --as-subdir=false \
   --overwrite=true \
   --check-md5=FailIfDifferent
 
@@ -52,7 +54,11 @@ verify_manifest="$work_dir/verify.sha256"
   find . -type f -print0 | sort -z | xargs -0 sha256sum
 ) > "$verify_manifest"
 
-missing_source_files="$(comm -23 "$manifest" "$verify_manifest")"
+sorted_manifest="$work_dir/source.sorted.sha256"
+sorted_verify_manifest="$work_dir/verify.sorted.sha256"
+LC_ALL=C sort -k2,2 "$manifest" > "$sorted_manifest"
+LC_ALL=C sort -k2,2 "$verify_manifest" > "$sorted_verify_manifest"
+missing_source_files="$(comm -23 "$sorted_manifest" "$sorted_verify_manifest")"
 if [[ -n "$missing_source_files" ]]; then
   echo "Artifact verification failed: Azure is missing source artifacts:" >&2
   printf '%s\n' "$missing_source_files" >&2

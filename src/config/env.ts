@@ -44,6 +44,10 @@ const EnvSchema = z.object({
         .map((host) => host.trim().toLowerCase())
         .filter(Boolean) ?? [],
     ),
+  MIGRATION_WRITE_FREEZE: z
+    .string()
+    .optional()
+    .transform((value) => value === "true"),
   CLOUDFLARE_API_TOKEN: z.string().min(1).optional(),
   CLOUDFLARE_ZONE_ID: z.string().min(1).optional(),
   CLOUDFLARE_ZONE_NAME: z.string().min(1).optional(),

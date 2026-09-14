@@ -104,10 +104,10 @@ jobs:
             -backend-config="client_id=${ARM_CLIENT_ID}" \
             -backend-config="use_oidc=true"
 
-      - name: Bootstrap Azure substrate with a public placeholder image
-        env:
-          TF_VAR_container_image: mcr.microsoft.com/azuredocs/containerapps-helloworld:latest
+      - name: Bootstrap Azure substrate without replacing an existing image
         run: |
+          existing_image="$(az containerapp show --name nyaaywatch-production --resource-group nyaaywatch-production --query 'properties.template.containers[0].image' --output tsv 2>/dev/null || true)"
+          export TF_VAR_container_image="${existing_image:-mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Build and publish the application image in ACR

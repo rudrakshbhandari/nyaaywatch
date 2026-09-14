@@ -86,6 +86,13 @@ export function createApp(
   app.use(express.urlencoded({ extended: false }));
   app.set("trust proxy", true);
   app.use((request, response, next) => {
+    if (config.MIGRATION_WRITE_FREEZE && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+      response.status(503).json({ error: "Writes are temporarily paused for migration." });
+      return;
+    }
+    next();
+  });
+  app.use((request, response, next) => {
     const requestHost = readRequestHost(request);
     if (!shouldRedirectToCanonicalHost(config, requestHost)) {
       next();
