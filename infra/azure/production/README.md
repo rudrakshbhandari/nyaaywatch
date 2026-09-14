@@ -53,3 +53,21 @@ TARGET_DATABASE_URL='postgresql://...' \
 `ALLOW_TARGET_OVERWRITE=true` is an explicit destructive exception and should
 only be used after a target backup and recorded cutover approval. The AWS
 source remains untouched by this operation.
+
+## Artifact transfer
+
+Copy the raw captures and release evidence before switching the application to
+Azure Blob. The script downloads the AWS bucket into a temporary directory,
+uploads it to the Azure container, downloads the result again, and compares
+SHA-256 manifests. It never deletes the AWS source or Azure target:
+
+```bash
+SOURCE_S3_URI='s3://nyaaywatch-production-artifacts-ACCOUNT_ID' \
+TARGET_BLOB_SAS_URL='https://STORAGE.blob.core.windows.net/artifacts?SAS_TOKEN' \
+./migrate-artifacts.sh
+```
+
+Use a short-lived, write-capable SAS scoped only to the target `artifacts`
+container. Do not put the SAS, AWS credentials, or either database URL in a
+repository file or shell history. Run this transfer again during the final
+cutover freeze to capture artifacts created since the rehearsal.

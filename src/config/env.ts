@@ -47,7 +47,10 @@ const EnvSchema = z.object({
   CLOUDFLARE_ZONE_ID: z.string().min(1).optional(),
   CLOUDFLARE_ZONE_NAME: z.string().min(1).optional(),
   CLOUDFLARE_WEB_ANALYTICS_TOKEN: z.string().min(1).optional(),
+  EMAIL_PROVIDER: z.enum(["aws", "azure"]).default("aws"),
   SES_SOURCE_EMAIL: z.string().email().optional(),
+  AZURE_COMMUNICATION_CONNECTION_STRING: z.string().min(1).optional(),
+  AZURE_EMAIL_SENDER: z.string().email().optional(),
   AWS_RUM_APP_MONITOR_ID: z.string().min(1).optional(),
   AWS_RUM_IDENTITY_POOL_ID: z.string().min(1).optional(),
 });
