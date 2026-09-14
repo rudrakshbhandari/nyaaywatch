@@ -176,4 +176,27 @@ describe("runAutoPublish", () => {
     expect(notifier.calls).toHaveLength(1);
     expect(notifier.calls[0].subject).toContain("auto-publish failed");
   });
+
+  it("reconciles a committed publication when cache invalidation throws", async () => {
+    const notifier = makeNotifier();
+    const runOperator = vi.fn()
+      .mockRejectedValueOnce(new Error("Cloudflare purge failed"))
+      .mockResolvedValueOnce([{ run: { id: "run_abc" } }]);
+
+    const outcome = await runAutoPublish(
+      {
+        scopeLabel: "State (HP)",
+        selector: { stateCode: "HP" },
+        fetchResult: baseFetchResult("complete", 10500, 10000),
+        pendingField: "pendingCases",
+      },
+      { runOperator, notifier },
+    );
+
+    expect(outcome).toMatchObject({ action: "published", publishRunId: "run_abc" });
+    expect(outcome.warning).toContain("Publication committed");
+    expect(runOperator).toHaveBeenNthCalledWith(2, { command: "publications", stateCode: "HP" }, expect.anything());
+    expect(notifier.calls).toHaveLength(1);
+    expect(notifier.calls[0].subject).toContain("cache invalidation warning");
+  });
 });

@@ -9,6 +9,7 @@ export interface AutoPublishOutcome {
   decision?: AutoPublishDecision;
   publishRunId?: string;
   error?: string;
+  warning?: string;
 }
 
 export interface AutoPublishRequest {
@@ -90,11 +91,52 @@ export async function runAutoPublish(
     return { action: "published", decision, publishRunId: inputs.runId };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    if (await hasPublishedRun(runOperator, request.selector, inputs.runId, rawEnv)) {
+      const warning = `Publication committed, but post-publish cache invalidation failed: ${message}`;
+      try {
+        await notifier.publish(
+          `NyaayWatch publish cache invalidation warning: ${request.scopeLabel}`,
+          `Run: ${inputs.runId}\n${warning}`,
+        );
+      } catch (notificationError) {
+        console.error(
+          `[auto-publish] Could not deliver cache invalidation warning for ${inputs.runId}: ${
+            notificationError instanceof Error ? notificationError.message : String(notificationError)
+          }`,
+        );
+      }
+      return { action: "published", decision, publishRunId: inputs.runId, warning };
+    }
+
     await notifier.publish(
       `NyaayWatch auto-publish failed: ${request.scopeLabel}`,
       `Run: ${inputs.runId}\nReason: ${message}`,
     );
     return { action: "publish_failed", decision, publishRunId: inputs.runId, error: message };
+  }
+}
+
+async function hasPublishedRun(
+  runOperator: typeof runOperatorInvocation,
+  selector: AutoPublishRequest["selector"],
+  runId: string,
+  rawEnv: NodeJS.ProcessEnv,
+): Promise<boolean> {
+  try {
+    const result = await runOperator({ ...selector, command: "publications" }, rawEnv);
+    const entries: unknown[] = Array.isArray(result)
+      ? result
+      : result && typeof result === "object" && Array.isArray((result as Record<string, unknown>).publications)
+        ? (result as Record<string, unknown>).publications as unknown[]
+        : [];
+    const latest = entries[0];
+    if (!latest || typeof latest !== "object") {
+      return false;
+    }
+    const run = (latest as Record<string, unknown>).run;
+    return Boolean(run && typeof run === "object" && (run as Record<string, unknown>).id === runId);
+  } catch {
+    return false;
   }
 }
 

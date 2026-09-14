@@ -140,6 +140,23 @@ describe("publish-pending sweep review digests", () => {
     expect(mocks.publishAlert.mock.calls[1][1]).toContain("Run: held");
   });
 
+  it("clears earlier holds when publish committed before cache invalidation failed", async () => {
+    mocks.listRuns.mockResolvedValueOnce([run("committed", 9), run("held", 8)]);
+    mocks.runOperator.mockImplementation(async ({ command, targetId }) => {
+      if (command === "publish") throw new Error("Cloudflare purge failed");
+      if (command === "publications") return [{ run: { id: "committed" } }];
+      return candidate(targetId, targetId === "committed" ? 450000 : 520038);
+    });
+
+    const summary = await runPublishPendingSweep({});
+
+    expect(summary).toMatchObject({ candidatesFound: 2, publishedCount: 1, skippedCount: 1, failedCount: 0 });
+    expect(mocks.publishAlert).toHaveBeenCalledTimes(1);
+    expect(mocks.publishAlert.mock.calls[0][0]).toContain("cache invalidation warning");
+    expect(mocks.publishAlert.mock.calls[0][1]).toContain("Run: committed");
+    expect(mocks.publishAlert.mock.calls[0][1]).not.toContain("Run: held");
+  });
+
   it("still reports collected holds when inspecting a later candidate fails", async () => {
     mocks.listRuns.mockResolvedValueOnce([run("inspect-fails", 9), run("held", 8)]);
     mocks.runOperator.mockImplementation(async ({ targetId }) => {
