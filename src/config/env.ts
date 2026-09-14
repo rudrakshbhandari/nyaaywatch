@@ -21,7 +21,8 @@ const EnvSchema = z.object({
   S3_BUCKET: z
     .string()
     .min(1)
-    .regex(/^nyaaywatch-[a-z0-9-]+$/, "S3_BUCKET must be nyaaywatch-prefixed"),
+    .regex(/^nyaaywatch-[a-z0-9-]+$/, "S3_BUCKET must be nyaaywatch-prefixed")
+    .optional(),
   AZURE_STORAGE_ACCOUNT_URL: z.string().url().optional(),
   AZURE_STORAGE_CONTAINER: z.string().min(1).optional(),
   DEPLOY_ENV: z.enum(["dev", "staging", "production"]).default("dev"),

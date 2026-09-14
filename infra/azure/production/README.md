@@ -10,11 +10,20 @@ changing the live AWS environment:
 - Azure Container Registry with managed-identity image pulls.
 - Azure Log Analytics for container logs.
 - A private virtual network and private DNS zone for PostgreSQL.
+- Azure Container Apps Jobs for the five existing fetch, publish, and smoke-monitor cadences.
 
 The application must be switched to the Azure artifact-store adapter before
-the container app is deployed. Scheduled operator jobs, email delivery,
-alarms, and production DNS remain deliberately outside this first target so
-the migration can be validated in parallel with AWS.
+the container app is deployed. Email delivery, alarms, and production DNS
+remain deliberately outside this target until the application and data paths
+have been validated in parallel with AWS.
+
+The scheduled jobs use UTC equivalents of the current Asia/Kolkata cadence:
+
+- lower-court fetch at 08:00 IST
+- Supreme Court fetch at 08:10 IST
+- reviewed High Court fetch at 08:20 IST
+- publish-pending sweep at 08:30 IST
+- public-alpha monitor every 30 minutes
 
 ## Plan-only validation
 
