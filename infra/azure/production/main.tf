@@ -253,7 +253,7 @@ resource "azurerm_container_app" "this" {
   }
 
   ingress {
-    external_enabled = true
+    external_enabled = var.enable_application
     target_port      = 3000
     transport        = "auto"
 
@@ -265,7 +265,7 @@ resource "azurerm_container_app" "this" {
 
   template {
     min_replicas = var.enable_application ? 1 : 0
-    max_replicas = 2
+    max_replicas = var.enable_application ? 2 : 1
 
     container {
       name   = var.project_name

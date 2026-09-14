@@ -7,6 +7,10 @@ output "container_registry_login_server" {
 }
 
 output "container_app_fqdn" {
+  value = azurerm_container_app.this.ingress[0].fqdn
+}
+
+output "container_app_latest_revision_fqdn" {
   value = azurerm_container_app.this.latest_revision_fqdn
 }
 

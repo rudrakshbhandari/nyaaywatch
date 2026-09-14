@@ -13,8 +13,11 @@ DNS cutover changes the live origin.
 2. Run the workflow once with `apply=true`, `enable_application=false`, and
    `enable_scheduled_jobs=false`; record the Terraform outputs, PostgreSQL FQDN,
    storage account, and state backend.
-3. Run `migrate-postgres.sh` against the AWS production database and the Azure
-   database. Keep the AWS database untouched and retain the row-count output.
+3. Run the repository-provided private relay procedure: launch the temporary
+   amd64 `infra/azure/production/relay.Dockerfile` image as an ECS Fargate task
+   in the AWS database VPC, upload the custom-format dump to the Azure Blob SAS
+   URL, and run the restore image as a manual Container Apps Job in the Azure
+   VNet. Keep the AWS database untouched and retain the row-count output.
 4. Run `migrate-artifacts.sh` against the AWS production artifact bucket and
    Azure `artifacts` container. Retain its file count, byte count, and manifest
    verification output.
@@ -27,19 +30,24 @@ DNS cutover changes the live origin.
 
 ## Cutover freeze
 
-1. Announce a short write freeze. Stop AWS scheduled writers and confirm no
-   fetch or publish job is running.
-2. Run the PostgreSQL and artifact migration scripts again. Compare the source
+1. Announce a short write freeze. Deploy the AWS application with
+   `MIGRATION_WRITE_FREEZE=true`, verify mutating routes return 503, stop AWS
+   scheduled writers, and confirm no fetch or publish job is running.
+2. Run the private relay/restore procedure and artifact migration script again. For the
+   database restore, use the approved clean-restore path (`ALLOW_TARGET_OVERWRITE=true`)
+   only after confirming the write freeze and retaining the pre-restore backup. Compare the source
    and target row counts, file counts, bytes, and application snapshot hashes.
-3. Rerun both migration scripts. The artifact check permits target-only files
+3. Rerun both migration procedures. The artifact check permits target-only files
    created during rehearsal while requiring every AWS source artifact to be
    present and checksum-identical.
 4. Apply Terraform with `enable_application = true` and
    `enable_scheduled_jobs = true`, then start the Azure jobs and perform one
    manual fetch/publish smoke test. Check
    the Azure logs and alarm webhook.
-5. Change the Cloudflare origin/DNS record for `nyaaywatch.in` to the verified
-   Azure Container App endpoint. Keep the AWS origin configuration intact.
+5. Configure and verify a Cloudflare Origin Rule that rewrites the origin
+   hostname/SNI to the stable Azure Container App ingress FQDN while preserving
+   the public `nyaaywatch.in` Host header, then change the Cloudflare origin/DNS
+   record. Keep the AWS origin configuration intact.
 6. Verify through the public hostname from an external network: health,
    canonical redirect, one public state page, JSON data, newsletter subscribe
    confirmation path, and operator health/read-only inspection.
@@ -47,9 +55,12 @@ DNS cutover changes the live origin.
 ## Rollback
 
 If any verification gate fails, stop Azure scheduled writers, restore the
-Cloudflare origin to the AWS load balancer, re-enable the AWS schedules, and
-verify the public hostname again. Do not delete Azure resources or overwrite
-the Azure database while investigating. Record the failing check, timestamp,
-image SHA, and last successful AWS release.
+Cloudflare origin to the AWS load balancer, redeploy AWS with
+`MIGRATION_WRITE_FREEZE=false`, re-enable the AWS schedules, and verify the
+public hostname again. If Azure accepted writes after cutover, export and
+review those Azure database rows and Blob objects before rollback; do not
+silently roll back over them. Do not delete Azure resources or overwrite the
+Azure database while investigating. Record the failing check, timestamp, image
+SHA, and last successful AWS release.
 
 Only after a separately approved stabilization period should AWS be retired.

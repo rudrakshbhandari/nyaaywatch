@@ -128,6 +128,7 @@ flowchart TD
 - Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate.
 - Published snapshot read models drive every public surface; rollback is one operator call.
+- The production target supports AWS/S3 and Azure Blob storage behind the same artifact-store interface; the Azure deployment lives under `infra/azure/production/`.
 
 ## Repository Map
 
@@ -138,12 +139,13 @@ flowchart TD
 | `src/domain/` | Zod schemas and typed contracts for captured, candidate, and published snapshots |
 | `src/ingest/`, `src/extract/`, `src/normalize/` | Pipeline stages from upstream NJDG capture to deterministic snapshot candidates |
 | `src/services/` | Published snapshot orchestration, newsletter delivery, and cache invalidation |
-| `src/storage/` | PostgreSQL and S3 adapters |
+| `src/storage/` | PostgreSQL plus AWS S3 and Azure Blob adapters |
 | `src/db/` | SQL migrations and migration tooling |
 | `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
 | `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
 | `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
 | `infra/aws/` | AWS dev, preview, staging, production, schedule, and cutover scripts/templates |
+| `infra/azure/` | Azure production migration target, Terraform, transfer scripts, and cutover runbook |
 | `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
