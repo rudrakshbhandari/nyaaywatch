@@ -14,7 +14,7 @@ export function renderParliamentarySnapshotPage(
   snapshot: ParliamentaryPublishedSnapshot,
   personId?: string,
 ): string {
-  const profile = personId ? snapshot.profiles.find((candidate) => candidate.person.personId === personId) : snapshot.profiles[0];
+  const profile = personId ? snapshot.profiles.find((candidate) => candidate.person.personId === personId) : undefined;
   const title = profile
     ? `${profile.person.fullName} — Lok Sabha parliamentary profile`
     : "Lok Sabha parliamentary activity snapshot";
