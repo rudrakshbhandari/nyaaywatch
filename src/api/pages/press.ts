@@ -14,8 +14,8 @@ export function renderPressPage(): string {
   const body = `
     <section class="press-hero">
       <p class="press-hero__eyebrow">PRESS & EMBED KIT</p>
-      <h1 class="press-hero__hed">For journalists,<br>researchers,<br>and civic groups.</h1>
-      <p class="press-hero__lede">Everything you need to cite, embed, or republish NyaayWatch data — logos, embed codes, suggested captions, and methodology links. All numbers come from public NJDG data with full methodology disclosure.</p>
+      <h1 class="press-hero__hed">Source links,<br>embeds,<br>and methodology.</h1>
+      <p class="press-hero__lede">Cite, embed, or republish NyaayWatch data with logos, embed codes, suggested captions, and methodology links. Numbers come from public NJDG data with documented methods.</p>
     </section>
 
     ${renderInvestigationWorkflow({
@@ -26,7 +26,7 @@ export function renderPressPage(): string {
         {
           eyebrow: "01",
           title: "National entry point",
-          body: "Use the homepage or Supreme Court page for top-level court-system context without flattening every tier into one league table.",
+          body: "Use the homepage or Supreme Court page for top-level court-system context. The tiers remain separate.",
           href: "/",
           cta: "Open homepage",
         },
@@ -237,7 +237,7 @@ export function renderPressPage(): string {
     pageCss: PRESS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS,
     og: {
       title: "Press & Embed Kit — NyaayWatch",
-      description: "Logos, embed codes, suggested captions, API quickstart, and methodology links for journalists and researchers using NyaayWatch court data.",
+      description: "Logos, embed codes, suggested captions, API quickstart, and methodology links for NyaayWatch court data.",
     },
   });
 }

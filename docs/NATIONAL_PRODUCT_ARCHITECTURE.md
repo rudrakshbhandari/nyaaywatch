@@ -324,7 +324,7 @@ The rollout sequence can still be:
 4. Supreme Court module
 5. later cross-tier synthesis improvements
 
-This is not a contradiction. It is the normal way to build the final shape without lying about current coverage.
+The sequence lets the product expand without claiming broader coverage than the data supports.
 
 ## Current Source Reality, Verified 2026-04-18
 
@@ -341,7 +341,7 @@ The current official public source landscape already supports thinking in three 
 - Department of Justice NJDG overview:
   - [doj.gov.in/the-national-judicial-data-grid-njdg](https://www.doj.gov.in/the-national-judicial-data-grid-njdg)
 
-This source shape is a strong argument for one product with tier-aware modules rather than one undifferentiated dashboard.
+This source shape supports one product with tier-aware modules rather than one undifferentiated dashboard.
 
 ## Decision
 
@@ -352,4 +352,4 @@ NyaayWatch should explicitly commit to this product direction:
 - one trust model
 - multiple tier-specific pipelines and methodology tracks
 
-That is the scalable path to covering the country without weakening rigor.
+This adds national coverage without changing the evidence standard.

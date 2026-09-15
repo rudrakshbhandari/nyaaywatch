@@ -119,7 +119,7 @@ Target horizon: `now -> next 6 months`
 
 Primary goal:
 
-- make the aggregate observability model robust across more states before widening the data model
+- make the aggregate observability model work across more states before widening the data model
 
 Focus:
 

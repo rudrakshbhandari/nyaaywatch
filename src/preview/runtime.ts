@@ -48,7 +48,7 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
     S3_BUCKET: rawEnv.S3_BUCKET ?? "nyaaywatch-preview-artifacts",
     DEPLOY_ENV: rawEnv.DEPLOY_ENV ?? "dev",
     OPERATOR_API_TOKEN: rawEnv.OPERATOR_API_TOKEN ?? `preview-disabled-${randomUUID()}`,
-    // The App Runner PR deployment opts into the throwaway public preview
+    // The App Runner PR deployment opts into the public preview
     // explicitly. Keep ordinary local preview behavior unchanged by default.
     ENABLE_OPERATOR_ROUTES: rawEnv.ENABLE_OPERATOR_ROUTES ?? "false",
     PUBLIC_PARLIAMENTARY_PREVIEW: rawEnv.PUBLIC_PARLIAMENTARY_PREVIEW ?? "true",

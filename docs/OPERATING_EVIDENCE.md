@@ -74,13 +74,13 @@ output/release-evidence/<publication-id>.json
 
 ## Internal parliamentary pilot evidence
 
-The bounded Lok Sabha pilot uses the same fetch, inspect, publish, replay, and rollback evidence pattern while remaining outside the public route family. Run the deterministic local proof with:
+Run the deterministic local proof with:
 
 ```bash
 npm run parliament:demo
 ```
 
-The demo records the captured, published, replayed, and rollback publication IDs, verifies that aggregate and MP profile values share one lineage, and checks the protected JSON and HTML routes. The exact output belongs in the pull request evidence for the change.
+The demo records captured, published, replayed, and rollback publication IDs, verifies one lineage for the aggregate and MP profile, and checks the JSON and HTML routes. A recorded result is in [the parliamentary demo evidence](internal/PARLIAMENTARY_DEMO.md).
 
 The internal routes are:
 
@@ -88,4 +88,4 @@ The internal routes are:
 - `GET /operator/parliamentary/html` — aggregate HTML read model.
 - `GET /operator/parliamentary/html/mp/mp-5814` — time-bounded Shri Mani A profile.
 
-These routes require the operator token. They do not authorize public redistribution of raw Digital Sansad or Parliament Digital Library artifacts.
+Normal environments require the operator token for these routes. PR previews expose normalized read models only; raw Digital Sansad and Parliament Digital Library artifacts remain internal.
