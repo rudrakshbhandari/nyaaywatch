@@ -248,6 +248,11 @@ Scheduled internal fetches and release verification run through the AWS and GitH
 ## Data sources
 
 NyaayWatch starts from official aggregate dashboards and documents its source boundary in the repository and on the public methodology pages:
+After Azure becomes the active production provider, set the repository variable
+`ACTIVE_PRODUCTION_PROVIDER=azure`. The main deploy job is gated on that value
+so later pushes do not restart the AWS service or re-enable its schedules.
+
+Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `SES_SOURCE_EMAIL` is an authenticated `@nyaaywatch.in` sender and `NJDG_OUTREACH_ARCHIVE_BUCKET` is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, writes the exact outbound payload to S3 under `ops/njdg-missing-zero-outreach/`, and fails loudly if email or archive configuration is incomplete.
 
 - [Supreme Court NJDG](https://scdg.sci.gov.in/scnjdg/)
 - [High Court NJDG](https://njdg.ecourts.gov.in/hcnjdg_v2/)
