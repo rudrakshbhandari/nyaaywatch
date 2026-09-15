@@ -18,9 +18,11 @@ jobs:
   watchdog:
     runs-on: ubuntu-latest
     env:
+      ACTIVE_PRODUCTION_PROVIDER: ${{ vars.ACTIVE_PRODUCTION_PROVIDER || 'aws' }}
       AWS_REGION: ap-south-1
       PUBLIC_BASE_URL: https://nyaaywatch.in
       PRODUCTION_STACK_NAME: nyaaywatch-production
+      OPERATOR_API_TOKEN: ${{ secrets.AZURE_OPERATOR_API_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -36,12 +38,14 @@ jobs:
         run: npm install
 
       - name: Configure AWS credentials
+        if: env.ACTIVE_PRODUCTION_PROVIDER == 'aws'
         uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
 
       - name: Load live operator token and alarm topic
+        if: env.ACTIVE_PRODUCTION_PROVIDER == 'aws'
         run: |
           operator_token_secret_arn="$(
             aws cloudformation describe-stacks \
@@ -80,6 +84,7 @@ jobs:
 
       - name: Run internal fetch schedule watchdog
         id: internal_fetch
+        if: env.ACTIVE_PRODUCTION_PROVIDER == 'aws'
         continue-on-error: true
         run: |
           set +e
@@ -91,11 +96,48 @@ jobs:
           [[ -f internal-fetch-schedule-summary.json ]] && cat internal-fetch-schedule-summary.json
           exit "$status"
 
+      - name: Log in to Azure for the production watchdog
+        if: env.ACTIVE_PRODUCTION_PROVIDER == 'azure'
+        uses: azure/login@eec3c95657c1536435858eda1f3ff5437fee8474
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Verify Azure scheduled jobs
+        id: azure_jobs
+        if: env.ACTIVE_PRODUCTION_PROVIDER == 'azure'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          resource_group="nyaaywatch-production"
+          app_prefix="nyaaywatch-production"
+          jobs=(fetch sc-fetch hc-fetch publish alpha-ops)
+          failures=()
+          for job_suffix in "${jobs[@]}"; do
+            job_name="${app_prefix}-${job_suffix}"
+            if ! az containerapp job show --name "$job_name" --resource-group "$resource_group" --output none; then
+              failures+=("$job_name is missing")
+            fi
+          done
+          node - <<'NODE'
+          const fs = require("node:fs");
+          fs.writeFileSync("internal-fetch-schedule-summary.json", JSON.stringify({
+            provider: "azure",
+            tiers: [],
+            failingTiers: [],
+          }, null, 2));
+          NODE
+          if ((${#failures[@]} > 0)); then
+            printf '%s\n' "${failures[@]}" >&2
+            exit 1
+          fi
+
       - name: Compose watchdog alert
         if: always()
         env:
           PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
-          INTERNAL_FETCH_OUTCOME: ${{ steps.internal_fetch.outcome }}
+          INTERNAL_FETCH_OUTCOME: ${{ env.ACTIVE_PRODUCTION_PROVIDER == 'azure' && steps.azure_jobs.outcome || steps.internal_fetch.outcome }}
         run: |
           node <<'NODE'
           const fs = require("node:fs");
@@ -245,7 +287,7 @@ jobs:
             core.setOutput("issue-number", issueNumber);
 
       - name: Publish SNS alert while watchdog issue is open or on recovery
-        if: always() && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'closed')
+        if: always() && env.ACTIVE_PRODUCTION_PROVIDER == 'aws' && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'closed')
         env:
           ACTION: ${{ steps.sync_issue.outputs.action }}
         run: |
@@ -264,7 +306,7 @@ jobs:
         if: always()
         env:
           PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
-          INTERNAL_FETCH_OUTCOME: ${{ steps.internal_fetch.outcome }}
+          INTERNAL_FETCH_OUTCOME: ${{ env.ACTIVE_PRODUCTION_PROVIDER == 'azure' && steps.azure_jobs.outcome || steps.internal_fetch.outcome }}
         run: |
           if [[ "$PUBLIC_ALPHA_OUTCOME" != "success" || "$INTERNAL_FETCH_OUTCOME" != "success" ]]; then
             exit 1

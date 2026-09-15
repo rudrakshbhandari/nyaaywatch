@@ -5,34 +5,39 @@ locals {
   # current Asia/Kolkata cadence: 08:00, 08:10, 08:20, and 08:30 IST.
   scheduled_jobs = {
     weekday-internal-fetch = {
-      name    = "fetch"
-      cron    = "30 2 * * *"
-      command = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
-      args    = []
+      name                 = "fetch"
+      cron                 = "30 2 * * *"
+      command              = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
+      args                 = []
+      replica_timeout      = 14400
     }
     supreme-court-internal-fetch = {
-      name    = "sc-fetch"
-      cron    = "40 2 * * *"
-      command = ["node", "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js"]
-      args    = []
+      name            = "sc-fetch"
+      cron            = "40 2 * * *"
+      command         = ["node", "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js"]
+      args            = []
+      replica_timeout = 3600
     }
     high-courts-internal-fetch = {
-      name    = "hc-fetch"
-      cron    = "50 2 * * *"
-      command = ["node", "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js"]
-      args    = []
+      name            = "hc-fetch"
+      cron            = "50 2 * * *"
+      command         = ["node", "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js"]
+      args            = []
+      replica_timeout = 3600
     }
     publish-pending-sweep = {
-      name    = "publish"
-      cron    = "0 3 * * *"
-      command = ["node", "dist/src/dev/ecs-publish-pending-entrypoint.js"]
-      args    = []
+      name            = "publish"
+      cron            = "0 3 * * *"
+      command         = ["node", "dist/src/dev/ecs-publish-pending-entrypoint.js"]
+      args            = []
+      replica_timeout = 3600
     }
     public-alpha-ops-monitor = {
-      name    = "alpha-ops"
-      cron    = "0 * * * *"
-      command = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
-      args    = ["--base-url", "https://nyaaywatch.in", "--target-set", "smoke"]
+      name            = "alpha-ops"
+      cron            = "0 * * * *"
+      command         = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
+      args            = ["--base-url", "https://nyaaywatch.in", "--target-set", "smoke"]
+      replica_timeout = 3600
     }
   }
 
@@ -413,7 +418,7 @@ resource "azurerm_container_app_job" "scheduled" {
   location                     = azurerm_resource_group.this.location
   resource_group_name          = azurerm_resource_group.this.name
   container_app_environment_id = azurerm_container_app_environment.this.id
-  replica_timeout_in_seconds   = 3600
+  replica_timeout_in_seconds   = each.value.replica_timeout
   replica_retry_limit          = 1
   tags                         = local.tags
 
