@@ -76,7 +76,7 @@ describe("publish-pending sweep review digests", () => {
     expect(subject).toBe("NyaayWatch review required: State (CG)");
     expect(message).toContain("Held runs requiring review: 3");
     for (const [id, value] of Object.entries(pending)) {
-      expect(message).toContain(`Run: ${id}\nReason: outlier_pending_delta\nQuality state: complete\nCurrent pending: ${value}\nPrevious published pending: 413079`);
+      expect(message).toContain(`Run: ${id}\nReason: outlier_pending_delta\nQuality state: complete\nCurrent pending: ${value}\nHistorical baseline pending: 413079`);
     }
     expect(message).toContain("Delta fraction: 25.0% (threshold 20%)");
     expect(message).toContain("Delta fraction: 25.9% (threshold 20%)");
@@ -109,7 +109,7 @@ describe("publish-pending sweep review digests", () => {
     const message = mocks.publishAlert.mock.calls[0][1];
     expect(message).toContain("Held runs requiring review: 1");
     expect(message).toContain("Run: latest-hold");
-    expect(message).toContain("Previous published pending: 450000");
+    expect(message).toContain("Historical baseline pending: 450000");
     expect(message).not.toContain("Run: superseded");
   });
 

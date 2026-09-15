@@ -121,7 +121,7 @@ export async function runPublishPendingSweep(
         `Publish-pending candidates for ${scope.scopeLabel}: ${candidates.length} run(s) — ${candidates.map((c) => c.id).join(", ")}`,
       );
 
-      // The candidate's trends array — and therefore its previousPending baseline —
+      // The candidate's trends array — and therefore its historical baseline —
       // is captured at fetch time. When we publish multiple candidates in one
       // sweep, runs after the first need to be evaluated against the run we just
       // published, not against whatever was the latest publication when this run
