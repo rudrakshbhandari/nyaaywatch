@@ -378,6 +378,8 @@ describe("HTTP routes", () => {
     expect(pressPage.text).toContain("/states/$STATE_SLUG/data/evidence/districts/$DISTRICT_ID.json");
     expect(pressPage.text).not.toContain("Himachal Pradesh");
     expect(pressPage.text).not.toContain("Kangra");
+    expect(pressPage.text).toContain("selected lower-court geography");
+    expect(pressPage.text).not.toContain("selected state courts");
     expect(pressPage.text).toContain('href="/#lower-court-pages"');
     expect(pressPage.text).not.toContain('href="/data/evidence/state.json"');
     expect(pressPage.text).not.toContain('href="/movers"');
@@ -1226,6 +1228,11 @@ describe("HTTP routes", () => {
     expect(punjabDistrictEmbed.text).toContain("Ludhiana");
     expect(punjabDistrictEmbed.text).toContain("PUNJAB");
     expect(punjabDistrictEmbed.text).toContain("https://nyaaywatch.in/states/punjab/districts/ludhiana");
+
+    const punjabStateEmbed = await request(app).get("/embed/state/punjab");
+    expect(punjabStateEmbed.status).toBe(200);
+    expect(punjabStateEmbed.text).toContain("LOWER-COURT GEOGRAPHY OVERVIEW");
+    expect(punjabStateEmbed.text).toContain("Punjab");
 
     const punjabDistrictPack = await request(app).get("/states/punjab/data/evidence/districts/ludhiana.json");
     expect(punjabDistrictPack.status).toBe(200);
