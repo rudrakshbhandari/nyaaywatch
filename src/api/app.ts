@@ -73,7 +73,10 @@ const LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY = "No published snapshot is avail
 
 export function createMigrationWriteFreezeMiddleware(enabled: boolean) {
   return (request: Request, response: Response, next: NextFunction) => {
-    if (enabled && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+    const mutatingGet =
+      request.method === "GET" &&
+      (/^\/subscribe\/confirm\//.test(request.path) || /^\/unsubscribe\//.test(request.path));
+    if (enabled && (mutatingGet || !["GET", "HEAD", "OPTIONS"].includes(request.method))) {
       response.status(503).json({ error: "Writes are temporarily paused for migration." });
       return;
     }
