@@ -75,6 +75,7 @@ function buildMethodology() {
     missingDataRules: [
       "A Lok Sabha-wide question aggregate is not labeled as a Session 5 count.",
       "Bill sponsorship is missing when the official result does not publish a member identifier.",
+      "A bill or question result is not counted when its declared total is missing or does not match the captured rows.",
       "Attendance is not published until the official attendance code legend is verified.",
       "No ranking, composite score, or judgment about a person is derived from activity counts.",
     ],
@@ -87,24 +88,27 @@ function buildActivitySummary(
   scope: "house_session" | "member_session",
 ) {
   const uniqueBillIds = new Set(capture.bills.map((bill) => `${bill.billNumber}:${bill.title}`));
+  const billAttributionStatus = getBillAttributionStatus(capture);
   const attributedBillCount = capture.bills.filter((bill) => bill.introducedByMemberId === capture.person.personId).length;
-  const attributedBillRecords = capture.bills.filter((bill) => bill.introducedByMemberId !== null).length;
-  const nullAttributionRecords = capture.bills.length - attributedBillRecords;
-  const questionRows = scope === "member_session" && capture.questionRowsComplete ? capture.questions : [];
+  const questionRows = scope === "member_session" && capture.questionRowsStatus === "complete" ? capture.questions : [];
   const isMemberScope = scope === "member_session";
+  const canPublishHouseBillCounts = capture.billRowsStatus === "complete";
+  const canPublishMemberBillCounts = canPublishHouseBillCounts && billAttributionStatus === "complete";
 
   return {
     scope,
     bills: {
-      recordCount: capture.bills.length,
-      uniqueBillCount: uniqueBillIds.size,
+      recordCount: isMemberScope
+        ? canPublishMemberBillCounts ? attributedBillCount : null
+        : canPublishHouseBillCounts ? capture.bills.length : null,
+      uniqueBillCount: isMemberScope
+        ? canPublishMemberBillCounts
+          ? new Set(capture.bills.filter((bill) => bill.introducedByMemberId === capture.person.personId).map((bill) => `${bill.billNumber}:${bill.title}`)).size
+          : null
+        : canPublishHouseBillCounts ? uniqueBillIds.size : null,
+      captureStatus: capture.billRowsStatus,
       attributedToMemberCount: isMemberScope ? attributedBillCount : null,
-      attributionStatus:
-        nullAttributionRecords === 0
-          ? ("complete" as const)
-          : attributedBillRecords === 0
-            ? ("not_published_by_source" as const)
-            : ("partial" as const),
+      attributionStatus: billAttributionStatus,
     },
     questions: {
       sessionScopedCount: questionRows.length > 0 ? questionRows.length : null,
@@ -115,9 +119,11 @@ function buildActivitySummary(
       byType: countBy(questionRows, (question) => question.questionType ?? "Not stated"),
       breakdownStatus: !isMemberScope
         ? ("not_captured" as const)
-        : !capture.questionRowsComplete
+        : capture.questionRowsStatus === "incomplete"
           ? ("incomplete" as const)
-          : questionRows.length > 0
+          : capture.questionRowsStatus === "unverified"
+            ? ("unverified" as const)
+            : questionRows.length > 0
             ? ("captured" as const)
             : ("not_captured" as const),
     },
@@ -131,6 +137,16 @@ function buildActivitySummary(
   };
 }
 
+function getBillAttributionStatus(
+  capture: ExtractedParliamentaryCapture,
+): "complete" | "not_published_by_source" | "partial" {
+  const attributedBillRecords = capture.bills.filter((bill) => bill.introducedByMemberId !== null).length;
+  const nullAttributionRecords = capture.bills.length - attributedBillRecords;
+  if (nullAttributionRecords === 0) return "complete";
+  if (attributedBillRecords === 0) return "not_published_by_source";
+  return "partial";
+}
+
 function buildMissingData(capture: ExtractedParliamentaryCapture, scope: "house_session" | "member_session"): string[] {
   const missingData: string[] = [];
   if (scope === "house_session") {
@@ -138,12 +154,19 @@ function buildMissingData(capture: ExtractedParliamentaryCapture, scope: "house_
   } else {
     if (capture.questions.length === 0) {
       missingData.push("question-rows-not-captured-modern-endpoint-unresolved");
-    } else if (!capture.questionRowsComplete) {
+    } else if (capture.questionRowsStatus === "incomplete") {
       missingData.push("question-result-incomplete");
+    } else if (capture.questionRowsStatus === "unverified") {
+      missingData.push("question-result-unverified-total");
     }
     if (capture.participation.questionCountScope !== "session") {
       missingData.push("source-question-aggregate-not-session-scoped");
     }
+  }
+  if (capture.billRowsStatus === "incomplete") {
+    missingData.push(scope === "house_session" ? "house-session-bill-result-incomplete" : "bill-result-incomplete");
+  } else if (capture.billRowsStatus === "unverified") {
+    missingData.push(scope === "house_session" ? "house-session-bill-result-unverified-total" : "bill-result-unverified-total");
   }
   if (scope === "member_session" && !capture.bills.some((bill) => bill.introducedByMemberId !== null)) {
     missingData.push("bill-attribution-not-published-by-source");

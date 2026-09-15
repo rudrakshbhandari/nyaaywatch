@@ -105,7 +105,7 @@ export const ParliamentaryCaptureBundleSchema = z.object({
   sessionStartDate: DateOnlySchema,
   sessionEndDate: DateOnlySchema,
   sourceResultTotals: z.object({
-    billRecords: z.number().int().nonnegative(),
+    billRecords: z.number().int().nonnegative().nullable(),
     questionRecords: z.number().int().nonnegative().nullable(),
   }),
   sourceEvidence: z.array(ParliamentarySourceEvidenceSchema).min(1),
@@ -138,8 +138,9 @@ export const ParliamentarySnapshotMetadataSchema = z.object({
 });
 
 export const ParliamentaryBillActivitySummarySchema = z.object({
-  recordCount: z.number().int().nonnegative(),
-  uniqueBillCount: z.number().int().nonnegative(),
+  recordCount: z.number().int().nonnegative().nullable(),
+  uniqueBillCount: z.number().int().nonnegative().nullable(),
+  captureStatus: z.enum(["complete", "incomplete", "unverified"]),
   attributedToMemberCount: z.number().int().nonnegative().nullable(),
   attributionStatus: z.enum(["complete", "not_published_by_source", "partial"]),
 });
@@ -151,7 +152,7 @@ export const ParliamentaryQuestionActivitySummarySchema = z.object({
   bySession: z.array(ParliamentaryBreakdownEntrySchema),
   byMinistry: z.array(ParliamentaryBreakdownEntrySchema),
   byType: z.array(ParliamentaryBreakdownEntrySchema),
-  breakdownStatus: z.enum(["captured", "incomplete", "not_captured", "not_session_scoped"]),
+  breakdownStatus: z.enum(["captured", "incomplete", "unverified", "not_captured", "not_session_scoped"]),
 });
 
 export const ParliamentaryActivitySummarySchema = z.object({
