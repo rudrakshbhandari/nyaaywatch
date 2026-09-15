@@ -33,7 +33,8 @@ else
   rc=$?
 fi
 if [[ "$rc" -eq 0 ]]; then
-  psql -XAtF $'\t' "$SOURCE_DATABASE_URL" >"$counts_file" 2>>"$log_file" <<SQL
+  raw_counts_file=/tmp/source-row-counts.raw.tsv
+  psql -XqAtF $'\t' "$SOURCE_DATABASE_URL" >"$raw_counts_file" 2>>"$log_file" <<SQL
 BEGIN ISOLATION LEVEL REPEATABLE READ;
 SET TRANSACTION SNAPSHOT '$snapshot';
 SELECT format('select %L, count(*) from %I.%I;', table_schema||'.'||table_name, table_schema, table_name)
@@ -44,6 +45,10 @@ ORDER BY 1;
 COMMIT;
 SQL
   rc=$?
+  if [[ "$rc" -eq 0 ]]; then
+    awk -F $'\t' 'NF == 2 && $2 ~ /^[0-9]+$/ { print }' "$raw_counts_file" >"$counts_file"
+    rc=$?
+  fi
 fi
 if [[ "$rc" -eq 0 ]]; then
   curl --fail --silent --show-error --retry 3 -X PUT -H "x-ms-blob-type: BlockBlob" --upload-file "$dump_file" "$AZURE_BLOB_SAS_URL" >>"$log_file" 2>&1
