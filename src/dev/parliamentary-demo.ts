@@ -86,8 +86,8 @@ try {
         },
         publishedValues: {
           uniqueBillCount: snapshot.aggregate.activity.bills.uniqueBillCount,
-          sourceReportedQuestionCount: snapshot.aggregate.activity.questions.sourceReportedCount,
-          sessionScopedQuestionCount: snapshot.aggregate.activity.questions.sessionScopedCount,
+          sourceReportedQuestionCount: snapshot.profiles[0]?.activity.questions.sourceReportedCount,
+          sessionScopedQuestionCount: snapshot.profiles[0]?.activity.questions.sessionScopedCount,
           mpProfile: snapshot.profiles[0]?.person.fullName,
         },
         surfaces: {

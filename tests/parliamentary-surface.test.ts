@@ -37,8 +37,11 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
     expect(jsonResponse.body.snapshot.metadata.scopeId).toBe("ls-18-session-5");
     expect(jsonResponse.body.snapshot.metadata.lineageId).toBe("parliament-ls18-s5-20260811T033035Z");
     expect(jsonResponse.body.aggregate.activity.bills.uniqueBillCount).toBe(14);
-    expect(jsonResponse.body.aggregate.activity.questions.sourceReportedCount).toBe(125);
-    expect(jsonResponse.body.aggregate.activity.questions.sessionScopedCount).toBe(20);
+    expect(jsonResponse.body.aggregate.activity.scope).toBe("house_session");
+    expect(jsonResponse.body.aggregate.activity.questions.sourceReportedCount).toBeNull();
+    expect(jsonResponse.body.aggregate.activity.questions.sessionScopedCount).toBeNull();
+    expect(jsonResponse.body.profiles[0].activity.questions.sourceReportedCount).toBe(125);
+    expect(jsonResponse.body.profiles[0].activity.questions.sessionScopedCount).toBe(20);
     expect(jsonResponse.body.methodology.publicationBoundary).toContain("Internal operator surfaces only");
     expect(jsonResponse.body.citations.some((citation: { url: string }) => citation.url.includes("sansad.in"))).toBe(true);
 
@@ -50,9 +53,8 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
     expect(htmlResponse.text).toContain('data-lineage-id="parliament-ls18-s5-20260811T033035Z"');
     expect(htmlResponse.text).toContain("Unique bills");
     expect(htmlResponse.text).toContain(">14</dd>");
-    expect(htmlResponse.text).toContain("Questions reported by source");
-    expect(htmlResponse.text).toContain(">125</dd>");
-    expect(htmlResponse.text).toContain(">20</dd>");
+    expect(htmlResponse.text).toContain("Question rows for the full session");
+    expect(htmlResponse.text).toContain("Full House/session question coverage was not captured");
     expect(htmlResponse.text).toContain("https://sansad.in/api_ls/member/5814?locale=en");
 
     const profileResponse = await request(context.app)
@@ -64,6 +66,7 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
     expect(profileResponse.text).toContain("Dharmapuri");
     expect(profileResponse.text).toContain("Dravida Munnetra Kazhagam");
     expect(profileResponse.text).toContain(">125</dd>");
+    expect(profileResponse.text).toContain("Debate participation (Lok Sabha-wide)");
 
     expect((await request(context.app).get("/parliamentary")).status).toBe(404);
   });
@@ -75,6 +78,13 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
     expect((await request(context.app).get("/operator/parliamentary")).status).toBe(200);
     expect((await request(context.app).get("/operator/parliamentary/html")).status).toBe(200);
     expect((await request(context.app).get("/operator/parliamentary/html/mp/mp-5814")).status).toBe(200);
+  });
+
+  it("keeps parliamentary preview routes protected unless explicitly enabled", async () => {
+    const context = await createSurfaceContext();
+    pools.push(context.pool);
+
+    expect((await request(context.app).get("/operator/parliamentary")).status).toBe(401);
   });
 });
 

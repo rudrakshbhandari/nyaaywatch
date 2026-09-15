@@ -205,8 +205,11 @@
     "questionCount": 125,
     "questionCountScope": "lok_sabha",
     "debateCount": 4,
+    "debateCountScope": "lok_sabha",
     "billParticipationCount": 0,
+    "billParticipationCountScope": "lok_sabha",
     "committeeParticipationCount": 2,
+    "committeeParticipationCountScope": "lok_sabha",
     "evidenceIds": ["ds-question-aggregate-5814", "ds-debate-aggregate-5814", "ds-committee-aggregate-5814"]
   }
 }

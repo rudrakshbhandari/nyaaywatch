@@ -11,20 +11,19 @@ The deterministic fixture demo completed on 2026-09-15 with these results:
 ```json
 {
   "scope": "ls-18-session-5",
-  "capturedRunId": "run_77a21789-09e8-4d99-a628-a4f676fdac16",
-  "publishedRunId": "run_77a21789-09e8-4d99-a628-a4f676fdac16",
-  "publishedPublicationId": "publication_d9910a8c-8a21-4cc5-87d6-ca9e682005f5",
-  "replayRunId": "run_4452d061-46b4-46f2-9407-05465f6f1c62",
-  "replayPublicationId": "publication_d6aaffbf-cd12-4661-9c59-4e6347587538",
-  "rollbackPublicationId": "publication_de8049d9-301f-4264-97b4-37fc3219fef1",
+  "capturedRunId": "run_2e2c5c49-5e76-4800-92ee-d7f568b13b59",
+  "publishedRunId": "run_2e2c5c49-5e76-4800-92ee-d7f568b13b59",
+  "publishedPublicationId": "publication_567ef326-57cc-439a-bfd6-1b6d413c7fce",
+  "replayRunId": "run_2b543efc-4245-49ed-b645-340b020a4e0c",
+  "replayPublicationId": "publication_0c1a814f-ee9c-43fd-ab51-8e211a6ee154",
+  "rollbackPublicationId": "publication_dacd2ae5-ad33-4028-a364-2318a33964bd",
   "statuses": { "captured": "completed", "published": "published", "replayed": "replayed", "rollback": "rollback" },
   "lineage": { "aggregate": "parliament-ls18-s5-20260811T033035Z", "profile": "parliament-ls18-s5-20260811T033035Z", "replay": "parliament-ls18-s5-20260811T033035Z", "allMatch": true },
   "publishedValues": { "uniqueBillCount": 14, "sourceReportedQuestionCount": 125, "sessionScopedQuestionCount": 20, "mpProfile": "Shri Mani A" },
   "surfaces": { "jsonStatus": 200, "htmlStatus": 200, "profileHtmlStatus": 200, "htmlContainsLineage": true, "htmlContainsUniqueBillCount": true, "profileHtmlContainsName": true },
   "qualityState": "partial",
   "remainingMissingData": [
-    "source-question-aggregate-not-session-scoped",
-    "bill-attribution-not-published-by-source",
+    "house-session-question-coverage-not-captured",
     "attendance-not-published-official-code-legend-unverified"
   ]
 }

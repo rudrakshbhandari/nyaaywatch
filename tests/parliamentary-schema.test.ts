@@ -38,6 +38,8 @@ describe("parliamentary capture schema", () => {
     });
     expect(parsed.participation.questionCount).toBe(125);
     expect(parsed.participation.questionCountScope).toBe("lok_sabha");
+    expect(parsed.participation.debateCountScope).toBe("lok_sabha");
+    expect(parsed.participation.committeeParticipationCountScope).toBe("lok_sabha");
     expect(parsed.sourceResultTotals.questionRecords).toBe(20);
     expect(parsed.sourceEvidence.some((evidence) => evidence.evidenceId === "ds-questions-18-5-member-5814")).toBe(true);
     expect(parsed.sourceEvidence.some((evidence) => evidence.sourceSystem === "parliament_digital_library")).toBe(true);

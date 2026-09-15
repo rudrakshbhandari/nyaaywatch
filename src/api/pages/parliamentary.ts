@@ -50,11 +50,7 @@ function renderAggregate(snapshot: ParliamentaryPublishedSnapshot): string {
     <section class="grid" aria-label="Published activity values">
       ${metric("Bill records", activity.bills.recordCount)}
       ${metric("Unique bills", activity.bills.uniqueBillCount)}
-      ${metric("Member-attributed bills", activity.bills.attributedToMemberCount)}
-      ${metric("Questions reported by source", activity.questions.sourceReportedCount ?? "Not available")}
-      ${metric("Session-scoped question rows", activity.questions.sessionScopedCount ?? "Not captured")}
-      ${metric("Debate participation records", activity.debateParticipationCount ?? "Not available")}
-      ${metric("Committee participation records", activity.committeeParticipationCount ?? "Not available")}
+      ${metric("Question rows for the full session", activity.questions.sessionScopedCount ?? "Not captured")}
       ${metric("Attendance", "Not published")}
     </section>
     ${renderQuestionCaveat(activity.questions.sourceReportedCount, activity.questions.sourceReportedScope, activity.questions.breakdownStatus)}
@@ -79,11 +75,11 @@ function renderProfile(snapshot: ParliamentaryPublishedSnapshot, profile: Parlia
     <section class="grid" aria-label="Published MP activity values">
       ${metric("Bill records", activity.bills.recordCount)}
       ${metric("Unique bills", activity.bills.uniqueBillCount)}
-      ${metric("Member-attributed bills", activity.bills.attributedToMemberCount)}
-      ${metric("Questions reported by source", activity.questions.sourceReportedCount ?? "Not available")}
+      ${metric("Member-attributed bills", activity.bills.attributedToMemberCount ?? "Not available")}
+      ${metric(`Questions reported by source (${participationScopeLabel(activity.questions.sourceReportedScope)})`, activity.questions.sourceReportedCount ?? "Not available")}
       ${metric("Session-scoped question rows", activity.questions.sessionScopedCount ?? "Not captured")}
-      ${metric("Debate participation records", activity.debateParticipationCount ?? "Not available")}
-      ${metric("Committee participation records", activity.committeeParticipationCount ?? "Not available")}
+      ${metric(`Debate participation (${participationScopeLabel(activity.debateParticipationScope)})`, activity.debateParticipationCount ?? "Not available")}
+      ${metric(`Committee participation (${participationScopeLabel(activity.committeeParticipationScope)})`, activity.committeeParticipationCount ?? "Not available")}
       ${metric("Attendance", "Not published")}
     </section>
     ${renderQuestionCaveat(activity.questions.sourceReportedCount, activity.questions.sourceReportedScope, activity.questions.breakdownStatus)}
@@ -114,7 +110,26 @@ function renderQuestionCaveat(
   sourceReportedScope: string,
   breakdownStatus: string,
 ): string {
+  if (sourceReportedScope === "not_available") {
+    return `<aside class="caveat"><strong>Question data note:</strong> Full House/session question coverage was not captured for this aggregate.</aside>`;
+  }
+  if (breakdownStatus === "incomplete") {
+    return `<aside class="caveat"><strong>Question data note:</strong> The captured question rows were incomplete, so the session count and breakdowns are not published.</aside>`;
+  }
   return `<aside class="caveat"><strong>Question data note:</strong> ${sourceReportedCount ?? "No count"} is reported for the ${escapeHtml(sourceReportedScope)} scope. Session question rows are ${escapeHtml(breakdownStatus)}; the source count is not labeled as a Session 5 total.</aside>`;
+}
+
+function participationScopeLabel(scope: "lok_sabha" | "session" | "unknown" | "not_available"): string {
+  switch (scope) {
+    case "lok_sabha":
+      return "Lok Sabha-wide";
+    case "session":
+      return "session-scoped";
+    case "unknown":
+      return "scope unknown";
+    case "not_available":
+      return "not available";
+  }
 }
 
 function metric(label: string, value: number | string): string {
