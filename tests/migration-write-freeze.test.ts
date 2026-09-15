@@ -36,4 +36,15 @@ describe("migration write freeze", () => {
     expect(blocked.status).toHaveBeenCalledWith(503);
     expect(next).not.toHaveBeenCalled();
   });
+
+  it("rejects HEAD requests that Express would dispatch through mutating GET routes", () => {
+    const middleware = createMigrationWriteFreezeMiddleware(true);
+    const next = vi.fn();
+    const blocked = createResponse();
+
+    middleware({ method: "HEAD", path: "/unsubscribe/token" } as never, blocked as never, next);
+
+    expect(blocked.status).toHaveBeenCalledWith(503);
+    expect(next).not.toHaveBeenCalled();
+  });
 });

@@ -194,6 +194,10 @@ Use `npm run infra:production-preflight` before any production-stack cutover wor
 
 Use `npm run infra:production-cutover-inventory` before any mutating production-stack cutover work. It records the current stack outputs, ECS image, runtime bucket/secret bindings, database instance identifier, schedule targets, and target-stack status needed by the production cutover runbook. The April 28, 2026 cutover restored `nyaaywatch-production` from manual RDS snapshot `nyaaywatch-prod-cutover-20260428-0019`, synced the artifacts bucket, moved DNS to the production ALB, and reconciled production-named schedules. The later staging reclaim pointed `staging.nyaaywatch.in` at the `nyaaywatch-staging` ALB with the staging ACM certificate; `nyaaywatch-staging-v2` was retired after the reclaim.
 
+After Azure becomes the active production provider, set the repository variable
+`ACTIVE_PRODUCTION_PROVIDER=azure`. The main deploy job is gated on that value
+so later pushes do not restart the AWS service or re-enable its schedules.
+
 Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `SES_SOURCE_EMAIL` is an authenticated `@nyaaywatch.in` sender and `NJDG_OUTREACH_ARCHIVE_BUCKET` is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, writes the exact outbound payload to S3 under `ops/njdg-missing-zero-outreach/`, and fails loudly if email or archive configuration is incomplete.
 
 Release helpers:
