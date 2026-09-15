@@ -304,6 +304,11 @@ resource "azurerm_container_app" "this" {
       }
 
       env {
+        name  = "RUNTIME_REGION"
+        value = var.location
+      }
+
+      env {
         name  = "EMAIL_PROVIDER"
         value = "azure"
       }
@@ -485,6 +490,11 @@ resource "azurerm_container_app_job" "scheduled" {
       env {
         name  = "DEPLOY_ENV"
         value = var.environment_name
+      }
+
+      env {
+        name  = "RUNTIME_REGION"
+        value = var.location
       }
 
       env {

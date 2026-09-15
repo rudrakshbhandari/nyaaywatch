@@ -11,6 +11,7 @@ const EnvSchema = z.object({
   DATABASE_URL: z.string().url(),
   STORAGE_PROVIDER: z.enum(["aws", "azure"]).default("aws"),
   AWS_REGION: z.literal("ap-south-1").default("ap-south-1"),
+  RUNTIME_REGION: z.string().min(1).default("ap-south-1"),
   AWS_ENDPOINT_URL_S3: z.string().url().optional(),
   AWS_S3_FORCE_PATH_STYLE: z
     .string()

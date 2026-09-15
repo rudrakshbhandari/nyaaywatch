@@ -18,6 +18,11 @@ on:
         required: true
         default: false
         type: boolean
+      manage_public_hostname:
+        description: "Keep the imported Azure custom-domain binding managed by Terraform"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -48,6 +53,7 @@ jobs:
       TF_VAR_public_base_url: https://nyaaywatch.in
       TF_VAR_enable_scheduled_jobs: ${{ inputs.enable_scheduled_jobs }}
       TF_VAR_enable_application: ${{ inputs.enable_application }}
+      TF_VAR_manage_public_hostname: ${{ inputs.manage_public_hostname }}
       TF_VAR_project_name: nyaaywatch
       TF_VAR_environment_name: production
       TF_VAR_location: centralindia
