@@ -25,11 +25,11 @@ export function renderParliamentarySnapshotPage(
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    <title>${escapeHtml(title)} — NyaayWatch internal</title>
+    <title>${escapeHtml(title)} — NyaayWatch</title>
     <style>${PAGE_CSS}</style>
   </head>
   <body>
-    <header class="masthead"><span>NYAAWATCH / INTERNAL</span><span>LOK SABHA ONLY</span></header>
+    <header class="masthead"><span>NYAAWATCH / PARLIAMENT</span><span>LOK SABHA ONLY</span></header>
     <main data-lineage-id="${escapeHtml(snapshot.metadata.lineageId)}" data-scope-id="${escapeHtml(snapshot.metadata.scopeId)}">
       ${body}
       ${renderSnapshotMeta(snapshot)}
@@ -45,8 +45,8 @@ function renderAggregate(snapshot: ParliamentaryPublishedSnapshot): string {
   return `
     <p class="eyebrow">PARLIAMENTARY ACTIVITY SNAPSHOT</p>
     <h1>Lok Sabha activity</h1>
-    <p class="lede">A bounded, source-linked snapshot for ${escapeHtml(snapshot.aggregate.scopeLabel)}. It records activity counts and missing data; it does not rate people or parties.</p>
-    <p class="quality">Quality: <strong>${escapeHtml(snapshot.metadata.qualityState)}</strong> · Internal publication only</p>
+    <p class="lede">A source-linked snapshot for ${escapeHtml(snapshot.aggregate.scopeLabel)}. It reports activity counts and missing data.</p>
+    <p class="quality">Quality: <strong>${escapeHtml(snapshot.metadata.qualityState)}</strong> · Published snapshot</p>
     <section class="grid" aria-label="Published activity values">
       ${metric("Bill records", activity.bills.recordCount)}
       ${metric("Unique bills", activity.bills.uniqueBillCount)}
@@ -68,7 +68,7 @@ function renderProfile(snapshot: ParliamentaryPublishedSnapshot, profile: Parlia
   return `
     <p class="eyebrow">TIME-BOUNDED MP PROFILE</p>
     <h1>${escapeHtml(profile.person.fullName)}</h1>
-    <p class="lede">Official-record identity and activity for ${escapeHtml(snapshot.aggregate.scopeLabel)}. This is a record of sourced activity, not a judgment about the MP.</p>
+    <p class="lede">Official identity and activity for ${escapeHtml(snapshot.aggregate.scopeLabel)}.</p>
     <dl class="identity">
       <div><dt>Party</dt><dd>${escapeHtml(profile.person.party.name)}${profile.person.party.abbreviation ? ` (${escapeHtml(profile.person.party.abbreviation)})` : ""}</dd></div>
       <div><dt>Constituency</dt><dd>${escapeHtml(profile.person.constituency.name)}, ${escapeHtml(profile.person.constituency.stateOrUnionTerritory)}</dd></div>

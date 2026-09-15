@@ -87,7 +87,7 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
       <header class="watchroom-section__head">
         <p class="watchroom-section__eyebrow">OPEN WATCHROOMS</p>
         <h2>Choose the question first.</h2>
-        <p>These pages do not rank every court tier together. They keep each issue inside the lower-court source family and point back to reusable evidence.</p>
+        <p>Each page keeps the issue inside the lower-court source family and points back to reusable evidence.</p>
       </header>
       <div class="watchroom-card-grid">
         <article class="watchroom-decision-card">

@@ -66,7 +66,7 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
     expect((await request(context.app).get("/parliamentary")).status).toBe(404);
   });
 
-  it("allows normalized parliamentary pages through the throwaway preview flag", async () => {
+  it("allows normalized parliamentary pages through the preview flag", async () => {
     const context = await createSurfaceContext({ PUBLIC_PARLIAMENTARY_PREVIEW: "true" });
     pools.push(context.pool);
 

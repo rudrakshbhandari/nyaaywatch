@@ -93,7 +93,7 @@ export function renderOldCaseWatchroomPage(entries: OldCaseWatchroomEntry[]): st
         {
           eyebrow: "01",
           title: "Start with share",
-          body: "Look at the 3+ year share first. It shows where long waits are concentrated, not just where the pending pile is large.",
+          body: "Look at the 3+ year share first. It shows where long waits make up a large part of the pending pile.",
           href: "#geography-table",
           cta: "See geographies",
         },

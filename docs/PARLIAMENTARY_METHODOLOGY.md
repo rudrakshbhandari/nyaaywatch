@@ -1,19 +1,17 @@
 # Internal Parliamentary Pilot Methodology
 
-Status: internal pilot only. This document describes the bounded Lok Sabha vertical; it is not a public beta or a statement about all Indian legislatures.
+Status: internal pilot. Scope is Lok Sabha 18, Session 5, and one MP profile. It does not cover Rajya Sabha, state legislatures, executive-branch activity, rankings, or composite scores.
 
 ## Scope and reference date
 
 The pilot currently covers Lok Sabha 18, Session 5 (`2025-07-21` to `2025-08-21`) and one official-record MP profile: Shri Mani A (`mpsno=5814`), DMK, Dharmapuri, Tamil Nadu. The snapshot reference date is the official Session 5 end date, `2025-08-21`, rather than the capture time. Capture time is retained separately for reproducibility.
-
-The pilot does not cover Rajya Sabha, state legislatures, executive-branch activity, or a generic politician directory. It does not rank MPs, parties, or constituencies and does not calculate a composite performance score.
 
 ## What is sourced
 
 The published internal payload links to the official Digital Sansad records used for:
 
 - MP name, party, constituency, House, Lok Sabha term label, and role history.
-- Lok Sabha 18 Session 5 bill-result records. The pilot stores normalized fields and official links, not bill PDF bytes.
+- Lok Sabha 18 Session 5 bill-result records. The pilot stores normalized fields and official links; it does not store bill PDF bytes.
 - Member question, debate, and committee participation aggregates.
 - A bounded 20-row member- and session-filtered question result for MP source code `5814`.
 - Lok Sabha session boundaries.
@@ -53,6 +51,6 @@ Primary source links:
 
 ## Publication and redistribution boundary
 
-The pilot is available behind the operator token at `/operator/parliamentary`, `/operator/parliamentary/html`, and `/operator/parliamentary/html/mp/mp-5814` in normal environments. Throwaway PR previews may expose these normalized fixture-backed read surfaces without a token for development review; they contain no raw captures or replay copies. Raw captures and replay copies remain internal artifacts, and production/public routes do not expose this vertical.
+Normal environments require the operator token for `/operator/parliamentary`, `/operator/parliamentary/html`, and `/operator/parliamentary/html/mp/mp-5814`. PR previews expose only normalized fixture data for development. Raw captures and replay copies stay internal, and production/public routes do not expose this vertical.
 
 The Digital Sansad terms and Parliament Digital Library policy were reviewed, but no broad approval for bulk redistribution of parliamentary source content was inferred. The pilot therefore publishes normalized aggregates, source metadata, and official links only. Public beta requires explicit source/legal review, question-row coverage, methodology review, and a publication decision.

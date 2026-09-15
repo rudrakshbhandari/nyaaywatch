@@ -186,7 +186,7 @@ export function renderHighCourtOverviewPage(
       ${renderSectionHead({
         headline: "How to read this page",
         lede:
-          "This High Court page stays anchored to one published aggregate snapshot, with explicit methodology and official source links.",
+          "This page uses one published aggregate snapshot and links to the methodology and official source.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
