@@ -328,7 +328,7 @@ describe("HTTP routes", () => {
     expect(apiPage.text).toContain("/v1/high-courts/:courtSlug/{stats,trends}");
     expect(apiPage.text).toContain('href="/supreme-court/api"');
     expect(apiPage.text).toContain('href="/high-courts"');
-    expect(apiPage.text).toContain("/states/:stateSlug/data");
+    expect(apiPage.text).toContain("/states/:stateSlug/data/districts.csv");
     expect(apiPage.text).not.toContain("The <code>/data</code> downloads");
 
     const districtCsv = await request(app).get("/data/districts.csv");

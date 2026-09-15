@@ -38,7 +38,7 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
           stateEvidencePack: context.routes.stateEvidencePack,
           districtEvidencePack: context.routes.districtEvidencePack(":districtId"),
         };
-  const csvParityPath = scope === "national" ? "/states/:stateSlug/data" : context.routes.data;
+  const csvParityPath = scope === "national" ? "/states/:stateSlug/data/districts.csv" : context.routes.districtsCsv;
   const nationalTierReferences =
     scope === "national"
       ? `
