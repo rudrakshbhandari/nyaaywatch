@@ -40,7 +40,7 @@ SET TRANSACTION SNAPSHOT '$snapshot';
 SELECT format('select %L, count(*) from %I.%I;', table_schema||'.'||table_name, table_schema, table_name)
 FROM information_schema.tables
 WHERE table_schema='public'
-ORDER BY 1;
+ORDER BY 1
 \gexec
 COMMIT;
 SQL
