@@ -148,7 +148,7 @@ export function buildCopy(
 
     sectionWhat: "Why this site exists",
     sectionWhatBody:
-      `NyaayWatch is an independent view of public court aggregates. ${publicScopeDescription} It publishes reviewed snapshots instead of a continuously refreshed surface, so citizens, reporters, and civic groups can inspect the numbers, cite them, and ask sharper questions.`,
+      `NyaayWatch is an independent view of public court aggregates. ${publicScopeDescription} It publishes reviewed snapshots with dated source links and methodology.`,
   } as const;
 }
 

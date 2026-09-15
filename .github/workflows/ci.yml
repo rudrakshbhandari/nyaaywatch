@@ -309,7 +309,11 @@ jobs:
             Preview ready: ${process.env.PREVIEW_URL}
 
             Service: \`${process.env.SERVICE_NAME}\`
-            Mode: fixture-backed public web preview`;
+            Mode: fixture-backed public development preview
+
+            Parliamentary aggregate: ${process.env.PREVIEW_URL}/operator/parliamentary/html
+            Parliamentary JSON: ${process.env.PREVIEW_URL}/operator/parliamentary
+            MP profile: ${process.env.PREVIEW_URL}/operator/parliamentary/html/mp/mp-5814`;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,

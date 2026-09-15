@@ -164,7 +164,7 @@ export function renderNationalHome(input: {
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly backlog change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
+            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly backlog change across the Supreme Court, High Courts, and lower courts, with dated sources and methodology for each published view."
             : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers update continuously or forecast outcomes."
         }</p>
         <div class="national-hero__cta">

@@ -200,7 +200,7 @@ export function renderLearnPage(): string {
         <article class="learn-pressure-card">
           <span>Age</span>
           <h3>Old-case burden</h3>
-          <p>Shows how much of the pending pile has already waited for years. A high share means long waits are not just a few isolated cases.</p>
+          <p>Shows how much of the pending pile has already waited for years. A high share means long waits are widespread in the pending pile.</p>
         </article>
         <article class="learn-pressure-card">
           <span>Movement</span>

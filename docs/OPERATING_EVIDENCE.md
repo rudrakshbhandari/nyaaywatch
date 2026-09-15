@@ -71,3 +71,21 @@ output/release-evidence/<publication-id>.json
 - Treat the current active publication as the rollback target until a new publish succeeds.
 - Do not publish if the prepublish summary says the target run is not `completed` or lacks a stored candidate.
 - Do not treat a postpublish run as finished until the evidence files exist, the active publication matches the intended publication id, and `docs/RELEASE_HISTORY.md` has been updated.
+
+## Internal parliamentary pilot evidence
+
+Run the deterministic local proof with:
+
+```bash
+npm run parliament:demo
+```
+
+The demo records captured, published, replayed, and rollback publication IDs, verifies one lineage for the aggregate and MP profile, and checks the JSON and HTML routes. A recorded result is in [the parliamentary demo evidence](internal/PARLIAMENTARY_DEMO.md).
+
+The internal routes are:
+
+- `GET /operator/parliamentary` — published JSON read model, citations, methodology, aggregate, and profiles.
+- `GET /operator/parliamentary/html` — aggregate HTML read model.
+- `GET /operator/parliamentary/html/mp/mp-5814` — time-bounded Shri Mani A profile.
+
+Normal environments require the operator token for these routes. PR previews expose normalized read models only; raw Digital Sansad and Parliament Digital Library artifacts remain internal.

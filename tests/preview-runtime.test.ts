@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { createPreviewRuntime } from "../src/preview/runtime.js";
 
 describe("preview runtime", () => {
-  it("serves fixture-backed public routes without external storage", async () => {
+  it("serves fixture public routes without external storage", async () => {
     const runtime = await createPreviewRuntime({
       NODE_ENV: "test",
       PORT: "3000",
@@ -27,6 +27,22 @@ describe("preview runtime", () => {
 
       const punjab = await request(runtime.app).get("/states/punjab");
       expect(punjab.status).toBe(503);
+    } finally {
+      await runtime.close();
+    }
+  });
+
+  it("keeps parliamentary routes protected unless the preview flag is explicit", async () => {
+    const runtime = await createPreviewRuntime({
+      NODE_ENV: "test",
+      PORT: "3000",
+      APP_MODE: "preview",
+      ENABLE_OPERATOR_ROUTES: "true",
+    });
+
+    try {
+      const parliamentary = await request(runtime.app).get("/operator/parliamentary");
+      expect(parliamentary.status).toBe(401);
     } finally {
       await runtime.close();
     }

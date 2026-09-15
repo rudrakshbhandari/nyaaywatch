@@ -104,9 +104,7 @@ Calcutta High Court, Bombay High Court, and Gauhati High Court were the correct 
 - broader and more operationally complex than the now-live Wave 1 courts
 - no longer blocked on the court-first model itself, because Wave 1 has already proven the public batch discipline under live traffic
 
-The point of Wave 2 was not to reopen the model debate.
-
-The point of Wave 2 was to prove that the repo can keep expanding the public High Court beta in larger deliberate batches once the narrower Wave 1 courts stayed stable.
+Wave 2 tested whether the public High Court beta could expand in larger batches after Wave 1 stayed stable under live traffic.
 
 The immediate repo slice before any public flip is now concrete:
 

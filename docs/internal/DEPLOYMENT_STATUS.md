@@ -11,7 +11,7 @@ Use this document as the live environment map. For routine release go/no-go deci
 NyaayWatch should operate with four distinct lanes:
 
 - **Local development**: local Node, PostgreSQL, and LocalStack S3 for implementation and fixture-backed operator checks.
-- **Pull request previews**: fixture-backed public web previews for copy, UI, and responsive review. Previews do not expose operator routes or touch live evidence.
+- **Pull request previews**: fixture-backed public web previews for copy, UI, responsive review, and the normalized parliamentary read surfaces. Previews use in-memory data and do not touch live evidence.
 - **Dedicated AWS staging**: optional isolated rehearsal environment for release checks, migration rehearsal, operator-flow validation, alarm verification, and destructive rollback/replay testing before public release work. Provision on demand with `infra/aws/staging/deploy-stack.sh`; do not keep it always-on for alpha cost.
 - **Production / public alpha**: `https://nyaaywatch.in`, serving public snapshots and live operator schedules from the reality-named production stack `nyaaywatch-production`.
 
