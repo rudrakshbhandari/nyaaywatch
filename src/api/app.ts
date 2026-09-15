@@ -135,7 +135,7 @@ export function createApp(
   });
 
   app.get("/health", (_request, response) => {
-    response.json({ ok: true, region: config.AWS_REGION, stateCode: config.STATE_CODE });
+    response.json({ ok: true, region: config.RUNTIME_REGION, stateCode: config.STATE_CODE });
   });
 
   app.get("/robots.txt", (_request, response) => {
