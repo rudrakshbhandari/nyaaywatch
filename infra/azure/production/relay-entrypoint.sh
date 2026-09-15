@@ -6,6 +6,12 @@ set -euo pipefail
 : "${AZURE_LOG_SAS_URL:?}"
 : "${AZURE_COUNTS_SAS_URL:?}"
 
+# The AWS-managed secret may include the RDS libpq compatibility flag. It is
+# accepted by the AWS runtime but rejected by PostgreSQL 16, so strip only
+# that provider-specific query parameter before opening the source session.
+SOURCE_DATABASE_URL="$(printf '%s' "$SOURCE_DATABASE_URL" | sed -e 's/?uselibpqcompat=true&/?/' -e 's/&uselibpqcompat=true//')"
+export SOURCE_DATABASE_URL
+
 log_file=/tmp/relay.log
 dump_file=/tmp/nyaaywatch.dump
 counts_file=/tmp/source-row-counts.tsv
