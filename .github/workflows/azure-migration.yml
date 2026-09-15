@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   provision:
-    if: inputs.apply == true
+    if: inputs.apply == true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     concurrency:
       group: nyaaywatch-azure-production
