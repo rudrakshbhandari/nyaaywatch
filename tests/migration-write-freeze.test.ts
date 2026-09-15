@@ -25,4 +25,15 @@ describe("migration write freeze", () => {
     expect(next).toHaveBeenCalledOnce();
     expect(allowed.status).not.toHaveBeenCalled();
   });
+
+  it("rejects state-changing newsletter GET routes", () => {
+    const middleware = createMigrationWriteFreezeMiddleware(true);
+    const next = vi.fn();
+    const blocked = createResponse();
+
+    middleware({ method: "GET", path: "/subscribe/confirm/token" } as never, blocked as never, next);
+
+    expect(blocked.status).toHaveBeenCalledWith(503);
+    expect(next).not.toHaveBeenCalled();
+  });
 });
