@@ -23,11 +23,24 @@ The scheduled jobs use UTC equivalents of the current Asia/Kolkata cadence:
 - Supreme Court fetch at 08:10 IST
 - reviewed High Court fetch at 08:20 IST
 - publish-pending sweep at 08:30 IST
-- public-alpha monitor every 30 minutes
+- public-alpha monitor hourly
 
 Scheduled jobs are disabled by default. Set `enable_scheduled_jobs = true`
 only during the approved cutover after the AWS writers are stopped; this
 prevents a rehearsal Azure apply from writing alongside production AWS.
+
+The canonical hostname binding is also opt-in because Azure requires DNS
+validation before it can issue the managed certificate. After the `asuid`
+validation record exists, import an existing binding (if one was created during
+validation) and set `manage_public_hostname = true` for subsequent applies:
+
+```bash
+terraform import azurerm_container_app_custom_domain.public[0] \
+  /subscriptions/SUBSCRIPTION_ID/resourceGroups/nyaaywatch-production/providers/Microsoft.App/containerApps/nyaaywatch-production/customDomainName/nyaaywatch.in
+```
+
+Terraform then keeps the binding attached across image deployments while Azure
+continues to manage certificate issuance and renewal asynchronously.
 
 ## Plan-only validation
 

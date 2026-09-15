@@ -57,6 +57,12 @@ variable "public_base_url" {
   default     = "https://nyaaywatch.in"
 }
 
+variable "manage_public_hostname" {
+  description = "Manage the canonical public hostname binding in Terraform after the Azure validation records exist. Import an existing binding before enabling this flag."
+  type        = bool
+  default     = false
+}
+
 variable "azure_communication_connection_string" {
   description = "Azure Communication Services email connection string. Keep in protected CI variables or an untracked tfvars file."
   type        = string

@@ -14,6 +14,10 @@ output "container_app_latest_revision_fqdn" {
   value = azurerm_container_app.this.latest_revision_fqdn
 }
 
+output "public_hostname" {
+  value = "nyaaywatch.in"
+}
+
 output "storage_account_name" {
   value = azurerm_storage_account.this.name
 }
