@@ -75,6 +75,39 @@ describe("runAutoPublish", () => {
     expect(notifier.calls[0].message).toContain("outlier_pending_delta");
   });
 
+  it("publishes through an isolated bad published baseline", async () => {
+    const notifier = makeNotifier();
+    const runOperator = vi.fn().mockResolvedValue({ ok: true });
+    const fetchResult = {
+      run: { id: "run_pb" },
+      candidate: {
+        snapshot: { qualityState: "complete" },
+        stats: { pendingCases: 1027146 },
+        trends: [
+          { pendingCases: 1031353 },
+          { pendingCases: 1031347 },
+          { pendingCases: 1031702 },
+          { pendingCases: 849713 },
+          { pendingCases: 1027146 },
+        ],
+      },
+    };
+
+    const outcome = await runAutoPublish(
+      {
+        scopeLabel: "State (PB)",
+        selector: { stateCode: "PB" },
+        fetchResult,
+        pendingField: "pendingCases",
+      },
+      { runOperator, notifier },
+    );
+
+    expect(outcome.action).toBe("published");
+    expect(outcome.decision?.previousPending).toBe(1031350);
+    expect(notifier.calls).toHaveLength(0);
+  });
+
   it("notifies when quality is not complete", async () => {
     const notifier = makeNotifier();
     const runOperator = vi.fn();

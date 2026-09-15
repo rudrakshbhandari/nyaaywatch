@@ -55,4 +55,26 @@ describe("evaluateAutoPublish", () => {
     const decision = evaluateAutoPublish({ qualityState: "complete", currentPending: 1000 });
     expect(decision.deltaThreshold).toBe(DEFAULT_AUTO_PUBLISH_DELTA_THRESHOLD);
   });
+
+  it("uses the median of recent history so one bad publication does not poison the baseline", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 1027146,
+      previousPendingCandidates: [1031353, 1031347, 1031702, 849713],
+    });
+
+    expect(decision).toMatchObject({ publish: true, previousPending: 1031350 });
+    expect(decision.deltaFraction).toBeCloseTo(0.0041, 4);
+  });
+
+  it("still holds a genuine jump from a stable recent baseline", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 13000,
+      previousPendingCandidates: [9900, 10000, 10100],
+    });
+
+    expect(decision).toMatchObject({ publish: false, reason: "outlier_pending_delta", previousPending: 10000 });
+    expect(decision.deltaFraction).toBeCloseTo(0.3, 5);
+  });
 });

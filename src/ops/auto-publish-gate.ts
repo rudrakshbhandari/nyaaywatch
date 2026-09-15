@@ -19,6 +19,7 @@ export interface EvaluateAutoPublishOptions {
   qualityState: string;
   currentPending?: number;
   previousPending?: number;
+  previousPendingCandidates?: number[];
   deltaThreshold?: number;
 }
 
@@ -34,7 +35,8 @@ export function evaluateAutoPublish(options: EvaluateAutoPublishOptions): AutoPu
     return { ...base, publish: false, reason: "current_pending_missing" };
   }
 
-  if (options.previousPending === undefined || options.previousPending <= 0) {
+  const previousPending = selectBaseline(options);
+  if (previousPending === undefined || previousPending <= 0) {
     return {
       ...base,
       publish: true,
@@ -42,14 +44,14 @@ export function evaluateAutoPublish(options: EvaluateAutoPublishOptions): AutoPu
     };
   }
 
-  const deltaFraction = Math.abs(options.currentPending - options.previousPending) / options.previousPending;
+  const deltaFraction = Math.abs(options.currentPending - previousPending) / previousPending;
   if (deltaFraction > deltaThreshold) {
     return {
       ...base,
       publish: false,
       reason: "outlier_pending_delta",
       currentPending: options.currentPending,
-      previousPending: options.previousPending,
+      previousPending,
       deltaFraction,
     };
   }
@@ -58,7 +60,18 @@ export function evaluateAutoPublish(options: EvaluateAutoPublishOptions): AutoPu
     ...base,
     publish: true,
     currentPending: options.currentPending,
-    previousPending: options.previousPending,
+    previousPending,
     deltaFraction,
   };
+}
+
+function selectBaseline(options: EvaluateAutoPublishOptions) {
+  const candidates = options.previousPendingCandidates?.filter((value) => Number.isFinite(value) && value > 0) ?? [];
+  if (candidates.length === 0) {
+    return options.previousPending;
+  }
+
+  const sorted = [...candidates].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
 }

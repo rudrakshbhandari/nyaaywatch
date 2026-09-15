@@ -66,6 +66,9 @@ export async function runAutoPublish(
     qualityState: inputs.qualityState,
     currentPending: inputs.currentPending,
     previousPending,
+    previousPendingCandidates: request.previousPendingOverride === undefined
+      ? inputs.previousPendingCandidates
+      : undefined,
   });
 
   if (!decision.publish) {
@@ -148,6 +151,7 @@ interface ExtractedGateInputs {
   qualityState?: string;
   currentPending?: number;
   previousPending?: number;
+  previousPendingCandidates?: number[];
 }
 
 function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | "pendingCases"): ExtractedGateInputs {
@@ -172,13 +176,18 @@ function extractGateInputs(result: unknown, pendingField: "pendingTotalCases" | 
   const currentPending = typeof currentPendingRaw === "number" ? currentPendingRaw : undefined;
 
   const trends = Array.isArray(candidate.trends) ? (candidate.trends as Array<Record<string, unknown>>) : [];
-  const previousPending = trends.length >= 2 ? trends[trends.length - 2]?.[pendingField] : undefined;
+  const previousTrendValues = trends
+    .slice(0, -1)
+    .map((trend) => trend?.[pendingField])
+    .filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  const previousPending = previousTrendValues.at(-1);
 
   return {
     runId,
     qualityState,
     currentPending,
-    previousPending: typeof previousPending === "number" ? previousPending : undefined,
+    previousPending,
+    previousPendingCandidates: previousTrendValues,
   };
 }
 
@@ -192,7 +201,7 @@ export function formatReviewDetails(runId: string, decision: AutoPublishDecision
     lines.push(`Current pending: ${decision.currentPending}`);
   }
   if (decision.previousPending !== undefined) {
-    lines.push(`Previous published pending: ${decision.previousPending}`);
+    lines.push(`Historical baseline pending: ${decision.previousPending}`);
   }
   if (decision.deltaFraction !== undefined) {
     lines.push(`Delta fraction: ${(decision.deltaFraction * 100).toFixed(1)}% (threshold ${(decision.deltaThreshold * 100).toFixed(0)}%)`);
