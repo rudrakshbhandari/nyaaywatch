@@ -46,6 +46,7 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
       .get("/operator/parliamentary/html")
       .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
     expect(htmlResponse.status).toBe(200);
+    expect(htmlResponse.text).toContain("<h1>Lok Sabha activity</h1>");
     expect(htmlResponse.text).toContain('data-lineage-id="parliament-ls18-s5-20260811T033035Z"');
     expect(htmlResponse.text).toContain("Unique bills");
     expect(htmlResponse.text).toContain(">14</dd>");
@@ -58,6 +59,7 @@ describe("internal parliamentary HTML and JSON surfaces", () => {
       .get("/operator/parliamentary/html/mp/mp-5814")
       .set("x-operator-token", context.config.OPERATOR_API_TOKEN);
     expect(profileResponse.status).toBe(200);
+    expect(profileResponse.text).toContain("<h1>Shri Mani A</h1>");
     expect(profileResponse.text).toContain("Shri Mani A");
     expect(profileResponse.text).toContain("Dharmapuri");
     expect(profileResponse.text).toContain("Dravida Munnetra Kazhagam");
