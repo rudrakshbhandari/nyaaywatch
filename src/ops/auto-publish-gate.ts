@@ -73,5 +73,14 @@ function selectBaseline(options: EvaluateAutoPublishOptions) {
 
   const sorted = [...candidates].sort((a, b) => a - b);
   const middle = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 1 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2;
+  if (sorted.length % 2 === 1) {
+    return sorted[middle];
+  }
+
+  const lowerMiddle = sorted[middle - 1];
+  const upperMiddle = sorted[middle];
+  const middleDelta = Math.abs(upperMiddle - lowerMiddle) / lowerMiddle;
+  return middleDelta <= (options.deltaThreshold ?? DEFAULT_AUTO_PUBLISH_DELTA_THRESHOLD)
+    ? (lowerMiddle + upperMiddle) / 2
+    : options.previousPending;
 }

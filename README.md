@@ -130,7 +130,7 @@ flowchart TD
 - One AWS-hosted containerized app, fronted by Cloudflare.
 - PostgreSQL is the canonical store for runs, artifacts, subscriptions, and publication state.
 - S3 stores raw scrape evidence, normalized snapshot candidates, release evidence, and outreach archives.
-- Publish requires an operator action or a passing auto-publish gate. The change gate compares each complete run with the median of its recent prior trend points, so one bad historical publication does not poison later comparisons while a sustained jump still goes to review.
+- Publish requires an operator action or a passing auto-publish gate. The change gate compares each complete run with an agreed median of its recent prior trend points, so one bad historical publication does not poison later comparisons while a sustained jump or conflicted short history still goes to review.
 - Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.

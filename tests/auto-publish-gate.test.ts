@@ -77,4 +77,16 @@ describe("evaluateAutoPublish", () => {
     expect(decision).toMatchObject({ publish: false, reason: "outlier_pending_delta", previousPending: 10000 });
     expect(decision.deltaFraction).toBeCloseTo(0.3, 5);
   });
+
+  it("does not invent a midpoint baseline when even history disagrees", () => {
+    const decision = evaluateAutoPublish({
+      qualityState: "complete",
+      currentPending: 150,
+      previousPending: 200,
+      previousPendingCandidates: [100, 200],
+    });
+
+    expect(decision).toMatchObject({ publish: false, reason: "outlier_pending_delta", previousPending: 200 });
+    expect(decision.deltaFraction).toBeCloseTo(0.25, 5);
+  });
 });
