@@ -368,6 +368,22 @@ resource "azurerm_container_app" "this" {
   depends_on = [azurerm_role_assignment.acr_pull, azurerm_role_assignment.blob_contributor]
 }
 
+resource "azurerm_container_app_custom_domain" "public" {
+  count = var.manage_public_hostname ? 1 : 0
+
+  name             = "nyaaywatch.in"
+  container_app_id = azurerm_container_app.this.id
+
+  # Azure provisions and renews the managed certificate asynchronously after
+  # DNS validation. Keep those API-populated fields out of Terraform's diff.
+  lifecycle {
+    ignore_changes = [
+      certificate_binding_type,
+      container_app_environment_certificate_id,
+    ]
+  }
+}
+
 resource "azurerm_container_app_job" "scheduled" {
   for_each = var.enable_scheduled_jobs ? local.scheduled_jobs : {}
 

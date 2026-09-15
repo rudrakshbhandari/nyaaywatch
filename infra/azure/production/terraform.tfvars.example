@@ -8,5 +8,6 @@ operator_api_token      = "REPLACE_WITH_SECRET"
 cloudflare_api_token    = null
 cloudflare_zone_name    = "nyaaywatch.in"
 public_base_url         = "https://nyaaywatch.in"
+manage_public_hostname  = false
 enable_scheduled_jobs   = false
 enable_application      = false
