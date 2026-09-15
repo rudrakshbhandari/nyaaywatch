@@ -3,6 +3,7 @@ import { z } from "zod";
 const DateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Expected an ISO calendar date");
 const HouseSchema = z.literal("lok_sabha");
 const EvidenceIdsSchema = z.array(z.string().min(1)).min(1);
+const ParticipationScopeSchema = z.enum(["lok_sabha", "session", "unknown", "not_available"]);
 
 export const ParliamentarySourceEvidenceSchema = z.object({
   evidenceId: z.string().min(1),
@@ -85,10 +86,13 @@ export const ParliamentaryQuestionSchema = z.object({
 
 export const ParliamentaryParticipationSummarySchema = z.object({
   questionCount: z.number().int().nonnegative().nullable(),
-  questionCountScope: z.enum(["lok_sabha", "session", "unknown"]),
+  questionCountScope: ParticipationScopeSchema,
   debateCount: z.number().int().nonnegative().nullable(),
+  debateCountScope: ParticipationScopeSchema,
   billParticipationCount: z.number().int().nonnegative().nullable(),
+  billParticipationCountScope: ParticipationScopeSchema,
   committeeParticipationCount: z.number().int().nonnegative().nullable(),
+  committeeParticipationCountScope: ParticipationScopeSchema,
   evidenceIds: EvidenceIdsSchema,
 });
 
@@ -136,25 +140,28 @@ export const ParliamentarySnapshotMetadataSchema = z.object({
 export const ParliamentaryBillActivitySummarySchema = z.object({
   recordCount: z.number().int().nonnegative(),
   uniqueBillCount: z.number().int().nonnegative(),
-  attributedToMemberCount: z.number().int().nonnegative(),
+  attributedToMemberCount: z.number().int().nonnegative().nullable(),
   attributionStatus: z.enum(["complete", "not_published_by_source", "partial"]),
 });
 
 export const ParliamentaryQuestionActivitySummarySchema = z.object({
   sessionScopedCount: z.number().int().nonnegative().nullable(),
   sourceReportedCount: z.number().int().nonnegative().nullable(),
-  sourceReportedScope: z.enum(["lok_sabha", "session", "unknown"]),
+  sourceReportedScope: ParticipationScopeSchema,
   bySession: z.array(ParliamentaryBreakdownEntrySchema),
   byMinistry: z.array(ParliamentaryBreakdownEntrySchema),
   byType: z.array(ParliamentaryBreakdownEntrySchema),
-  breakdownStatus: z.enum(["captured", "not_captured", "not_session_scoped"]),
+  breakdownStatus: z.enum(["captured", "incomplete", "not_captured", "not_session_scoped"]),
 });
 
 export const ParliamentaryActivitySummarySchema = z.object({
+  scope: z.enum(["house_session", "member_session"]),
   bills: ParliamentaryBillActivitySummarySchema,
   questions: ParliamentaryQuestionActivitySummarySchema,
   debateParticipationCount: z.number().int().nonnegative().nullable(),
+  debateParticipationScope: ParticipationScopeSchema,
   committeeParticipationCount: z.number().int().nonnegative().nullable(),
+  committeeParticipationScope: ParticipationScopeSchema,
   attendanceStatus: z.literal("not_published"),
 });
 

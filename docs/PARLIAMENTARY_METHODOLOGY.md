@@ -6,6 +6,8 @@ Status: internal pilot. Scope is Lok Sabha 18, Session 5, and one MP profile. It
 
 The pilot currently covers Lok Sabha 18, Session 5 (`2025-07-21` to `2025-08-21`) and one official-record MP profile: Shri Mani A (`mpsno=5814`), DMK, Dharmapuri, Tamil Nadu. The snapshot reference date is the official Session 5 end date, `2025-08-21`, rather than the capture time. Capture time is retained separately for reproducibility.
 
+The aggregate publishes House/session bill totals. Member question, debate, committee, and bill-attribution values appear on the time-bounded MP profile and retain their source scope.
+
 ## What is sourced
 
 The published internal payload links to the official Digital Sansad records used for:

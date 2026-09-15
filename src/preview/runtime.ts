@@ -51,7 +51,7 @@ export async function createPreviewRuntime(rawEnv: NodeJS.ProcessEnv = process.e
     // The App Runner PR deployment opts into the public preview
     // explicitly. Keep ordinary local preview behavior unchanged by default.
     ENABLE_OPERATOR_ROUTES: rawEnv.ENABLE_OPERATOR_ROUTES ?? "false",
-    PUBLIC_PARLIAMENTARY_PREVIEW: rawEnv.PUBLIC_PARLIAMENTARY_PREVIEW ?? "true",
+    PUBLIC_PARLIAMENTARY_PREVIEW: rawEnv.PUBLIC_PARLIAMENTARY_PREVIEW ?? "false",
     STATE_CODE: rawEnv.STATE_CODE ?? "HP",
   });
   const profile = getStateProfile(config.STATE_CODE);

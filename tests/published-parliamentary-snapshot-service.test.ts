@@ -39,9 +39,11 @@ describe("PublishedParliamentarySnapshotService", () => {
     const published = await context.service.publishRun(captured.run.id, "Parliament fixture publish");
     expect(published.run.status).toBe("published");
     expect(published.snapshot.payload.metadata.lineageId).toBe(captured.candidate?.metadata.lineageId);
-    expect(published.snapshot.payload.aggregate.activity.questions.sessionScopedCount).toBe(20);
-    expect(published.snapshot.payload.aggregate.activity.questions.sourceReportedCount).toBe(125);
-    expect(published.snapshot.payload.aggregate.activity.questions.sourceReportedScope).toBe("lok_sabha");
+    expect(published.snapshot.payload.aggregate.activity.scope).toBe("house_session");
+    expect(published.snapshot.payload.aggregate.activity.questions.sessionScopedCount).toBeNull();
+    expect(published.snapshot.payload.profiles[0]?.activity.questions.sessionScopedCount).toBe(20);
+    expect(published.snapshot.payload.profiles[0]?.activity.questions.sourceReportedCount).toBe(125);
+    expect(published.snapshot.payload.profiles[0]?.activity.questions.sourceReportedScope).toBe("lok_sabha");
     expect((await context.service.getPublishedSnapshot())?.id).toBe(published.snapshot.id);
   });
 

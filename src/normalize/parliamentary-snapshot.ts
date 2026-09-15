@@ -7,6 +7,7 @@ import {
   type ParliamentarySnapshotCandidate,
 } from "../domain/parliamentary-schema.js";
 import { extractParliamentaryCapture } from "../extract/parliamentary-source.js";
+import type { ExtractedParliamentaryCapture } from "../extract/parliamentary-source.js";
 
 const METHODOLOGY_VERSION = "2026.08-parliament-pilot-1";
 
@@ -15,8 +16,10 @@ export function buildParliamentarySnapshotCandidate(
 ): ParliamentarySnapshotCandidate {
   const extracted = extractParliamentaryCapture(capture);
   const sourceEvidenceIds = extracted.sourceEvidence.map((evidence) => evidence.evidenceId);
-  const activity = buildActivitySummary(extracted);
-  const missingData = buildMissingData(extracted);
+  const aggregateActivity = buildActivitySummary(extracted, "house_session");
+  const profileActivity = buildActivitySummary(extracted, "member_session");
+  const aggregateMissingData = buildMissingData(extracted, "house_session");
+  const profileMissingData = buildMissingData(extracted, "member_session");
   const metadata = {
     scopeId: `ls-${extracted.lokSabhaNumber}-session-${extracted.sessionNumber}`,
     house: extracted.house,
@@ -28,7 +31,7 @@ export function buildParliamentarySnapshotCandidate(
     referenceDateAt: `${extracted.sessionEndDate}T00:00:00.000Z`,
     referenceDateKind: "source_session_end_date" as const,
     methodologyVersion: METHODOLOGY_VERSION,
-    qualityState: missingData.length === 0 ? ("complete" as const) : ("partial" as const),
+    qualityState: aggregateMissingData.length === 0 ? ("complete" as const) : ("partial" as const),
     lineageId: extracted.captureId,
     sourceEvidenceIds,
   };
@@ -39,15 +42,15 @@ export function buildParliamentarySnapshotCandidate(
     methodology: buildMethodology(),
     aggregate: {
       scopeLabel: `Lok Sabha ${extracted.lokSabhaNumber}, Session ${extracted.sessionNumber}`,
-      activity,
-      missingData,
+      activity: aggregateActivity,
+      missingData: aggregateMissingData,
     },
     profiles: [
       {
         person: extracted.person,
         roles: extracted.roles,
-        activity,
-        missingData,
+        activity: profileActivity,
+        missingData: profileMissingData,
       },
     ],
   });
@@ -60,7 +63,8 @@ function buildMethodology() {
     sourcedFacts: [
       "Person name, party, constituency, House, term label, and role period labels come from Digital Sansad member records.",
       "Bill records come from the captured Digital Sansad Lok Sabha bills result and retain official links only.",
-      "Question, debate, and committee participation counts are reported by the cited Digital Sansad member endpoints.",
+      "Member question, debate, and committee participation counts are reported by the cited Digital Sansad member endpoints and appear only on the MP profile.",
+      "The aggregate contains House/session bill totals; full-session question coverage was not captured by this fixture.",
       "Session boundaries come from the cited Digital Sansad session register.",
     ],
     derivedValues: [
@@ -78,45 +82,70 @@ function buildMethodology() {
   };
 }
 
-function buildActivitySummary(capture: ParliamentaryCaptureBundle) {
+function buildActivitySummary(
+  capture: ExtractedParliamentaryCapture,
+  scope: "house_session" | "member_session",
+) {
   const uniqueBillIds = new Set(capture.bills.map((bill) => `${bill.billNumber}:${bill.title}`));
-  const attributedToMemberCount = capture.bills.filter(
-    (bill) => bill.introducedByMemberId === capture.person.personId,
-  ).length;
+  const attributedBillCount = capture.bills.filter((bill) => bill.introducedByMemberId === capture.person.personId).length;
+  const attributedBillRecords = capture.bills.filter((bill) => bill.introducedByMemberId !== null).length;
+  const nullAttributionRecords = capture.bills.length - attributedBillRecords;
+  const questionRows = scope === "member_session" && capture.questionRowsComplete ? capture.questions : [];
+  const isMemberScope = scope === "member_session";
 
   return {
+    scope,
     bills: {
       recordCount: capture.bills.length,
       uniqueBillCount: uniqueBillIds.size,
-      attributedToMemberCount,
-      attributionStatus: attributedToMemberCount > 0 ? ("complete" as const) : ("not_published_by_source" as const),
+      attributedToMemberCount: isMemberScope ? attributedBillCount : null,
+      attributionStatus:
+        nullAttributionRecords === 0
+          ? ("complete" as const)
+          : attributedBillRecords === 0
+            ? ("not_published_by_source" as const)
+            : ("partial" as const),
     },
     questions: {
-      sessionScopedCount: capture.questions.length > 0 ? capture.questions.length : null,
-      sourceReportedCount: capture.participation.questionCount,
-      sourceReportedScope: capture.participation.questionCountScope,
-      bySession: countBy(capture.questions, (question) => `Session ${question.sessionNumber}`),
-      byMinistry: countBy(capture.questions, (question) => question.ministry ?? "Not stated"),
-      byType: countBy(capture.questions, (question) => question.questionType ?? "Not stated"),
-      breakdownStatus:
-        capture.questions.length > 0
-          ? ("captured" as const)
-          : ("not_captured" as const),
+      sessionScopedCount: questionRows.length > 0 ? questionRows.length : null,
+      sourceReportedCount: isMemberScope ? capture.participation.questionCount : null,
+      sourceReportedScope: isMemberScope ? capture.participation.questionCountScope : ("not_available" as const),
+      bySession: countBy(questionRows, (question) => `Session ${question.sessionNumber}`),
+      byMinistry: countBy(questionRows, (question) => question.ministry ?? "Not stated"),
+      byType: countBy(questionRows, (question) => question.questionType ?? "Not stated"),
+      breakdownStatus: !isMemberScope
+        ? ("not_captured" as const)
+        : !capture.questionRowsComplete
+          ? ("incomplete" as const)
+          : questionRows.length > 0
+            ? ("captured" as const)
+            : ("not_captured" as const),
     },
-    debateParticipationCount: capture.participation.debateCount,
-    committeeParticipationCount: capture.participation.committeeParticipationCount,
+    debateParticipationCount: isMemberScope ? capture.participation.debateCount : null,
+    debateParticipationScope: isMemberScope ? capture.participation.debateCountScope : ("not_available" as const),
+    committeeParticipationCount: isMemberScope ? capture.participation.committeeParticipationCount : null,
+    committeeParticipationScope: isMemberScope
+      ? capture.participation.committeeParticipationCountScope
+      : ("not_available" as const),
     attendanceStatus: "not_published" as const,
   };
 }
 
-function buildMissingData(capture: ParliamentaryCaptureBundle): string[] {
+function buildMissingData(capture: ExtractedParliamentaryCapture, scope: "house_session" | "member_session"): string[] {
   const missingData: string[] = [];
-  if (capture.questions.length === 0) {
-    missingData.push("question-rows-not-captured-modern-endpoint-unresolved");
-  } else if (capture.participation.questionCountScope !== "session") {
-    missingData.push("source-question-aggregate-not-session-scoped");
+  if (scope === "house_session") {
+    missingData.push("house-session-question-coverage-not-captured");
+  } else {
+    if (capture.questions.length === 0) {
+      missingData.push("question-rows-not-captured-modern-endpoint-unresolved");
+    } else if (!capture.questionRowsComplete) {
+      missingData.push("question-result-incomplete");
+    }
+    if (capture.participation.questionCountScope !== "session") {
+      missingData.push("source-question-aggregate-not-session-scoped");
+    }
   }
-  if (!capture.bills.some((bill) => bill.introducedByMemberId !== null)) {
+  if (scope === "member_session" && !capture.bills.some((bill) => bill.introducedByMemberId !== null)) {
     missingData.push("bill-attribution-not-published-by-source");
   }
   missingData.push("attendance-not-published-official-code-legend-unverified");
