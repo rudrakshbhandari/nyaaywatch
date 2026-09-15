@@ -36,6 +36,13 @@ locals {
     }
   }
 
+  legacy_hostname_list = [
+    for host in split(",", var.legacy_hosts) : trimspace(host)
+    if trimspace(host) != "" && trimspace(host) != var.canonical_host
+  ]
+
+  public_hostnames = toset(concat([var.canonical_host], local.legacy_hostname_list))
+
   tags = {
     project = var.project_name
     env     = var.environment_name
@@ -346,7 +353,7 @@ resource "azurerm_container_app" "this" {
       }
 
       dynamic "env" {
-        for_each = var.cloudflare_api_token == null ? [] : [var.cloudflare_api_token]
+        for_each = coalesce(var.cloudflare_api_token, "") == "" ? [] : [var.cloudflare_api_token]
 
         content {
           name        = "CLOUDFLARE_API_TOKEN"
@@ -384,9 +391,9 @@ resource "azurerm_container_app" "this" {
 }
 
 resource "azurerm_container_app_custom_domain" "public" {
-  count = var.manage_public_hostname ? 1 : 0
+  for_each = var.manage_public_hostname ? local.public_hostnames : toset([])
 
-  name             = "nyaaywatch.in"
+  name             = each.value
   container_app_id = azurerm_container_app.this.id
 
   # Azure provisions and renews the managed certificate asynchronously after
@@ -555,7 +562,7 @@ resource "azurerm_container_app_job" "scheduled" {
       }
 
       dynamic "env" {
-        for_each = var.cloudflare_api_token == null ? [] : [var.cloudflare_api_token]
+        for_each = coalesce(var.cloudflare_api_token, "") == "" ? [] : [var.cloudflare_api_token]
 
         content {
           name        = "CLOUDFLARE_API_TOKEN"

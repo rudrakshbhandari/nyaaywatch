@@ -15,7 +15,7 @@ output "container_app_latest_revision_fqdn" {
 }
 
 output "public_hostname" {
-  value = "nyaaywatch.in"
+  value = var.canonical_host
 }
 
 output "storage_account_name" {
