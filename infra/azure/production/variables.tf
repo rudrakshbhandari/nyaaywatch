@@ -57,6 +57,18 @@ variable "public_base_url" {
   default     = "https://nyaaywatch.in"
 }
 
+variable "canonical_host" {
+  description = "Canonical hostname used by the application for legacy-host redirects."
+  type        = string
+  default     = "nyaaywatch.in"
+}
+
+variable "legacy_hosts" {
+  description = "Comma-separated legacy hostnames that redirect to canonical_host."
+  type        = string
+  default     = "nyaaywatch.com,www.nyaaywatch.com"
+}
+
 variable "manage_public_hostname" {
   description = "Manage the canonical public hostname binding in Terraform after the Azure validation records exist. Import an existing binding before enabling this flag."
   type        = bool

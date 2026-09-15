@@ -359,6 +359,16 @@ resource "azurerm_container_app" "this" {
         value = var.public_base_url
       }
 
+      env {
+        name  = "CANONICAL_HOST"
+        value = var.canonical_host
+      }
+
+      env {
+        name  = "LEGACY_HOSTS"
+        value = var.legacy_hosts
+      }
+
       dynamic "env" {
         for_each = var.cloudflare_zone_name == null ? [] : [var.cloudflare_zone_name]
 
