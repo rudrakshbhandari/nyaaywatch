@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://nyaaywatch.in">Open NyaayWatch</a> ·
   <a href="https://nyaaywatch.in/learn">Learn how it works</a> ·
-  <a href="https://nyaaywatch.in/methodology">Read the methodology</a> ·
+  <a href="https://nyaaywatch.in/#accountability">Read the methodology</a> ·
   <a href="https://nyaaywatch.in/api">Use the API</a> ·
   <a href="CONTRIBUTING.md">Contribute</a>
 </p>
@@ -32,9 +32,9 @@ The project is built for people who need to inspect, explain, or cite court data
 | If you want to... | Start with... |
 | --- | --- |
 | Explore the public data | [Open the live site](https://nyaaywatch.in) |
-| Understand the numbers | [Methodology](https://nyaaywatch.in/methodology) and [Learn](https://nyaaywatch.in/learn) |
-| Build on the data | [API reference](https://nyaaywatch.in/api) and [data downloads](https://nyaaywatch.in/data) |
-| Cite or share a result | [Evidence pages](https://nyaaywatch.in/data) and the [press and embed kit](https://nyaaywatch.in/press) |
+| Understand the numbers | [Methodology](https://nyaaywatch.in/#accountability) and [Learn](https://nyaaywatch.in/learn) |
+| Build on the data | [API reference](https://nyaaywatch.in/api) and [choose a lower-court geography](https://nyaaywatch.in/#lower-court-pages) |
+| Cite or share a result | [Choose an evidence page](https://nyaaywatch.in/#lower-court-pages) and the [press and embed kit](https://nyaaywatch.in/press) |
 | Run the project locally | [Quickstart](#quickstart) |
 | Improve the project | [Contributing guide](CONTRIBUTING.md) |
 
@@ -57,6 +57,8 @@ NyaayWatch is a public alpha publishing reviewed snapshots. Coverage means that 
 | Lower courts | [`/states/:slug`](https://nyaaywatch.in/states/punjab) and `/v1/states/:slug/...` | All 36 state and Union Territory NJDG selectors |
 
 The home page is the national entry point, followed by explicit state, Union Territory, High Court, and Supreme Court routes.
+
+Legacy compatibility note: `/districts`, `/data`, and `/methodology` are unscoped Himachal Pradesh lower-court shortcuts. Use the homepage geography selector and `/states/:stateSlug/...` routes for a specific geography. `/api` is the national API reference; state-specific API pages use `/states/:stateSlug/api`.
 
 ## The trust model
 
@@ -153,7 +155,7 @@ flowchart TD
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
 | `docs/` | Design, methodology, release, operations, source reviews, and coverage audit docs |
 
-See the [API reference](https://nyaaywatch.in/api) for the current contract and the [data page](https://nyaaywatch.in/data) for downloadable evidence.
+See the [API reference](https://nyaaywatch.in/api) for the current contract and the homepage's lower-court selector for downloadable evidence by geography.
 
 ## Quickstart
 

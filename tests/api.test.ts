@@ -324,6 +324,12 @@ describe("HTTP routes", () => {
     expect(apiPage.text).not.toContain("Viewing Himachal Pradesh");
     expect(apiPage.text).toContain("State or Union Territory-wide backlog");
     expect(apiPage.text).toContain("state or Union Territory-wide trend surface");
+    expect(apiPage.text).toContain("/v1/supreme-court/{stats,trends}");
+    expect(apiPage.text).toContain("/v1/high-courts/:courtSlug/{stats,trends}");
+    expect(apiPage.text).toContain('href="/supreme-court/api"');
+    expect(apiPage.text).toContain('href="/high-courts"');
+    expect(apiPage.text).toContain("/states/:stateSlug/data");
+    expect(apiPage.text).not.toContain("The <code>/data</code> downloads");
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);

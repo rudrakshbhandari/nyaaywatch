@@ -4,8 +4,8 @@ import { renderSectionHead } from "../design/ui.js";
 
 /**
  * /api — developer reference for the three public JSON endpoints. No snapshot
- * required; the page is static narrative + route documentation. The CSV
- * downloads are linked from /data rather than duplicated here.
+ * required; the page is static narrative + route documentation. CSV downloads
+ * are linked from the applicable state-scoped data page rather than duplicated here.
  */
 export function renderApiPage(context: PublicPageContext, scope: "national" | "state"): string {
   const aggregateAdjective =
@@ -38,6 +38,30 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
           stateEvidencePack: context.routes.stateEvidencePack,
           districtEvidencePack: context.routes.districtEvidencePack(":districtId"),
         };
+  const csvParityPath = scope === "national" ? "/states/:stateSlug/data" : context.routes.data;
+  const nationalTierReferences =
+    scope === "national"
+      ? `
+    <section class="endpoints__notes">
+      ${renderSectionHead({
+        headline: "Other court-tier APIs",
+        lede: "Supreme Court and High Court endpoints keep their own schemas and source caveats.",
+      })}
+      <div class="card-grid card-grid--2">
+        <article class="card">
+          <h3>Supreme Court</h3>
+          <p><code>/v1/supreme-court/{stats,trends}</code></p>
+          <p><a href="/supreme-court/api">Open Supreme Court API reference</a></p>
+        </article>
+        <article class="card">
+          <h3>High Courts</h3>
+          <p><code>/v1/high-courts/:courtSlug/{stats,trends}</code></p>
+          <p><a href="/high-courts">Choose a High Court</a></p>
+        </article>
+      </div>
+    </section>
+  `
+      : "";
   const body = `
     ${renderSectionHead({
       eyebrow: "DEVELOPER ACCESS",
@@ -227,12 +251,14 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
       </div>
     </section>
 
+    ${nationalTierReferences}
+
     <section class="endpoints__notes">
       ${renderSectionHead({ headline: "What the API guarantees" })}
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>CSV parity</h3>
-          <p>The <code>/data</code> downloads stay aligned with the same published read model, so the CSV columns and the JSON fields mean the same thing.</p>
+          <p>The <code>${csvParityPath}</code> downloads stay aligned with the same published read model, so the CSV columns and the JSON fields mean the same thing.</p>
         </article>
         <article class="card">
           <h3>Published only</h3>
