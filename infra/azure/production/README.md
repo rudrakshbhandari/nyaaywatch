@@ -13,9 +13,11 @@ changing the live AWS environment:
 - Azure Container Apps Jobs for the five existing fetch, publish, and smoke-monitor cadences.
 
 The application must be switched to the Azure artifact-store adapter before
-the container app is deployed. Email delivery, alarms, and production DNS
-remain deliberately outside this target until the application and data paths
-have been validated in parallel with AWS.
+the container app is deployed. The target supports Azure Communication Services
+email and an optional HTTPS alarm webhook; provide the verified sender,
+connection string, and webhook before cutover if newsletter delivery and
+failure paging are required. Production DNS remains outside this target until
+the application and data paths have been validated in parallel with AWS.
 
 The scheduled jobs use UTC equivalents of the current Asia/Kolkata cadence:
 

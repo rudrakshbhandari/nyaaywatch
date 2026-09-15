@@ -226,7 +226,7 @@ resource "azurerm_container_app" "this" {
   }
 
   dynamic "secret" {
-    for_each = var.cloudflare_api_token == null ? [] : [var.cloudflare_api_token]
+    for_each = coalesce(var.cloudflare_api_token, "") == "" ? [] : [var.cloudflare_api_token]
 
     content {
       name  = "cloudflare-api-token"
@@ -235,7 +235,7 @@ resource "azurerm_container_app" "this" {
   }
 
   dynamic "secret" {
-    for_each = var.azure_communication_connection_string == null ? [] : [var.azure_communication_connection_string]
+    for_each = coalesce(var.azure_communication_connection_string, "") == "" ? [] : [var.azure_communication_connection_string]
 
     content {
       name  = "azure-communication-connection-string"
@@ -314,7 +314,7 @@ resource "azurerm_container_app" "this" {
       }
 
       dynamic "env" {
-        for_each = var.azure_communication_connection_string == null ? [] : [var.azure_communication_connection_string]
+        for_each = coalesce(var.azure_communication_connection_string, "") == "" ? [] : [var.azure_communication_connection_string]
 
         content {
           name        = "AZURE_COMMUNICATION_CONNECTION_STRING"
@@ -323,7 +323,7 @@ resource "azurerm_container_app" "this" {
       }
 
       dynamic "env" {
-        for_each = var.azure_email_sender == null ? [] : [var.azure_email_sender]
+        for_each = coalesce(var.azure_email_sender, "") == "" ? [] : [var.azure_email_sender]
 
         content {
           name  = "AZURE_EMAIL_SENDER"
@@ -332,7 +332,7 @@ resource "azurerm_container_app" "this" {
       }
 
       dynamic "env" {
-        for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+        for_each = coalesce(var.alarm_webhook_url, "") == "" ? [] : [var.alarm_webhook_url]
 
         content {
           name        = "ALARM_WEBHOOK_URL"
@@ -427,7 +427,7 @@ resource "azurerm_container_app_job" "scheduled" {
   }
 
   dynamic "secret" {
-    for_each = var.cloudflare_api_token == null ? [] : [var.cloudflare_api_token]
+    for_each = coalesce(var.cloudflare_api_token, "") == "" ? [] : [var.cloudflare_api_token]
 
     content {
       name  = "cloudflare-api-token"
@@ -436,7 +436,7 @@ resource "azurerm_container_app_job" "scheduled" {
   }
 
   dynamic "secret" {
-    for_each = var.azure_communication_connection_string == null ? [] : [var.azure_communication_connection_string]
+    for_each = coalesce(var.azure_communication_connection_string, "") == "" ? [] : [var.azure_communication_connection_string]
 
     content {
       name  = "azure-communication-connection-string"
@@ -445,7 +445,7 @@ resource "azurerm_container_app_job" "scheduled" {
   }
 
   dynamic "secret" {
-    for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+    for_each = coalesce(var.alarm_webhook_url, "") == "" ? [] : [var.alarm_webhook_url]
 
     content {
       name  = "alarm-webhook-url"
