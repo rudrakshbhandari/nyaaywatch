@@ -8,7 +8,10 @@ import { renderSectionHead } from "../design/ui.js";
  * downloads are linked from /data rather than duplicated here.
  */
 export function renderApiPage(context: PublicPageContext, scope: "national" | "state"): string {
-  const aggregateAdjective = context.lowerCourtCopy.aggregateAdjective;
+  const aggregateAdjective =
+    scope === "national" ? "state or Union Territory-wide" : context.lowerCourtCopy.aggregateAdjective;
+  const aggregateAdjectiveTitle =
+    scope === "national" ? "State or Union Territory-wide" : context.lowerCourtCopy.aggregateAdjectiveTitle;
   const shellNavLinks =
     scope === "national"
       ? [
@@ -51,7 +54,7 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${documentedRoutes.stats}</code>
-          <p>${context.lowerCourtCopy.aggregateAdjectiveTitle} backlog, disposal pace, wait estimate, and count of districts to watch for the active publication.</p>
+          <p>${aggregateAdjectiveTitle} backlog, disposal pace, wait estimate, and count of districts to watch for the active publication.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{

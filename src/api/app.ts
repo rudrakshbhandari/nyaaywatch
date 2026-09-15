@@ -467,7 +467,7 @@ export function createApp(
           supremeCourtSnapshot: supremeCourtSnapshot?.payload ?? null,
           highCourtEntries,
           lowerCourtSnapshot: snapshot.payload,
-          lowerCourtContext: buildPublicPageContext(currentProfile, availableProfiles),
+          lowerCourtContext: buildPublicPageContext(currentProfile, availableProfiles, "national"),
           availableStateProfiles: availableProfiles,
           stateMapEntries,
         }),

@@ -155,6 +155,10 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain('id="lower-court-pages" open');
     expect(homepage.text).toContain("Pending across public geographies");
     expect(homepage.text).toContain("Highest-pressure geography");
+    expect(homepage.text).toContain("Choose a geography");
+    expect(homepage.text).not.toContain('href="/methodology"');
+    expect(homepage.text).not.toContain('href="/data"');
+    expect(homepage.text).not.toContain('href="/districts"');
     expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
     expect(homepage.text).not.toContain("featured published snapshot");
     expect(homepage.text).not.toContain("Kullu, Himachal Pradesh");
@@ -163,11 +167,14 @@ describe("HTTP routes", () => {
     expect(himachalOverview.status).toBe(200);
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
     expect(himachalOverview.text).toContain("Follow the state trail.");
+    expect(himachalOverview.text).toContain("Court transparency, Himachal Pradesh");
+    expect(himachalOverview.text).not.toContain("Court transparency across India");
 
     const himachalApi = await request(app).get("/states/himachal/api");
     expect(himachalApi.status).toBe(200);
     expect(himachalApi.text).toContain("/v1/stats/himachal");
     expect(himachalApi.text).not.toContain("/v1/states/:stateSlug/stats");
+    expect(himachalOverview.text).toContain('href="/states/himachal/api"');
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
@@ -315,6 +322,8 @@ describe("HTTP routes", () => {
     expect(apiPage.text).toContain('href="/supreme-court"');
     expect(apiPage.text).not.toContain('href="/districts"');
     expect(apiPage.text).not.toContain("Viewing Himachal Pradesh");
+    expect(apiPage.text).toContain("State or Union Territory-wide backlog");
+    expect(apiPage.text).toContain("state or Union Territory-wide trend surface");
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);
@@ -363,6 +372,12 @@ describe("HTTP routes", () => {
     expect(pressPage.text).toContain("/states/$STATE_SLUG/data/evidence/districts/$DISTRICT_ID.json");
     expect(pressPage.text).not.toContain("Himachal Pradesh");
     expect(pressPage.text).not.toContain("Kangra");
+    expect(pressPage.text).toContain('href="/#lower-court-pages"');
+    expect(pressPage.text).not.toContain('href="/data/evidence/state.json"');
+    expect(pressPage.text).not.toContain('href="/movers"');
+    expect(pressPage.text).not.toContain('href="/data"');
+    expect(pressPage.text).not.toContain('href="/methodology"');
+    expect(pressPage.text).not.toContain('href="/districts"');
     expect(pressPage.text).not.toContain("live numbers");
 
     const sitemap = await request(app).get("/sitemap.xml");

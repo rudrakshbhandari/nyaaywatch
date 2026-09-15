@@ -55,8 +55,9 @@ const DEFAULT_PUBLIC_STATE_CODE = "HP";
 export function buildPublicPageContext(
   currentProfile: NjdgStateProfile,
   availableProfiles: NjdgStateProfile[],
+  scope: "national" | "state" = "state",
 ): PublicPageContext {
-  const routes = buildPublicStateRoutes(currentProfile);
+  const routes = buildPublicStateRoutes(currentProfile, scope);
   const visibleProfiles = sortPublicStateProfiles(availableProfiles.length > 0 ? availableProfiles : [currentProfile]);
   const lowerCourtCopy = buildPublicLowerCourtCopy(currentProfile);
 
@@ -75,10 +76,7 @@ export function buildPublicPageContext(
       active: profile.stateCode === currentProfile.stateCode,
     })),
     brandHref: routes.home,
-    brandTag:
-      currentProfile.stateCode === DEFAULT_PUBLIC_STATE_CODE
-        ? "Court transparency across India"
-        : `Court transparency, ${currentProfile.stateName}`,
+    brandTag: `Court transparency, ${currentProfile.stateName}`,
     lowerCourtCopy,
     publicScopeDescription: buildPublicScopeDescription(currentProfile, visibleProfiles),
   };
@@ -88,7 +86,7 @@ function sortPublicStateProfiles(profiles: NjdgStateProfile[]) {
   return [...profiles].sort((left, right) => left.stateName.localeCompare(right.stateName, "en"));
 }
 
-export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRoutes {
+export function buildPublicStateRoutes(profile: NjdgStateProfile, scope: "national" | "state" = "state"): PublicStateRoutes {
   const htmlBase = isDefaultPublicState(profile) ? "" : `/states/${profile.stateSlug}`;
   const home = isDefaultPublicState(profile) ? "/states/himachal" : `/states/${profile.stateSlug}`;
   const apiBase = isDefaultPublicState(profile)
@@ -118,7 +116,7 @@ export function buildPublicStateRoutes(profile: NjdgStateProfile): PublicStateRo
     districtEvidencePack: (districtId) =>
       `${htmlBase ? `${htmlBase}/data/evidence/districts` : "/data/evidence/districts"}/${districtId}.json`,
     methodology: htmlBase ? `${htmlBase}/methodology` : "/methodology",
-    api: htmlBase ? `${htmlBase}/api` : "/api",
+    api: htmlBase ? `${htmlBase}/api` : scope === "national" ? "/api" : "/states/himachal/api",
     statsApi: apiBase.stats,
     districtsApi: apiBase.districts,
     trendsApi: apiBase.trends,
@@ -139,7 +137,7 @@ function buildPublicScopeDescription(
 
   if (isDefaultPublicState(currentProfile)) {
     if (otherGeographyCount === 0) {
-      return "This state page covers Himachal Pradesh. The national homepage lives at /, and the lower-court shortcuts stay available on the unscoped district, data, methodology, and API routes.";
+      return "This state page covers Himachal Pradesh. The national homepage lives at /, and the legacy district, data, and methodology shortcuts remain unscoped while this page's API link stays state-scoped.";
     }
 
     return `This state page covers Himachal Pradesh. The national homepage lives at /, and the switcher links ${otherGeographyPages}.`;

@@ -5,6 +5,7 @@ import { SITE_ORIGIN } from "../share/site-origin.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderPressPage(): string {
+  const nationalCoverageHref = "/#lower-court-pages";
   const curlExample = `STATE_SLUG=YOUR_STATE_SLUG\ncurl "${SITE_ORIGIN}/v1/states/$STATE_SLUG/stats" | jq`;
   const districtExample = `STATE_SLUG=YOUR_STATE_SLUG\ncurl "${SITE_ORIGIN}/v1/states/$STATE_SLUG/districts" | jq '.districts[0]'`;
   const evidencePackExample =
@@ -40,15 +41,15 @@ export function renderPressPage(): string {
           eyebrow: "03",
           title: "District evidence",
           body: "Use district pages, CSVs, movers, and comparisons for local reporting from published lower-court snapshots.",
-          href: "/districts",
-          cta: "Open districts",
+          href: nationalCoverageHref,
+          cta: "Choose a geography",
         },
         {
           eyebrow: "04",
           title: "Reusable data",
           body: "Use CSV and API outputs where safe; raw scrape artifacts are not public evidence packs.",
-          href: "/data",
-          cta: "Open data",
+          href: nationalCoverageHref,
+          cta: "Choose a geography",
         },
       ],
     })}
@@ -119,17 +120,17 @@ export function renderPressPage(): string {
         <article class="card">
           <h3>Evidence pages</h3>
           <p>District and court pages are the safest citation targets because they keep the visible metric, source date, and methodology link together.</p>
-          <p><a class="btn btn--ghost btn--small" href="/districts">Open districts</a></p>
+          <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
         <article class="card">
           <h3>Downloadable packs</h3>
           <p>Use evidence pack JSON when you need the metric, source date, methodology, CSV/API links, and caveats in one reusable file. Raw capture files stay outside the public download boundary.</p>
-          <p><a class="btn btn--ghost btn--small" href="/data/evidence/state.json">Open state pack</a></p>
+          <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
         <article class="card">
           <h3>Movement and contrast</h3>
           <p>Use movers for snapshot-to-snapshot changes and compare pages for two-district contrasts inside the same geography.</p>
-          <p><a class="btn btn--ghost btn--small" href="/movers">Open movers</a></p>
+          <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
       </div>
     </section>
@@ -153,7 +154,7 @@ export function renderPressPage(): string {
           <pre class="press-embed__code">${escapeHtml(evidencePackExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(evidencePackExample)}">Copy</button>
         </div>
-        <p class="card__meta">Full API reference: <a href="/api">/api</a> · <a href="/methodology">Methodology</a> · <a href="/data">Data downloads</a></p>
+        <p class="card__meta">Full API reference: <a href="/api">/api</a> · <a href="${nationalCoverageHref}">Choose a geography</a></p>
       </div>
     </section>
 
@@ -224,9 +225,8 @@ export function renderPressPage(): string {
     brandHref: "/",
     brandTag: "Judicial observability across tiers",
     navLinks: [
-      { id: "districts", href: "/districts", label: "Districts" },
-      { id: "data", href: "/data", label: "Data" },
-      { id: "methodology", href: "/methodology", label: "Method" },
+      { id: "home", href: "/", label: "Home" },
+      { id: "districts", href: nationalCoverageHref, label: "Lower courts" },
       { id: "api", href: "/api", label: "API" },
     ],
     footer: {
