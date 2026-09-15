@@ -80,7 +80,7 @@ export function renderStateEmbedWidget(
       <span class="embed-header__date">${escapeHtml(model.sourceDateLabel)}</span>
     </div>
     <div class="embed-divider"></div>
-    <p class="embed-eyebrow">STATE OVERVIEW</p>
+    <p class="embed-eyebrow">LOWER-COURT GEOGRAPHY OVERVIEW</p>
     <h1 class="embed-name">${escapeHtml(snapshot.stateName)}</h1>
     <p class="embed-summary">How long is the wait for justice in ${escapeHtml(snapshot.stateName)}?</p>
     <div class="embed-stats">

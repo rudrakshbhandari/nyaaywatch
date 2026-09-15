@@ -27,6 +27,7 @@ export function renderNationalHome(input: {
     publicStateCount: input.availableStateProfiles.length,
   });
   const supremeRoutes = buildPublicSupremeCourtRoutes();
+  const lowerCourtSelectorHref = "#lower-court-pages";
 
   const HIGH_COURT_TEASER_LIMIT = 6;
   const highCourtCards =
@@ -168,7 +169,7 @@ export function renderNationalHome(input: {
             : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers update continuously or forecast outcomes."
         }</p>
         <div class="national-hero__cta">
-          <a class="btn btn--primary" href="${model.supremeCourt.snapshot ? supremeRoutes.home : input.lowerCourtContext.routes.home}">${
+          <a class="btn btn--primary" href="${model.supremeCourt.snapshot ? supremeRoutes.home : lowerCourtSelectorHref}">${
             model.supremeCourt.snapshot ? "Track the Supreme Court" : "Track lower courts"
           }</a>
           <a class="btn btn--ghost" href="/high-courts">Browse High Courts</a>
@@ -358,8 +359,7 @@ export function renderNationalHome(input: {
         <article class="card">
           <h3>District and subordinate courts</h3>
           <p>The lower-court layer remains the deepest public drilldown anywhere on the site.</p>
-          <p><a href="${input.lowerCourtContext.routes.methodology}">Methodology</a></p>
-          <p><a href="${input.lowerCourtContext.routes.data}">Data</a></p>
+          <p><a href="${lowerCourtSelectorHref}">Choose a geography</a></p>
           <p><a href="${input.lowerCourtContext.routes.api}">API</a></p>
         </article>
       </div>
@@ -377,7 +377,7 @@ export function renderNationalHome(input: {
     navLinks: [
       { id: "supreme-court", href: "/supreme-court", label: "Supreme Court" },
       { id: "high-courts", href: "/high-courts", label: "High Courts" },
-      { id: "districts", href: input.lowerCourtContext.routes.districts, label: "Districts" },
+      { id: "districts", href: lowerCourtSelectorHref, label: "Lower courts" },
       { id: "learn", href: "/learn", label: "Learn" },
     ],
     footer: {

@@ -155,6 +155,10 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain('id="lower-court-pages" open');
     expect(homepage.text).toContain("Pending across public geographies");
     expect(homepage.text).toContain("Highest-pressure geography");
+    expect(homepage.text).toContain("Choose a geography");
+    expect(homepage.text).not.toContain('href="/methodology"');
+    expect(homepage.text).not.toContain('href="/data"');
+    expect(homepage.text).not.toContain('href="/districts"');
     expect(homepage.text).not.toContain("Himachal stays the default lower-court lens");
     expect(homepage.text).not.toContain("featured published snapshot");
     expect(homepage.text).not.toContain("Kullu, Himachal Pradesh");
@@ -163,6 +167,14 @@ describe("HTTP routes", () => {
     expect(himachalOverview.status).toBe(200);
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
     expect(himachalOverview.text).toContain("Follow the state trail.");
+    expect(himachalOverview.text).toContain("Court transparency, Himachal Pradesh");
+    expect(himachalOverview.text).not.toContain("Court transparency across India");
+
+    const himachalApi = await request(app).get("/states/himachal/api");
+    expect(himachalApi.status).toBe(200);
+    expect(himachalApi.text).toContain("/v1/stats/himachal");
+    expect(himachalApi.text).not.toContain("/v1/states/:stateSlug/stats");
+    expect(himachalOverview.text).toContain('href="/states/himachal/api"');
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
@@ -301,8 +313,23 @@ describe("HTTP routes", () => {
 
     const apiPage = await request(app).get("/api");
     expect(apiPage.status).toBe(200);
-    expect(apiPage.text).toContain("/data/evidence/state.json");
-    expect(apiPage.text).toContain("/data/evidence/districts/:districtId.json");
+    expect(apiPage.text).toContain("/v1/states/:stateSlug/stats");
+    expect(apiPage.text).toContain("/states/:stateSlug/data/evidence/state.json");
+    expect(apiPage.text).toContain("Selected state or Union Territory");
+    expect(apiPage.text).not.toContain('"stateName": "Himachal Pradesh"');
+    expect(apiPage.text).not.toContain('"districtId": "kangra"');
+    expect(apiPage.text).toContain('href="/high-courts"');
+    expect(apiPage.text).toContain('href="/supreme-court"');
+    expect(apiPage.text).not.toContain('href="/districts"');
+    expect(apiPage.text).not.toContain("Viewing Himachal Pradesh");
+    expect(apiPage.text).toContain("State or Union Territory-wide backlog");
+    expect(apiPage.text).toContain("state or Union Territory-wide trend surface");
+    expect(apiPage.text).toContain("/v1/supreme-court/{stats,trends}");
+    expect(apiPage.text).toContain("/v1/high-courts/:courtSlug/{stats,trends}");
+    expect(apiPage.text).toContain('href="/supreme-court/api"');
+    expect(apiPage.text).toContain('href="/high-courts"');
+    expect(apiPage.text).toContain("/states/:stateSlug/data/districts.csv");
+    expect(apiPage.text).not.toContain("The <code>/data</code> downloads");
 
     const districtCsv = await request(app).get("/data/districts.csv");
     expect(districtCsv.status).toBe(200);
@@ -345,7 +372,20 @@ describe("HTTP routes", () => {
     expect(pressPage.status).toBe(200);
     expect(pressPage.text).toContain("Citation-ready starting points.");
     expect(pressPage.text).toContain("currently published numbers");
-    expect(pressPage.text).toContain("/data/evidence/districts/kangra.json");
+    expect(pressPage.text).toContain("/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID");
+    expect(pressPage.text).toContain('href="/">national coverage page</a>');
+    expect(pressPage.text).not.toContain('href="/districts">districts page</a>');
+    expect(pressPage.text).toContain("/states/$STATE_SLUG/data/evidence/districts/$DISTRICT_ID.json");
+    expect(pressPage.text).not.toContain("Himachal Pradesh");
+    expect(pressPage.text).not.toContain("Kangra");
+    expect(pressPage.text).toContain("selected lower-court geography");
+    expect(pressPage.text).not.toContain("selected state courts");
+    expect(pressPage.text).toContain('href="/#lower-court-pages"');
+    expect(pressPage.text).not.toContain('href="/data/evidence/state.json"');
+    expect(pressPage.text).not.toContain('href="/movers"');
+    expect(pressPage.text).not.toContain('href="/data"');
+    expect(pressPage.text).not.toContain('href="/methodology"');
+    expect(pressPage.text).not.toContain('href="/districts"');
     expect(pressPage.text).not.toContain("live numbers");
 
     const sitemap = await request(app).get("/sitemap.xml");
@@ -1181,6 +1221,18 @@ describe("HTTP routes", () => {
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/districts/ludhiana.json");
     expect(punjabDistrictPage.text).toContain("/states/punjab/data/evidence/state.json");
     expect(punjabDistrictPage.text).toContain("Punjab");
+
+    const punjabDistrictEmbed = await request(app).get("/states/punjab/embed/district/ludhiana");
+    expect(punjabDistrictEmbed.status).toBe(200);
+    expect(punjabDistrictEmbed.headers["content-security-policy"]).toBe("frame-ancestors *");
+    expect(punjabDistrictEmbed.text).toContain("Ludhiana");
+    expect(punjabDistrictEmbed.text).toContain("PUNJAB");
+    expect(punjabDistrictEmbed.text).toContain("https://nyaaywatch.in/states/punjab/districts/ludhiana");
+
+    const punjabStateEmbed = await request(app).get("/embed/state/punjab");
+    expect(punjabStateEmbed.status).toBe(200);
+    expect(punjabStateEmbed.text).toContain("LOWER-COURT GEOGRAPHY OVERVIEW");
+    expect(punjabStateEmbed.text).toContain("Punjab");
 
     const punjabDistrictPack = await request(app).get("/states/punjab/data/evidence/districts/ludhiana.json");
     expect(punjabDistrictPack.status).toBe(200);

@@ -5,9 +5,11 @@ import { SITE_ORIGIN } from "../share/site-origin.js";
 import { INVESTIGATION_WORKFLOW_CSS, renderInvestigationWorkflow } from "./investigation-workflow.js";
 
 export function renderPressPage(): string {
-  const curlExample = `curl ${SITE_ORIGIN}/v1/stats/himachal | jq`;
-  const districtExample = `curl ${SITE_ORIGIN}/v1/districts | jq '.districts[0]'`;
-  const evidencePackExample = `curl ${SITE_ORIGIN}/data/evidence/districts/kangra.json | jq`;
+  const nationalCoverageHref = "/#lower-court-pages";
+  const curlExample = `STATE_SLUG=YOUR_STATE_SLUG\ncurl "${SITE_ORIGIN}/v1/states/$STATE_SLUG/stats" | jq`;
+  const districtExample = `STATE_SLUG=YOUR_STATE_SLUG\ncurl "${SITE_ORIGIN}/v1/states/$STATE_SLUG/districts" | jq '.districts[0]'`;
+  const evidencePackExample =
+    `STATE_SLUG=YOUR_STATE_SLUG\nDISTRICT_ID=YOUR_DISTRICT_ID\ncurl "${SITE_ORIGIN}/states/$STATE_SLUG/data/evidence/districts/$DISTRICT_ID.json" | jq`;
 
   const body = `
     <section class="press-hero">
@@ -39,15 +41,15 @@ export function renderPressPage(): string {
           eyebrow: "03",
           title: "District evidence",
           body: "Use district pages, CSVs, movers, and comparisons for local reporting from published lower-court snapshots.",
-          href: "/districts",
-          cta: "Open districts",
+          href: nationalCoverageHref,
+          cta: "Choose a geography",
         },
         {
           eyebrow: "04",
           title: "Reusable data",
           body: "Use CSV and API outputs where safe; raw scrape artifacts are not public evidence packs.",
-          href: "/data",
-          cta: "Open data",
+          href: nationalCoverageHref,
+          cta: "Choose a geography",
         },
       ],
     })}
@@ -88,25 +90,25 @@ export function renderPressPage(): string {
     </section>
 
     <section class="press-section">
-      ${renderSectionHead({ headline: "Embed a district or state widget.", lede: "Drop an iframe into Substack, WordPress, Ghost, or any CMS. The widget shows the currently published numbers and links back to the full evidence page." })}
+      ${renderSectionHead({ headline: "Embed a district or lower-court geography widget.", lede: "Drop an iframe into Substack, WordPress, Ghost, or any CMS. The widget shows the currently published numbers and links back to the full evidence page." })}
       <div class="card">
-        <p class="press-embed__intro">Replace <code>kangra</code> with any district ID from the <a href="/districts">districts page</a>. Replace <code>himachal</code> with any state slug.</p>
+        <p class="press-embed__intro">Replace <code>YOUR_STATE_SLUG</code> with a state or Union Territory slug and <code>YOUR_DISTRICT_ID</code> with a district ID from that geography's districts page. Start from the <a href="/">national coverage page</a> to choose the geography and open its district list.</p>
         <div class="press-embed__variants">
           <div class="press-embed__variant">
             <p class="press-embed__variant-label">District widget</p>
-            <pre class="press-embed__code" id="embed-district">&lt;iframe src="${escapeHtml(SITE_ORIGIN)}/embed/district/kangra"
+            <pre class="press-embed__code" id="embed-district">&lt;iframe src="${escapeHtml(SITE_ORIGIN)}/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID"
   width="420" height="220"
   frameborder="0" style="border:none;"
-  title="NyaayWatch — Kangra district courts"&gt;&lt;/iframe&gt;</pre>
-            <button class="btn btn--ghost btn--small press-copy-btn" data-copy='<iframe src="${SITE_ORIGIN}/embed/district/kangra" width="420" height="220" frameborder="0" style="border:none;" title="NyaayWatch — Kangra district courts"></iframe>'>Copy embed</button>
+  title="NyaayWatch — selected district courts"&gt;&lt;/iframe&gt;</pre>
+            <button class="btn btn--ghost btn--small press-copy-btn" data-copy='<iframe src="${SITE_ORIGIN}/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID" width="420" height="220" frameborder="0" style="border:none;" title="NyaayWatch — selected district courts"></iframe>'>Copy embed</button>
           </div>
           <div class="press-embed__variant">
-            <p class="press-embed__variant-label">State widget</p>
-            <pre class="press-embed__code" id="embed-state">&lt;iframe src="${escapeHtml(SITE_ORIGIN)}/embed/state/himachal"
+            <p class="press-embed__variant-label">Lower-court geography widget</p>
+            <pre class="press-embed__code" id="embed-state">&lt;iframe src="${escapeHtml(SITE_ORIGIN)}/embed/state/YOUR_STATE_SLUG"
   width="420" height="220"
   frameborder="0" style="border:none;"
-  title="NyaayWatch — Himachal Pradesh courts"&gt;&lt;/iframe&gt;</pre>
-            <button class="btn btn--ghost btn--small press-copy-btn" data-copy='<iframe src="${SITE_ORIGIN}/embed/state/himachal" width="420" height="220" frameborder="0" style="border:none;" title="NyaayWatch — Himachal Pradesh courts"></iframe>'>Copy embed</button>
+  title="NyaayWatch — selected lower-court geography"&gt;&lt;/iframe&gt;</pre>
+            <button class="btn btn--ghost btn--small press-copy-btn" data-copy='<iframe src="${SITE_ORIGIN}/embed/state/YOUR_STATE_SLUG" width="420" height="220" frameborder="0" style="border:none;" title="NyaayWatch — selected lower-court geography"></iframe>'>Copy embed</button>
           </div>
         </div>
       </div>
@@ -118,17 +120,17 @@ export function renderPressPage(): string {
         <article class="card">
           <h3>Evidence pages</h3>
           <p>District and court pages are the safest citation targets because they keep the visible metric, source date, and methodology link together.</p>
-          <p><a class="btn btn--ghost btn--small" href="/districts">Open districts</a></p>
+          <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
         <article class="card">
           <h3>Downloadable packs</h3>
           <p>Use evidence pack JSON when you need the metric, source date, methodology, CSV/API links, and caveats in one reusable file. Raw capture files stay outside the public download boundary.</p>
-          <p><a class="btn btn--ghost btn--small" href="/data/evidence/state.json">Open state pack</a></p>
+          <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
         <article class="card">
           <h3>Movement and contrast</h3>
           <p>Use movers for snapshot-to-snapshot changes and compare pages for two-district contrasts inside the same geography.</p>
-          <p><a class="btn btn--ghost btn--small" href="/movers">Open movers</a></p>
+          <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
       </div>
     </section>
@@ -136,9 +138,9 @@ export function renderPressPage(): string {
     <section class="press-section">
       ${renderSectionHead({ headline: "Journalist quickstart.", lede: "Pull the numbers directly from the API. No authentication, no rate limits for reasonable use." })}
       <div class="card">
-        <p class="press-api__intro">Examples below use <code>himachal</code> and <code>kangra</code> — swap in the state or district slug you want. See <a href="/api">/api</a> for the full route list and supported scopes.</p>
+        <p class="press-api__intro">Set <code>YOUR_STATE_SLUG</code> and <code>YOUR_DISTRICT_ID</code> to the scope you want. See <a href="/api">/api</a> for the full route list and supported scopes.</p>
         <div class="press-api-row">
-          <p class="press-api__label">State summary (example: Himachal Pradesh)</p>
+          <p class="press-api__label">State or Union Territory summary</p>
           <pre class="press-embed__code">${escapeHtml(curlExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(curlExample)}">Copy</button>
         </div>
@@ -148,11 +150,11 @@ export function renderPressPage(): string {
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(districtExample)}">Copy</button>
         </div>
         <div class="press-api-row">
-          <p class="press-api__label">District evidence pack (example: Kangra)</p>
+          <p class="press-api__label">District evidence pack</p>
           <pre class="press-embed__code">${escapeHtml(evidencePackExample)}</pre>
           <button class="btn btn--ghost btn--small press-copy-btn" data-copy="${escapeHtml(evidencePackExample)}">Copy</button>
         </div>
-        <p class="card__meta">Full API reference: <a href="/api">/api</a> · <a href="/methodology">Methodology</a> · <a href="/data">Data downloads</a></p>
+        <p class="card__meta">Full API reference: <a href="/api">/api</a> · <a href="${nationalCoverageHref}">Choose a geography</a></p>
       </div>
     </section>
 
@@ -223,9 +225,8 @@ export function renderPressPage(): string {
     brandHref: "/",
     brandTag: "Judicial observability across tiers",
     navLinks: [
-      { id: "districts", href: "/districts", label: "Districts" },
-      { id: "data", href: "/data", label: "Data" },
-      { id: "methodology", href: "/methodology", label: "Method" },
+      { id: "home", href: "/", label: "Home" },
+      { id: "districts", href: nationalCoverageHref, label: "Lower courts" },
       { id: "api", href: "/api", label: "API" },
     ],
     footer: {

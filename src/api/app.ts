@@ -467,7 +467,7 @@ export function createApp(
           supremeCourtSnapshot: supremeCourtSnapshot?.payload ?? null,
           highCourtEntries,
           lowerCourtSnapshot: snapshot.payload,
-          lowerCourtContext: buildPublicPageContext(currentProfile, availableProfiles),
+          lowerCourtContext: buildPublicPageContext(currentProfile, availableProfiles, "national"),
           availableStateProfiles: availableProfiles,
           stateMapEntries,
         }),
@@ -620,22 +620,43 @@ export function createApp(
     }),
   );
 
-  // ── Embed widgets (/embed/district/:id, /embed/state/:slug) ───────────────
+  // ── Embed widgets (/embed/district/:id, /states/:slug/embed/district/:id, /embed/state/:slug) ──
+  const serveDistrictEmbed = async (
+    profile: NjdgStateProfile,
+    currentService: PublishedSnapshotService,
+    districtId: string,
+    response: Response,
+  ) => {
+    const context = buildPublicPageContext(profile, await listAvailablePublicProfiles(publicServices, profile));
+    const detail = await currentService.getDistrictDetail(districtId);
+    if (!detail) {
+      response.status(404).end();
+      return;
+    }
+    response.removeHeader("X-Frame-Options");
+    response.setHeader("Content-Security-Policy", "frame-ancestors *");
+    response.send(renderDistrictEmbedWidget(detail.snapshot, detail.district, context.routes.district(districtId)));
+  };
+
+  app.get(
+    "/states/:stateSlug/embed/district/:districtId",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).end();
+        return;
+      }
+      await serveDistrictEmbed(resolved.profile, resolved.service, readRouteParam(request.params.districtId), response);
+    }),
+  );
+
   app.get(
     "/embed/district/:districtId",
     asyncRoute(async (request, response) => {
       const districtId = readRouteParam(request.params.districtId);
       const currentProfile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
       const currentService = getRequiredPublicService(currentProfile.stateCode, publicServices);
-      const context = buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile));
-      const detail = await currentService.getDistrictDetail(districtId);
-      if (!detail) {
-        response.status(404).end();
-        return;
-      }
-      response.removeHeader("X-Frame-Options");
-      response.setHeader("Content-Security-Policy", "frame-ancestors *");
-      response.send(renderDistrictEmbedWidget(detail.snapshot, detail.district, context.routes.district(districtId)));
+      await serveDistrictEmbed(currentProfile, currentService, districtId, response);
     }),
   );
 
@@ -699,6 +720,7 @@ export function createApp(
       response.send(
         renderApiPage(
           buildPublicPageContext(currentProfile, await listAvailablePublicProfiles(publicServices, currentProfile)),
+          "national",
         ),
       );
     }),
@@ -991,6 +1013,7 @@ export function createApp(
       response.send(
         renderApiPage(
           buildPublicPageContext(resolved.profile, await listAvailablePublicProfiles(publicServices, resolved.profile)),
+          "state",
         ),
       );
     }),
