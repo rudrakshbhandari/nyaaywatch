@@ -71,7 +71,7 @@ variable "azure_email_sender" {
 }
 
 variable "alarm_webhook_url" {
-  description = "Optional Azure Monitor Action Group or equivalent webhook endpoint for application alarms."
+  description = "Optional HTTPS inbound webhook endpoint that accepts the application's alarm POST payloads. Azure Monitor Action Group webhooks are outbound destinations and are not valid here."
   type        = string
   sensitive   = true
   default     = null
