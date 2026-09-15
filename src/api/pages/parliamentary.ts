@@ -48,8 +48,8 @@ function renderAggregate(snapshot: ParliamentaryPublishedSnapshot): string {
     <p class="lede">A source-linked snapshot for ${escapeHtml(snapshot.aggregate.scopeLabel)}. It reports activity counts and missing data.</p>
     <p class="quality">Quality: <strong>${escapeHtml(snapshot.metadata.qualityState)}</strong> · Published snapshot</p>
     <section class="grid" aria-label="Published activity values">
-      ${metric("Bill records", activity.bills.recordCount)}
-      ${metric("Unique bills", activity.bills.uniqueBillCount)}
+      ${metric("Bill records", activity.bills.recordCount ?? "Not available")}
+      ${metric("Unique bills", activity.bills.uniqueBillCount ?? "Not available")}
       ${metric("Question rows for the full session", activity.questions.sessionScopedCount ?? "Not captured")}
       ${metric("Attendance", "Not published")}
     </section>
@@ -73,8 +73,8 @@ function renderProfile(snapshot: ParliamentaryPublishedSnapshot, profile: Parlia
     </dl>
     <h2>Activity in the published scope</h2>
     <section class="grid" aria-label="Published MP activity values">
-      ${metric("Bill records", activity.bills.recordCount)}
-      ${metric("Unique bills", activity.bills.uniqueBillCount)}
+      ${metric("Member-attributed bill records", activity.bills.recordCount ?? "Not available")}
+      ${metric("Unique member-attributed bills", activity.bills.uniqueBillCount ?? "Not available")}
       ${metric("Member-attributed bills", activity.bills.attributedToMemberCount ?? "Not available")}
       ${metric(`Questions reported by source (${participationScopeLabel(activity.questions.sourceReportedScope)})`, activity.questions.sourceReportedCount ?? "Not available")}
       ${metric("Session-scoped question rows", activity.questions.sessionScopedCount ?? "Not captured")}
@@ -115,6 +115,9 @@ function renderQuestionCaveat(
   }
   if (breakdownStatus === "incomplete") {
     return `<aside class="caveat"><strong>Question data note:</strong> The captured question rows were incomplete, so the session count and breakdowns are not published.</aside>`;
+  }
+  if (breakdownStatus === "unverified") {
+    return `<aside class="caveat"><strong>Question data note:</strong> The source did not provide a result total, so the captured rows are not published as a complete session count.</aside>`;
   }
   return `<aside class="caveat"><strong>Question data note:</strong> ${sourceReportedCount ?? "No count"} is reported for the ${escapeHtml(sourceReportedScope)} scope. Session question rows are ${escapeHtml(breakdownStatus)}; the source count is not labeled as a Session 5 total.</aside>`;
 }

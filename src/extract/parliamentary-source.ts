@@ -6,7 +6,8 @@ import {
 } from "../domain/parliamentary-schema.js";
 
 export type ExtractedParliamentaryCapture = ParliamentaryCaptureBundle & {
-  questionRowsComplete: boolean;
+  billRowsStatus: "complete" | "incomplete" | "unverified";
+  questionRowsStatus: "complete" | "incomplete" | "unverified";
 };
 
 export function extractParliamentaryCapture(
@@ -25,11 +26,20 @@ export function extractParliamentaryCapture(
     throw new Error(`Parliamentary question rows are outside the declared capture scope: ${outOfScopeQuestions.map((question) => question.questionId).join(", ")}`);
   }
 
+  const outOfScopeBills = parsed.bills.filter(
+    (bill) =>
+      bill.house !== parsed.house ||
+      bill.lokSabhaNumber !== parsed.lokSabhaNumber ||
+      bill.sessionNumber !== parsed.sessionNumber,
+  );
+  if (outOfScopeBills.length > 0) {
+    throw new Error(`Parliamentary bill rows are outside the declared capture scope: ${outOfScopeBills.map((bill) => bill.billId).join(", ")}`);
+  }
+
   return {
     ...parsed,
-    questionRowsComplete:
-      parsed.sourceResultTotals.questionRecords === null ||
-      parsed.questions.length === parsed.sourceResultTotals.questionRecords,
+    billRowsStatus: resultSetStatus(parsed.sourceResultTotals.billRecords, parsed.bills.length),
+    questionRowsStatus: resultSetStatus(parsed.sourceResultTotals.questionRecords, parsed.questions.length),
     roles: [...parsed.roles].sort((left, right) => left.roleId.localeCompare(right.roleId)),
     bills: [...parsed.bills].sort(compareBills),
     questions: [...parsed.questions].sort(compareQuestions),
@@ -37,6 +47,14 @@ export function extractParliamentaryCapture(
       left.evidenceId.localeCompare(right.evidenceId),
     ),
   };
+}
+
+function resultSetStatus(
+  declaredTotal: number | null,
+  capturedRows: number,
+): "complete" | "incomplete" | "unverified" {
+  if (declaredTotal === null) return "unverified";
+  return declaredTotal === capturedRows ? "complete" : "incomplete";
 }
 
 function compareBills(left: ParliamentaryBill, right: ParliamentaryBill): number {

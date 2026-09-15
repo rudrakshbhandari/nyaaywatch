@@ -22,6 +22,7 @@ describe("parliamentary snapshot normalization", () => {
     expect(first.aggregate.activity.bills).toEqual({
       recordCount: 15,
       uniqueBillCount: 14,
+      captureStatus: "complete",
       attributedToMemberCount: null,
       attributionStatus: "not_published_by_source",
     });
@@ -42,6 +43,13 @@ describe("parliamentary snapshot normalization", () => {
     expect(first.profiles).toHaveLength(1);
     expect(first.profiles[0]?.person.personId).toBe("mp-5814");
     expect(first.profiles[0]?.activity.scope).toBe("member_session");
+    expect(first.profiles[0]?.activity.bills).toMatchObject({
+      recordCount: null,
+      uniqueBillCount: null,
+      captureStatus: "complete",
+      attributedToMemberCount: 0,
+      attributionStatus: "not_published_by_source",
+    });
     expect(first.profiles[0]?.activity.questions).toMatchObject({
       sessionScopedCount: 20,
       sourceReportedCount: 125,
@@ -71,6 +79,33 @@ describe("parliamentary snapshot normalization", () => {
     expect(candidate.profiles[0]?.missingData).toContain("question-result-incomplete");
   });
 
+  it("does not treat an unknown question total as a complete result", async () => {
+    const capture = await fixtureClient.capture();
+    capture.sourceResultTotals.questionRecords = null;
+
+    const candidate = buildParliamentarySnapshotCandidate(capture);
+
+    expect(candidate.profiles[0]?.activity.questions.sessionScopedCount).toBeNull();
+    expect(candidate.profiles[0]?.activity.questions.breakdownStatus).toBe("unverified");
+    expect(candidate.profiles[0]?.missingData).toContain("question-result-unverified-total");
+  });
+
+  it("does not publish bill counts when the declared result total is incomplete or unknown", async () => {
+    const incompleteCapture = await fixtureClient.capture();
+    incompleteCapture.sourceResultTotals.billRecords = incompleteCapture.bills.length + 1;
+    const incomplete = buildParliamentarySnapshotCandidate(incompleteCapture);
+    expect(incomplete.aggregate.activity.bills.recordCount).toBeNull();
+    expect(incomplete.aggregate.activity.bills.captureStatus).toBe("incomplete");
+    expect(incomplete.aggregate.missingData).toContain("house-session-bill-result-incomplete");
+
+    const unverifiedCapture = await fixtureClient.capture();
+    unverifiedCapture.sourceResultTotals.billRecords = null;
+    const unverified = buildParliamentarySnapshotCandidate(unverifiedCapture);
+    expect(unverified.aggregate.activity.bills.uniqueBillCount).toBeNull();
+    expect(unverified.aggregate.activity.bills.captureStatus).toBe("unverified");
+    expect(unverified.aggregate.missingData).toContain("house-session-bill-result-unverified-total");
+  });
+
   it("rejects question rows outside the declared House, session, or member scope", async () => {
     const capture = await fixtureClient.capture();
     const question = capture.questions[0];
@@ -78,6 +113,15 @@ describe("parliamentary snapshot normalization", () => {
     question.sessionNumber = 4;
 
     expect(() => buildParliamentarySnapshotCandidate(capture)).toThrow(/outside the declared capture scope/);
+  });
+
+  it("rejects bill rows outside the declared House or session scope", async () => {
+    const capture = await fixtureClient.capture();
+    const bill = capture.bills[0];
+    if (!bill) throw new Error("Fixture bill missing");
+    bill.sessionNumber = 4;
+
+    expect(() => buildParliamentarySnapshotCandidate(capture)).toThrow(/bill rows are outside the declared capture scope/);
   });
 
   it("derives bill attribution status from source field coverage", async () => {
