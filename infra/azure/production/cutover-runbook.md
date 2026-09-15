@@ -9,7 +9,10 @@ DNS cutover changes the live origin.
 
 1. Configure the protected GitHub variables/secrets documented in
    `.github/workflows/azure-migration.yml`, including a verified Azure
-   Communication Services sender and an Azure Monitor Action Group webhook.
+   Communication Services sender and an HTTPS inbound alarm receiver that the
+   application is authorized to POST to. An Azure Monitor Action Group webhook
+   is an outbound Azure Monitor destination and is not an application inbound
+   endpoint.
 2. Run the workflow once with `apply=true`, `enable_application=false`, and
    `enable_scheduled_jobs=false`; record the Terraform outputs, PostgreSQL FQDN,
    storage account, and state backend.
@@ -36,7 +39,10 @@ DNS cutover changes the live origin.
    nyaaywatch-production <current-production-image>` (the stack parameter and
    redeploy helper pass the flag into ECS), verify mutating routes return 503,
    stop AWS scheduled writers, and confirm no fetch or publish job is running.
-2. Run the private relay/restore procedure and artifact migration script again. For the
+2. Reapply with `enable_application=false` and
+   `enable_scheduled_jobs=false`, then verify the Azure app has zero active
+   replicas before the destructive restore. Run the private relay/restore
+   procedure and artifact migration script again. For the
    database restore, use the approved clean-restore path (`ALLOW_TARGET_OVERWRITE=true`)
    only after confirming the write freeze and retaining the pre-restore backup.
    The restore relay honors this flag with `pg_restore --clean --if-exists`.
@@ -49,11 +55,11 @@ DNS cutover changes the live origin.
    `enable_scheduled_jobs = true`, then start the Azure jobs and perform one
    manual fetch/publish smoke test. Check
    the Azure logs and alarm webhook.
-5. Configure and verify a Cloudflare Origin Rule that rewrites both the origin
-   Host header and TLS SNI to the stable Azure Container App ingress FQDN, then
-   change the Cloudflare origin/DNS record. The public hostname remains visible
-   to clients at the edge, while the Azure ingress receives its routable host.
-   Keep the AWS origin configuration intact.
+5. Bind the public hostname to Azure Container Apps with a managed certificate,
+   then change the Cloudflare origin/DNS record. Keep the AWS origin
+   configuration intact. If the Cloudflare plan supports origin Host/SNI
+   overrides, those may be used instead, but the cutover must not depend on an
+   unavailable Origin Rules entitlement.
 6. Verify through the public hostname from an external network: health,
    canonical redirect, one public state page, JSON data, newsletter subscribe
    confirmation path, and operator health/read-only inspection.
