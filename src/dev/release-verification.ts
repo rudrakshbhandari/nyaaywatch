@@ -18,7 +18,7 @@ import { getSupremeCourtProfile } from "../supreme-court.js";
 
 const HealthResponseSchema = z.object({
   ok: z.literal(true),
-  region: z.literal("ap-south-1"),
+  region: z.string().min(1),
   stateCode: z.literal("HP"),
 });
 
