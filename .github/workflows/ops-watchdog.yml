@@ -20,6 +20,7 @@ jobs:
     env:
       ACTIVE_PRODUCTION_PROVIDER: ${{ vars.ACTIVE_PRODUCTION_PROVIDER || 'aws' }}
       AWS_REGION: ap-south-1
+      RUNTIME_REGION: ${{ vars.ACTIVE_PRODUCTION_PROVIDER == 'azure' && 'centralindia' || 'ap-south-1' }}
       PUBLIC_BASE_URL: https://nyaaywatch.in
       PRODUCTION_STACK_NAME: nyaaywatch-production
       OPERATOR_API_TOKEN: ${{ secrets.AZURE_OPERATOR_API_TOKEN }}
