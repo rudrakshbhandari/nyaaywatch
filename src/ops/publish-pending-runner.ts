@@ -126,7 +126,7 @@ export async function runPublishPendingSweep(
       // was first captured. Track the running pending value here and feed it into
       // the gate as previousPendingOverride. The same applies to district maps
       // used by the concentrated-district gate for lower courts.
-      let runningPreviousPending: number | undefined;
+      let runningPreviousPending = await loadPreviousPending(store, scope.scopeCode, scope.scopeType, scope.pendingField);
       let runningPreviousDistrictPending =
         scope.scopeType === "lower_court_state"
           ? await loadPreviousDistrictPending(store, scope.scopeCode, scope.scopeType)
@@ -227,4 +227,21 @@ async function loadPreviousDistrictPending(
     return undefined;
   }
   return extractDistrictPendingMap({ payload: latest.payload });
+}
+
+async function loadPreviousPending(
+  store: PgWarehouseStore,
+  scopeCode: string,
+  scopeType: ScopeType,
+  pendingField: SweepScope["pendingField"],
+): Promise<number | undefined> {
+  const latest =
+    scopeType === "lower_court_state"
+      ? await store.getLatestPublishedSnapshot(scopeCode, scopeType)
+      : scopeType === "high_court"
+        ? await store.getLatestHighCourtPublishedSnapshot(scopeCode, scopeType)
+        : await store.getLatestSupremeCourtPublishedSnapshot(scopeCode, scopeType);
+  const stats = latest?.payload.stats as Record<string, unknown> | undefined;
+  const pending = stats?.[pendingField];
+  return typeof pending === "number" && Number.isFinite(pending) ? pending : undefined;
 }
