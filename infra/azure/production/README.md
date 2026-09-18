@@ -37,7 +37,7 @@ validation record exists, import an existing binding (if one was created during
 validation) and set `manage_public_hostname = true` for subsequent applies:
 
 ```bash
-terraform import azurerm_container_app_custom_domain.public[0] \
+terraform import 'azurerm_container_app_custom_domain.public["nyaaywatch.in"]' \
   /subscriptions/SUBSCRIPTION_ID/resourceGroups/nyaaywatch-production/providers/Microsoft.App/containerApps/nyaaywatch-production/customDomainName/nyaaywatch.in
 ```
 

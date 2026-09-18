@@ -234,6 +234,18 @@ Scheduled internal fetches and release verification run through the AWS and GitH
 
 ## Read the docs
 
+```bash
+npm run operator:remote -- --base-url=https://nyaaywatch.in publications
+npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court=gujarat fetch "Internal Gujarat HC fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal SC fetch"
+npm run infra:production-preflight
+npm run infra:production-cutover-inventory
+npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
+```
+
+The AWS-only `npm run operator:production` path is retired after the Azure cutover. Use `npm run operator:remote` for supported production lanes. Do not run the AWS one-off ECS operator unless you are deliberately performing an AWS rollback rehearsal with `ACTIVE_PRODUCTION_PROVIDER=aws` and an explicitly restored AWS stack.
+
 - [NyaayWatch design](docs/NYAAYWATCH_DESIGN.md): product definition, public information architecture, and constraints
 - [India court coverage audit](docs/INDIA_COURT_COVERAGE_AUDIT.md): current court and geography coverage boundary
 - [Copy voice](docs/COPY_VOICE.md): public language rules

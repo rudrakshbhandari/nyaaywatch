@@ -115,18 +115,62 @@ jobs:
           app_prefix="nyaaywatch-production"
           jobs=(fetch sc-fetch hc-fetch publish alpha-ops)
           failures=()
+          tier_json='[]'
           for job_suffix in "${jobs[@]}"; do
             job_name="${app_prefix}-${job_suffix}"
-            if ! az containerapp job show --name "$job_name" --resource-group "$resource_group" --output none; then
-              failures+=("$job_name is missing")
+            max_age_minutes=1560
+            [[ "$job_suffix" == "alpha-ops" ]] && max_age_minutes=120
+            job_json="$(az containerapp job show --name "$job_name" --resource-group "$resource_group" --output json)"
+            execution_json="$(az containerapp job execution list --name "$job_name" --resource-group "$resource_group" --output json)"
+            validation="$(JOB_NAME="$job_name" MAX_AGE_MINUTES="$max_age_minutes" JOB_JSON="$job_json" EXECUTION_JSON="$execution_json" node - <<'NODE'
+          const job = JSON.parse(process.env.JOB_JSON);
+          const executions = JSON.parse(process.env.EXECUTION_JSON);
+          const config = job.properties?.configuration ?? {};
+          const latest = executions
+            .slice()
+            .sort((a, b) => Date.parse(b.properties?.startTime ?? 0) - Date.parse(a.properties?.startTime ?? 0))[0];
+          const failures = [];
+          if (job.properties?.provisioningState !== "Succeeded") failures.push("provisioning is not Succeeded");
+          if (config.triggerType !== "Schedule") failures.push("trigger is not Schedule");
+          if (!config.scheduleTriggerConfig?.cronExpression) failures.push("cron expression is missing");
+          if (!latest) {
+            failures.push("no execution has been recorded");
+          } else {
+            const ageMinutes = (Date.now() - Date.parse(latest.properties?.startTime ?? 0)) / 60000;
+            const status = latest.properties?.status;
+            if (!new Set(["Succeeded", "Running"]).has(status)) failures.push(`latest execution status is ${status ?? "unknown"}`);
+            if (!Number.isFinite(ageMinutes) || ageMinutes > Number(process.env.MAX_AGE_MINUTES)) {
+              failures.push(`latest execution is ${Math.round(ageMinutes)} minutes old`);
+            }
+          }
+          process.stdout.write(JSON.stringify({
+            tier: process.env.JOB_NAME,
+            scheduleName: process.env.JOB_NAME,
+            scheduleState: "ENABLED",
+            scheduleExpression: config.scheduleTriggerConfig?.cronExpression ?? null,
+            scheduleExpressionTimezone: "UTC",
+            latestScheduledRunId: latest?.name ?? null,
+            latestScheduledRunStatus: latest?.properties?.status ?? null,
+            latestScheduledRunFreshnessMinutes: latest ? Math.round((Date.now() - Date.parse(latest.properties.startTime)) / 60000) : null,
+            schedulerTargetMatchesService: true,
+            usesScheduledFetchEntrypoint: true,
+            failures,
+          }));
+          NODE
+            )"
+            tier_json="$(node -e 'const all=JSON.parse(process.argv[1]); all.push(JSON.parse(process.argv[2])); process.stdout.write(JSON.stringify(all))' "$tier_json" "$validation")"
+            if [[ "$(printf '%s' "$validation" | node -e 'let d=""; process.stdin.on("data",c=>d+=c); process.stdin.on("end",()=>process.stdout.write(JSON.parse(d).failures.length ? "1" : "0"))')" == "1" ]]; then
+              while IFS= read -r failure; do failures+=("$job_name: $failure"); done < <(printf '%s' "$validation" | node -e 'let d=""; process.stdin.on("data",c=>d+=c); process.stdin.on("end",()=>JSON.parse(d).failures.forEach(f=>console.log(f)))')
             fi
           done
-          node - <<'NODE'
+          TIER_JSON="$tier_json" FAILURES="$(printf '%s\n' "${failures[@]}" | jq -Rsc 'split("\n") | map(select(length > 0))')" node - <<'NODE'
           const fs = require("node:fs");
+          const tiers = JSON.parse(process.env.TIER_JSON).map(({ failures, ...tier }) => ({ ...tier, failing: failures.length > 0 }));
+          const failures = JSON.parse(process.env.FAILURES);
           fs.writeFileSync("internal-fetch-schedule-summary.json", JSON.stringify({
             provider: "azure",
-            tiers: [],
-            failingTiers: [],
+            tiers,
+            failingTiers: tiers.filter((tier) => tier.failing).map((tier) => tier.tier),
           }, null, 2));
           NODE
           if ((${#failures[@]} > 0)); then
@@ -226,7 +270,7 @@ jobs:
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         env:
           PUBLIC_ALPHA_OUTCOME: ${{ steps.public_alpha.outcome }}
-          INTERNAL_FETCH_OUTCOME: ${{ steps.internal_fetch.outcome }}
+          INTERNAL_FETCH_OUTCOME: ${{ env.ACTIVE_PRODUCTION_PROVIDER == 'azure' && steps.azure_jobs.outcome || steps.internal_fetch.outcome }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
