@@ -43,6 +43,12 @@ interface TaskStatus {
 }
 
 async function main() {
+  if (process.env.ACTIVE_PRODUCTION_PROVIDER?.trim().toLowerCase() === "azure") {
+    throw new Error(
+      "operator:production is AWS-only and retired for the Azure cutover. Use operator:remote for live Azure lanes, or set ACTIVE_PRODUCTION_PROVIDER=aws only for an explicit AWS rollback rehearsal.",
+    );
+  }
+
   const options = parseStagingOperatorCliOptions(process.argv.slice(2));
   const stackOutputs = await fetchStackOutputs(options.stackName, options.region, options.profile);
   const serviceName = await fetchServiceName(options.stackName, options.region, options.profile);

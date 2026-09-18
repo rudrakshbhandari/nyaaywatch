@@ -1,6 +1,9 @@
 name: Azure migration target
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       apply:
@@ -28,8 +31,32 @@ permissions:
   contents: read
 
 jobs:
+  verify:
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && vars.ACTIVE_PRODUCTION_PROVIDER == 'azure')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run typecheck and tests
+        run: |
+          npm run typecheck
+          npm test -- --run
+
   provision:
-    if: inputs.apply == true && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && vars.ACTIVE_PRODUCTION_PROVIDER == 'azure')
+    needs: verify
     runs-on: ubuntu-latest
     concurrency:
       group: nyaaywatch-azure-production
@@ -51,9 +78,12 @@ jobs:
       TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_cloudflare_zone_name: nyaaywatch.in
       TF_VAR_public_base_url: https://nyaaywatch.in
-      TF_VAR_enable_scheduled_jobs: ${{ inputs.enable_scheduled_jobs }}
-      TF_VAR_enable_application: ${{ inputs.enable_application }}
-      TF_VAR_manage_public_hostname: ${{ inputs.manage_public_hostname }}
+      TF_VAR_enable_scheduled_jobs: ${{ github.event_name == 'push' && 'true' || inputs.enable_scheduled_jobs }}
+      TF_VAR_enable_application: ${{ github.event_name == 'push' && 'true' || inputs.enable_application }}
+      # Once Azure is the active provider, normal main pushes must preserve the
+      # imported and managed public-hostname bindings. Keep this opt-in for
+      # manual provisioning so rehearsal applies cannot claim the live domain.
+      TF_VAR_manage_public_hostname: ${{ github.event_name == 'push' && 'true' || inputs.manage_public_hostname }}
       TF_VAR_project_name: nyaaywatch
       TF_VAR_environment_name: production
       TF_VAR_location: centralindia
@@ -112,7 +142,16 @@ jobs:
 
       - name: Bootstrap Azure substrate without replacing an existing image
         run: |
-          existing_image="$(az containerapp show --name nyaaywatch-production --resource-group nyaaywatch-production --query 'properties.template.containers[0].image' --output tsv 2>/dev/null || true)"
+          set -euo pipefail
+          error_file="$(mktemp)"
+          if existing_image="$(az containerapp show --name nyaaywatch-production --resource-group nyaaywatch-production --query 'properties.template.containers[0].image' --output tsv 2>"$error_file")"; then
+            :
+          elif grep -q 'ResourceNotFound' "$error_file"; then
+            existing_image=""
+          else
+            cat "$error_file" >&2
+            exit 1
+          fi
           export TF_VAR_container_image="${existing_image:-mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
@@ -126,6 +165,34 @@ jobs:
           registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
           export TF_VAR_container_image="${registry}/nyaaywatch:${GITHUB_SHA}"
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
+
+      - name: Verify the deployed revision is healthy
+        if: env.TF_VAR_enable_application == 'true'
+        run: |
+          set -euo pipefail
+          registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
+          expected_image="${registry}/nyaaywatch:${GITHUB_SHA}"
+          for attempt in $(seq 1 30); do
+            revision_json="$(az containerapp revision list \
+              --name nyaaywatch-production \
+              --resource-group nyaaywatch-production \
+              --output json)"
+            revision_name="$(printf '%s' "$revision_json" | jq -r --arg image "$expected_image" '[.[] | select(.properties.template.containers[0].image == $image)] | sort_by(.properties.createdTime) | last | .name // empty')"
+            revision_fqdn="$(printf '%s' "$revision_json" | jq -r --arg image "$expected_image" '[.[] | select(.properties.template.containers[0].image == $image)] | sort_by(.properties.createdTime) | last | .properties.fqdn // empty')"
+            revision_running_state="$(printf '%s' "$revision_json" | jq -r --arg image "$expected_image" '[.[] | select(.properties.template.containers[0].image == $image)] | sort_by(.properties.createdTime) | last | .properties.runningState // empty')"
+            revision_health_state="$(printf '%s' "$revision_json" | jq -r --arg image "$expected_image" '[.[] | select(.properties.template.containers[0].image == $image)] | sort_by(.properties.createdTime) | last | .properties.healthState // empty')"
+            if [ -n "$revision_name" ] && [ -n "$revision_fqdn" ] && [ "$revision_running_state" = "Running" ] && [ "$revision_health_state" = "Healthy" ]; then
+              status="$(curl --silent --show-error --insecure --output /tmp/nyaaywatch-health --write-out '%{http_code}' "https://${revision_fqdn}/health" || true)"
+              if [ "$status" = "200" ]; then
+                echo "Verified revision ${revision_name} (${expected_image}) at https://${revision_fqdn}/health"
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          cat /tmp/nyaaywatch-health >&2 || true
+          echo "Azure revision for ${expected_image} did not become healthy on its revision FQDN" >&2
+          exit 1
 
       - name: Print migration target endpoints
         run: terraform -chdir=infra/azure/production output

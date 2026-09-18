@@ -26,10 +26,20 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ap-south-1
+      ACTIVE_PRODUCTION_PROVIDER: ${{ vars.ACTIVE_PRODUCTION_PROVIDER || 'aws' }}
       STACK_NAME: ${{ inputs.stack_name || 'nyaaywatch-production' }}
       PUBLIC_BASE_URL: https://nyaaywatch.in
 
     steps:
+      - name: Refuse AWS-only operations while Azure is active
+        run: |
+          set -euo pipefail
+          if [[ "${ACTIVE_PRODUCTION_PROVIDER,,}" == "azure" ]]; then
+            echo "ACTIVE_PRODUCTION_PROVIDER=azure; this AWS-only workflow is disabled after cutover." >&2
+            echo "Use the Azure Container Apps jobs for production fetch and publish operations." >&2
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 

@@ -6,3 +6,4 @@ RUN apt-get update \
 
 COPY infra/azure/production/relay-entrypoint.sh /usr/local/bin/relay-entrypoint.sh
 RUN chmod 0755 /usr/local/bin/relay-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/relay-entrypoint.sh"]

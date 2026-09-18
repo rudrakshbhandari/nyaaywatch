@@ -121,17 +121,23 @@ flowchart TD
   operator["Operator fetch or replay"] --> reviewed
   reviewed --> gate{"Publish gate passes?"}
   gate -->|yes| publish["Publish reviewed read model"]
-  gate -->|no| alert["SNS alert and human review"]
+  gate -->|no| alert["Provider-configured alert and human review"]
   publish --> current["Current public snapshot"]
   current --> rollback["Rollback stays one operator action"]
   rollback --> current
 ```
 
-- One AWS-hosted containerized app, fronted by Cloudflare.
+- One provider-selected containerized app, fronted by Cloudflare. The active
+  production provider is controlled by the protected `ACTIVE_PRODUCTION_PROVIDER`
+  repository variable; AWS remains the documented rollback origin while Azure
+  is being cut over.
 - PostgreSQL is the canonical store for runs, artifacts, subscriptions, and publication state.
-- S3 stores raw scrape evidence, normalized snapshot candidates, release evidence, and outreach archives.
+- The active provider's object storage stores raw scrape evidence, normalized
+  snapshot candidates, release evidence, and outreach archives. AWS uses S3;
+  Azure uses Blob Storage.
 - Publish requires an operator action or a passing auto-publish gate. The change gate compares each complete run with an agreed median of its recent prior trend points, so one bad historical publication does not poison later comparisons while a sustained jump or conflicted short history still goes to review.
-- Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
+- Auto-publish validates fresh internal runs against quality and delta guardrails,
+  publishes when safe, and sends the provider-configured alarm when blocked.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.
 - The production target supports AWS/S3 and Azure Blob storage behind the same artifact-store interface; the Azure deployment lives under `infra/azure/production/`.
@@ -233,6 +239,18 @@ Scheduled internal fetches and release verification run through the AWS and GitH
 </details>
 
 ## Read the docs
+
+```bash
+npm run operator:remote -- --base-url=https://nyaaywatch.in publications
+npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court=gujarat fetch "Internal Gujarat HC fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal SC fetch"
+npm run infra:production-preflight
+npm run infra:production-cutover-inventory
+npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
+```
+
+The AWS-only `npm run operator:production` path is retired after the Azure cutover. Use `npm run operator:remote` for supported production lanes. Do not run the AWS one-off ECS operator unless you are deliberately performing an AWS rollback rehearsal with `ACTIVE_PRODUCTION_PROVIDER=aws` and an explicitly restored AWS stack.
 
 - [NyaayWatch design](docs/NYAAYWATCH_DESIGN.md): product definition, public information architecture, and constraints
 - [India court coverage audit](docs/INDIA_COURT_COVERAGE_AUDIT.md): current court and geography coverage boundary

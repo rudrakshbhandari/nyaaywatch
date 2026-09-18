@@ -60,15 +60,21 @@ DNS cutover changes the live origin.
    configuration intact. If the Cloudflare plan supports origin Host/SNI
    overrides, those may be used instead, but the cutover must not depend on an
    unavailable Origin Rules entitlement.
-6. Verify through the public hostname from an external network: health,
+6. Set the protected repository variable `ACTIVE_PRODUCTION_PROVIDER=azure`
+   before normal main-branch deployments resume. Verify that the Azure deploy,
+   watchdog, and scheduled-fetch paths select Azure; confirm that the
+   AWS-only `ops-publish-pending` dispatch fails fast and that the AWS schedules
+   remain stopped.
+7. Verify through the public hostname from an external network: health,
    canonical redirect, one public state page, JSON data, newsletter subscribe
    confirmation path, and operator health/read-only inspection.
 
 ## Rollback
 
 If any verification gate fails, stop Azure scheduled writers, restore the
-Cloudflare origin to the AWS load balancer, redeploy AWS with
-`MIGRATION_WRITE_FREEZE=false`, re-enable the AWS schedules, and verify the
+Cloudflare origin to the AWS load balancer, set the repository variable
+`ACTIVE_PRODUCTION_PROVIDER=aws` before the next main-branch push, redeploy AWS
+with `MIGRATION_WRITE_FREEZE=false`, re-enable the AWS schedules, and verify the
 public hostname again. If Azure accepted writes after cutover, export and
 review those Azure database rows and Blob objects before rollback; do not
 silently roll back over them. Do not delete Azure resources or overwrite the
