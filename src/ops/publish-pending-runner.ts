@@ -158,6 +158,15 @@ export async function runPublishPendingSweep(
             // supersedes earlier held runs, which no longer require review.
             heldReviews.length = 0;
             runningPreviousPending = outcome.decision?.currentPending;
+          } else if (outcome.action === "publish_failed") {
+            // Publishing commits the database state before cache invalidation. If
+            // invalidation fails, keep the committed publication as the baseline
+            // for later candidates while still reporting the operational failure.
+            const latest = await loadLatestPublishedRun(store, scope.scopeCode, scope.scopeType);
+            if (latest?.runId === candidate.id) {
+              heldReviews.length = 0;
+              runningPreviousPending = await loadPreviousPending(store, scope.scopeCode, scope.scopeType, scope.pendingField);
+            }
           }
 
           const sweepFailed = outcome.action === "publish_failed" || outcome.action === "gate_inputs_missing";
@@ -241,4 +250,35 @@ export function assertPublishPendingSweepSucceeded(summary: PublishPendingSummar
 
   const failed = summary.results.filter((r) => !r.ok).map((r) => `${r.scopeLabel} (${r.runId})`);
   throw new Error(`Publish-pending sweep failed for ${summary.failedCount} run(s): ${failed.join(", ")}`);
+}
+
+async function loadLatestPublishedRun(
+  store: PgWarehouseStore,
+  scopeCode: string,
+  scopeType: ScopeType,
+): Promise<{ runId: string } | null> {
+  const latest =
+    scopeType === "lower_court_state"
+      ? await store.getLatestPublishedSnapshot(scopeCode, scopeType)
+      : scopeType === "high_court"
+        ? await store.getLatestHighCourtPublishedSnapshot(scopeCode, scopeType)
+        : await store.getLatestSupremeCourtPublishedSnapshot(scopeCode, scopeType);
+  return latest ? { runId: latest.runId } : null;
+}
+
+async function loadPreviousPending(
+  store: PgWarehouseStore,
+  scopeCode: string,
+  scopeType: ScopeType,
+  pendingField: SweepScope["pendingField"],
+): Promise<number | undefined> {
+  const latest =
+    scopeType === "lower_court_state"
+      ? await store.getLatestPublishedSnapshot(scopeCode, scopeType)
+      : scopeType === "high_court"
+        ? await store.getLatestHighCourtPublishedSnapshot(scopeCode, scopeType)
+        : await store.getLatestSupremeCourtPublishedSnapshot(scopeCode, scopeType);
+  const stats = latest?.payload.stats as Record<string, unknown> | undefined;
+  const pending = stats?.[pendingField];
+  return typeof pending === "number" && Number.isFinite(pending) ? pending : undefined;
 }
