@@ -114,6 +114,25 @@ export const ParliamentaryCaptureBundleSchema = z.object({
   bills: z.array(ParliamentaryBillSchema),
   questions: z.array(ParliamentaryQuestionSchema),
   participation: ParliamentaryParticipationSummarySchema,
+}).superRefine((capture, context) => {
+  const sourceEvidenceIds = new Set(capture.sourceEvidence.map((evidence) => evidence.evidenceId));
+  if (sourceEvidenceIds.size !== capture.sourceEvidence.length) {
+    context.addIssue({ code: "custom", path: ["sourceEvidence"], message: "sourceEvidence IDs must be unique" });
+  }
+
+  const referencedEvidenceIds = [
+    ...capture.person.evidenceIds,
+    ...capture.person.party.evidenceIds,
+    ...capture.person.constituency.evidenceIds,
+    ...capture.roles.flatMap((role) => role.evidenceIds),
+    ...capture.bills.flatMap((bill) => bill.evidenceIds),
+    ...capture.questions.flatMap((question) => question.evidenceIds),
+    ...capture.participation.evidenceIds,
+  ];
+  const missingEvidenceIds = [...new Set(referencedEvidenceIds)].filter((id) => !sourceEvidenceIds.has(id));
+  if (missingEvidenceIds.length > 0) {
+    context.addIssue({ code: "custom", path: ["sourceEvidence"], message: `Unknown evidence IDs: ${missingEvidenceIds.join(", ")}` });
+  }
 });
 
 export const ParliamentaryBreakdownEntrySchema = z.object({

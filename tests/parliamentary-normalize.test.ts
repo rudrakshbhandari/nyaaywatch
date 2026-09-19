@@ -47,7 +47,7 @@ describe("parliamentary snapshot normalization", () => {
       recordCount: null,
       uniqueBillCount: null,
       captureStatus: "complete",
-      attributedToMemberCount: 0,
+      attributedToMemberCount: null,
       attributionStatus: "not_published_by_source",
     });
     expect(first.profiles[0]?.activity.questions).toMatchObject({

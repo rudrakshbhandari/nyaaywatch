@@ -107,11 +107,11 @@ function buildActivitySummary(
           : null
         : canPublishHouseBillCounts ? uniqueBillIds.size : null,
       captureStatus: capture.billRowsStatus,
-      attributedToMemberCount: isMemberScope ? attributedBillCount : null,
+      attributedToMemberCount: isMemberScope && canPublishMemberBillCounts ? attributedBillCount : null,
       attributionStatus: billAttributionStatus,
     },
     questions: {
-      sessionScopedCount: questionRows.length > 0 ? questionRows.length : null,
+      sessionScopedCount: isMemberScope && capture.questionRowsStatus === "complete" ? questionRows.length : null,
       sourceReportedCount: isMemberScope ? capture.participation.questionCount : null,
       sourceReportedScope: isMemberScope ? capture.participation.questionCountScope : ("not_available" as const),
       bySession: countBy(questionRows, (question) => `Session ${question.sessionNumber}`),

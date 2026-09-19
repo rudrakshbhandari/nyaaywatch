@@ -38,8 +38,8 @@ export function extractParliamentaryCapture(
 
   return {
     ...parsed,
-    billRowsStatus: resultSetStatus(parsed.sourceResultTotals.billRecords, parsed.bills.length),
-    questionRowsStatus: resultSetStatus(parsed.sourceResultTotals.questionRecords, parsed.questions.length),
+    billRowsStatus: resultSetStatus(parsed.sourceResultTotals.billRecords, parsed.bills.map((bill) => bill.billId)),
+    questionRowsStatus: resultSetStatus(parsed.sourceResultTotals.questionRecords, parsed.questions.map((question) => question.questionId)),
     roles: [...parsed.roles].sort((left, right) => left.roleId.localeCompare(right.roleId)),
     bills: [...parsed.bills].sort(compareBills),
     questions: [...parsed.questions].sort(compareQuestions),
@@ -51,10 +51,10 @@ export function extractParliamentaryCapture(
 
 function resultSetStatus(
   declaredTotal: number | null,
-  capturedRows: number,
+  rowIds: string[],
 ): "complete" | "incomplete" | "unverified" {
   if (declaredTotal === null) return "unverified";
-  return declaredTotal === capturedRows ? "complete" : "incomplete";
+  return declaredTotal === rowIds.length && new Set(rowIds).size === rowIds.length ? "complete" : "incomplete";
 }
 
 function compareBills(left: ParliamentaryBill, right: ParliamentaryBill): number {
