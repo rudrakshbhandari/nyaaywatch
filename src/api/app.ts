@@ -71,6 +71,19 @@ const LOWER_COURT_GEOGRAPHY_NOT_FOUND_TEXT = "Lower-court geography not found.";
 const LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_TITLE = "Lower-Court Geography Not Available Yet";
 const LOWER_COURT_GEOGRAPHY_NOT_AVAILABLE_BODY = "No published snapshot is available for this lower-court geography yet.";
 
+export function createMigrationWriteFreezeMiddleware(enabled: boolean) {
+  return (request: Request, response: Response, next: NextFunction) => {
+    const mutatingNewsletterMethod =
+      ["GET", "HEAD"].includes(request.method) &&
+      (/^\/subscribe\/confirm\//.test(request.path) || /^\/unsubscribe\//.test(request.path));
+    if (enabled && (mutatingNewsletterMethod || !["GET", "HEAD", "OPTIONS"].includes(request.method))) {
+      response.status(503).json({ error: "Writes are temporarily paused for migration." });
+      return;
+    }
+    next();
+  };
+}
+
 export function createApp(
   config: AppConfig,
   service: PublishedSnapshotService,
@@ -85,6 +98,7 @@ export function createApp(
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.set("trust proxy", true);
+  app.use(createMigrationWriteFreezeMiddleware(config.MIGRATION_WRITE_FREEZE));
   app.use((request, response, next) => {
     const requestHost = readRequestHost(request);
     if (!shouldRedirectToCanonicalHost(config, requestHost)) {
@@ -121,7 +135,7 @@ export function createApp(
   });
 
   app.get("/health", (_request, response) => {
-    response.json({ ok: true, region: config.AWS_REGION, stateCode: config.STATE_CODE });
+    response.json({ ok: true, region: config.RUNTIME_REGION, stateCode: config.STATE_CODE });
   });
 
   app.get("/robots.txt", (_request, response) => {

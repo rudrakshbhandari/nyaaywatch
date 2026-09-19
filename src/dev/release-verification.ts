@@ -18,7 +18,7 @@ import { getSupremeCourtProfile } from "../supreme-court.js";
 
 const HealthResponseSchema = z.object({
   ok: z.literal(true),
-  region: z.literal("ap-south-1"),
+  region: z.string().min(1),
   stateCode: z.literal("HP"),
 });
 
@@ -126,6 +126,7 @@ export async function verifyPublicRelease(
     highCourtSlug?: string;
     supremeCourt?: boolean;
     now?: Date;
+    expectedRegion?: string;
     /** Override the CSV parity retry delay. Pass 0 in tests to avoid real waits. */
     csvParityRetryDelayMs?: number;
   } = {},
@@ -134,14 +135,15 @@ export async function verifyPublicRelease(
   const target = resolveReleaseTarget(options);
   const checkedAt = options.now ?? new Date();
   const retryDelayMs = options.csvParityRetryDelayMs ?? CSV_PARITY_RETRY_DELAY_MS;
+  const expectedRegion = options.expectedRegion ?? process.env.RUNTIME_REGION?.trim() ?? "ap-south-1";
   if (target.tier === "high_court") {
-    return verifyHighCourtRelease(normalizedBaseUrl, target, checkedAt);
+    return verifyHighCourtRelease(normalizedBaseUrl, target, checkedAt, expectedRegion);
   }
   if (target.tier === "supreme_court") {
-    return verifySupremeCourtRelease(normalizedBaseUrl, target, checkedAt);
+    return verifySupremeCourtRelease(normalizedBaseUrl, target, checkedAt, expectedRegion);
   }
 
-  return verifyLowerCourtRelease(normalizedBaseUrl, target, checkedAt, retryDelayMs);
+  return verifyLowerCourtRelease(normalizedBaseUrl, target, checkedAt, retryDelayMs, expectedRegion);
 }
 
 async function verifyLowerCourtRelease(
@@ -149,6 +151,7 @@ async function verifyLowerCourtRelease(
   target: Extract<ReleaseTarget, { tier: "lower_court_state" }>,
   checkedAt: Date,
   retryDelayMs: number,
+  expectedRegion: string,
 ): Promise<ReleaseVerificationSummary> {
   const [health, statsPayload, districtsPayload, trendsPayload, operatorAuthResult, dataPage, districtsCsv] =
     await Promise.all([
@@ -161,6 +164,7 @@ async function verifyLowerCourtRelease(
       fetchTextResponse(`${normalizedBaseUrl}${target.districtsCsvPath}`),
     ]);
 
+  assertExpectedRegion(health.region, expectedRegion);
   assertSnapshotState(statsPayload.snapshot, target.stateCode, target.stateName);
   assertMatchingSnapshot("districts", districtsPayload.snapshot, statsPayload.snapshot);
   assertMatchingSnapshot("trends", trendsPayload.snapshot, statsPayload.snapshot);
@@ -216,6 +220,7 @@ async function verifyHighCourtRelease(
   normalizedBaseUrl: string,
   target: Extract<ReleaseTarget, { tier: "high_court" }>,
   checkedAt: Date,
+  expectedRegion: string,
 ): Promise<ReleaseVerificationSummary> {
   const [health, statsPayload, trendsPayload, operatorAuthResult, dataPage] = await Promise.all([
     fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
@@ -225,6 +230,7 @@ async function verifyHighCourtRelease(
     fetchTextResponse(`${normalizedBaseUrl}${target.dataPagePath}`),
   ]);
 
+  assertExpectedRegion(health.region, expectedRegion);
   assertHighCourtSnapshot(statsPayload.snapshot, target);
   assertMatchingSnapshotJson("high court trends", trendsPayload.snapshot, statsPayload.snapshot);
   assertCacheProtection(`${target.label} data page`, dataPage.response);
@@ -251,6 +257,7 @@ async function verifySupremeCourtRelease(
   normalizedBaseUrl: string,
   target: Extract<ReleaseTarget, { tier: "supreme_court" }>,
   checkedAt: Date,
+  expectedRegion: string,
 ): Promise<ReleaseVerificationSummary> {
   const [health, statsPayload, trendsPayload, operatorAuthResult, dataPage] = await Promise.all([
     fetchJson(`${normalizedBaseUrl}/health`, HealthResponseSchema),
@@ -260,6 +267,7 @@ async function verifySupremeCourtRelease(
     fetchTextResponse(`${normalizedBaseUrl}${target.dataPagePath}`),
   ]);
 
+  assertExpectedRegion(health.region, expectedRegion);
   assertSupremeCourtSnapshot(statsPayload.snapshot, target);
   assertMatchingSnapshotJson("supreme court trends", trendsPayload.snapshot, statsPayload.snapshot);
   assertCacheProtection("Supreme Court data page", dataPage.response);
@@ -289,6 +297,12 @@ function normalizeBaseUrl(baseUrl: string) {
   }
 
   return trimmed.replace(/\/+$/, "");
+}
+
+function assertExpectedRegion(actualRegion: string, expectedRegion: string) {
+  if (actualRegion !== expectedRegion) {
+    throw new Error(`Health region mismatch: expected ${expectedRegion}, received ${actualRegion}.`);
+  }
 }
 
 function resolveReleaseTarget(options: { stateSlug?: string; highCourtSlug?: string; supremeCourt?: boolean }) {

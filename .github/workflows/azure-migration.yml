@@ -1,0 +1,183 @@
+name: Azure migration target
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Provision or update the Azure migration target"
+        required: true
+        default: false
+        type: boolean
+      enable_scheduled_jobs:
+        description: "Enable Azure writers; use only after the documented cutover freeze"
+        required: true
+        default: false
+        type: boolean
+      enable_application:
+        description: "Start an Azure application replica; use only after restoring data and artifacts"
+        required: true
+        default: false
+        type: boolean
+      manage_public_hostname:
+        description: "Keep the imported Azure custom-domain binding managed by Terraform"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && vars.ACTIVE_PRODUCTION_PROVIDER == 'azure')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run typecheck and tests
+        run: |
+          npm run typecheck
+          npm test -- --run
+
+  provision:
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && vars.ACTIVE_PRODUCTION_PROVIDER == 'azure')
+    needs: verify
+    runs-on: ubuntu-latest
+    concurrency:
+      group: nyaaywatch-azure-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_database_admin_password: ${{ secrets.AZURE_DATABASE_ADMIN_PASSWORD }}
+      TF_VAR_operator_api_token: ${{ secrets.AZURE_OPERATOR_API_TOKEN }}
+      TF_VAR_azure_communication_connection_string: ${{ secrets.AZURE_COMMUNICATION_CONNECTION_STRING }}
+      TF_VAR_azure_email_sender: ${{ vars.AZURE_EMAIL_SENDER }}
+      TF_VAR_alarm_webhook_url: ${{ secrets.AZURE_ALARM_WEBHOOK_URL }}
+      TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      TF_VAR_cloudflare_zone_name: nyaaywatch.in
+      TF_VAR_public_base_url: https://nyaaywatch.in
+      TF_VAR_enable_scheduled_jobs: ${{ github.event_name == 'push' && 'true' || inputs.enable_scheduled_jobs }}
+      TF_VAR_enable_application: ${{ github.event_name == 'push' && 'true' || inputs.enable_application }}
+      TF_VAR_manage_public_hostname: ${{ github.event_name == 'push' && 'false' || inputs.manage_public_hostname }}
+      TF_VAR_project_name: nyaaywatch
+      TF_VAR_environment_name: production
+      TF_VAR_location: centralindia
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+
+      - name: Log in to Azure
+        uses: azure/login@eec3c95657c1536435858eda1f3ff5437fee8474
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+
+      - name: Bootstrap durable Terraform state storage
+        env:
+          STATE_RESOURCE_GROUP: nyaaywatch-terraform-state
+          STATE_STORAGE_ACCOUNT: nyaaywatchtfstate377
+        run: |
+          az group create --name "$STATE_RESOURCE_GROUP" --location centralindia --output none
+          az storage account create \
+            --name "$STATE_STORAGE_ACCOUNT" \
+            --resource-group "$STATE_RESOURCE_GROUP" \
+            --location centralindia \
+            --sku Standard_LRS \
+            --min-tls-version TLS1_2 \
+            --allow-blob-public-access false \
+            --output none
+          state_key="$(az storage account keys list --resource-group "$STATE_RESOURCE_GROUP" --account-name "$STATE_STORAGE_ACCOUNT" --query '[0].value' --output tsv)"
+          az storage container create \
+            --name terraform-state \
+            --account-name "$STATE_STORAGE_ACCOUNT" \
+            --account-key "$state_key" \
+            --output none
+
+      - name: Initialize durable Terraform state
+        env:
+          STATE_RESOURCE_GROUP: nyaaywatch-terraform-state
+          STATE_STORAGE_ACCOUNT: nyaaywatchtfstate377
+        run: |
+          state_key="$(az storage account keys list --resource-group "$STATE_RESOURCE_GROUP" --account-name "$STATE_STORAGE_ACCOUNT" --query '[0].value' --output tsv)"
+          terraform -chdir=infra/azure/production init -input=false \
+            -backend-config="resource_group_name=${STATE_RESOURCE_GROUP}" \
+            -backend-config="storage_account_name=${STATE_STORAGE_ACCOUNT}" \
+            -backend-config="container_name=terraform-state" \
+            -backend-config="key=nyaaywatch-production.tfstate" \
+            -backend-config="access_key=${state_key}" \
+            -backend-config="subscription_id=${ARM_SUBSCRIPTION_ID}" \
+            -backend-config="tenant_id=${ARM_TENANT_ID}" \
+            -backend-config="client_id=${ARM_CLIENT_ID}" \
+            -backend-config="use_oidc=true"
+
+      - name: Bootstrap Azure substrate without replacing an existing image
+        run: |
+          set -euo pipefail
+          error_file="$(mktemp)"
+          if existing_image="$(az containerapp show --name nyaaywatch-production --resource-group nyaaywatch-production --query 'properties.template.containers[0].image' --output tsv 2>"$error_file")"; then
+            :
+          elif grep -q 'ResourceNotFound' "$error_file"; then
+            existing_image=""
+          else
+            cat "$error_file" >&2
+            exit 1
+          fi
+          export TF_VAR_container_image="${existing_image:-mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
+          terraform -chdir=infra/azure/production apply -auto-approve -input=false
+
+      - name: Build and publish the application image in ACR
+        run: |
+          registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
+          az acr build --registry "${registry%%.*}" --image "nyaaywatch:${GITHUB_SHA}" .
+
+      - name: Deploy the migration image and scheduled jobs
+        run: |
+          registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
+          export TF_VAR_container_image="${registry}/nyaaywatch:${GITHUB_SHA}"
+          terraform -chdir=infra/azure/production apply -auto-approve -input=false
+
+      - name: Verify the deployed revision is healthy
+        if: env.TF_VAR_enable_application == 'true'
+        run: |
+          set -euo pipefail
+          fqdn="$(az containerapp show --name nyaaywatch-production --resource-group nyaaywatch-production --query 'properties.configuration.ingress.fqdn' --output tsv)"
+          for attempt in $(seq 1 30); do
+            status="$(curl --silent --show-error --insecure --output /tmp/nyaaywatch-health --write-out '%{http_code}' "https://${fqdn}/health" || true)"
+            if [ "$status" = "200" ]; then
+              exit 0
+            fi
+            sleep 10
+          done
+          cat /tmp/nyaaywatch-health >&2 || true
+          echo "Azure revision did not become healthy at https://${fqdn}/health" >&2
+          exit 1
+
+      - name: Print migration target endpoints
+        run: terraform -chdir=infra/azure/production output

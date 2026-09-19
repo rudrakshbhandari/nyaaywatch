@@ -9,7 +9,7 @@ import { createSupremeCourtSourceClient } from "../ingest/supreme-court-source-c
 import { PublishedHighCourtSnapshotService } from "../services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "../services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
-import { S3ArtifactStore } from "../storage/artifact-store.js";
+import { createArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
 import { getSupremeCourtProfile } from "../supreme-court.js";
 import { hasFlag, readFlag, stripFlag } from "./cli-flag-utils.js";
@@ -100,7 +100,7 @@ export async function runOperatorInvocation(
 
   try {
     const store = PgWarehouseStore.fromPool(pool);
-    const artifactStore = new S3ArtifactStore(config);
+    const artifactStore = createArtifactStore(config);
     if (invocation.supremeCourt) {
       const supremeCourtService = new PublishedSupremeCourtSnapshotService(
         config,

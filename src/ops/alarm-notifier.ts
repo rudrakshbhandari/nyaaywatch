@@ -24,7 +24,26 @@ class SnsAlarmNotifier implements AlarmNotifier {
   }
 }
 
+class WebhookAlarmNotifier implements AlarmNotifier {
+  constructor(private readonly webhookUrl: string) {}
+
+  async publish(subject: string, message: string): Promise<void> {
+    const response = await fetch(this.webhookUrl, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ subject, message, source: "nyaaywatch" }),
+    });
+    if (!response.ok) {
+      throw new Error(`Alarm webhook returned HTTP ${response.status}.`);
+    }
+  }
+}
+
 export function createAlarmNotifier(rawEnv: NodeJS.ProcessEnv = process.env): AlarmNotifier {
+  const webhookUrl = rawEnv.ALARM_WEBHOOK_URL?.trim();
+  if (webhookUrl) {
+    return new WebhookAlarmNotifier(webhookUrl);
+  }
   const topicArn = rawEnv.ALARM_TOPIC_ARN?.trim();
   if (!topicArn) {
     return new NoopAlarmNotifier();

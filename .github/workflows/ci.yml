@@ -115,7 +115,7 @@ jobs:
           fi
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ACTIVE_PRODUCTION_PROVIDER != 'azure'
     needs:
       - secret-scan
       - verify
@@ -181,7 +181,8 @@ jobs:
           ./infra/aws/staging/reconcile-internal-fetch-schedule.sh "$PRODUCTION_STACK_NAME"
 
   preview:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    # AWS App Runner previews are opt-in while production is Azure-native.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && vars.ENABLE_AWS_PREVIEWS == 'true'
     needs:
       - secret-scan
     runs-on: ubuntu-latest

@@ -134,6 +134,7 @@ flowchart TD
 - Auto-publish validates fresh internal runs against quality and delta guardrails, publishes when safe, and pages via SNS when blocked.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.
+- The production target supports AWS/S3 and Azure Blob storage behind the same artifact-store interface; the Azure deployment lives under `infra/azure/production/`.
 
 ## Repository Map
 
@@ -144,12 +145,13 @@ flowchart TD
 | `src/domain/` | Zod schemas and typed contracts for captured, candidate, and published snapshots |
 | `src/ingest/`, `src/extract/`, `src/normalize/` | Pipeline stages from upstream NJDG capture to deterministic snapshot candidates |
 | `src/services/` | Published snapshot orchestration, newsletter delivery, and cache invalidation |
-| `src/storage/` | PostgreSQL and S3 adapters |
+| `src/storage/` | PostgreSQL plus AWS S3 and Azure Blob adapters |
 | `src/db/` | SQL migrations and migration tooling |
 | `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
 | `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
 | `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
 | `infra/aws/` | AWS dev, preview, staging, production, schedule, and cutover scripts/templates |
+| `infra/azure/` | Azure production migration target, Terraform, transfer scripts, and cutover runbook |
 | `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
@@ -232,6 +234,18 @@ Scheduled internal fetches and release verification run through the AWS and GitH
 
 ## Read the docs
 
+```bash
+npm run operator:remote -- --base-url=https://nyaaywatch.in publications
+npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court=gujarat fetch "Internal Gujarat HC fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal SC fetch"
+npm run infra:production-preflight
+npm run infra:production-cutover-inventory
+npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
+```
+
+The AWS-only `npm run operator:production` path is retired after the Azure cutover. Use `npm run operator:remote` for supported production lanes. Do not run the AWS one-off ECS operator unless you are deliberately performing an AWS rollback rehearsal with `ACTIVE_PRODUCTION_PROVIDER=aws` and an explicitly restored AWS stack.
+
 - [NyaayWatch design](docs/NYAAYWATCH_DESIGN.md): product definition, public information architecture, and constraints
 - [India court coverage audit](docs/INDIA_COURT_COVERAGE_AUDIT.md): current court and geography coverage boundary
 - [Copy voice](docs/COPY_VOICE.md): public language rules
@@ -246,6 +260,11 @@ Scheduled internal fetches and release verification run through the AWS and GitH
 ## Data sources
 
 NyaayWatch starts from official aggregate dashboards and documents its source boundary in the repository and on the public methodology pages:
+After Azure becomes the active production provider, set the repository variable
+`ACTIVE_PRODUCTION_PROVIDER=azure`. The main deploy job is gated on that value
+so later pushes do not restart the AWS service or re-enable its schedules.
+
+Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `SES_SOURCE_EMAIL` is an authenticated `@nyaaywatch.in` sender and `NJDG_OUTREACH_ARCHIVE_BUCKET` is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, writes the exact outbound payload to S3 under `ops/njdg-missing-zero-outreach/`, and fails loudly if email or archive configuration is incomplete.
 
 - [Supreme Court NJDG](https://scdg.sci.gov.in/scnjdg/)
 - [High Court NJDG](https://njdg.ecourts.gov.in/hcnjdg_v2/)

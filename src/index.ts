@@ -11,7 +11,7 @@ import { createPreviewRuntime, type AppRuntime } from "./preview/runtime.js";
 import { PublishedHighCourtSnapshotService } from "./services/published-high-court-snapshot-service.js";
 import { PublishedSupremeCourtSnapshotService } from "./services/published-supreme-court-snapshot-service.js";
 import { PublishedSnapshotService } from "./services/published-snapshot-service.js";
-import { S3ArtifactStore } from "./storage/artifact-store.js";
+import { createArtifactStore } from "./storage/artifact-store.js";
 import { PgWarehouseStore } from "./storage/postgres.js";
 import { getSupremeCourtProfile } from "./supreme-court.js";
 import { Pool } from "pg";
@@ -54,7 +54,7 @@ async function createRuntime(): Promise<AppRuntime> {
   await runMigrations(pool);
 
   const store = PgWarehouseStore.fromPool(pool);
-  const artifactStore = new S3ArtifactStore(config);
+  const artifactStore = createArtifactStore(config);
   const sourceClient = new NjdgStateSourceClient(profile);
   const service = new PublishedSnapshotService(config, profile, store, artifactStore, sourceClient);
   const publicServices = Object.fromEntries(
