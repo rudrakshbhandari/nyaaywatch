@@ -3,6 +3,10 @@
 .env.*
 !.env.example
 node_modules/
+infra/azure/production/.terraform/
+infra/azure/production/terraform.tfstate
+infra/azure/production/terraform.tfstate.*
+infra/azure/production/terraform.tfvars
 dist/
 build/
 coverage/

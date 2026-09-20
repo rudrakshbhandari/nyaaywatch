@@ -9,6 +9,8 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { DefaultAzureCredential } from "@azure/identity";
+import { BlobServiceClient } from "@azure/storage-blob";
 
 import type { AppConfig } from "../config/env.js";
 import { sha256 } from "../lib/hash.js";
@@ -35,8 +37,13 @@ type BucketTag = { Key: string; Value: string };
 
 export class S3ArtifactStore implements ArtifactStore {
   private readonly client: S3Client;
+  private readonly bucket: string;
 
   constructor(private readonly config: AppConfig) {
+    if (!config.S3_BUCKET) {
+      throw new Error("AWS storage requires S3_BUCKET.");
+    }
+    this.bucket = config.S3_BUCKET;
     this.client = new S3Client({
       region: config.AWS_REGION,
       endpoint: config.AWS_ENDPOINT_URL_S3,
@@ -53,14 +60,14 @@ export class S3ArtifactStore implements ArtifactStore {
 
   async ensureBucket(): Promise<void> {
     try {
-      await this.client.send(new HeadBucketCommand({ Bucket: this.config.S3_BUCKET }));
+      await this.client.send(new HeadBucketCommand({ Bucket: this.bucket }));
       await this.applyBucketTags();
       return;
     } catch {
       try {
         await this.client.send(
           new CreateBucketCommand({
-            Bucket: this.config.S3_BUCKET,
+            Bucket: this.bucket,
             CreateBucketConfiguration: { LocationConstraint: this.config.AWS_REGION },
           }),
         );
@@ -83,7 +90,7 @@ export class S3ArtifactStore implements ArtifactStore {
 
     await this.client.send(
       new PutObjectCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Key: key,
         Body: body,
         ContentType: "application/json",
@@ -92,7 +99,7 @@ export class S3ArtifactStore implements ArtifactStore {
     );
 
     return {
-      bucket: this.config.S3_BUCKET,
+      bucket: this.bucket,
       key,
       checksumSha256,
       sizeBytes: Buffer.byteLength(body),
@@ -106,8 +113,8 @@ export class S3ArtifactStore implements ArtifactStore {
   ): Promise<StoredArtifact> {
     await this.client.send(
       new CopyObjectCommand({
-        Bucket: this.config.S3_BUCKET,
-        CopySource: `${this.config.S3_BUCKET}/${sourceKey}`,
+        Bucket: this.bucket,
+        CopySource: `${this.bucket}/${sourceKey}`,
         Key: destinationKey,
         MetadataDirective: "REPLACE",
         Metadata: metadata,
@@ -116,13 +123,13 @@ export class S3ArtifactStore implements ArtifactStore {
 
     const head = await this.client.send(
       new HeadObjectCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Key: destinationKey,
       }),
     );
 
     return {
-      bucket: this.config.S3_BUCKET,
+      bucket: this.bucket,
       key: destinationKey,
       checksumSha256: head.Metadata?.checksumsha256 ?? "",
       sizeBytes: Number(head.ContentLength ?? 0),
@@ -132,7 +139,7 @@ export class S3ArtifactStore implements ArtifactStore {
   async downloadJson<T>(key: string, options: DownloadJsonOptions = {}): Promise<T> {
     const response = await this.client.send(
       new GetObjectCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Key: key,
       }),
     );
@@ -160,7 +167,7 @@ export class S3ArtifactStore implements ArtifactStore {
 
     await this.client.send(
       new PutBucketTaggingCommand({
-        Bucket: this.config.S3_BUCKET,
+        Bucket: this.bucket,
         Tagging: {
           TagSet: mergeBucketTags(existingTags, desiredTags),
         },
@@ -172,7 +179,7 @@ export class S3ArtifactStore implements ArtifactStore {
     try {
       const response = await this.client.send(
         new GetBucketTaggingCommand({
-          Bucket: this.config.S3_BUCKET,
+          Bucket: this.bucket,
         }),
       );
 
@@ -192,6 +199,106 @@ export class S3ArtifactStore implements ArtifactStore {
       throw error;
     }
   }
+}
+
+export class AzureBlobArtifactStore implements ArtifactStore {
+  private readonly container;
+
+  constructor(private readonly config: AppConfig) {
+    if (!config.AZURE_STORAGE_ACCOUNT_URL || !config.AZURE_STORAGE_CONTAINER) {
+      throw new Error(
+        "Azure storage requires AZURE_STORAGE_ACCOUNT_URL and AZURE_STORAGE_CONTAINER.",
+      );
+    }
+
+    this.container = new BlobServiceClient(
+      config.AZURE_STORAGE_ACCOUNT_URL,
+      new DefaultAzureCredential({ managedIdentityClientId: config.AZURE_CLIENT_ID }),
+    ).getContainerClient(config.AZURE_STORAGE_CONTAINER);
+  }
+
+  async ensureBucket(): Promise<void> {
+    await this.container.createIfNotExists();
+    await this.container.setMetadata({
+      project: "nyaaywatch",
+      env: this.config.DEPLOY_ENV,
+    });
+  }
+
+  async uploadJson(
+    key: string,
+    payload: unknown,
+    metadata: Record<string, string> = {},
+  ): Promise<StoredArtifact> {
+    const body = JSON.stringify(payload, null, 2);
+    const checksumSha256 = sha256(body);
+    const blob = this.container.getBlockBlobClient(key);
+
+    await blob.upload(body, Buffer.byteLength(body), {
+      blobHTTPHeaders: { blobContentType: "application/json" },
+      metadata: { ...metadata, checksumsha256: checksumSha256 },
+    });
+
+    return {
+      bucket: this.config.AZURE_STORAGE_CONTAINER!,
+      key,
+      checksumSha256,
+      sizeBytes: Buffer.byteLength(body),
+    };
+  }
+
+  async copyObject(
+    sourceKey: string,
+    destinationKey: string,
+    metadata: Record<string, string> = {},
+  ): Promise<StoredArtifact> {
+    const source = await this.downloadBody(sourceKey);
+    verifyArtifactChecksum(sourceKey, source, metadata.checksumsha256);
+    const checksumSha256 = sha256(source);
+    const blob = this.container.getBlockBlobClient(destinationKey);
+    await blob.upload(source, Buffer.byteLength(source), {
+      blobHTTPHeaders: { blobContentType: "application/json" },
+      metadata: { ...metadata, checksumsha256: checksumSha256 },
+    });
+
+    return {
+      bucket: this.config.AZURE_STORAGE_CONTAINER!,
+      key: destinationKey,
+      checksumSha256,
+      sizeBytes: Buffer.byteLength(source),
+    };
+  }
+
+  async downloadJson<T>(key: string, options: DownloadJsonOptions = {}): Promise<T> {
+    const body = await this.downloadBody(key);
+    verifyArtifactChecksum(key, body, options.expectedChecksumSha256);
+    return JSON.parse(body) as T;
+  }
+
+  private async downloadBody(key: string): Promise<string> {
+    const response = await this.container.getBlobClient(key).download();
+    const body = await readableToBuffer(response.readableStreamBody);
+    if (body.length === 0) {
+      throw new Error(`Artifact ${key} was empty.`);
+    }
+    return body.toString("utf8");
+  }
+}
+
+async function readableToBuffer(stream: NodeJS.ReadableStream | undefined): Promise<Buffer> {
+  if (!stream) return Buffer.alloc(0);
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
+
+export function createArtifactStore(config: AppConfig): ArtifactStore {
+  return config.STORAGE_PROVIDER === "azure"
+    ? new AzureBlobArtifactStore(config)
+    : new S3ArtifactStore(config);
 }
 
 function isBucketAlreadyOwnedError(error: unknown): boolean {

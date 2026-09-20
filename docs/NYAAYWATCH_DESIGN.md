@@ -106,7 +106,9 @@ The repository now ships an India-first public alpha implementation of this arch
 - public JSON for `GET /v1/stats/himachal`, `GET /v1/districts`, and `GET /v1/trends`
 - public Supreme Court and High Court beta routes with tier-specific methodology, data, and API surfaces
 - explicit state/Union Territory-scoped public routes for all 36 lower-court NJDG selector geographies via `/states/:stateSlug/...` and `/v1/states/:stateSlug/...`
-- PostgreSQL-backed run, publication, and published-snapshot state plus S3-backed raw evidence artifacts
+- PostgreSQL-backed run, publication, and published-snapshot state plus
+  provider-selected object storage for raw evidence artifacts. AWS uses S3;
+  Azure uses Blob Storage through the same artifact-store interface.
 - published district-history and CSV export surfaces that stay inside the active public snapshot lineage
 
 Himachal remains only the legacy unscoped lower-court default for compatibility. It is no longer the product scope.
@@ -115,8 +117,13 @@ Himachal remains only the legacy unscoped lower-court default for compatibility.
 
 The user has confirmed access to `AWS $10k` in startup/student credits plus additional tooling credits from the YC student pack. That should influence implementation priority:
 
-- prefer AWS for the first deploy rather than introducing a parallel hosting path
-- use credits to fund the one-container app, PostgreSQL, S3 artifact storage, and logging around publish actions
+- use the currently active provider for production rather than running parallel
+  writers. AWS remains the default until the Azure cutover gates pass; after
+  cutover, Azure is selected by the protected `ACTIVE_PRODUCTION_PROVIDER`
+  repository variable and AWS is retained only as a rollback origin
+- use the applicable provider credits to fund the one-container app,
+  PostgreSQL, provider-native artifact storage, and logging around publish
+  actions
 - keep optional third-party credits in support roles only so the public product still stands on reproducible stored evidence even if those credits expire
 
 ## MVP Public Experience
@@ -547,10 +554,12 @@ Keep this document focused on the product-specific design decisions that are har
 - public CSV snapshot downloads
 - GitHub as the open source home
 
-## AWS Shape For Alpha
+## Provider-Selected Production Shape
 
-- S3 for raw scrape artifacts and immutable snapshots
-- scheduled runs on AWS
+- S3 or Azure Blob Storage for raw scrape artifacts and immutable snapshots,
+  selected by the active production provider
+- scheduled runs on the active provider, with AWS schedules disabled during and
+  after an Azure cutover
 - PostgreSQL as the normalized query layer
 - one containerized app for web, API, admin, and jobs
 

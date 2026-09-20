@@ -5,7 +5,7 @@ import { runMigrations } from "../db/migrate.js";
 import { createFixtureSourceClient } from "./fixtures.js";
 import { getStateProfile } from "../geographies.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
-import { S3ArtifactStore } from "../storage/artifact-store.js";
+import { createArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
 
 async function main(): Promise<void> {
@@ -16,7 +16,7 @@ async function main(): Promise<void> {
     await runMigrations(pool);
 
     const store = PgWarehouseStore.fromPool(pool);
-    const artifactStore = new S3ArtifactStore(config);
+    const artifactStore = createArtifactStore(config);
     const sourceClient = createFixtureSourceClient(config.STATE_CODE);
     const service = new PublishedSnapshotService(config, profile, store, artifactStore, sourceClient);
     const existing = await service.getPublishedSnapshot();

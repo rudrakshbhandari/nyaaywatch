@@ -115,7 +115,7 @@ jobs:
           fi
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.ACTIVE_PRODUCTION_PROVIDER != 'azure'
     needs:
       - secret-scan
       - verify

@@ -4,7 +4,7 @@ import { loadConfig } from "../config/env.js";
 import { getStateProfile, getStateProfileByCodeOrSlug } from "../geographies.js";
 import { NjdgStateSourceClient } from "../ingest/himachal-source-client.js";
 import { PublishedSnapshotService } from "../services/published-snapshot-service.js";
-import { S3ArtifactStore } from "../storage/artifact-store.js";
+import { createArtifactStore } from "../storage/artifact-store.js";
 import { PgWarehouseStore } from "../storage/postgres.js";
 import { recordReleaseHistory } from "./release-ops.js";
 import { readFlag } from "./cli-flags.js";
@@ -23,7 +23,7 @@ async function main() {
       config,
       profile,
       PgWarehouseStore.fromPool(pool),
-      new S3ArtifactStore(config),
+      createArtifactStore(config),
       new NjdgStateSourceClient(profile),
     );
     const summary = await recordReleaseHistory(service, args);

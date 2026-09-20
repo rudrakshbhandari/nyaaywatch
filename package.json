@@ -11,7 +11,14 @@
     "url": "https://github.com/rudrakshbhandari/nyaaywatch.git"
   },
   "author": "NyaayWatch Contributors",
-  "keywords": ["india", "judiciary", "court-data", "transparency", "njdg", "open-data"],
+  "keywords": [
+    "india",
+    "judiciary",
+    "court-data",
+    "transparency",
+    "njdg",
+    "open-data"
+  ],
   "engines": {
     "node": ">=22"
   },
@@ -59,6 +66,9 @@
     "@aws-sdk/client-s3": "^3.1126.0",
     "@aws-sdk/client-ses": "^3.1126.0",
     "@aws-sdk/client-sns": "^3.1126.0",
+    "@azure/communication-email": "^1.1.0",
+    "@azure/identity": "^4.13.3",
+    "@azure/storage-blob": "^12.33.0",
     "@resvg/resvg-js": "^2.6.2",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

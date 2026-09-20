@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from "node:crypto";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { EmailClient } from "@azure/communication-email";
 import type { Pool } from "pg";
 
 import type { AppConfig } from "../config/env.js";
@@ -17,15 +18,28 @@ export interface Subscriber {
 
 export class NewsletterService {
   private readonly ses: SESClient | null;
+  private readonly azureEmail: EmailClient | null;
+  private readonly emailProvider: "aws" | "azure";
   private readonly sourceEmail: string | undefined;
 
   constructor(
     private readonly pool: Pool,
-    config: Pick<AppConfig, "AWS_REGION" | "SES_SOURCE_EMAIL">,
+    config: Pick<
+      AppConfig,
+      | "AWS_REGION"
+      | "SES_SOURCE_EMAIL"
+      | "EMAIL_PROVIDER"
+      | "AZURE_COMMUNICATION_CONNECTION_STRING"
+      | "AZURE_EMAIL_SENDER"
+    >,
   ) {
-    this.sourceEmail = config.SES_SOURCE_EMAIL;
-    this.ses = this.sourceEmail
+    this.emailProvider = config.EMAIL_PROVIDER;
+    this.sourceEmail = config.EMAIL_PROVIDER === "aws" ? config.SES_SOURCE_EMAIL : config.AZURE_EMAIL_SENDER;
+    this.ses = config.EMAIL_PROVIDER === "aws" && this.sourceEmail
       ? new SESClient({ region: config.AWS_REGION })
+      : null;
+    this.azureEmail = config.EMAIL_PROVIDER === "azure" && config.AZURE_COMMUNICATION_CONNECTION_STRING
+      ? new EmailClient(config.AZURE_COMMUNICATION_CONNECTION_STRING)
       : null;
   }
 
@@ -93,7 +107,7 @@ export class NewsletterService {
     token: string,
     baseUrl: string,
   ): Promise<void> {
-    if (!this.ses || !this.sourceEmail) return;
+    if (!this.isConfigured()) return;
     const confirmUrl = `${baseUrl}/subscribe/confirm/${token}`;
     const unsubUrl = `${baseUrl}/unsubscribe/${token}`;
     await this.sendEmail({
@@ -119,8 +133,8 @@ export class NewsletterService {
     scope: string,
     stateSlug: string,
   ): Promise<number> {
-    if (!this.ses || !this.sourceEmail) {
-      logInfo(`[newsletter] SES not configured — skipping digest for scope ${scope}`);
+    if (!this.isConfigured()) {
+      logInfo(`[newsletter] ${this.emailProvider} email is not configured — skipping digest for scope ${scope}`);
       return 0;
     }
 
@@ -177,16 +191,35 @@ export class NewsletterService {
   }
 
   private async sendEmail(opts: { to: string; subject: string; text: string }): Promise<void> {
-    if (!this.ses || !this.sourceEmail) return;
-    await this.ses.send(
-      new SendEmailCommand({
-        Source: this.sourceEmail,
-        Destination: { ToAddresses: [opts.to] },
-        Message: {
-          Subject: { Data: opts.subject, Charset: "UTF-8" },
-          Body: { Text: { Data: opts.text, Charset: "UTF-8" } },
-        },
-      }),
-    );
+    if (!this.isConfigured() || !this.sourceEmail) return;
+    if (this.emailProvider === "aws") {
+      await this.ses!.send(
+        new SendEmailCommand({
+          Source: this.sourceEmail,
+          Destination: { ToAddresses: [opts.to] },
+          Message: {
+            Subject: { Data: opts.subject, Charset: "UTF-8" },
+            Body: { Text: { Data: opts.text, Charset: "UTF-8" } },
+          },
+        }),
+      );
+      return;
+    }
+
+    const poller = await this.azureEmail!.beginSend({
+      senderAddress: this.sourceEmail,
+      recipients: { to: [{ address: opts.to }] },
+      content: { subject: opts.subject, plainText: opts.text },
+    });
+    const result = await poller.pollUntilDone();
+    if (result.status !== "Succeeded") {
+      throw new Error(`Azure email operation finished with status ${result.status}.`);
+    }
+  }
+
+  private isConfigured(): boolean {
+    return this.emailProvider === "aws"
+      ? this.ses !== null && this.sourceEmail !== undefined
+      : this.azureEmail !== null && this.sourceEmail !== undefined;
   }
 }
