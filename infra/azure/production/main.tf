@@ -344,6 +344,15 @@ resource "azurerm_container_app" "this" {
       }
 
       dynamic "env" {
+        for_each = coalesce(var.alarm_email_to, "") == "" ? [] : [var.alarm_email_to]
+
+        content {
+          name  = "ALARM_EMAIL_TO"
+          value = env.value
+        }
+      }
+
+      dynamic "env" {
         for_each = coalesce(var.alarm_webhook_url, "") == "" ? [] : [var.alarm_webhook_url]
 
         content {
@@ -538,6 +547,15 @@ resource "azurerm_container_app_job" "scheduled" {
 
         content {
           name  = "AZURE_EMAIL_SENDER"
+          value = env.value
+        }
+      }
+
+      dynamic "env" {
+        for_each = var.alarm_email_to == null ? [] : [var.alarm_email_to]
+
+        content {
+          name  = "ALARM_EMAIL_TO"
           value = env.value
         }
       }

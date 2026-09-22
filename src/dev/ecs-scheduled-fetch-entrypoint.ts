@@ -1,5 +1,6 @@
 import { ECS_OPERATOR_ERROR_PREFIX, ECS_OPERATOR_RESULT_PREFIX } from "./staging-operator-ops.js";
 import { assertScheduledFetchSucceeded, runScheduledFetches } from "./scheduled-fetch.js";
+import { createAlarmNotifier } from "../ops/alarm-notifier.js";
 
 async function main() {
   try {
@@ -10,6 +11,7 @@ async function main() {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`${ECS_OPERATOR_ERROR_PREFIX}${message}`);
+    await createAlarmNotifier().publish("NyaayWatch scheduled fetch failed", message);
     throw error;
   }
 }
