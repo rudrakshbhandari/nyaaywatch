@@ -1,8 +1,10 @@
+import { pathToFileURL } from "node:url";
+
 import { ECS_OPERATOR_ERROR_PREFIX, ECS_OPERATOR_RESULT_PREFIX } from "./staging-operator-ops.js";
 import { assertScheduledSupremeCourtFetchSucceeded, runScheduledSupremeCourtFetch } from "./scheduled-supreme-court-fetch.js";
 import { createAlarmNotifier } from "../ops/alarm-notifier.js";
 
-async function main() {
+export async function main() {
   try {
     const notePrefix = process.argv.slice(2).join(" ").trim() || undefined;
     const summary = await runScheduledSupremeCourtFetch(notePrefix);
@@ -16,4 +18,6 @@ async function main() {
   }
 }
 
-await main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main();
+}
