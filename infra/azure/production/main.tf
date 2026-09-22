@@ -5,11 +5,11 @@ locals {
   # current Asia/Kolkata cadence: 08:00, 08:10, 08:20, and 08:30 IST.
   scheduled_jobs = {
     weekday-internal-fetch = {
-      name                 = "fetch"
-      cron                 = "30 2 * * *"
-      command              = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
-      args                 = []
-      replica_timeout      = 14400
+      name            = "fetch"
+      cron            = "30 2 * * *"
+      command         = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
+      args            = []
+      replica_timeout = 14400
     }
     supreme-court-internal-fetch = {
       name            = "sc-fetch"
@@ -552,7 +552,7 @@ resource "azurerm_container_app_job" "scheduled" {
       }
 
       dynamic "env" {
-        for_each = var.alarm_email_to == null ? [] : [var.alarm_email_to]
+        for_each = coalesce(var.alarm_email_to, "") == "" ? [] : [var.alarm_email_to]
 
         content {
           name  = "ALARM_EMAIL_TO"
