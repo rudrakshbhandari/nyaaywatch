@@ -74,6 +74,7 @@ jobs:
       TF_VAR_operator_api_token: ${{ secrets.AZURE_OPERATOR_API_TOKEN }}
       TF_VAR_azure_communication_connection_string: ${{ secrets.AZURE_COMMUNICATION_CONNECTION_STRING }}
       TF_VAR_azure_email_sender: ${{ vars.AZURE_EMAIL_SENDER }}
+      TF_VAR_alarm_email_to: ${{ vars.ALARM_EMAIL_TO }}
       TF_VAR_alarm_webhook_url: ${{ secrets.AZURE_ALARM_WEBHOOK_URL }}
       TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       TF_VAR_cloudflare_zone_name: nyaaywatch.in

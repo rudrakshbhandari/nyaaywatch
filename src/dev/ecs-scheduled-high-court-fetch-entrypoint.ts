@@ -1,4 +1,5 @@
 import { ECS_OPERATOR_ERROR_PREFIX, ECS_OPERATOR_RESULT_PREFIX } from "./staging-operator-ops.js";
+import { createAlarmNotifier } from "../ops/alarm-notifier.js";
 import { assertScheduledHighCourtFetchSucceeded, runScheduledHighCourtFetches } from "./scheduled-high-court-fetch.js";
 
 async function main() {
@@ -10,6 +11,7 @@ async function main() {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`${ECS_OPERATOR_ERROR_PREFIX}${message}`);
+    await createAlarmNotifier().publish("NyaayWatch High Court fetch failed", message);
     throw error;
   }
 }
