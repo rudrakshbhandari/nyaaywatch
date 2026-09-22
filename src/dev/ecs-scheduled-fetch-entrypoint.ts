@@ -13,7 +13,12 @@ export async function main() {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`${ECS_OPERATOR_ERROR_PREFIX}${message}`);
-    await createAlarmNotifier().publish("NyaayWatch scheduled fetch failed", message);
+    try {
+      await createAlarmNotifier().publish("NyaayWatch scheduled fetch failed", message);
+    } catch (notificationError) {
+      const notificationMessage = notificationError instanceof Error ? notificationError.message : String(notificationError);
+      console.error(`[alarm-notifier] Failed to publish scheduled fetch failure: ${notificationMessage}`);
+    }
     throw error;
   }
 }

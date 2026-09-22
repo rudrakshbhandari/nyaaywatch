@@ -8,7 +8,7 @@ afterEach(() => {
 describe("scheduled entrypoint failure alerts", () => {
   it("publishes and rethrows lower-court failures", async () => {
     const error = new Error("lower-court failed");
-    const publish = vi.fn().mockResolvedValue(undefined);
+    const publish = vi.fn().mockRejectedValue(new Error("notification failed"));
     vi.doMock("../src/ops/alarm-notifier.js", () => ({
       createAlarmNotifier: () => ({ publish }),
     }));
@@ -26,7 +26,7 @@ describe("scheduled entrypoint failure alerts", () => {
 
   it("publishes and rethrows Supreme Court failures", async () => {
     const error = new Error("Supreme Court failed");
-    const publish = vi.fn().mockResolvedValue(undefined);
+    const publish = vi.fn().mockRejectedValue(new Error("notification failed"));
     vi.doMock("../src/ops/alarm-notifier.js", () => ({
       createAlarmNotifier: () => ({ publish }),
     }));
@@ -44,7 +44,7 @@ describe("scheduled entrypoint failure alerts", () => {
 
   it("publishes and rethrows High Court failures", async () => {
     const error = new Error("High Court failed");
-    const publish = vi.fn().mockResolvedValue(undefined);
+    const publish = vi.fn().mockRejectedValue(new Error("notification failed"));
     vi.doMock("../src/ops/alarm-notifier.js", () => ({
       createAlarmNotifier: () => ({ publish }),
     }));
