@@ -57,6 +57,7 @@ const EnvSchema = z.object({
   SES_SOURCE_EMAIL: z.string().email().optional(),
   AZURE_COMMUNICATION_CONNECTION_STRING: z.string().min(1).optional(),
   AZURE_EMAIL_SENDER: z.string().email().optional(),
+  ALARM_EMAIL_TO: z.string().email().optional(),
   AWS_RUM_APP_MONITOR_ID: z.string().min(1).optional(),
   AWS_RUM_IDENTITY_POOL_ID: z.string().min(1).optional(),
 }).superRefine((value, context) => {

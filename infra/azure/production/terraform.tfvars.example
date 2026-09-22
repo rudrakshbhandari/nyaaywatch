@@ -10,6 +10,7 @@ cloudflare_zone_name    = "nyaaywatch.in"
 public_base_url         = "https://nyaaywatch.in"
 canonical_host          = "nyaaywatch.in"
 legacy_hosts            = "nyaaywatch.com,www.nyaaywatch.com"
+alarm_email_to          = "rudrakshbhandari99@gmail.com"
 manage_public_hostname  = false
 enable_scheduled_jobs   = false
 enable_application      = false
