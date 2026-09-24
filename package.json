@@ -70,7 +70,7 @@
     "@azure/identity": "^4.13.3",
     "@azure/storage-blob": "^12.33.0",
     "@resvg/resvg-js": "^2.6.2",
-    "dotenv": "^17.2.3",
+    "dotenv": "^18.0.0",
     "express": "^5.1.0",
     "pg": "^8.23.0",
     "pg-mem": "^3.0.5",
