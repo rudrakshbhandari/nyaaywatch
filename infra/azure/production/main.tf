@@ -10,6 +10,7 @@ locals {
       command         = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
       args            = []
       replica_timeout = 14400
+      retry_limit     = 1
     }
     supreme-court-internal-fetch = {
       name            = "sc-fetch"
@@ -17,6 +18,7 @@ locals {
       command         = ["node", "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js"]
       args            = []
       replica_timeout = 3600
+      retry_limit     = 1
     }
     high-courts-internal-fetch = {
       name            = "hc-fetch"
@@ -24,6 +26,7 @@ locals {
       command         = ["node", "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js"]
       args            = []
       replica_timeout = 3600
+      retry_limit     = 1
     }
     publish-pending-sweep = {
       name            = "publish"
@@ -31,6 +34,7 @@ locals {
       command         = ["node", "dist/src/dev/ecs-publish-pending-entrypoint.js"]
       args            = []
       replica_timeout = 3600
+      retry_limit     = 1
     }
     public-alpha-ops-monitor = {
       name            = "alpha-ops"
@@ -38,6 +42,7 @@ locals {
       command         = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
       args            = ["--base-url", "https://nyaaywatch.in", "--target-set", "smoke"]
       replica_timeout = 3600
+      retry_limit     = 0
     }
   }
 
@@ -428,8 +433,10 @@ resource "azurerm_container_app_job" "scheduled" {
   resource_group_name          = azurerm_resource_group.this.name
   container_app_environment_id = azurerm_container_app_environment.this.id
   replica_timeout_in_seconds   = each.value.replica_timeout
-  replica_retry_limit          = 1
-  tags                         = local.tags
+  # The monitor sends an alert on failure; retrying the same failed check
+  # immediately sends a duplicate email. Fetch jobs retain one transient retry.
+  replica_retry_limit = each.value.retry_limit
+  tags                = local.tags
 
   identity {
     type         = "UserAssigned"

@@ -27,6 +27,10 @@ The scheduled jobs use UTC equivalents of the current Asia/Kolkata cadence:
 - publish-pending sweep at 08:30 IST
 - public-alpha monitor hourly
 
+Fetch and publish jobs retry once after a failed execution. The public-alpha
+monitor does not retry because each failed attempt sends an email alert; the
+next hourly check provides the retry without duplicating that notification.
+
 Scheduled jobs are disabled by default. Set `enable_scheduled_jobs = true`
 only during the approved cutover after the AWS writers are stopped; this
 prevents a rehearsal Azure apply from writing alongside production AWS.
