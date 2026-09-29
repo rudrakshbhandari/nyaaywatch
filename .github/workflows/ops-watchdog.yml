@@ -18,9 +18,12 @@ jobs:
   watchdog:
     runs-on: ubuntu-latest
     env:
-      ACTIVE_PRODUCTION_PROVIDER: ${{ vars.ACTIVE_PRODUCTION_PROVIDER || 'aws' }}
+      # Azure is the current production provider. Keep AWS available only when
+      # explicitly selected for a deliberate rollback; a missing GitHub
+      # repository variable must not silently send the watchdog to retired AWS.
+      ACTIVE_PRODUCTION_PROVIDER: ${{ vars.ACTIVE_PRODUCTION_PROVIDER || 'azure' }}
       AWS_REGION: ap-south-1
-      RUNTIME_REGION: ${{ vars.ACTIVE_PRODUCTION_PROVIDER == 'azure' && 'centralindia' || 'ap-south-1' }}
+      RUNTIME_REGION: ${{ (vars.ACTIVE_PRODUCTION_PROVIDER || 'azure') == 'azure' && 'centralindia' || 'ap-south-1' }}
       PUBLIC_BASE_URL: https://nyaaywatch.in
       PRODUCTION_STACK_NAME: nyaaywatch-production
       OPERATOR_API_TOKEN: ${{ secrets.AZURE_OPERATOR_API_TOKEN }}
