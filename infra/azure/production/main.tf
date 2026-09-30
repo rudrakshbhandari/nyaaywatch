@@ -261,7 +261,7 @@ resource "azurerm_container_app" "this" {
   }
 
   dynamic "secret" {
-    for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+    for_each = var.alarm_webhook_url == null || var.alarm_webhook_url == "" ? [] : [var.alarm_webhook_url]
 
     content {
       name  = "alarm-webhook-url"
@@ -358,7 +358,7 @@ resource "azurerm_container_app" "this" {
       }
 
       dynamic "env" {
-        for_each = coalesce(var.alarm_webhook_url, "") == "" ? [] : [var.alarm_webhook_url]
+        for_each = var.alarm_webhook_url == null || var.alarm_webhook_url == "" ? [] : [var.alarm_webhook_url]
 
         content {
           name        = "ALARM_WEBHOOK_URL"
@@ -483,7 +483,7 @@ resource "azurerm_container_app_job" "scheduled" {
   }
 
   dynamic "secret" {
-    for_each = coalesce(var.alarm_webhook_url, "") == "" ? [] : [var.alarm_webhook_url]
+    for_each = var.alarm_webhook_url == null || var.alarm_webhook_url == "" ? [] : [var.alarm_webhook_url]
 
     content {
       name  = "alarm-webhook-url"
@@ -568,7 +568,7 @@ resource "azurerm_container_app_job" "scheduled" {
       }
 
       dynamic "env" {
-        for_each = var.alarm_webhook_url == null ? [] : [var.alarm_webhook_url]
+        for_each = var.alarm_webhook_url == null || var.alarm_webhook_url == "" ? [] : [var.alarm_webhook_url]
 
         content {
           name        = "ALARM_WEBHOOK_URL"
