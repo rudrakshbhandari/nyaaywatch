@@ -30,24 +30,23 @@ export function createSupremeCourtSourceClient(): SupremeCourtSourceClient {
 }
 
 async function fetchHtml(url: string): Promise<string> {
-  let response: Response;
   try {
-    response = await fetch(url, {
+    const response = await fetch(url, {
       headers: {
         "user-agent": "NyaayWatch/0.1 (+https://github.com/rudrakshbhandari/nyaaywatch)",
         accept: "text/html,application/xhtml+xml",
       },
       signal: AbortSignal.timeout(30_000),
     });
+
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+
+    return await response.text();
   } catch (error) {
     throw new Error(`Failed to fetch Supreme Court NJDG page ${url}: ${formatFetchError(error)}`, { cause: error });
   }
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch Supreme Court NJDG page ${url}: ${response.status} ${response.statusText}`);
-  }
-
-  return response.text();
 }
 
 function formatFetchError(error: unknown): string {
