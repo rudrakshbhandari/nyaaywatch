@@ -51,7 +51,10 @@ locals {
     if trimspace(host) != "" && trimspace(host) != var.canonical_host
   ]
 
-  public_hostnames = toset(concat([var.canonical_host], local.legacy_hostname_list))
+  # Only manage the canonical hostname here. Legacy aliases require Azure
+  # ownership TXT records (asuid.<host>) before Container Apps accepts them;
+  # keep those out of Terraform until DNS validation is in place.
+  public_hostnames = toset([var.canonical_host])
 
   tags = {
     project = var.project_name
