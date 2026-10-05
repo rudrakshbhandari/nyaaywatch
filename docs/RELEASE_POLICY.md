@@ -98,10 +98,15 @@ Treat a release as blocked if any one of these is true:
    - unhealthy host count is `0`
    - ALB 5xx counts are `0`
    - structured app errors are `0` or understood
-2. Review the last 30 minutes of app logs:
+2. Review the last 30 minutes of app logs for the active provider. For Azure production:
    ```bash
-   aws logs tail /ecs/nyaaywatch-production --since 30m --region ap-south-1
+   az containerapp logs show \
+     --name nyaaywatch-production \
+     --resource-group nyaaywatch-production \
+     --tail 100 \
+     --type console
    ```
+   Use `aws logs tail /ecs/nyaaywatch-production --since 30m --region ap-south-1` only when AWS is the active production provider.
 3. If any `level=error` log line appears, either fix it first or explicitly record why it is safe to ignore for this release.
 4. Run the public verification script against the target hostname:
    ```bash
@@ -152,12 +157,12 @@ For the next 15 minutes:
 
 At least once each week, even without a publish:
 
-- scan the alarm history
+- scan alert history for the active production provider
 - review app errors for recurring patterns
 - confirm the dashboard still reflects the real stack resources
 - run `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`
-- confirm `nyaaywatch-production-public-alpha-ops` has not entered `ALARM` and that any previous all-public-target alarm has a reviewed root cause
-- if the repo-level ops watchdog is being audited or repaired, also run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` so the three live scheduler tiers are checked directly against EventBridge and recent operator history
+- for Azure production, confirm the latest `nyaaywatch-production-alpha-ops` Container Apps execution succeeded and review any provider-configured failure notification; use the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm only when AWS is the active production provider
+- if the repo-level ops watchdog is being audited or repaired, run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` only when AWS is the active provider; the Azure path checks Container Apps job configuration and recent executions in `.github/workflows/ops-watchdog.yml`
 - treat any reported daily-fetch lag as an operator issue even if the public snapshot is not yet old enough to count as stale by the product trust model, because the sweep now checks internal run history rather than published snapshot age
 
 ## Practical Release Rule
