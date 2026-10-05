@@ -25,11 +25,13 @@ The scheduled jobs use UTC equivalents of the current Asia/Kolkata cadence:
 - Supreme Court fetch at 08:10 IST
 - reviewed High Court fetch at 08:20 IST
 - publish-pending sweep at 08:30 IST
-- public-alpha monitor hourly
+- public-alpha monitor daily at 12:30 IST (07:00 UTC)
 
 Fetch and publish jobs retry once after a failed execution. The public-alpha
-monitor does not retry because each failed attempt sends an email alert; the
-next hourly check provides the retry without duplicating that notification.
+monitor does not retry. It sends at most one failure email per scheduled run,
+so a persistent monitor failure produces at most one reminder per day instead
+of one per hour. The independent fetch jobs continue to send their own failure
+alerts.
 
 Scheduled jobs are disabled by default. Set `enable_scheduled_jobs = true`
 only during the approved cutover after the AWS writers are stopped; this
