@@ -98,7 +98,25 @@ Treat a release as blocked if any one of these is true:
    - unhealthy host count is `0`
    - ALB 5xx counts are `0`
    - structured app errors are `0` or understood
-2. Review the last 30 minutes of app logs:
+2. Review all console logs from the last 30 minutes across Azure app replicas. For Azure production:
+   ```bash
+   workspace_id="$(az monitor log-analytics workspace show \
+     --resource-group nyaaywatch-production \
+     --workspace-name nyaaywatch-production-logs \
+     --query customerId \
+     --output tsv)"
+   query="ContainerAppConsoleLogs_CL
+   | where TimeGenerated >= ago(30m)
+   | where ContainerAppName_s == 'nyaaywatch-production'
+   | project TimeGenerated, ContainerGroupName_g, RevisionName_s, ContainerName_s, Log_s
+   | order by TimeGenerated desc"
+   az monitor log-analytics query \
+     --workspace "$workspace_id" \
+     --analytics-query "$query" \
+     --timespan PT30M \
+     --output table
+   ```
+   `ContainerGroupName_g` identifies the replica. Use this AWS command only when AWS is the active production provider:
    ```bash
    aws logs tail /ecs/nyaaywatch-production --since 30m --region ap-south-1
    ```
@@ -114,7 +132,7 @@ Treat a release as blocked if any one of these is true:
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
    ```
    This must stay green before treating the release window as operationally quiet. It fails if any public lower-court state, public High Court, or the Supreme Court surface has route/parity drift, a stale public snapshot, or a latest successful internal fetch run old enough to suggest the daily internal fetch cadence is slipping.
-   Outside the release window, the live stack reruns a smaller `--target-set=smoke` check hourly through the `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm if the smoke check fails. Keep the full sweep for release windows and the daily GitHub watchdog so routine monitoring does not overload the single public origin with every route family at once.
+   Outside the release window, the Azure Container Apps `alpha-ops` job reruns a smaller `--target-set=smoke` check daily at 12:30 PM IST (07:00 UTC), after this schedule change is applied. A failed check sends the provider-configured alert. The daily GitHub watchdog continues to run the full sweep at 05:00 UTC. Keep the full sweep for release windows and the daily watchdog so routine monitoring does not overload the single public origin with every route family at once. The reduced smoke-check cadence means an issue arising just after a run may take up to a day to be detected by that check.
 6. Run prepublish verification for the candidate run and note the rollback target:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
@@ -152,12 +170,12 @@ For the next 15 minutes:
 
 At least once each week, even without a publish:
 
-- scan the alarm history
+- scan alert history for the active production provider
 - review app errors for recurring patterns
 - confirm the dashboard still reflects the real stack resources
 - run `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`
-- confirm `nyaaywatch-production-public-alpha-ops` has not entered `ALARM` and that any previous all-public-target alarm has a reviewed root cause
-- if the repo-level ops watchdog is being audited or repaired, also run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` so the three live scheduler tiers are checked directly against EventBridge and recent operator history
+- for Azure production, confirm the latest `nyaaywatch-production-alpha-ops` Container Apps execution succeeded and review any provider-configured failure notification; use the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm only when AWS is the active production provider
+- if the repo-level ops watchdog is being audited or repaired, run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` only when AWS is the active provider; the Azure path checks Container Apps job configuration and recent executions in `.github/workflows/ops-watchdog.yml`
 - treat any reported daily-fetch lag as an operator issue even if the public snapshot is not yet old enough to count as stale by the product trust model, because the sweep now checks internal run history rather than published snapshot age
 
 ## Practical Release Rule

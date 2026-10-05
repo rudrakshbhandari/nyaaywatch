@@ -121,8 +121,9 @@ jobs:
           tier_json='[]'
           for job_suffix in "${jobs[@]}"; do
             job_name="${app_prefix}-${job_suffix}"
+            # Daily jobs allow one interval plus a 2-hour margin. The watchdog
+            # runs at 05:00 UTC, before alpha-ops at 07:00 UTC.
             max_age_minutes=1560
-            [[ "$job_suffix" == "alpha-ops" ]] && max_age_minutes=120
             job_json="$(az containerapp job show --name "$job_name" --resource-group "$resource_group" --output json)"
             execution_json="$(az containerapp job execution list --name "$job_name" --resource-group "$resource_group" --output json)"
             validation="$(JOB_NAME="$job_name" MAX_AGE_MINUTES="$max_age_minutes" JOB_JSON="$job_json" EXECUTION_JSON="$execution_json" node - <<'NODE'

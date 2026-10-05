@@ -17,9 +17,9 @@ These two signals are intentionally separated because upstream NJDG breakage is 
 
 The ops watchdog is where these signals surface first:
 
-- scheduled run: `.github/workflows/ops-watchdog.yml` (every day at `05:00` UTC) and the in-stack `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule hourly
+- scheduled run: `.github/workflows/ops-watchdog.yml` (every day at `05:00` UTC) and the Azure Container Apps `alpha-ops` smoke monitor (daily at `07:00` UTC after this schedule change is applied)
 - failure artifact: the durable GitHub issue titled `Ops watchdog failure`, which lists `dailyFetchLagStates`, `staleStates`, and `failingTiers`
-- first-incident alert: SNS topic `nyaaywatch-production-alerts`
+- first-incident alert: provider-configured alert email
 - command for an ad-hoc check:
   ```bash
   export OPERATOR_API_TOKEN=...
@@ -43,7 +43,21 @@ npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-sl
 
 1. Check the ops watchdog issue body for which tier is lagging (`lower`, `supreme`, `high`) and which scope.
 2. Inspect the latest scheduled run and freshness in the same issue body.
-3. Look at `/ecs/nyaaywatch-production` logs for the affected tier around the expected `8:00`, `8:10`, or `8:20` AM Asia/Kolkata window.
+3. Inspect the Azure Container Apps execution logs for the affected fetch tier around the expected `8:00`, `8:10`, or `8:20` AM Asia/Kolkata window. List executions, then request logs for the relevant execution (Azure CLI `containerapp` extension 2.79 or later):
+   ```bash
+   az containerapp job execution list \
+     --name nyaaywatch-production-fetch \
+     --resource-group nyaaywatch-production \
+     --output table
+   az containerapp job logs show \
+     --name nyaaywatch-production-fetch \
+     --resource-group nyaaywatch-production \
+     --execution <execution-name> \
+     --container weekday-internal-fetch \
+     --tail 100 \
+     --format text
+   ```
+   For Supreme Court, use job/container `nyaaywatch-production-sc-fetch` / `supreme-court-internal-fetch`; for High Courts, use `nyaaywatch-production-hc-fetch` / `high-courts-internal-fetch`.
 4. If the upstream source is returning a predictable error, record it in `docs/EXPANSION_REVIEW_LOG.md` and wait for the next window — do not hand-run a recovery fetch unless the next scheduled window is more than 24 hours away.
 5. If the upstream source is returning something novel (HTML shape change, new challenge page, different selector payload), open a source-shape task and link it from the watchdog issue before closing.
 
