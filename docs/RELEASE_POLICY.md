@@ -114,7 +114,7 @@ Treat a release as blocked if any one of these is true:
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
    ```
    This must stay green before treating the release window as operationally quiet. It fails if any public lower-court state, public High Court, or the Supreme Court surface has route/parity drift, a stale public snapshot, or a latest successful internal fetch run old enough to suggest the daily internal fetch cadence is slipping.
-   Outside the release window, the live stack reruns a smaller `--target-set=smoke` check hourly through the `nyaaywatch-production-public-alpha-ops-monitor` ECS schedule and raises the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm if the smoke check fails. Keep the full sweep for release windows and the daily GitHub watchdog so routine monitoring does not overload the single public origin with every route family at once.
+   Outside the release window, the Azure Container Apps `alpha-ops` job reruns a smaller `--target-set=smoke` check daily at 12:30 PM IST (07:00 UTC), after this schedule change is applied. A failed check sends the provider-configured alert. The daily GitHub watchdog continues to run the full sweep at 05:00 UTC. Keep the full sweep for release windows and the daily watchdog so routine monitoring does not overload the single public origin with every route family at once. The reduced smoke-check cadence means an issue arising just after a run may take up to a day to be detected by that check.
 6. Run prepublish verification for the candidate run and note the rollback target:
    ```bash
    npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
