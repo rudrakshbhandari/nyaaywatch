@@ -98,15 +98,28 @@ Treat a release as blocked if any one of these is true:
    - unhealthy host count is `0`
    - ALB 5xx counts are `0`
    - structured app errors are `0` or understood
-2. Review the last 30 minutes of app logs for the active provider. For Azure production:
+2. Review all console logs from the last 30 minutes across Azure app replicas. For Azure production:
    ```bash
-   az containerapp logs show \
-     --name nyaaywatch-production \
+   workspace_id="$(az monitor log-analytics workspace show \
      --resource-group nyaaywatch-production \
-     --tail 100 \
-     --type console
+     --workspace-name nyaaywatch-production-logs \
+     --query customerId \
+     --output tsv)"
+   query="ContainerAppConsoleLogs_CL
+   | where TimeGenerated >= ago(30m)
+   | where ContainerAppName_s == 'nyaaywatch-production'
+   | project TimeGenerated, ContainerGroupName_g, RevisionName_s, ContainerName_s, Log_s
+   | order by TimeGenerated desc"
+   az monitor log-analytics query \
+     --workspace "$workspace_id" \
+     --analytics-query "$query" \
+     --timespan PT30M \
+     --output table
    ```
-   Use `aws logs tail /ecs/nyaaywatch-production --since 30m --region ap-south-1` only when AWS is the active production provider.
+   `ContainerGroupName_g` identifies the replica. Use this AWS command only when AWS is the active production provider:
+   ```bash
+   aws logs tail /ecs/nyaaywatch-production --since 30m --region ap-south-1
+   ```
 3. If any `level=error` log line appears, either fix it first or explicitly record why it is safe to ignore for this release.
 4. Run the public verification script against the target hostname:
    ```bash
