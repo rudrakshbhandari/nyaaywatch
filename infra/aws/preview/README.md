@@ -24,7 +24,7 @@ Preview cleanup now has three layers:
 
 1. `pull_request.closed` deletes the matching preview service directly.
 2. Every preview deploy reconciles existing `nyaaywatch-pr-*` App Runner services against the set of currently open PRs before attempting create/update.
-3. `.github/workflows/preview-reconcile.yml` runs hourly and can be triggered manually to prune any stale preview services left behind by missed close events or App Runner state races.
+3. `.github/workflows/preview-reconcile.yml` runs hourly, and can be triggered manually, only when the `ENABLE_AWS_PREVIEWS` repository variable is `true`. That is the same opt-in gate as the pull request preview job. While the variable is off, the workflow does not assume the preview role.
 
 The preview helpers now page through the full App Runner `list-services` inventory before deciding what to keep, delete, or update. That matters once the account has more than one page of preview services: stale entries beyond the first page still count against the shared App Runner service quota.
 
