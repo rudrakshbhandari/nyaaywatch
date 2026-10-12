@@ -184,7 +184,7 @@ Public product posture:
 The current implementation takes these fields from public NJDG district dashboard pages:
 
 - state and district names/codes from the district selector
-- source snapshot date from the dashboard's own "Last Reviewed and Updated on" field
+- source snapshot date from the dashboard footer. The live label is "Last Updated"; older captures used "Last Reviewed and Updated on"
 - total pending/open cases
 - cases instituted in the last month
 - cases disposed in the last month
