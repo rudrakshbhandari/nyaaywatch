@@ -179,6 +179,17 @@ Public product posture:
 - published snapshots remain the canonical citation layer
 - richer live or quasi-live surfaces should be clearly separated from the published observability layer
 
+### Selected Future Product Directions
+
+The following directions are approved for roadmap inclusion and remain backlog work, with no implementation start or delivery date committed. They extend the product through separately reviewed evidence surfaces while preserving the current aggregate-snapshot truth layer.
+
+1. **[What happened to this?](https://github.com/rudrakshbhandari/nyaaywatch/issues/407)** — maintain public-accountability timelines that connect an original commitment, court direction, audit finding or project to later evidence, the responsible institution and the next documented step. First validate a maintainable cohort with five manually reviewed timelines; a 25-issue cohort is the proposed MVP. Store distinct date semantics, checked-through coverage, modifications/stays/supersession, correction history and reported-versus-supported outcomes.
+2. **[Follow my representatives](https://github.com/rudrakshbhandari/nyaaywatch/issues/408)** — create source-backed representative profiles and opt-in change alerts, linking formal activity and assurances to the issue timelines above. Establish Parliament coverage first, then expand House-specific and local-body connectors. Time-valid office and constituency identity, vacancies, role-aware attribution and per-category coverage are required before claiming broader coverage.
+
+Both directions share source provenance, evidence assertions, reversible identity joins, reviewed publication, version/correction lineage and alert delivery. Cross-source collection, responsible scraping and PDF normalization are core engineering work; clean APIs are useful where available but are not a prerequisite. Every source still requires a defensible acquisition/reuse posture and maintainable update process.
+
+Public pilots must preserve the existing claim discipline: no unsupported live-data or uniform-completeness claims, no inferred guilt or automated compliance verdicts, no invented individual votes from voice votes, no performance rankings from raw activity counts, and no unnecessary personal/family data. Source quality, maintenance capacity and appropriate review are release gates. Full acceptance criteria remain in the linked issues.
+
 ## Current Government-Sourced Inputs
 
 The current implementation takes these fields from public NJDG district dashboard pages:

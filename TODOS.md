@@ -16,6 +16,15 @@ Do not use this file as a second release ledger. The detailed rollout evidence a
 - `docs/internal/RELEASE_HISTORY.md`
 - `docs/internal/EXPANSION_REVIEW_LOG.md`
 
+## Planned Product Expansions
+
+These directions are approved for roadmap inclusion. Implementation scope, source-access feasibility, editorial capacity and delivery timing still require a separate decision. The current aggregate court-snapshot publication contract and operational work remain in place.
+
+- [ ] [What happened to this? — public accountability timelines](https://github.com/rudrakshbhandari/nyaaywatch/issues/407): follow a government commitment, court direction or public project through a dated, source-linked timeline, identify the institution responsible for the next step, and offer opt-in material-change alerts. Proposed first cohort: 25 maintained issue timelines after a five-issue source-access/editorial pilot. Preserve subsequent-order supersession, corrections, coverage limits and the difference between reported completion and supported outcomes.
+- [ ] [Follow my representatives — public profiles and change alerts](https://github.com/rudrakshbhandari/nyaaywatch/issues/408): discover and follow MPs, MLAs and local representatives through source-backed office/tenure histories, parliamentary activity, disclosures, precisely attributed case status and relevant project follow-through. Begin with Parliament; expand state and local connectors by evidence quality. A national register is a coverage goal, with category-level completeness and freshness made explicit.
+
+Shared enabling work: permitted source collection and responsible scraping across pages/PDFs/feeds/APIs, source provenance, dated institution/office/geography identifiers and reversible joins, reviewed publication, correction lineage, coverage reporting and opt-in alerts. Keep individual responsibilities distinct from institutional implementation. The linked issues own the detailed scope and acceptance gates.
+
 ## Next Up
 
 ### 1. Public Alpha Operations And Alerting
