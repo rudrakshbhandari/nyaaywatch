@@ -78,14 +78,14 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
-    "@playwright/test": "^1.62.1",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
     "@types/express": "^5.0.3",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.6.5",
     "@types/pg": "^8.23.1",
     "@types/supertest": "^7.2.1",
-    "supertest": "^7.1.4",
-    "tsx": "^4.23.13",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"
   }
