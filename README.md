@@ -62,13 +62,13 @@ Legacy compatibility note: `/districts`, `/data`, and `/methodology` are unscope
 
 ## Roadmap
 
-The current approved scope is to operate and maintain this snapshot-based coverage; no new court-geography or feature expansion is approved for implementation.
+The current approved scope is to operate and maintain this snapshot-based coverage; no new court-geography rollout is queued.
 
 - **Current:** keep the existing aggregate snapshots, public coverage, and evidence-backed publishing reliable.
-- **Possible next:** consider metric improvements or narrow, internal-first pilots using deeper court data, after a separate decision.
+- **Planned for roadmap review:** public accountability timelines and representative profiles with change alerts are recorded as future directions. Their source pilots, implementation scope, and delivery timing still need separate decisions.
 - **Longer term:** add order or judgment details, or document text, only where source terms, quality, and reproducibility support them. Published snapshots remain the public citation baseline.
 
-These are strategic directions, not commitments. The [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md) and [metric strategy](docs/METRIC_STRATEGY.md) explain the options; the [maintainer roadmap](TODOS.md) records approved open work. New source classes or deeper coverage must pass the source, methodology, public-trust, and operational checks in the [expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md). Completed rollout plans are kept in [`docs/archive/`](docs/archive/) as historical records.
+These are planning directions, not implementation commitments. See the issues for [accountability timelines](https://github.com/rudrakshbhandari/nyaaywatch/issues/407) and [representative profiles](https://github.com/rudrakshbhandari/nyaaywatch/issues/408), the [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md), and the [metric strategy](docs/METRIC_STRATEGY.md). The [maintainer roadmap](TODOS.md) records in-flight and approved work. New source classes or deeper coverage must pass the source, methodology, public-trust, and operational checks in the [expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md). Completed rollout plans are kept in [`docs/archive/`](docs/archive/) as historical records.
 
 ## The trust model
 

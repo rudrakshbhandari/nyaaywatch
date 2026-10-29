@@ -113,7 +113,7 @@ Even then, public trust-critical surfaces should continue to publish reviewed sn
 
 ## Roadmap
 
-This is a strategic direction, not an approved delivery schedule. Stage 1 is complete for the current aggregate observability layer: the configured Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies are represented in the public product. The stages below describe possible future work and do not authorize implementation by themselves. Use `TODOS.md` for approved open work.
+This is a strategic direction, not an approved delivery schedule. Stage 1 is complete for the current aggregate observability layer: the configured Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies are represented in the public product. The future directions in stages 2 and 3 do not authorize implementation by themselves. Two product directions are approved for roadmap planning, but have no implementation start or delivery date: [public accountability timelines](https://github.com/rudrakshbhandari/nyaaywatch/issues/407) and [representative profiles and change alerts](https://github.com/rudrakshbhandari/nyaaywatch/issues/408). Use `TODOS.md` for the current planning status and in-flight work.
 
 ### Stage 1: Strengthen The Snapshot Observatory
 
