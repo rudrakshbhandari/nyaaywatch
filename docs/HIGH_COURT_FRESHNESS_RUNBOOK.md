@@ -74,7 +74,7 @@ npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-sl
 **Do:**
 
 1. Decide whether to hold the current publication with an explicit freshness banner or rollback to nothing-published for the affected scope. Holding is almost always correct — the snapshot is still provenance-traceable, only old.
-2. If holding: confirm the state-specific methodology note or the shared High Court methodology page already carries language consistent with `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`. The `coveredGeographies[]` language does not talk about freshness explicitly; if a specific court needs a court-specific caveat, add it there, not inline in the renderer.
+2. If holding: confirm the state-specific methodology note or the shared High Court methodology page already carries language consistent with `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`. The `coveredGeographies[]` language does not talk about freshness explicitly; if a specific court needs a court-specific caveat, add it there, not inline in the renderer.
 3. If rolling back: follow the publish/rollback path in `docs/OPERATING_EVIDENCE.md`. Record the rollback in `docs/RELEASE_HISTORY.md` with a `publication_*` entry and an explicit reason field referencing this runbook.
 4. Update the watchdog issue with the decision and the publication id of the action taken.
 
@@ -109,6 +109,6 @@ If automation ever looks like the right answer for one of these, write the desig
 - `docs/RELEASE_POLICY.md` — cadence, publisher authority, blocked release criteria
 - `docs/ALPHA_RELEASE_CHECKLIST.md` — publish-time go/no-go
 - `docs/OPERATING_EVIDENCE.md` — minimum release evidence
-- `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md` — High Court public copy rules
+- `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md` — High Court public copy rules
 - `src/dev/public-alpha-ops.ts` — source of `DEFAULT_DAILY_FETCH_LAG_THRESHOLD_DAYS` and `STALE_SNAPSHOT_THRESHOLD_DAYS`
 - `.github/workflows/ops-watchdog.yml` — scheduled watchdog and durable issue wiring

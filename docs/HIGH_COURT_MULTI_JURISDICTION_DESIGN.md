@@ -189,7 +189,7 @@ This is a design recommendation, not a public rollout approval.
 - update homepage framing so the High Court section does not imply one-state equivalence
 - add methodology language for mixed state and union-territory coverage
 
-The concrete implementation plan for this phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
+The concrete implementation plan for this phase now lives in `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
 
 ### Phase 4: Public-beta expansion
 
@@ -213,5 +213,5 @@ Current rollout posture:
 - the remaining deferred court-first High Courts are now approved for public-beta rollout in larger waves, not one-court-at-a-time hesitation
 
 The concrete first execution slice for this design lived in `docs/archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` (archived; phase 1 complete).
-The concrete public-language follow-up after that slice now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
-The concrete batch rollout plan for the remaining deferred courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`.
+The concrete public-language follow-up after that slice now lives in `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
+The concrete batch rollout plan for the remaining deferred courts now lives in `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`.

@@ -60,6 +60,16 @@ The home page is the national entry point, followed by explicit state, Union Ter
 
 Legacy compatibility note: `/districts`, `/data`, and `/methodology` are unscoped Himachal Pradesh lower-court shortcuts. Use the homepage geography selector and `/states/:stateSlug/...` routes for a specific geography. `/api` is the national API reference; state-specific API pages use `/states/:stateSlug/api`.
 
+## Roadmap
+
+The current approved scope is to operate and maintain this snapshot-based coverage; no new court-geography or feature expansion is approved for implementation.
+
+- **Current:** keep the existing aggregate snapshots, public coverage, and evidence-backed publishing reliable.
+- **Possible next:** consider metric improvements or narrow, internal-first pilots using deeper court data, after a separate decision.
+- **Longer term:** add order or judgment details, or document text, only where source terms, quality, and reproducibility support them. Published snapshots remain the public citation baseline.
+
+These are strategic directions, not commitments. The [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md) and [metric strategy](docs/METRIC_STRATEGY.md) explain the options; the [maintainer roadmap](TODOS.md) records approved open work. New source classes or deeper coverage must pass the source, methodology, public-trust, and operational checks in the [expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md). Completed rollout plans are kept in [`docs/archive/`](docs/archive/) as historical records.
+
 ## The trust model
 
 NyaayWatch treats the publication boundary as part of the product.
@@ -261,7 +271,7 @@ The AWS-only `npm run operator:production` path is retired after the Azure cutov
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md): branches, worktrees, and local commands
 - [Design system](DESIGN.md): visual and accessibility rules
 - [Brand system](brand/BRAND.md): logos, type, color, and press assets
-- [Working backlog](TODOS.md): current follow-up work
+- [Maintainer roadmap](TODOS.md): approved open work and current scope
 
 ## Data sources
 

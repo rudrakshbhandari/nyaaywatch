@@ -1,5 +1,7 @@
 # High Court Multi-Jurisdiction Public Beta Batch Plan
 
+> Archived 2026-10-29: this implementation plan is complete. It is preserved as a record of the decisions and rollout; current approved work is tracked in [the roadmap](../../TODOS.md).
+
 Concrete rollout plan for the remaining deferred court-first High Court public beta set after Punjab and Haryana.
 
 This document exists to answer one narrow question:
@@ -128,7 +130,7 @@ This document is now the completed rollout plan for the deferred court-first Hig
 
 Supporting context still lives in:
 
-- `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
-- `docs/archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`
-- `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`
-- `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`
+- `../HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
+- `../../archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md`
+- `HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`
+- `HIGH_COURT_WAVE_VALIDATION_PLAN.md`

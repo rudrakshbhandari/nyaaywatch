@@ -1,5 +1,7 @@
 # High Court Multi-Jurisdiction Public Language Plan
 
+> Archived 2026-10-29: this implementation plan is complete. It is preserved as a record of the decisions and rollout; current approved work is tracked in [the roadmap](../../TODOS.md).
+
 Concrete plan for the public-methodology and route-language pass that follows the completed internal Punjab and Haryana pilot.
 
 This document exists to answer one narrow question:
@@ -219,7 +221,7 @@ Keep this phase reviewable through narrow PRs.
 
 - after Punjab and Haryana, keep the same court-first public copy contract for the remaining deferred courts
 - do not reopen the semantics debate for every remaining court
-- follow `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md` for the approved two-wave rollout shape of the remaining six deferred courts
+- follow `HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md` for the approved two-wave rollout shape of the remaining six deferred courts
 
 ## Acceptance Criteria
 

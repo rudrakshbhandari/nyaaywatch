@@ -1,5 +1,7 @@
 # Supreme Court Pilot Plan
 
+> Archived 2026-10-29: this implementation plan is complete. It is preserved as a record of the decisions and rollout; current approved work is tracked in [the roadmap](../../TODOS.md).
+
 Execution plan for the Supreme Court tier as the next public top-down module inside NyaayWatch.
 
 This document turns the national product architecture into a concrete next planning slice after the Himachal High Court public beta.
@@ -46,8 +48,8 @@ The repo now has the internal Supreme Court scaffold:
 - Supreme Court snapshot-candidate and published-snapshot schemas
 - internal operator lifecycle under `/operator/supreme-court/...`
 - local and remote operator CLI support
-- repeated live Supreme Court proof cycles recorded in `docs/SUPREME_COURT_INTERNAL_READINESS_REVIEW.md`
-- a repo-side Supreme Court methodology draft in `docs/SUPREME_COURT_METHODOLOGY.md`
+- repeated live Supreme Court proof cycles recorded in `../SUPREME_COURT_INTERNAL_READINESS_REVIEW.md`
+- a repo-side Supreme Court methodology draft in `../SUPREME_COURT_METHODOLOGY.md`
 
 What it does **not** have yet:
 
@@ -103,7 +105,7 @@ Working rule:
 
 ## Product Shape In The Final Architecture
 
-This pilot should be designed as part of the final national shell described in `docs/NATIONAL_PRODUCT_ARCHITECTURE.md`.
+This pilot should be designed as part of the final national shell described in `../NATIONAL_PRODUCT_ARCHITECTURE.md`.
 
 That means:
 

@@ -1,5 +1,7 @@
 # High Court Wave Validation Plan
 
+> Archived 2026-10-29: this implementation plan is complete. It is preserved as a record of the decisions and rollout; current approved work is tracked in [the roadmap](../../TODOS.md).
+
 Concrete next-step plan after the internal multi-High-Court setup landed.
 
 This document answers one narrow question:
@@ -22,8 +24,8 @@ The original seven-court public High Court beta is no longer the terminal public
 
 Every queued single-jurisdiction High Court in the current registry now has live internal proof coverage, and the court-first multi-jurisdiction model has already cleared the Punjab and Haryana, Delhi, Kerala, Madras, Bombay, Calcutta, and Gauhati public beta launches. The previously pending Wave 2 gate is now closed too, and the final ten internally proven High Courts are now approved for public beta exposure as one final batch.
 
-The initial design answer for that next phase now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`.
-The first execution-plan answer for that next phase lived in `docs/archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` (archived; phase 1 complete).
+The initial design answer for that next phase now lives in `../HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`.
+The first execution-plan answer for that next phase lived in `../../archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` (archived; phase 1 complete).
 PR 3 from that plan is now landed too, so Punjab and Haryana High Court is configured with explicit Punjab, Haryana, and Chandigarh coverage and is already live in the public beta.
 
 The first validation pair was:
@@ -402,7 +404,7 @@ Current conclusion from live evidence:
 - the next remaining question is not whether more internal queued-court proof is needed
 - the next remaining question is whether any additional public High Court wave or any multi-jurisdiction expansion is methodologically defensible
 - the original decision was to keep the seven-court public High Court beta fixed until the multi-jurisdiction court problem was intentionally designed
-- the first explicit design pass for that problem now exists in `docs/HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
+- the first explicit design pass for that problem now exists in `../HIGH_COURT_MULTI_JURISDICTION_DESIGN.md`
 
 Follow-up live check on **April 20, 2026** for the internal Punjab and Haryana High Court pilot:
 
@@ -464,7 +466,7 @@ The harder questions that originally blocked a public multi-jurisdiction court n
 
 - multi-jurisdiction High Courts fit the product and schema through a court-first identity plus explicit `coveredGeographies[]`
 - the public methodology language now remains honest once court-to-state mapping is no longer one-to-one
-- Punjab and Haryana is the first public multi-jurisdiction High Court beta page, and the remaining deferred court-first High Courts have now been approved for public beta exposure through the completed batch discipline recorded in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
+- Punjab and Haryana is the first public multi-jurisdiction High Court beta page, and the remaining deferred court-first High Courts have now been approved for public beta exposure through the completed batch discipline recorded in `HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
 - after the final ten-court exposure, the public High Court beta set covers all 25 configured HC NJDG selector-backed High Court profiles
 - Delhi High Court, High Court of Kerala, and Madras High Court are now live public Wave 1 courts
 - Bombay High Court, Calcutta High Court, and Gauhati High Court are now live public Wave 2 courts

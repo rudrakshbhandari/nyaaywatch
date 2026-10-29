@@ -178,7 +178,7 @@ Primary files:
 
 - `src/high-courts.ts`
 - `docs/HIGH_COURT_INTERNAL_WAVE_1.md`
-- `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`
+- `HIGH_COURT_WAVE_VALIDATION_PLAN.md`
 
 Required work:
 
@@ -269,6 +269,6 @@ Phase 1 has now succeeded, and the public-beta decision can stand on product jud
 
 The next move is now explicit:
 
-1. keep `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md` as the public copy and trust contract that made Punjab and Haryana defensible
-2. follow `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md` for the remaining deferred courts
+1. keep `HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md` as the public copy and trust contract that made Punjab and Haryana defensible
+2. follow `HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md` for the remaining deferred courts
 3. execute the remaining deferred court-first High Courts in sequential public-beta waves of three courts each rather than falling back to pairs or one-court launches

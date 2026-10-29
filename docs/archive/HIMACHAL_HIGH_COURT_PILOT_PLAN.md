@@ -1,6 +1,8 @@
 # Himachal High Court Pilot Plan
 
-Historical note: this was the first High Court tier pilot plan. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `README.md` and `docs/INDIA_COURT_COVERAGE_AUDIT.md` for current coverage and route scope.
+> Archived 2026-10-29: this implementation plan is complete. It is preserved as a record of the decisions and rollout; current approved work is tracked in [the roadmap](../../TODOS.md).
+
+Historical note: this was the first High Court tier pilot plan. The current public scope is India-first: Supreme Court, all 25 High Courts, and all 36 lower-court state/Union Territory geographies. Use `../../README.md` and `../INDIA_COURT_COVERAGE_AUDIT.md` for current coverage and route scope.
 
 Execution plan for the first High Court tier pilot inside NyaayWatch.
 
@@ -91,7 +93,7 @@ Working rule:
 
 ## Product Shape In The Final Architecture
 
-This pilot should be designed as part of the final national shell described in `docs/NATIONAL_PRODUCT_ARCHITECTURE.md`.
+This pilot should be designed as part of the final national shell described in `../NATIONAL_PRODUCT_ARCHITECTURE.md`.
 
 That means:
 
@@ -367,9 +369,9 @@ Current repo state:
 
 - steps 1 through 6 are now complete
 - the next High Court decision is whether repeated internal operator cycles make a narrow public beta defensible
-- the repo now has a dedicated internal-readiness verifier and review doc for that stage: `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` and `docs/HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md`
-- the repo now also has a first internal-only multi-state High Court registry for the single-jurisdiction courts that fit the current snapshot contract, documented in `docs/HIGH_COURT_INTERNAL_WAVE_1.md`
-- the repo now also has an explicit first queued-court validation recommendation for that wave in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`, using the batch verifier `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
+- the repo now has a dedicated internal-readiness verifier and review doc for that stage: `npm run high-court:readiness -- --base-url=https://nyaaywatch.in --court-slug=himachal` and `../HIMACHAL_HIGH_COURT_INTERNAL_READINESS_REVIEW.md`
+- the repo now also has a first internal-only multi-state High Court registry for the single-jurisdiction courts that fit the current snapshot contract, documented in `../HIGH_COURT_INTERNAL_WAVE_1.md`
+- the repo now also has an explicit first queued-court validation recommendation for that wave in `HIGH_COURT_WAVE_VALIDATION_PLAN.md`, using the batch verifier `npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-slugs=uttar-pradesh,rajasthan`
 
 ## Definition Of Done
 

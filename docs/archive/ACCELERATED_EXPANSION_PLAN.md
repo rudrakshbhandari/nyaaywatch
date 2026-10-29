@@ -369,7 +369,7 @@ Instead:
 ### High Court Plan
 
 1. use Himachal High Court as the first tier pilot inside the national NyaayWatch shell
-2. follow `docs/HIMACHAL_HIGH_COURT_PILOT_PLAN.md` for source review, data contract, operator flow, and public-beta gates
+2. follow `HIMACHAL_HIGH_COURT_PILOT_PLAN.md` for source review, data contract, operator flow, and public-beta gates
 3. define what the public metrics should be at that tier before implementation drifts into case-level scope
 4. validate that those metrics can be tied back to stored evidence with the same rigor as the lower-court layer
 5. only then expand into a small multi-High-Court wave
@@ -378,7 +378,7 @@ Instead:
 
 1. treat Supreme Court as the next public top-down tier inside the one-product national shell
 2. do the source and metric review independently through `docs/SUPREME_COURT_SOURCE_REVIEW.md`
-3. follow `docs/SUPREME_COURT_PILOT_PLAN.md` for route shape, homepage integration, data contract, and methodology gates
+3. follow `SUPREME_COURT_PILOT_PLAN.md` for route shape, homepage integration, data contract, and methodology gates
 4. launch only after the tier-specific methodology is defensible
 
 ## Non-Negotiables

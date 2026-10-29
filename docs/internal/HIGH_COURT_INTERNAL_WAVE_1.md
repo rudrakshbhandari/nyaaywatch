@@ -106,7 +106,7 @@ The next serious gate is still operational evidence:
 - source-review writeups for any newly modeled court shape
 - a methodologically honest reason to expose any public High Court beta beyond the original seven-court set
 
-The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
+The repo now makes the next recommendation explicit in `../archive/HIGH_COURT_WAVE_VALIDATION_PLAN.md`:
 
 - Chhattisgarh and Jharkhand have now cleared the internal proof bar
 - Karnataka and Odisha have now also cleared the internal proof bar
@@ -118,7 +118,7 @@ The repo now makes the next recommendation explicit in `docs/HIGH_COURT_WAVE_VAL
 - `docs/archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` now has PR 1 through PR 4 completed, and Punjab and Haryana High Court has live internal fetch, publish, replay, and rollback proof with explicit Punjab, Haryana, and Chandigarh coverage
 - the next live validation move is no longer another proof cycle; the concrete methodology and UX follow-up is now landed on the shipped public High Court surfaces
 - the original seven-court public beta is no longer fixed now that Punjab and Haryana has cleared the separate product and methodology decision
-- the next approved public-beta move for the remaining deferred court-first High Courts now lives in `docs/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
+- the next approved public-beta move for the remaining deferred court-first High Courts now lives in `../archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`
 - Delhi, Kerala, and Madras are now live in the public High Court beta as the completed Wave 1 batch
 - the remaining three deferred courts have now also cleared deploy verification, cache purge, and rollout-evidence sync for the Wave 2 public batch
 - the final ten internally proven High Courts are now approved for public beta exposure as one final batch

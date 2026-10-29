@@ -113,9 +113,11 @@ Even then, public trust-critical surfaces should continue to publish reviewed sn
 
 ## Roadmap
 
+This is a strategic direction, not an approved delivery schedule. Stage 1 is complete for the current aggregate observability layer: the configured Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies are represented in the public product. The stages below describe possible future work and do not authorize implementation by themselves. Use `TODOS.md` for approved open work.
+
 ### Stage 1: Strengthen The Snapshot Observatory
 
-Target horizon: `now -> next 6 months`
+Status: complete for the current aggregate observability layer.
 
 Primary goal:
 
@@ -139,7 +141,7 @@ Public product posture:
 
 ### Stage 2: Add Internal Deeper Data Pilots
 
-Target horizon: `~6 to 18 months`
+Status: future option; requires a separate approval before implementation.
 
 Primary goal:
 
@@ -160,7 +162,7 @@ Public product posture:
 
 ### Stage 3: Expand To A Hybrid Multi-Layer Platform
 
-Target horizon: `18 months+`
+Status: longer-term option; requires a separate approval before implementation.
 
 Primary goal:
 
