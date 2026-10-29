@@ -67,7 +67,7 @@
     "@aws-sdk/client-ses": "^3.1126.0",
     "@aws-sdk/client-sns": "^3.1126.0",
     "@azure/communication-email": "^1.1.0",
-    "@azure/identity": "^4.13.3",
+    "@azure/identity": "^4.14.1",
     "@azure/storage-blob": "^12.33.0",
     "@resvg/resvg-js": "^2.6.2",
     "dotenv": "^17.2.3",
