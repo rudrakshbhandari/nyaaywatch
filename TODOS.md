@@ -11,6 +11,8 @@ Two product directions are approved for roadmap planning, not implementation or 
 - [What happened to this? — public accountability timelines](https://github.com/rudrakshbhandari/nyaaywatch/issues/407): source-linked timelines for public commitments and directions, with responsible institutions, follow-through, corrections, and optional change alerts. A small source-access and editorial pilot is proposed first.
 - [Follow my representatives — profiles and change alerts](https://github.com/rudrakshbhandari/nyaaywatch/issues/408): source-backed representative profiles and opt-in alerts, starting with Parliament and expanding only where coverage can be supported. An earlier internal Lok Sabha pilot in [PR #365](https://github.com/rudrakshbhandari/nyaaywatch/pull/365) closed without merging, so it is not part of the shipped product.
 
+  Proposed first data pilot: a Lok Sabha activity snapshot plus time-bounded MP profiles, starting with bills and parliamentary questions. Keep it internal while official-source coverage, identity matching, timestamps and session boundaries, pagination, redistribution terms, and methodology are reviewed. Do not add rankings or performance scores. See the [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md). This is a planning direction only; it does not authorize implementation or public release.
+
 The [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md) and [metric strategy](docs/METRIC_STRATEGY.md) describe other future directions and candidate metrics; they are not implementation commitments. New source classes, metric families, or deeper coverage must pass the source, methodology, public-trust, and operational checks in [the expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md).
 
 ## Open work
