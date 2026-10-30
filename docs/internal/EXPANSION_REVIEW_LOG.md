@@ -58,7 +58,7 @@ This log exists so expansion decisions are tied to concrete runs, publication id
 - Publish safety and operations: `fetch -> inspect -> publish -> replay -> rollback` succeeded end to end against state-scoped `pb` artifacts.
 - Rollback clarity: rollback restored the original Punjab publication cleanly after the replay publication.
 - Operating evidence: a second independent Punjab window ran on 2026-04-16 at least 2 hours and 43 minutes after the first one, with the same statewide outputs and another successful replay plus rollback cycle.
-- Public-readiness review groundwork: `docs/PUNJAB_PUBLIC_READINESS_REVIEW.md` now covers metadata shape, copy posture, and exposure-boundary assumptions for a future narrow public rollout.
+- Public-readiness review groundwork for Punjab covered metadata shape, copy posture, and exposure-boundary assumptions before the public rollout.
 - Live rollout verification: the deployed public stack now serves Punjab at `/states/punjab`, `/v1/states/punjab/...`, and `/states/punjab/data/districts.csv`, and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab` passed with `districtCount=22`, `trendCount=1`, and CSV metadata parity confirmed.
 
 ### Operational Notes
