@@ -12,7 +12,7 @@ The signals below are what "on-call" is responsible for. Everything else is norm
 | --- | --- | --- |
 | Public-alpha ops sweep failure | Azure Container Apps `alpha-ops` smoke monitor (daily 07:00 UTC after this schedule change is applied) and `.github/workflows/ops-watchdog.yml` full sweep (daily 05:00 UTC) | Provider-configured failure email and durable GitHub issue `Ops watchdog failure` |
 | Internal fetch schedule failure | `npm run ops:verify-internal-fetch-schedule` inside the watchdog | Same GitHub issue, `failingTiers` section |
-| Public hostname health | `nyaaywatch-production-health-endpoint`, `nyaaywatch-production-alb-target-5xx` | SNS topic `nyaaywatch-production-alerts` |
+| Public hostname health | Azure Monitor and Container Apps health/logs | Provider-configured notification and watchdog issue |
 | Structured app errors | `nyaaywatch-production-app-errors` | SNS topic `nyaaywatch-production-alerts` |
 | Missed daily internal fetch at 08:00, 08:10, or 08:20 Asia/Kolkata | `ops:verify-internal-fetch-schedule` tier outcome | Same GitHub issue, per-tier block |
 | NJDG missing-zero outreach send failure | `.github/workflows/njdg-missing-zero-outreach.yml` Monday, Wednesday, and Friday schedule | Durable GitHub issue `NJDG outreach failure` and SNS topic `nyaaywatch-production-alerts` |
@@ -32,7 +32,7 @@ These are targets, not contractual SLAs. Document any miss in the watchdog issue
 
 | Severity | Definition | Acknowledge | Start remediation | Close or escalate |
 | --- | --- | --- | --- | --- |
-| Sev-1 | Public hostname `/health` failing, ALB 5xx alarm firing, or a public page serving content that does not match the active publication | 15 minutes | 30 minutes | 2 hours |
+| Sev-1 | Public hostname `/health` failing, public endpoint failing or Azure application errors, or a public page serving content that does not match the active publication | 15 minutes | 30 minutes | 2 hours |
 | Sev-2 | Ops watchdog red with `staleStates` non-empty, or any public snapshot past the 14-day trust threshold | 2 hours | 4 hours | next business day |
 | Sev-3 | Ops watchdog red with only `dailyFetchLagStates` or `failingTiers` set, public snapshot still fresh | next business day | within 2 business days | within 5 business days |
 
@@ -57,7 +57,7 @@ Escalate when any of the following is true:
 - the primary operator will not acknowledge a Sev-1 within 15 minutes
 - the primary operator cannot start Sev-1 remediation within 30 minutes
 - a Sev-2 incident has been open for 24 hours without a decision recorded
-- the incident touches infrastructure the primary operator does not have access to (for example, DNS at the registrar, AWS account root, or domain-level Cloudflare settings)
+- the incident touches infrastructure the primary operator does not have access to (for example, DNS at the registrar, Azure subscription access, or domain-level Cloudflare settings)
 
 Do not escalate by messaging individuals out of band without also updating the watchdog issue — the issue is the durable record and future operators will read it.
 
@@ -75,18 +75,14 @@ For every incident, in order:
    npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in
    npm run release:verify -- --base-url=https://nyaaywatch.in
    ```
-4. For an origin-timeout, request-burst, or unexplained 5xx incident, inspect attribution and protection first:
-   ```bash
-   aws s3 ls s3://nyaaywatch-production-artifacts-723951822728/alb-access-logs/AWSLogs/723951822728/ --recursive --summarize
-   aws wafv2 get-sampled-requests --region ap-south-1 --scope REGIONAL --web-acl-arn <PublicIngressWebAclArn> --rule-metric-name nyaaywatch-production-forwarded-client-rate-limit --time-window StartTime=<iso>,EndTime=<iso> --max-items 100
-   aws wafv2 get-sampled-requests --region ap-south-1 --scope REGIONAL --web-acl-arn <PublicIngressWebAclArn> --rule-metric-name nyaaywatch-production-non-cloudflare-origin-block --time-window StartTime=<iso>,EndTime=<iso> --max-items 100
-   ```
-   If the stack has not yet been updated to include `PublicIngressWebAclArn`, record that as the incident blocker before guessing at client or path attribution.
+4. For an origin timeout, request burst, or unexplained 5xx incident, inspect
+   Azure Monitor alerts and production Container App logs in Log Analytics.
+   Follow `infra/azure/production/README.md` for the current resource path.
 5. Decide whether the alert maps to a runbook:
    - public trust / freshness / lag: `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md`
    - publish or rollback decisions: `docs/RELEASE_POLICY.md` and `docs/OPERATING_EVIDENCE.md`
    - stack or environment anomalies: `docs/internal/DEPLOYMENT_STATUS.md`
-6. If the failure is stale public lower-court snapshots after a deployed code fix, wait for the `main` deployment workflow to finish, then run the manual **Ops Publish Pending** workflow from `main`. Use `refresh_lower_courts=true` when the latest lower-court internal runs were created before the deployed fix; otherwise leave it false. The workflow reconciles the production EventBridge schedules against the live ECS service, triggers the existing schedules through the live stack, restores the normal schedule expressions, reconciles again, then reruns the public-alpha and internal-fetch verifiers. Do not use it to bypass publish gates or publish stale/partial runs.
+6. For stale snapshots after a deployed fix, check the Azure Container Apps Job executions and follow the reviewed operator publish flow in `docs/RELEASE_POLICY.md`. Do not bypass publish gates or publish stale/partial runs.
 7. Take the action or explicitly record why no action is being taken. Every incident closes with either a publication id, a PR link, or a one-line "held, reason recorded" note.
 8. If any assumption in this document was wrong in practice, propose an edit to this file in the same PR that closes the incident.
 
@@ -102,6 +98,6 @@ For every incident, in order:
 - `docs/RELEASE_POLICY.md` — cadence, publish authority, blocked release criteria, weekly review
 - `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md` — freshness and daily-fetch lag decisions
 - `docs/OPERATING_EVIDENCE.md` — required evidence per release
-- `docs/internal/DEPLOYMENT_STATUS.md` — live environment map, alarm names, topic ARNs
+- `docs/internal/DEPLOYMENT_STATUS.md` — selected provider and live-state verification pointers
 - `.github/workflows/ops-watchdog.yml` — scheduled watchdog and issue wiring
 - `.github/workflows/ops-publish-pending.yml` — manual gated publish-pending recovery

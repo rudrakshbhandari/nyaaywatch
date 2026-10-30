@@ -200,7 +200,7 @@ Blockers:
 These matter, but they are not required to reach the Himachal alpha MVP:
 
 - multi-state expansion readiness gates, now documented in `docs/MULTI_STATE_EXPANSION_GATES.md`
-- release cadence and observability refinements, now partially documented in `docs/RELEASE_POLICY.md` and `docs/DEPLOYMENT_STATUS.md`
+- release cadence and observability refinements, now partially documented in `docs/RELEASE_POLICY.md` and `docs/internal/DEPLOYMENT_STATUS.md`
 - broader post-MVP operational maturity work that does not affect the first public alpha
 
 Track those in `TODOS.md`, not here.
@@ -234,7 +234,7 @@ Track those in `TODOS.md`, not here.
 - 2026-04-23: Fixed the App Runner preview cleanup pagination gap. The preview reconcile, preview delete, and preview deploy lookup paths now page through the full `list-services` inventory instead of only the first page, with regression coverage for stale preview deletion beyond page one. This closes the real quota leak that left merged-PR previews consuming the 30-service App Runner cap.
 - 2026-04-14: Initial execution plan created from `README.md`, design doc, engineering test plan, TODO backlog, and shipped storage work.
 - 2026-04-14: Phase 2 completed with real NJDG Himachal capture, deterministic extract/normalize, gated publish, replay from stored raw evidence, and operator runbook updates.
-- 2026-04-14: Added `docs/JUDICIARY_PUBLIC_DATA_LANDSCAPE.md` to document current public judiciary sources, digitization limits, and the realistic public-data-backed scope ceiling.
+- 2026-04-14: Added a public-source inventory covering judiciary data availability, digitization limits, and the realistic public-data-backed scope ceiling; its current coverage boundary is summarized in `docs/INDIA_COURT_COVERAGE_AUDIT.md`.
 - 2026-04-14: Phase 3 completed with a full `/districts` workspace, district history and export surfaces, `/data`, expanded methodology, and visible freshness / quality state across public trust-critical metrics.
 - 2026-04-14: Phase 4 verification started with GitHub Actions CI, Playwright browser E2E for public trust flows, and stable API contract tests.
 - 2026-04-14: Added persistent-stack integration coverage for replay/rollback via Docker PostgreSQL plus LocalStack S3, plus responsive/accessibility trust-surface QA in Playwright.
@@ -246,9 +246,9 @@ Track those in `TODOS.md`, not here.
 - 2026-04-15: Added post-MVP release policy, live deployment-status evidence, CloudWatch observability outputs, and a repeatable `linux/amd64` ECR build path after the first public-alpha review and post-deploy validation cycle.
 - 2026-04-15: Added automatic `main` deploys that build a `linux/amd64` image in GitHub Actions, push to ECR, roll the live ECS service, and verify `/health` against the staging stack.
 - 2026-04-15: Added fixture-backed App Runner preview deployments for pull requests so design and copy review no longer depend on the live AWS stack.
-- 2026-04-16: Added a tracked release ledger in `docs/RELEASE_HISTORY.md` plus `release:record` so postpublish evidence is preserved as markdown, JSON, and reviewer-attributed history entries.
+- 2026-04-16: Added a tracked release ledger in `docs/internal/RELEASE_HISTORY.md` plus `release:record` so postpublish evidence is preserved as markdown, JSON, and reviewer-attributed history entries.
 - 2026-04-16: Added internal multi-geography pipeline scaffolding with a state-profile-driven NJDG capture path, state-scoped artifact prefixes, and a first internal candidate-state profile for Punjab while keeping the public app Himachal-only.
-- 2026-04-16: Completed the first real live Punjab internal trial with a successful `fetch -> inspect -> publish -> replay -> rollback` cycle recorded in `docs/EXPANSION_REVIEW_LOG.md`; Punjab remains internal-only pending a second independent publish window at least 1 hour later, with 2+ hours preferred, and a public-trust parity review.
+- 2026-04-16: Completed the first real live Punjab internal trial with a successful `fetch -> inspect -> publish -> replay -> rollback` cycle recorded in `docs/internal/EXPANSION_REVIEW_LOG.md`; Punjab remains internal-only pending a second independent publish window at least 1 hour later, with 2+ hours preferred, and a public-trust parity review.
 - 2026-04-16: Added the state-specific go-live checklist and the public readiness review, and revised the expansion-window rule to `>= 1 hour minimum` with `2+ hours` preferred so Punjab launch prep is tied to a defensible repeatability standard rather than an arbitrary fixed delay.
 - 2026-04-16: Extracted a reusable repo-level `DESIGN.md`, updated source-of-truth references, and tightened release/cutover docs so routine publishes now point at the release checklist and policy while the domain checklist reads as recorded cutover state plus future-change guidance.
 - 2026-04-16: Completed the second independent Punjab window with a clean `fetch -> inspect -> publish -> replay -> rollback` cycle more than 2 hours after the first Punjab trial; Punjab has now cleared the internal operating-evidence gate and the next slice is narrow public-surface implementation plus parity verification.

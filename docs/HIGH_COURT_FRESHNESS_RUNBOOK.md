@@ -58,7 +58,7 @@ npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-sl
      --format text
    ```
    For Supreme Court, use job/container `nyaaywatch-production-sc-fetch` / `supreme-court-internal-fetch`; for High Courts, use `nyaaywatch-production-hc-fetch` / `high-courts-internal-fetch`.
-4. If the upstream source is returning a predictable error, record it in `docs/EXPANSION_REVIEW_LOG.md` and wait for the next window — do not hand-run a recovery fetch unless the next scheduled window is more than 24 hours away.
+4. If the upstream source is returning a predictable error, record it in `docs/internal/EXPANSION_REVIEW_LOG.md` and wait for the next window — do not hand-run a recovery fetch unless the next scheduled window is more than 24 hours away.
 5. If the upstream source is returning something novel (HTML shape change, new challenge page, different selector payload), open a source-shape task and link it from the watchdog issue before closing.
 
 **Do not:**
@@ -75,7 +75,7 @@ npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-sl
 
 1. Decide whether to hold the current publication with an explicit freshness banner or rollback to nothing-published for the affected scope. Holding is almost always correct — the snapshot is still provenance-traceable, only old.
 2. If holding: confirm the state-specific methodology note or the shared High Court methodology page describes the court's covered geographies. The `coveredGeographies[]` language does not talk about freshness explicitly; if a specific court needs a court-specific caveat, add it there, not inline in the renderer.
-3. If rolling back: follow the publish/rollback path in `docs/OPERATING_EVIDENCE.md`. Record the rollback in `docs/RELEASE_HISTORY.md` with a `publication_*` entry and an explicit reason field referencing this runbook.
+3. If rolling back: follow the publish/rollback path in `docs/OPERATING_EVIDENCE.md`. Record the rollback in `docs/internal/RELEASE_HISTORY.md` with a `publication_*` entry and an explicit reason field referencing this runbook.
 4. Update the watchdog issue with the decision and the publication id of the action taken.
 
 ### C. Stale snapshot, no daily-fetch lag
@@ -92,7 +92,7 @@ npm run high-court:wave-readiness -- --base-url=https://nyaaywatch.in --court-sl
 
 Some sources produce data that is structurally fine but semantically quirky (for example, scoped NJDG pages where one of the tier filters returns zero for long stretches, or where case-type coding differs from the common High Court pattern).
 
-When a court repeatedly triggers this runbook for the same upstream reason, add a court-specific paragraph to that court's overview surface or to the shared High Court methodology page — not an inline footnote on metrics. Record the addition in `docs/EXPANSION_REVIEW_LOG.md` so future operators can see why the extra caveat exists.
+When a court repeatedly triggers this runbook for the same upstream reason, add a court-specific paragraph to that court's overview surface or to the shared High Court methodology page — not an inline footnote on metrics. Record the addition in `docs/internal/EXPANSION_REVIEW_LOG.md` so future operators can see why the extra caveat exists.
 
 ## What Not To Automate
 

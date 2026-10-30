@@ -8,7 +8,7 @@ This doc exists to answer three questions clearly:
 2. When should NyaayWatch add case-level records, orders, judgments, or faster-moving feeds?
 3. Which public metrics come directly from government dashboards versus NyaayWatch's own calculations?
 
-Use `docs/METRIC_STRATEGY.md` for the product-level metric inventory and the ranked list of metric additions.
+This document also records the current metric boundary and candidate directions so source and metric strategy stay in one place. Candidate metrics are not approved for implementation unless they appear in `TODOS.md`.
 
 ## Bottom Line
 
@@ -225,6 +225,24 @@ NyaayWatch currently calculates or assigns the following:
   - assigned by NyaayWatch to version the transform logic behind the publication
 - publication timestamp and lineage
   - assigned by NyaayWatch during publish/replay/rollback flows
+
+## Metric Directions
+
+The current public metric set is sufficient for the snapshot observatory. The
+following are research candidates, not approved product work:
+
+- **Derivable from current snapshots:** backlog movement as a share of pending
+  load, break-even clearances, catch-up burden, age-bucket shares where source
+  fields support them, persistence of watchlist placement, backlog
+  concentration, and civil/criminal mix where both categories are comparable.
+- **Needs source/schema work:** preserved age-bucket fields, consistent filed
+  and cleared counts, and comparable High Court case-type detail.
+- **Needs new sources and methodology:** judge-adjusted or
+  population-normalized pressure, case-level duration, and conviction rates.
+
+Do not publish a candidate until its source coverage, denominator, cross-court
+comparability, missing-data behavior, and public wording are defensible. Move a
+metric into `TODOS.md` before treating it as approved implementation work.
 
 ## What NyaayWatch Is Committing Itself To
 
