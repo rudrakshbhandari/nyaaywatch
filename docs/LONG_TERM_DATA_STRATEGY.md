@@ -155,6 +155,22 @@ Focus:
 - test linkages between aggregate shifts and underlying case/document activity
 - document court-tier-specific differences instead of assuming one national schema
 
+#### Proposed Non-Judicial Pilot: Lok Sabha Activity
+
+The representative-profile direction may begin with an internal Lok Sabha snapshot and time-bounded MP profiles. Start with bills and parliamentary questions, then add debate or committee activity only where official records support reliable attribution and scope. Keep this separate from the judiciary data model until its source and methodology review is complete.
+
+Before implementation or public release, the pilot needs:
+
+- a completed review of Digital Sansad and Parliament Digital Library records, including timestamps, session boundaries, pagination, identity completeness, and reuse terms
+- a bounded fixture set with source links and reproducible extraction, normalization, publication, replay, and rollback
+- explicit coverage states for missing, incomplete, and unverified source results
+- separate House/session and member activity, with comparisons limited to matching House, session, role, or cohort boundaries
+- internal-only HTML and JSON until source, legal, methodology, and publication gates pass
+
+The first slice is limited to Lok Sabha bills and questions. It does not include Rajya Sabha, state legislatures, executive data, politician or party rankings, or composite performance scores. Activity counts must not be used to infer a person's competence, honesty, ideology, corruption, popularity, or policy quality. Raw parliamentary PDFs and bulk search results stay private unless reuse is explicitly approved; prefer normalized values with links to official records.
+
+This is a proposed planning direction, not an approved implementation task or delivery commitment. The earlier pilot in [PR #365](https://github.com/rudrakshbhandari/nyaaywatch/pull/365) closed without merging and is not shipped.
+
 Public product posture:
 
 - public toplines still come from published aggregate snapshots
