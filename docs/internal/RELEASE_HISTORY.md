@@ -38,7 +38,7 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Legacy rollback stack: `nyaaywatch-staging`
 - Production task definition: `nyaaywatch-production:11`
 - Production schedules: `nyaaywatch-production-weekday-internal-fetch`, `nyaaywatch-production-supreme-court-internal-fetch`, `nyaaywatch-production-high-courts-internal-fetch`, `nyaaywatch-production-publish-pending-sweep`, `nyaaywatch-production-public-alpha-ops-monitor`
-- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/PRODUCTION_CUTOVER_RUNBOOK.md`, `TODOS.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, the historical AWS-to-Azure cutover procedure, `TODOS.md`
 - JSON evidence: `ALLOW_EXISTING_TARGET_STACK=true npm run infra:production-preflight`; `npm run release:verify -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in --stack-name=nyaaywatch-production`; `aws cloudwatch describe-alarms --region ap-south-1 --alarm-names nyaaywatch-production-health-endpoint nyaaywatch-production-alb-target-5xx nyaaywatch-production-app-errors nyaaywatch-production-public-alpha-ops`
 - Note: Production observation was green. The public-alpha sweep reported `62/62` healthy targets with no stale snapshots, no daily-fetch lag, and no failures; the schedule verifier showed all production schedules targeting `nyaaywatch-production:11`; all four production CloudWatch alarms were `OK`. Dedicated staging was not provisioned during the observation pass because the legacy rollback stack still owned the `nyaaywatch-staging` name and the requested `staging.nyaaywatch.in` ACM certificate was waiting on DNS validation; the stored Cloudflare token could not access DNS record APIs.
 - Follow-up: Later on `2026-04-29`, the staging ACM certificate was issued and temporary bridge stack `nyaaywatch-staging-v2` was provisioned with isolated `nyaaywatch-stage` resources. Direct ALB verification with `staging.nyaaywatch.in` as the TLS/HTTP host passed for `/health`, `/`, and `/v1/stats/himachal` after publishing seed run `run_77350daa-3176-47fb-ad56-f8602f019a8d`. Cloudflare DNS CNAME `staging` -> `nyaaywatch-stage-staging-579542294.ap-south-1.elb.amazonaws.com` is live as DNS-only, and normal-DNS verification passed for `/health`, `/`, `/v1/stats/himachal`, and `npm run release:verify -- --base-url=https://staging.nyaaywatch.in`.
@@ -60,7 +60,7 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Production ALB: `nyaaywatch-production-874934657.ap-south-1.elb.amazonaws.com`
 - Production task definition: deploy-managed `nyaaywatch-production:<revision>`; last observed as `nyaaywatch-production:6` at `2026-04-28T04:44:43.046Z`
 - Production schedules: `nyaaywatch-production-weekday-internal-fetch`, `nyaaywatch-production-supreme-court-internal-fetch`, `nyaaywatch-production-high-courts-internal-fetch`, `nyaaywatch-production-publish-pending-sweep`, `nyaaywatch-production-public-alpha-ops-monitor`
-- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/DOMAIN_CUTOVER_CHECKLIST.md`, `docs/PRODUCTION_CUTOVER_RUNBOOK.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, the historical domain cutover checklist, the historical AWS-to-Azure cutover procedure
 - JSON evidence: `npm run release:verify -- --base-url=https://nyaaywatch.in`; `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in`
 - Note: Cloudflare now points `nyaaywatch.in` at the reality-named production ALB. Public release verification passed through normal DNS, unauthenticated operator access still returns `401`, the temporary AWS Cloudflare DNS cutover secret is no longer listed in Secrets Manager, and the schedule watchdog verified all production schedules target the live production ECS task definition.
 
@@ -87,7 +87,7 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Methodology version: `2026.04-alpha`
 - Quality state: `complete`
 - Deploy evidence: GitHub Actions run `24863933038`, commit `f91b21066277cd61768ecd70d7930c819d4ead62`, task definition `nyaaywatch-staging:178`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`, `docs/INDIA_COURT_COVERAGE_AUDIT.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`, `docs/INDIA_COURT_COVERAGE_AUDIT.md`
 - JSON evidence: `ops:verify-public-alpha` live summary retained in deployment notes
 - Note: PR `#185` promoted the eight proven lower-court Union Territory profiles into the public route set without creating new publications. After the deploy settled, all eight HTML and JSON route families returned `200`, and `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in` reported `totalStates=36` with no stale, failing, or daily-fetch-lag geographies.
 
@@ -108,8 +108,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_e9382c6c-5548-46f6-b2e1-2d7d2f0060eb`
 - Rollback target: `publication_d9557678-91af-4bd2-ae98-8876b9052a38`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Bombay High Court became publicly reachable on `2026-04-20` after PR `#144` merged and deploy run `24691704672` settled the ECS service on task definition `:137`. Stable public verification passed for `/high-courts/bombay`, `/high-courts/bombay/data`, `/high-courts/bombay/methodology`, `/high-courts/bombay/api`, `/v1/high-courts/bombay/stats`, and `/v1/high-courts/bombay/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`.
 
 <!-- release:publication_dc662dd9-3d81-4e94-9bf3-b32f812dca12:end -->
@@ -129,8 +129,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_ad0aed7c-8117-4956-919f-70fbf8a33a94`
 - Rollback target: `publication_9f6cd11e-a27b-410c-9bf3-3f3a9bb9d743`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Calcutta High Court became publicly reachable on `2026-04-20` after PR `#144` merged and deploy run `24691704672` settled the ECS service on task definition `:137`. Stable public verification passed for `/high-courts/calcutta`, `/high-courts/calcutta/data`, `/high-courts/calcutta/methodology`, `/high-courts/calcutta/api`, `/v1/high-courts/calcutta/stats`, and `/v1/high-courts/calcutta/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`.
 
 <!-- release:publication_f1730e97-3737-4bbf-aafe-43de40acd816:end -->
@@ -150,8 +150,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_f4fde1e3-ae9a-47a2-a7f9-5268975800de`
 - Rollback target: `publication_06a118a1-df92-42fc-8a6e-543a7effc14a`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Gauhati High Court became publicly reachable on `2026-04-20` after PR `#144` merged and deploy run `24691704672` settled the ECS service on task definition `:137`. Stable public verification passed for `/high-courts/gauhati`, `/high-courts/gauhati/data`, `/high-courts/gauhati/methodology`, `/high-courts/gauhati/api`, `/v1/high-courts/gauhati/stats`, and `/v1/high-courts/gauhati/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=bombay,calcutta,gauhati`.
 
 <!-- release:publication_c109c7bd-2dac-410c-8a31-13affeef633a:end -->
@@ -171,8 +171,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_084a6007-3b85-4db0-965f-2343583c3cc4`
 - Rollback target: `publication_4196dc1a-60a2-473f-b5b3-737e2998ac2e`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Delhi High Court became publicly reachable on `2026-04-20` after PR `#141` merged and deploy run `24686545934` settled the ECS service on task definition `:134`. Stable public verification passed for `/high-courts/delhi`, `/high-courts/delhi/data`, `/high-courts/delhi/methodology`, `/high-courts/delhi/api`, `/v1/high-courts/delhi/stats`, and `/v1/high-courts/delhi/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`.
 
 <!-- release:publication_c5904e38-cced-477d-b184-5e586de6b8f4:end -->
@@ -192,8 +192,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_da459086-77db-42c1-8d3d-fee4805d02ec`
 - Rollback target: `publication_eb11a6c7-5863-4e26-b932-8e1bf3d5a47d`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: High Court of Kerala became publicly reachable on `2026-04-20` after PR `#141` merged and deploy run `24686545934` settled the ECS service on task definition `:134`. Stable public verification passed for `/high-courts/kerala`, `/high-courts/kerala/data`, `/high-courts/kerala/methodology`, `/high-courts/kerala/api`, `/v1/high-courts/kerala/stats`, and `/v1/high-courts/kerala/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`.
 
 <!-- release:publication_1019bb05-14df-4e67-9538-f45cbcdeac86:end -->
@@ -213,8 +213,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_4f74b550-e58c-4314-b587-c1ead97f3b45`
 - Rollback target: `publication_42dbfe9b-9670-4a6b-ab3f-a0ec8d618287`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Madras High Court became publicly reachable on `2026-04-20` after PR `#141` merged and deploy run `24686545934` settled the ECS service on task definition `:134`. Stable public verification passed for `/high-courts/madras`, `/high-courts/madras/data`, `/high-courts/madras/methodology`, `/high-courts/madras/api`, `/v1/high-courts/madras/stats`, and `/v1/high-courts/madras/trends`, and the explicit Cloudflare purge ran through `npm run release:purge-public-routes -- --high-court=delhi,kerala,madras`.
 
 <!-- release:publication_38e72bb4-5fed-4305-ade4-4d7b8d60843a:end -->
@@ -234,8 +234,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_a56b9376-cb93-4e1a-968c-0a99840b500c`
 - Rollback target: `publication_2e42c23c-9162-4fc6-8597-3e3a0bb8307a`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Gujarat High Court became publicly reachable on `2026-04-19` after PR `#115` merged and deploy run `24637168455` settled the ECS service on task definition `:103`. Stable public verification passed for `/high-courts/gujarat`, `/high-courts/gujarat/data`, `/high-courts/gujarat/methodology`, `/high-courts/gujarat/api`, `/v1/high-courts/gujarat/stats`, and `/v1/high-courts/gujarat/trends`.
 
 <!-- release:publication_33428d3e-cc95-4c3c-9ace-643528cfb4a7:end -->
@@ -255,8 +255,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_8526bedf-df11-46a0-a394-9379ae4d1547`
 - Rollback target: `publication_4ef80b3a-2f6c-45ec-9424-3064ed8d6e44`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Madhya Pradesh High Court became publicly reachable on `2026-04-19` after PR `#115` merged and deploy run `24637168455` settled the ECS service on task definition `:103`. Stable public verification passed for `/high-courts/madhya-pradesh`, `/high-courts/madhya-pradesh/data`, `/high-courts/madhya-pradesh/methodology`, `/high-courts/madhya-pradesh/api`, `/v1/high-courts/madhya-pradesh/stats`, and `/v1/high-courts/madhya-pradesh/trends`.
 
 <!-- release:publication_ff8a3e1c-c515-4bd3-a141-0ec3825f76b4:end -->
@@ -276,8 +276,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_3c040f94-6c45-4b0a-a17d-45f7ad418abe`
 - Rollback target: `publication_1ad99435-9427-475e-b8b9-cddd8b798270`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Allahabad High Court became publicly reachable on `2026-04-19` after PR `#113` merged and deploy run `24636212237` settled the ECS service on task definition `:101`. Stable public verification passed for `/high-courts/uttar-pradesh`, `/high-courts/uttar-pradesh/data`, `/high-courts/uttar-pradesh/methodology`, `/high-courts/uttar-pradesh/api`, `/v1/high-courts/uttar-pradesh/stats`, and `/v1/high-courts/uttar-pradesh/trends`.
 
 <!-- release:publication_91726f20-da84-4401-9da0-18c5ad711694:end -->
@@ -297,8 +297,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_bdc31094-2d40-4960-af99-13d2d803cf0c`
 - Rollback target: `publication_83827636-ed3a-4dff-9b98-a14d0106e09e`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Rajasthan High Court became publicly reachable on `2026-04-19` after PR `#113` merged and deploy run `24636212237` settled the ECS service on task definition `:101`. Stable public verification passed for `/high-courts/rajasthan`, `/high-courts/rajasthan/data`, `/high-courts/rajasthan/methodology`, `/high-courts/rajasthan/api`, `/v1/high-courts/rajasthan/stats`, and `/v1/high-courts/rajasthan/trends`.
 
 <!-- release:publication_40ac60e4-bb28-4628-b83d-2380d9dcf01f:end -->
@@ -318,8 +318,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_92990afc-1acd-4d37-b6d5-69dc95a1d933`
 - Rollback target: `publication_2321561c-ccdb-40f3-ba2f-ae55eadecae7`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Supreme Court became publicly reachable on `2026-04-19` after PR `#110` merged and deploy run `24624392748` settled the ECS service on task definition `:98`. Stable public HTML and JSON verification passed for `/supreme-court`, `/supreme-court/data`, `/supreme-court/methodology`, `/supreme-court/api`, `/v1/supreme-court/stats`, and `/v1/supreme-court/trends`.
 
 <!-- release:publication_4dbc4cab-b2cd-4021-a083-3e016dc7929a:end -->
@@ -339,8 +339,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_288288e1-f32b-45d1-86cd-c2384bba38ac`
 - Rollback target: `publication_af21ed65-7a07-4c1c-93f8-e77ba054bef6`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Himachal High Court became publicly reachable on `2026-04-19` after PR `#105` merged and deploy run `24621281752` settled the ECS service on task definition `:93`. The live public beta exposes the already-reviewed active High Court publication under `/high-courts/himachal`, with the public HTML and JSON routes all returning `200`.
 
 <!-- release:publication_e66cb2f9-b307-46d6-b00c-51b01e901fee:end -->
@@ -358,8 +358,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_d8eee45f-ad4d-490e-b779-362a1737b2d6`
 - Rollback target: `publication_29505d10-5434-4237-8b0d-89a9dfcf08cf`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Manipur became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/manipur`.
 
 <!-- release:publication_0276261b-85da-4b6d-8fab-1d96a7aa3b02:end -->
@@ -377,8 +377,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_c4d861cf-0c36-48af-8b3a-8f2c6990c35b`
 - Rollback target: `publication_680b9cd9-b54c-4a97-926b-dbaac9256c98`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Uttarakhand became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/uttarakhand`.
 
 <!-- release:publication_5463d029-d19a-4ed4-8271-57bb3dfc5343:end -->
@@ -396,8 +396,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_692dc19a-c8a9-4061-a22b-2f0631475baa`
 - Rollback target: `publication_90655c18-6088-44b7-9740-b4546a62242b`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Rajasthan became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/rajasthan`.
 
 <!-- release:publication_fe0f7c25-a719-4120-bab4-8427163cd311:end -->
@@ -415,8 +415,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_1eecc09f-de4e-49ce-86c3-03e1c8e09293`
 - Rollback target: `publication_55a13942-b67d-4a89-826a-b0ae334a7807`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Uttar Pradesh became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/uttar-pradesh`.
 
 <!-- release:publication_c05f662d-560f-4849-8750-37d92aa00e98:end -->
@@ -434,8 +434,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_466f100f-22b9-4c16-8dbd-1584e462e181`
 - Rollback target: `publication_3f08b92a-ac96-4a4a-9041-c02d90b1a2f2`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Madhya Pradesh became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/madhya-pradesh`.
 
 <!-- release:publication_fb5fccde-e81a-4c14-ad07-e91a810eb678:end -->
@@ -453,8 +453,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_1e58aef7-5966-4ce2-b24c-ebdd6e8fcb6c`
 - Rollback target: `publication_f000da6a-79d1-4683-8acf-2a1b235611b4`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Maharashtra became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/maharashtra`.
 
 <!-- release:publication_7a82419f-059a-456c-8797-bb33dbf5ab89:end -->
@@ -472,8 +472,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_154efd48-8963-44d2-8606-b5877145e26f`
 - Rollback target: `publication_3319a11d-16fd-4a40-ad4a-cb4869f41d31`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Bihar became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/bihar`.
 
 <!-- release:publication_1f5bd2f7-88a7-40b6-8e38-d55c1026ee86:end -->
@@ -491,8 +491,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_baf67425-5948-4e43-828c-b37b274ecfa5`
 - Rollback target: `publication_82c79b8b-aa07-4733-802e-12bd65e1c897`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Gujarat became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/gujarat`.
 
 <!-- release:publication_b6092d4c-e9e4-483d-bb7e-2669adb52583:end -->
@@ -510,8 +510,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_60b2d9fd-14db-43c0-9cac-d9d053ebdaa3`
 - Rollback target: `publication_0b8376be-33ae-4c60-a534-835ebb199b57`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Odisha became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/odisha`.
 
 <!-- release:publication_bde17d21-e0fe-409a-9981-37ed7784e133:end -->
@@ -529,8 +529,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_a31e4ca1-1f26-4f19-8a7d-6e3c6f574ca0`
 - Rollback target: `publication_09fd4895-3a75-4c8f-97aa-5222e4137541`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: West Bengal became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/west-bengal`.
 
 <!-- release:publication_df487011-4eaa-4b43-b127-166efd0866f7:end -->
@@ -548,8 +548,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_a64b3f23-836b-4f4e-b7e6-7693d035283e`
 - Rollback target: `publication_12683d90-942c-4050-b5f7-7ccca8932b07`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Jharkhand became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/jharkhand`.
 
 <!-- release:publication_5c30543e-2094-4616-aff3-b17ade4254a2:end -->
@@ -567,8 +567,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_6fe389aa-d51c-48b4-9bfd-a5186a41f21d`
 - Rollback target: `publication_412a4d67-73fe-4bdd-b149-24c05cbaf973`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Chhattisgarh became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/chhattisgarh`.
 
 <!-- release:publication_2400d34a-2320-483e-866d-f529b4b81172:end -->
@@ -586,8 +586,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_f07af2ea-5cf4-4943-a602-bf673744c9e4`
 - Rollback target: `publication_03355c7b-12b3-4d56-99ff-a88cffaf99fe`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Goa became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/goa`.
 
 <!-- release:publication_f55b59d8-e47a-4159-b166-ea89b8af29d4:end -->
@@ -605,8 +605,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_ffb1c5f8-b811-4557-9a12-0b12bdf9143f`
 - Rollback target: `publication_cde025be-6141-4f4c-8933-42844f5d0f0f`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Sikkim became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/sikkim`.
 
 <!-- release:publication_257083da-bd8c-4efc-93f1-6837905c177f:end -->
@@ -624,8 +624,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_aaf34f71-ebcf-4d12-84ae-101ca7ad4fa0`
 - Rollback target: `publication_fbcca757-9039-4891-900f-98bc0889c481`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Mizoram became publicly live during the 2026-04-18 all-supported-states rollout window after PR `#83` merged and deploy run `24600208536` settled the ECS service on task definition `:74`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/mizoram`.
 
 <!-- release:publication_468cfd50-4661-43e5-b4a4-bce047b46618:end -->
@@ -644,8 +644,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_e4ce54db-1dd6-473e-8ea6-318856c3f1f5`
 - Rollback target: `publication_dafbab89-af38-4a41-a006-9153f126e785`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Kerala became the sixth additional public state after task definition `:62` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/kerala`, including the expected Kerala title and heading on the public page.
 
 <!-- release:publication_4fff0bca-7b58-49d1-992d-a113c43f577a:end -->
@@ -663,8 +663,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_79ae11fb-75fa-460d-a47d-929d0889657c`
 - Rollback target: `publication_83bbcec4-3402-4f8c-9014-6646255a64a0`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Telangana became the fifth additional public state after task definition `:60` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/telangana`, and the live browser check confirmed the expected trust metadata plus supported-state navigation.
 
 <!-- release:publication_7691e5be-23b5-46ca-9aff-dd84148b7e8b:end -->
@@ -682,8 +682,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_e0f10a98-5e60-445a-b080-b9dafc962f61`
 - Rollback target: `publication_e6fcc230-9de5-42ed-9e29-1ed0fc287b8f`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Assam became the fourth additional public state after task definition `:56` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/assam`, and the live browser check confirmed the expected trust metadata plus supported-state navigation.
 
 <!-- release:publication_111cc225-f1a6-455d-8d7e-fd6af06ed597:end -->
@@ -701,8 +701,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_d7f79d01-99c7-41b5-b87d-a4145438b3fa`
 - Rollback target: `publication_43eefb27-a754-4590-91f1-0e38d9e40705`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Tamil Nadu became the third additional public state after task definition `:54` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/tamil-nadu`, and the live browser check confirmed the expected trust metadata plus supported-state navigation.
 
 <!-- release:publication_af06c306-b7e8-4c62-b4b8-e80f301f5b04:end -->
@@ -720,8 +720,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_bf1fd888-173c-4a58-9dde-f797b92f7c30`
 - Rollback target: `publication_09613d9d-ae89-4543-9028-8f5d971df587`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Haryana became the second additional public state after task definition `:45` rolled out. State-scoped API, CSV, and HTML verification passed on the stable `https://nyaaywatch.in/states/haryana` URL family, and the live browser check confirmed the expected trust metadata plus explicit supported-state navigation.
 
 <!-- release:publication_e57d5546-e9aa-4bee-a951-edeb2bc4789c:end -->
@@ -739,8 +739,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_2e5ea2e1-ba95-4d62-9ea9-be14123b39cf`
 - Rollback target: `publication_7db9a015-68d0-4182-8c77-f221797c7c2c`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Verified the post-`#41` state-aware live release flow on task definition `:28`. Punjab fetch and publish succeeded through the public HTTP operator routes, and state-scoped `release:prepublish`, `release:postpublish`, and `release:record` succeeded from one-off ECS tasks inside the AWS VPC. Public API parity updated immediately; the state-scoped CSV path required a cache-busting request to bypass a stale Cloudflare edge response.
 
 <!-- release:publication_8a5ddc6e-f520-4344-8161-76dc4dead033:end -->
@@ -758,8 +758,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_ff674e79-8752-4b4d-9b32-4c7a368d339c`
 - Rollback target: `none`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: First live Punjab public publication, exposed through explicit state-scoped routes after task definition `:26` deployed. Live verification passed on `/states/punjab`, the state-scoped API and CSV surfaces, and `npm run release:verify -- --base-url https://nyaaywatch.in --state-slug punjab`.
 
 <!-- release:publication_7db9a015-68d0-4182-8c77-f221797c7c2c:end -->
@@ -778,7 +778,7 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Published from run: `run_5d8880eb-ed95-4e08-b3aa-96437d5f45d9`
 - Rollback target: `publication_4a8ab19f-1d2a-4b9b-b6c4-1ab2d610f80a`
 - Markdown evidence: `docs/ALPHA_RELEASE_CHECKLIST.md`
-- JSON evidence: `docs/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/DEPLOYMENT_STATUS.md`
 - Note: Post-deploy rollback restored the intended public publication after validating fetch, publish, replay, and rollback in the live stack.
 
 <!-- release:publication_ce4939b3-0fdf-4044-9677-062ee0ae49b1:end -->
@@ -796,8 +796,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_30e5689d-a0da-46e8-8c27-c8624b68cd9d`
 - Rollback target: `publication_7337df86-24c6-4290-8ee4-2b740e5110af`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Meghalaya became the seventh additional public state after task definition `:64` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/meghalaya`.
 
 <!-- release:publication_72eff473-ec6f-4f28-b4d6-fd1cffef04e5:end -->
@@ -815,8 +815,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_79131eaf-bd31-4c4e-a95f-fc84b065a261`
 - Rollback target: `publication_30e8a0c5-9d15-4e9d-8f4b-ebf3143efb39`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Karnataka became the eighth additional public state after task definition `:66` rolled out. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/karnataka`.
 
 <!-- release:publication_c58870a4-f378-4848-a8ce-ae38fb62f885:end -->
@@ -834,8 +834,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_fa4c7a48-6536-4e32-9d3a-63f6eecec153`
 - Rollback target: `publication_81692c3c-e86a-4774-8619-32cc60f11a85`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Tripura became the ninth additional public state on task definition `:66`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/tripura`.
 
 <!-- release:publication_a2308b8b-946e-4725-900e-14e638fe85dd:end -->
@@ -853,8 +853,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_575e0ebe-fd32-4fda-88f2-1c6d69175d6c`
 - Rollback target: `publication_10a4a7ba-57ca-4382-86e5-3be094136be7`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Nagaland became the tenth additional public state on task definition `:66`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/nagaland`.
 
 <!-- release:publication_b01df802-1d04-409b-b608-55500e1b47a9:end -->
@@ -872,8 +872,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_60611cb7-7a5c-44b5-970e-4ca51355c1e7`
 - Rollback target: `publication_c9d3057f-b1a2-4a0f-83ea-ac2b66886e1a`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Andhra Pradesh became the eleventh additional public state on task definition `:69`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/andhra-pradesh`.
 
 <!-- release:publication_b090f61a-3762-4bf5-8529-36b331b6e362:end -->
@@ -891,8 +891,8 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Quality state: `complete`
 - Published from run: `run_d2dadaec-bda6-4639-8629-28201a562708`
 - Rollback target: `publication_3acdfe73-8c9b-40a8-b882-472934a2fa90`
-- Markdown evidence: `docs/DEPLOYMENT_STATUS.md`
-- JSON evidence: `docs/EXPANSION_REVIEW_LOG.md`
+- Markdown evidence: `docs/internal/DEPLOYMENT_STATUS.md`
+- JSON evidence: `docs/internal/EXPANSION_REVIEW_LOG.md`
 - Note: Arunachal Pradesh became the twelfth additional public state on task definition `:71`. Stable state-scoped API, CSV, and HTML verification passed on `https://nyaaywatch.in/states/arunachal-pradesh`.
 
 <!-- release:publication_ded2b9e1-f28a-4ead-90c4-1ba03a9890b0:end -->

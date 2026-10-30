@@ -2,6 +2,12 @@
 
 Audit date: **April 23, 2026**
 
+This is the current coverage/source inventory. NJDG aggregate dashboards are
+the supported public source boundary. Case-level records, full-text court
+documents, population denominators, and comparable judge-level data are not
+covered by the current product; proposals to add them must pass the source and
+methodology gates in `docs/MULTI_STATE_EXPANSION_GATES.md`.
+
 Purpose: record what NyaayWatch currently covers against the live official court-data surfaces, and identify what is still excluded before the product can claim all-India comprehensiveness across court tiers.
 
 ## Sources Checked

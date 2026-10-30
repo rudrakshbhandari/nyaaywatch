@@ -2,7 +2,7 @@
 
 What NyaayWatch says, where, and in what order when opening or widening public-alpha access.
 
-This document is for the one-shot comms moment — the point at which `https://nyaaywatch.in` is shared with people who are not already operators or reviewers. Per-release operator evidence lives in `docs/RELEASE_POLICY.md`, `docs/OPERATING_EVIDENCE.md`, and `docs/RELEASE_HISTORY.md`; this document is only about the outside-the-repo surface.
+This document is for the one-shot comms moment — the point at which `https://nyaaywatch.in` is shared with people who are not already operators or reviewers. Per-release operator evidence lives in `docs/RELEASE_POLICY.md`, `docs/OPERATING_EVIDENCE.md`, and `docs/internal/RELEASE_HISTORY.md`; this document is only about the outside-the-repo surface.
 
 ## Goals
 
@@ -70,4 +70,4 @@ Within one working week of the first announcement:
 - `docs/ALPHA_RELEASE_CHECKLIST.md` — publish-time go/no-go
 - `docs/ON_CALL_POLICY.md` — on-call roles, response targets, escalation
 - `docs/HIGH_COURT_FRESHNESS_RUNBOOK.md` — freshness and daily-fetch lag decisions
-- `docs/DEPLOYMENT_STATUS.md` — live environment map
+- `docs/internal/DEPLOYMENT_STATUS.md` — live environment map

@@ -20,7 +20,7 @@ For every public publish, keep:
 1. a prepublish verification summary for the target run
 2. a postpublish verification summary for the active publication
 3. the generated release evidence markdown and JSON files
-4. a tracked entry in `docs/RELEASE_HISTORY.md`
+4. a tracked entry in `docs/internal/RELEASE_HISTORY.md`
 5. the run id, publication id, and rollback target publication id
 
 Suggested minimum operating bar before discussing another geography publicly:
@@ -70,4 +70,4 @@ output/release-evidence/<publication-id>.json
 
 - Treat the current active publication as the rollback target until a new publish succeeds.
 - Do not publish if the prepublish summary says the target run is not `completed` or lacks a stored candidate.
-- Do not treat a postpublish run as finished until the evidence files exist, the active publication matches the intended publication id, and `docs/RELEASE_HISTORY.md` has been updated.
+- Do not treat a postpublish run as finished until the evidence files exist, the active publication matches the intended publication id, and `docs/internal/RELEASE_HISTORY.md` has been updated.
