@@ -4,6 +4,8 @@ Decision note for which NyaayWatch metrics should exist next, and which should n
 
 This document is about product metrics, not source expansion. Use `docs/LONG_TERM_DATA_STRATEGY.md` for the broader data-layer roadmap.
 
+The metric additions below are candidates, not an approved delivery sequence. Only tasks moved into `TODOS.md` are approved for implementation.
+
 ## Bottom Line
 
 NyaayWatch already has the core delay spine:

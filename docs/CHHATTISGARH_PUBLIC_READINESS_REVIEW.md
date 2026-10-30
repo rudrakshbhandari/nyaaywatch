@@ -72,7 +72,6 @@ Chhattisgarh was wired into the approved public-state set in repo config with de
 
 The Chhattisgarh-specific artifact for that pass is:
 
-- `docs/CHHATTISGARH_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

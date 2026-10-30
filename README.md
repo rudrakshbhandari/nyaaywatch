@@ -60,6 +60,16 @@ The home page is the national entry point, followed by explicit state, Union Ter
 
 Legacy compatibility note: `/districts`, `/data`, and `/methodology` are unscoped Himachal Pradesh lower-court shortcuts. Use the homepage geography selector and `/states/:stateSlug/...` routes for a specific geography. `/api` is the national API reference; state-specific API pages use `/states/:stateSlug/api`.
 
+## Roadmap
+
+The current approved scope is to operate and maintain this snapshot-based coverage; no new court-geography rollout is queued.
+
+- **Current:** keep the existing aggregate snapshots, public coverage, and evidence-backed publishing reliable.
+- **Planned for roadmap review:** public accountability timelines and representative profiles with change alerts are recorded as future directions. Their source pilots, implementation scope, and delivery timing still need separate decisions.
+- **Longer term:** add order or judgment details, or document text, only where source terms, quality, and reproducibility support them. Published snapshots remain the public citation baseline.
+
+These are planning directions, not implementation commitments. See the issues for [accountability timelines](https://github.com/rudrakshbhandari/nyaaywatch/issues/407) and [representative profiles](https://github.com/rudrakshbhandari/nyaaywatch/issues/408), the [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md), and the [metric strategy](docs/METRIC_STRATEGY.md). The [maintainer roadmap](TODOS.md) records in-flight and approved work. New source classes or deeper coverage must pass the source, methodology, public-trust, and operational checks in the [expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md). Completed rollout plans are removed from the active docs tree; Git history retains them when audit context is needed.
+
 ## The trust model
 
 NyaayWatch treats the publication boundary as part of the product.
@@ -261,7 +271,7 @@ The AWS-only `npm run operator:production` path is retired after the Azure cutov
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md): branches, worktrees, and local commands
 - [Design system](DESIGN.md): visual and accessibility rules
 - [Brand system](brand/BRAND.md): logos, type, color, and press assets
-- [Working backlog](TODOS.md): current follow-up work
+- [Maintainer roadmap](TODOS.md): approved open work and current scope
 
 ## Data sources
 

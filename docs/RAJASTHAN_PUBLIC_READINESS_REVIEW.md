@@ -72,7 +72,6 @@ Rajasthan was wired into the approved public-state set in repo config with dedic
 
 The Rajasthan-specific artifact for that pass is:
 
-- `docs/RAJASTHAN_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

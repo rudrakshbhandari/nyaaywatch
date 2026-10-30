@@ -22,7 +22,7 @@ Use `npm run release:record` after each successful publish to keep this file ali
 - Rollback target: `publication_46dcd795-7110-46b4-b2f6-a338d7ee052f`
 - Markdown evidence: `output/release-evidence/publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff.md`
 - JSON evidence: `output/release-evidence/publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff.json`
-- Note: Reviewed stored NJDG artifacts and canonical ECS operator result; recovered from Aug 26 source dip. See docs/internal/CG_REVIEW_RECOVERY_2026-09-07.md.
+- Note: Reviewed stored NJDG artifacts and canonical ECS operator result; recovered from Aug 26 source dip. Detailed recovery evidence remains available in Git history.
 
 <!-- release:publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff:end -->
 

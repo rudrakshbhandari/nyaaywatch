@@ -72,7 +72,6 @@ Bihar was wired into the approved public-state set in repo config with dedicated
 
 The Bihar-specific artifact for that pass is:
 
-- `docs/BIHAR_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

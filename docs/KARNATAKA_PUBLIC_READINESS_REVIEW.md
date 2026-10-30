@@ -83,7 +83,6 @@ Meghalaya provided the immediate rollout pattern. Karnataka did not need broader
 
 The Karnataka-specific artifacts for that pass are:
 
-- `docs/KARNATAKA_GO_LIVE_CHECKLIST.md`
 - targeted Karnataka public-route parity coverage that exercises the intended `/states/karnataka/...` and `/v1/states/karnataka/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline

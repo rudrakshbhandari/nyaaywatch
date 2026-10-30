@@ -72,7 +72,6 @@ Madhya Pradesh was wired into the approved public-state set in repo config with 
 
 The Madhya Pradesh-specific artifact for that pass is:
 
-- `docs/MADHYA_PRADESH_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

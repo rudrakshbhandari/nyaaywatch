@@ -78,7 +78,6 @@ Haryana provided the pattern. Tamil Nadu did not need invention or repo-level pu
 
 The verification artifacts for that pass now live in:
 
-- `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md`
 - targeted Tamil Nadu public-route parity coverage that exercises the intended `/states/tamil-nadu/...` and `/v1/states/tamil-nadu/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline
@@ -102,7 +101,7 @@ Tamil Nadu should now be treated as a completed narrow public rollout.
 The conditions below were satisfied before launch:
 
 1. Tamil Nadu passes stable-URL UI/API/CSV verification on the live hostname
-2. the preflight artifacts in `docs/TAMIL_NADU_GO_LIVE_CHECKLIST.md` are green on the integrated branch
+2. the preflight artifacts in the state-specific go-live checklist are green on the integrated branch
 3. public copy remains explicit about which states are live, without implying nationwide coverage
 
 ## Useful Work Completed By This Review

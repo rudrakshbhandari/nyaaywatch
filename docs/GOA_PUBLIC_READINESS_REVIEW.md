@@ -72,7 +72,6 @@ Goa was wired into the approved public-state set in repo config with dedicated p
 
 The Goa-specific artifact for that pass is:
 
-- `docs/GOA_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 
