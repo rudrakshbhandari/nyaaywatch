@@ -83,7 +83,6 @@ Karnataka provided the immediate rollout pattern. Tripura did not need broader r
 
 The Tripura-specific artifacts for that pass are:
 
-- `docs/TRIPURA_GO_LIVE_CHECKLIST.md`
 - targeted Tripura public-route parity coverage that exercises the intended `/states/tripura/...` and `/v1/states/tripura/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline

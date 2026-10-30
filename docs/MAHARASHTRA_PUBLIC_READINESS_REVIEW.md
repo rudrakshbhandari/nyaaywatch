@@ -72,7 +72,6 @@ Maharashtra was wired into the approved public-state set in repo config with ded
 
 The Maharashtra-specific artifact for that pass is:
 
-- `docs/MAHARASHTRA_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

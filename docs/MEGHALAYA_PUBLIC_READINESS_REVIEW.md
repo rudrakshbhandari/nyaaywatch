@@ -81,7 +81,6 @@ Kerala provides the immediate rollout pattern. Meghalaya does not need broader r
 
 The Meghalaya-specific artifacts for that pass are:
 
-- `docs/MEGHALAYA_GO_LIVE_CHECKLIST.md`
 - targeted Meghalaya public-route parity coverage that exercises the intended `/states/meghalaya/...` and `/v1/states/meghalaya/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline

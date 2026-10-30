@@ -83,7 +83,6 @@ Tripura provided the immediate rollout pattern. Nagaland did not need broader re
 
 The Nagaland-specific artifacts for that pass are:
 
-- `docs/NAGALAND_GO_LIVE_CHECKLIST.md`
 - targeted Nagaland public-route parity coverage that exercises the intended `/states/nagaland/...` and `/v1/states/nagaland/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline

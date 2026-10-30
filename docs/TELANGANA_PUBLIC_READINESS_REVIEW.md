@@ -81,7 +81,6 @@ Tamil Nadu and Assam provide the immediate rollout pattern. Telangana does not n
 
 The Telangana-specific artifacts for that pass are:
 
-- `docs/TELANGANA_GO_LIVE_CHECKLIST.md`
 - targeted Telangana public-route parity coverage that exercises the intended `/states/telangana/...` and `/v1/states/telangana/...` surfaces once Telangana is deliberately promoted into the public-state set
 
 ### 2. Information Architecture Discipline

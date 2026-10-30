@@ -363,7 +363,7 @@ Latest confirmed operator validation:
   - publication `publication_0d66e9d6-245e-4d98-9e27-b16d47da15ff` activated snapshot `snapshot_664b9b37-5c9f-4e3c-9ed8-e00d90bf0d91`
   - reference date `2026-09-07T02:42:55.076Z` (`captured_at`), published from `run_36f911f2-d1b4-467b-947a-8b4cc43f53b1`
   - rollback target `publication_46dcd795-7110-46b4-b2f6-a338d7ee052f`
-  - evidence: `docs/internal/CG_REVIEW_RECOVERY_2026-09-07.md`
+  - the detailed recovery note was removed from active docs; Git history retains it for audit investigations
 - Jammu & Kashmir and Ladakh High Court internal proof completed on 2026-04-23 before public-beta promotion:
   - the common High Court operator namespace remained auth-protected under `/operator/high-courts/jammu-kashmir-and-ladakh/...`
   - live High Court fetch run `run_e036f9ac-f0d2-4e73-b7c3-8017a054d677` completed successfully

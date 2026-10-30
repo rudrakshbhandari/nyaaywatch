@@ -23,6 +23,6 @@ The current in-flight maintenance item is [PR #406](https://github.com/rudrakshb
 
 High Court public-beta additions must continue to use deliberate, documented batches unless a concrete operational blocker requires an exception; record the reason with that change. This is a standing release rule, not an open expansion task.
 
-## Historical plans
+## Historical context
 
-Completed plans are preserved in [`docs/archive/`](docs/archive/). They document past decisions and execution; they are not current scope or commitments. The original Himachal MVP record remains at [`docs/MVP_EXECUTION_PLAN.md`](docs/MVP_EXECUTION_PLAN.md), as repository guidance explicitly uses it for historical MVP context.
+Completed rollout plans and per-geography readiness checklists were removed from the active docs tree; Git history retains them if an investigation needs the original records. The original Himachal MVP record remains at [`docs/MVP_EXECUTION_PLAN.md`](docs/MVP_EXECUTION_PLAN.md), as repository guidance explicitly uses it for historical MVP context. Keep current operational state in the three ledgers above.

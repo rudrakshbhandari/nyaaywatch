@@ -72,7 +72,6 @@ Uttarakhand was wired into the approved public-state set in repo config with ded
 
 The Uttarakhand-specific artifact for that pass is:
 
-- `docs/UTTARAKHAND_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

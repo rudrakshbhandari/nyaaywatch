@@ -72,7 +72,6 @@ Mizoram was wired into the approved public-state set in repo config with dedicat
 
 The Mizoram-specific artifact for that pass is:
 
-- `docs/MIZORAM_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

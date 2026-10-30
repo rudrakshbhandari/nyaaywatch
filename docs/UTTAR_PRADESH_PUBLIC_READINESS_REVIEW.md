@@ -72,7 +72,6 @@ Uttar Pradesh was wired into the approved public-state set in repo config with d
 
 The Uttar Pradesh-specific artifact for that pass is:
 
-- `docs/UTTAR_PRADESH_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

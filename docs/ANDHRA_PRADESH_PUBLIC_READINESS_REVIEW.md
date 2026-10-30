@@ -83,7 +83,6 @@ Nagaland provided the immediate rollout pattern. Andhra Pradesh did not need bro
 
 The Andhra Pradesh-specific artifacts for that pass are:
 
-- `docs/ANDHRA_PRADESH_GO_LIVE_CHECKLIST.md`
 - targeted Andhra Pradesh public-route parity coverage that exercises the intended `/states/andhra-pradesh/...` and `/v1/states/andhra-pradesh/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline

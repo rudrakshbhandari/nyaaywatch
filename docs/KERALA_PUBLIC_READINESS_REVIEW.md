@@ -84,7 +84,6 @@ Telangana provided the immediate rollout pattern. Kerala did not need broader re
 
 The Kerala-specific artifacts for that pass were:
 
-- `docs/KERALA_GO_LIVE_CHECKLIST.md`
 - targeted Kerala public-route parity coverage that exercises the intended `/states/kerala/...` and `/v1/states/kerala/...` surfaces once Kerala is deliberately promoted into the public-state set
 
 ### 2. Information Architecture Discipline

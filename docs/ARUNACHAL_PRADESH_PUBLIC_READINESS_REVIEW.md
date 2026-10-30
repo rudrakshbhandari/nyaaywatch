@@ -83,7 +83,6 @@ Andhra Pradesh provided the immediate rollout pattern. Arunachal Pradesh did not
 
 The Arunachal Pradesh-specific artifacts for that pass are:
 
-- `docs/ARUNACHAL_PRADESH_GO_LIVE_CHECKLIST.md`
 - targeted Arunachal Pradesh public-route parity coverage that exercises the intended `/states/arunachal-pradesh/...` and `/v1/states/arunachal-pradesh/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline

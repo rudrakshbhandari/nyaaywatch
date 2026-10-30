@@ -19,7 +19,7 @@ The current High Court implementation is still single-jurisdiction in four impor
 
 That works for the current registry because every configured public or internal High Court can still be honestly mapped to one lower-court state profile.
 
-It breaks down for the deferred courts in `docs/HIGH_COURT_INTERNAL_WAVE_1.md`:
+It breaks down for multi-jurisdiction courts such as:
 
 - Bombay High Court
 - Calcutta High Court
@@ -189,7 +189,7 @@ This is a design recommendation, not a public rollout approval.
 - update homepage framing so the High Court section does not imply one-state equivalence
 - add methodology language for mixed state and union-territory coverage
 
-The concrete implementation plan for this phase now lives in `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
+The public-language phase is complete; current methodology is documented on the public High Court surfaces.
 
 ### Phase 4: Public-beta expansion
 
@@ -212,6 +212,4 @@ Current rollout posture:
 - Punjab and Haryana is already the first live public multi-jurisdiction High Court beta page
 - the remaining deferred court-first High Courts are now approved for public-beta rollout in larger waves, not one-court-at-a-time hesitation
 
-The concrete first execution slice for this design lived in `docs/archive/HIGH_COURT_MULTI_JURISDICTION_PHASE_1_PLAN.md` (archived; phase 1 complete).
-The concrete public-language follow-up after that slice now lives in `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_LANGUAGE_PLAN.md`.
-The concrete batch rollout plan for the remaining deferred courts now lives in `archive/HIGH_COURT_MULTI_JURISDICTION_PUBLIC_BETA_BATCH_PLAN.md`.
+The first execution slice, public-language follow-up, and batch rollout are complete. Their plans were removed from the active docs tree; Git history retains them for audit context.

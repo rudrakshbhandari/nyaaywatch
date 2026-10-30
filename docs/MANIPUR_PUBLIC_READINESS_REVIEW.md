@@ -72,7 +72,6 @@ Manipur was wired into the approved public-state set in repo config with dedicat
 
 The Manipur-specific artifact for that pass is:
 
-- `docs/MANIPUR_GO_LIVE_CHECKLIST.md`
 
 ### 2. Information Architecture Discipline
 

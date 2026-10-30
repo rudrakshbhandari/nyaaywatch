@@ -81,7 +81,6 @@ Tamil Nadu provided the immediate pattern. Assam did not need invention or repo-
 
 The verification artifacts for that pass now live in:
 
-- `docs/ASSAM_GO_LIVE_CHECKLIST.md`
 - targeted Assam public-route parity coverage that exercises the intended `/states/assam/...` and `/v1/states/assam/...` surfaces under the approved public-state configuration
 
 ### 2. Information Architecture Discipline
@@ -105,7 +104,7 @@ Assam completed the next approved narrow public rollout on 2026-04-17.
 The live conditions that this review required are now satisfied:
 
 1. Assam passed stable-URL UI/API/CSV verification on the live hostname
-2. the preflight artifacts in `docs/ASSAM_GO_LIVE_CHECKLIST.md` are green
+2. the preflight artifacts in the state-specific go-live checklist are green
 3. public copy remains explicit about which states are live, without implying nationwide coverage
 
 ## Useful Work Completed By This Review
