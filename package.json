@@ -74,7 +74,7 @@
     "express": "^5.1.0",
     "pg": "^8.23.0",
     "pg-mem": "^3.0.5",
-    "satori": "^0.33.4",
+    "satori": "^0.33.5",
     "zod": "^4.5.4"
   },
   "devDependencies": {
