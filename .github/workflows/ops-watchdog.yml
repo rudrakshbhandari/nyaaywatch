@@ -124,50 +124,14 @@ jobs:
             # Daily jobs allow one interval plus a 2-hour margin. The watchdog
             # runs at 05:00 UTC, before alpha-ops at 07:00 UTC.
             max_age_minutes=1560
-            job_json="$(az containerapp job show --name "$job_name" --resource-group "$resource_group" --output json)"
-            execution_json="$(az containerapp job execution list --name "$job_name" --resource-group "$resource_group" --output json)"
-            validation="$(JOB_NAME="$job_name" MAX_AGE_MINUTES="$max_age_minutes" JOB_JSON="$job_json" EXECUTION_JSON="$execution_json" node - <<'NODE'
-          const job = JSON.parse(process.env.JOB_JSON);
-          const executions = JSON.parse(process.env.EXECUTION_JSON);
-          const config = job.properties?.configuration ?? {};
-          const latest = executions
-            .slice()
-            .sort((a, b) => Date.parse(b.properties?.startTime ?? 0) - Date.parse(a.properties?.startTime ?? 0))[0];
-          const completed = executions
-            .filter((execution) => !new Set(["Running", "Scheduled", "Starting"]).has(execution.properties?.status))
-            .sort((a, b) => Date.parse(b.properties?.endTime ?? b.properties?.startTime ?? 0) - Date.parse(a.properties?.endTime ?? a.properties?.startTime ?? 0))[0];
-          const failures = [];
-          if (job.properties?.provisioningState !== "Succeeded") failures.push("provisioning is not Succeeded");
-          if (config.triggerType !== "Schedule") failures.push("trigger is not Schedule");
-          if (!config.scheduleTriggerConfig?.cronExpression) failures.push("cron expression is missing");
-          if (!completed) {
-            failures.push("no completed execution has been recorded");
-          } else {
-            const completedAt = completed.properties?.endTime ?? completed.properties?.startTime;
-            const ageMinutes = (Date.now() - Date.parse(completedAt ?? 0)) / 60000;
-            const status = completed.properties?.status;
-            if (status !== "Succeeded") failures.push(`latest completed execution status is ${status ?? "unknown"}`);
-            if (!Number.isFinite(ageMinutes) || ageMinutes > Number(process.env.MAX_AGE_MINUTES)) {
-              failures.push(`latest completed execution is ${Math.round(ageMinutes)} minutes old`);
-            }
-          }
-          process.stdout.write(JSON.stringify({
-            tier: process.env.JOB_NAME,
-            scheduleName: process.env.JOB_NAME,
-            scheduleState: "ENABLED",
-            scheduleExpression: config.scheduleTriggerConfig?.cronExpression ?? null,
-            scheduleExpressionTimezone: "UTC",
-            latestScheduledRunId: completed?.name ?? null,
-            latestScheduledRunStatus: completed?.properties?.status ?? null,
-            latestScheduledRunFreshnessMinutes: completed ? Math.round((Date.now() - Date.parse(completed.properties?.endTime ?? completed.properties?.startTime)) / 60000) : null,
-            currentScheduledRunId: latest?.name ?? null,
-            currentScheduledRunStatus: latest?.properties?.status ?? null,
-            schedulerTargetMatchesService: true,
-            usesScheduledFetchEntrypoint: true,
-            failures,
-          }));
-          NODE
-            )"
+            # Execution history is too large to pass through the process environment.
+            # That overflow exits 126 ("Argument list too long") before the check runs.
+            job_file="$(mktemp)"
+            exec_file="$(mktemp)"
+            az containerapp job show --name "$job_name" --resource-group "$resource_group" --output json > "$job_file"
+            az containerapp job execution list --name "$job_name" --resource-group "$resource_group" --output json > "$exec_file"
+            validation="$(./node_modules/.bin/tsx src/dev/validate-azure-scheduled-job.ts --job-name "$job_name" --max-age-minutes "$max_age_minutes" --job-json "$job_file" --executions-json "$exec_file")"
+            rm -f "$job_file" "$exec_file"
             tier_json="$(node -e 'const all=JSON.parse(process.argv[1]); all.push(JSON.parse(process.argv[2])); process.stdout.write(JSON.stringify(all))' "$tier_json" "$validation")"
             if [[ "$(printf '%s' "$validation" | node -e 'let d=""; process.stdin.on("data",c=>d+=c); process.stdin.on("end",()=>process.stdout.write(JSON.parse(d).failures.length ? "1" : "0"))')" == "1" ]]; then
               while IFS= read -r failure; do failures+=("$job_name: $failure"); done < <(printf '%s' "$validation" | node -e 'let d=""; process.stdin.on("data",c=>d+=c); process.stdin.on("end",()=>JSON.parse(d).failures.forEach(f=>console.log(f)))')
