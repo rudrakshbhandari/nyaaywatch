@@ -113,6 +113,12 @@ variable "enable_application" {
   default     = false
 }
 
+variable "preserve_legacy_azure_runtime_env" {
+  description = "Keep Azure provider selectors for the currently deployed image during the infrastructure bootstrap apply."
+  type        = bool
+  default     = false
+}
+
 variable "container_cpu" {
   description = "Container Apps vCPU allocation."
   type        = number

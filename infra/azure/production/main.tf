@@ -326,6 +326,18 @@ resource "azurerm_container_app" "this" {
       }
 
       dynamic "env" {
+        for_each = var.preserve_legacy_azure_runtime_env ? {
+          STORAGE_PROVIDER = "azure"
+          EMAIL_PROVIDER   = "azure"
+        } : {}
+
+        content {
+          name  = env.key
+          value = env.value
+        }
+      }
+
+      dynamic "env" {
         for_each = coalesce(var.azure_communication_connection_string, "") == "" ? [] : [var.azure_communication_connection_string]
 
         content {
@@ -523,6 +535,18 @@ resource "azurerm_container_app_job" "scheduled" {
       env {
         name  = "RUNTIME_REGION"
         value = var.location
+      }
+
+      dynamic "env" {
+        for_each = var.preserve_legacy_azure_runtime_env ? {
+          STORAGE_PROVIDER = "azure"
+          EMAIL_PROVIDER   = "azure"
+        } : {}
+
+        content {
+          name  = env.key
+          value = env.value
+        }
       }
 
       dynamic "env" {

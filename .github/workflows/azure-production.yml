@@ -153,6 +153,9 @@ jobs:
             exit 1
           fi
           export TF_VAR_container_image="${existing_image:-mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
+          # The existing image still requires provider selectors. Keep them until
+          # the new image is built and installed by the second apply.
+          export TF_VAR_preserve_legacy_azure_runtime_env=true
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Build and publish the application image in ACR
@@ -164,6 +167,7 @@ jobs:
         run: |
           registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
           export TF_VAR_container_image="${registry}/nyaaywatch:${GITHUB_SHA}"
+          export TF_VAR_preserve_legacy_azure_runtime_env=false
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Verify the deployed revision is healthy
