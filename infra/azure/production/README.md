@@ -1,98 +1,44 @@
-# NyaayWatch Azure production target
+# Azure production deployment
 
-This Terraform target is the first migration stage from the current AWS
-CloudFormation stack. It provisions the durable Azure substrate without
-changing the live AWS environment:
+Azure is the selected production provider. GitHub's `ACTIVE_PRODUCTION_PROVIDER`
+repository variable is set to `azure`; `.github/workflows/azure-migration.yml`
+handles verification and Azure deployment on `main` pushes. The AWS production
+deployment job in `.github/workflows/ci.yml` runs only when the provider is not
+Azure.
 
-- Azure Container Apps for the Dockerized application.
-- Azure Database for PostgreSQL Flexible Server on a delegated private subnet.
-- Azure Blob Storage for raw artifacts and release evidence.
-- Azure Container Registry with managed-identity image pulls.
-- Azure Log Analytics for container logs.
-- A private virtual network and private DNS zone for PostgreSQL.
-- Azure Container Apps Jobs for the five existing fetch, publish, and smoke-monitor cadences.
+## Source of configuration
 
-The application must be switched to the Azure artifact-store adapter before
-the container app is deployed. The target supports Azure Communication Services
-email and an optional HTTPS alarm webhook; provide the verified sender,
-connection string, and webhook before cutover if newsletter delivery and
-failure paging are required. Production DNS remains outside this target until
-the application and data paths have been validated in parallel with AWS.
+- `main.tf`, `variables.tf`, and related Terraform files define the Container
+  App, PostgreSQL Flexible Server, Blob Storage, Container Registry, networking,
+  logging, and scheduled Container Apps Jobs.
+- `.github/workflows/azure-migration.yml` authenticates through GitHub OIDC,
+  initializes the remote Terraform state, plans/applies the configured stack,
+  and deploys the application image.
+- GitHub Actions secrets provide Azure identity, database, operator, and
+  notification credentials. Keep credentials and Terraform state out of Git.
 
-The scheduled jobs use UTC equivalents of the current Asia/Kolkata cadence:
+## Deployment and verification
 
-- lower-court fetch at 08:00 IST
-- Supreme Court fetch at 08:10 IST
-- reviewed High Court fetch at 08:20 IST
-- publish-pending sweep at 08:30 IST
-- public-alpha monitor daily at 12:30 IST (07:00 UTC)
+Normal production deploys follow successful checks on `main`. For a manual
+deployment or infrastructure change, use the workflow's `workflow_dispatch`
+inputs and review the Terraform plan before applying. Keep scheduled writers,
+application replicas, and public hostname management disabled for rehearsal
+applies unless the change is an approved production operation.
 
-Fetch and publish jobs retry once after a failed execution. The public-alpha
-monitor does not retry. It sends at most one failure email per scheduled run,
-so a persistent monitor failure produces at most one reminder per day instead
-of one per hour. The independent fetch jobs continue to send their own failure
-alerts.
+After deployment, verify the public hostname and health route, run
+`npm run release:verify -- --base-url=https://nyaaywatch.in`, and check the
+Azure Container Apps Job outcomes and application logs. Use
+`npm run operator:remote -- --base-url=https://nyaaywatch.in publications`
+for a read-only operator check.
 
-Scheduled jobs are disabled by default. Set `enable_scheduled_jobs = true`
-only during the approved cutover after the AWS writers are stopped; this
-prevents a rehearsal Azure apply from writing alongside production AWS.
-
-The canonical hostname binding is also opt-in because Azure requires DNS
-validation before it can issue the managed certificate. After the `asuid`
-validation record exists, import an existing binding (if one was created during
-validation) and set `manage_public_hostname = true` for subsequent applies:
+## Local Terraform checks
 
 ```bash
-terraform import 'azurerm_container_app_custom_domain.public["nyaaywatch.in"]' \
-  /subscriptions/SUBSCRIPTION_ID/resourceGroups/nyaaywatch-production/providers/Microsoft.App/containerApps/nyaaywatch-production/customDomainName/nyaaywatch.in
+terraform -chdir=infra/azure/production fmt -check
+terraform -chdir=infra/azure/production validate
 ```
 
-Terraform then keeps the binding attached across image deployments while Azure
-continues to manage certificate issuance and renewal asynchronously.
-
-## Plan-only validation
-
-```bash
-terraform init
-terraform fmt -check
-terraform validate
-terraform plan -var-file=terraform.tfvars
-```
-
-Never commit `terraform.tfvars` or a Terraform state file. Supply database and
-operator secrets through a protected CI variable or an untracked local file.
-
-## PostgreSQL transfer
-
-The target database must be provisioned and reachable through the Azure
-Container Apps VNet before transfer. The migration script keeps credentials in
-environment variables, refuses to overwrite a non-empty target by default,
-and compares every public-table row count after restore:
-
-```bash
-SOURCE_DATABASE_URL='postgresql://...' \
-TARGET_DATABASE_URL='postgresql://...' \
-./migrate-postgres.sh
-```
-
-`ALLOW_TARGET_OVERWRITE=true` is an explicit destructive exception. It enables
-`pg_restore --clean --if-exists`, so take a target backup and record cutover
-approval first. The AWS source remains untouched by this operation.
-
-## Artifact transfer
-
-Copy the raw captures and release evidence before switching the application to
-Azure Blob. The script downloads the AWS bucket into a temporary directory,
-uploads it to the Azure container, downloads the result again, and compares
-SHA-256 manifests. It never deletes the AWS source or Azure target:
-
-```bash
-SOURCE_S3_URI='s3://nyaaywatch-production-artifacts-ACCOUNT_ID' \
-TARGET_BLOB_SAS_URL='https://STORAGE.blob.core.windows.net/artifacts?SAS_TOKEN' \
-./migrate-artifacts.sh
-```
-
-Use a short-lived, write-capable SAS scoped only to the target `artifacts`
-container. Do not put the SAS, AWS credentials, or either database URL in a
-repository file or shell history. Run this transfer again during the final
-cutover freeze to capture artifacts created since the rehearsal.
+Do not commit `terraform.tfvars`, state files, credentials, database URLs, or
+time-limited storage tokens. Record release evidence in
+`docs/internal/RELEASE_HISTORY.md` and keep the current environment map in
+`docs/internal/DEPLOYMENT_STATUS.md`.
