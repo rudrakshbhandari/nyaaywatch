@@ -457,6 +457,54 @@ export class PgWarehouseStore {
     return result.rows.map(mapPublication);
   }
 
+  async listPublishedSnapshots(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<PublishedSnapshotRecord[]> {
+    const result = await this.db.query(
+      `SELECT ps.*
+      FROM published_snapshots ps
+      WHERE ps.scope_type = $1 AND ps.scope_code = $2
+        AND EXISTS (
+          SELECT 1 FROM publication_history ph
+          WHERE ph.published_snapshot_id = ps.id
+            AND ph.scope_type = $1 AND ph.scope_code = $2
+        )
+      ORDER BY ps.created_at ASC, ps.id ASC`,
+      [scopeType, scopeCode],
+    );
+    return result.rows.map(mapPublishedSnapshot);
+  }
+
+  async listPublishedHighCourtSnapshots(scopeCode: string): Promise<HighCourtPublishedSnapshotRecord[]> {
+    const result = await this.db.query(
+      `SELECT ps.*
+      FROM published_snapshots ps
+      WHERE ps.scope_type = 'high_court' AND ps.scope_code = $1
+        AND EXISTS (
+          SELECT 1 FROM publication_history ph
+          WHERE ph.published_snapshot_id = ps.id
+            AND ph.scope_type = 'high_court' AND ph.scope_code = $1
+        )
+      ORDER BY ps.created_at ASC, ps.id ASC`,
+      [scopeCode],
+    );
+    return result.rows.map(mapHighCourtPublishedSnapshot);
+  }
+
+  async listPublishedSupremeCourtSnapshots(scopeCode: string): Promise<SupremeCourtPublishedSnapshotRecord[]> {
+    const result = await this.db.query(
+      `SELECT ps.*
+      FROM published_snapshots ps
+      WHERE ps.scope_type = 'supreme_court' AND ps.scope_code = $1
+        AND EXISTS (
+          SELECT 1 FROM publication_history ph
+          WHERE ph.published_snapshot_id = ps.id
+            AND ph.scope_type = 'supreme_court' AND ph.scope_code = $1
+        )
+      ORDER BY ps.created_at ASC, ps.id ASC`,
+      [scopeCode],
+    );
+    return result.rows.map(mapSupremeCourtPublishedSnapshot);
+  }
+
   async getHighCourtSnapshotForRun(runId: string): Promise<HighCourtPublishedSnapshotRecord | null> {
     const result = await this.db.query(
       "SELECT * FROM published_snapshots WHERE run_id = $1 ORDER BY created_at DESC LIMIT 1",

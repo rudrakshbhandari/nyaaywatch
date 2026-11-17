@@ -266,6 +266,25 @@ export function createApp(
   );
 
   app.get(
+    "/v1/archive",
+    asyncRoute(async (request, response) => {
+      const pagination = readArchivePagination(request.query);
+      if (!pagination) {
+        response.status(400).json({ error: "Use a non-negative integer offset and a limit from 1 to 100." });
+        return;
+      }
+      const profile = getStateProfile(DEFAULT_PUBLIC_STATE_CODE);
+      const archive = await getRequiredPublicService(DEFAULT_PUBLIC_STATE_CODE, publicServices).listSnapshotArchive(pagination.offset, pagination.limit);
+      if (archive.total === 0) {
+        response.status(404).json({ error: "No published snapshot history available." });
+        return;
+      }
+      applyPublishedDataCacheHeaders(response);
+      response.json(buildArchiveResponse({ type: "lower_court_state", code: profile.stateCode, name: profile.stateName }, archive));
+    }),
+  );
+
+  app.get(
     "/v1/states/:stateSlug/stats",
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicStateRequest(request, publicServices);
@@ -320,6 +339,29 @@ export function createApp(
   );
 
   app.get(
+    "/v1/states/:stateSlug/archive",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicStateRequest(request, publicServices);
+      if (!resolved) {
+        response.status(404).json({ error: LOWER_COURT_GEOGRAPHY_NOT_FOUND_JSON });
+        return;
+      }
+      const pagination = readArchivePagination(request.query);
+      if (!pagination) {
+        response.status(400).json({ error: "Use a non-negative integer offset and a limit from 1 to 100." });
+        return;
+      }
+      const archive = await resolved.service.listSnapshotArchive(pagination.offset, pagination.limit);
+      if (archive.total === 0) {
+        response.status(404).json({ error: "No published snapshot history available." });
+        return;
+      }
+      applyPublishedDataCacheHeaders(response);
+      response.json(buildArchiveResponse({ type: "lower_court_state", code: resolved.profile.stateCode, name: resolved.profile.stateName }, archive));
+    }),
+  );
+
+  app.get(
     "/v1/high-courts/:courtSlug/stats",
     asyncRoute(async (request, response) => {
       const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
@@ -358,6 +400,29 @@ export function createApp(
   );
 
   app.get(
+    "/v1/high-courts/:courtSlug/archive",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicHighCourtRequest(request, highCourtServices);
+      if (!resolved) {
+        response.status(404).json({ error: "High Court not found." });
+        return;
+      }
+      const pagination = readArchivePagination(request.query);
+      if (!pagination) {
+        response.status(400).json({ error: "Use a non-negative integer offset and a limit from 1 to 100." });
+        return;
+      }
+      const archive = await resolved.service.listSnapshotArchive(pagination.offset, pagination.limit);
+      if (archive.total === 0) {
+        response.status(404).json({ error: "No published High Court snapshot history available." });
+        return;
+      }
+      applyPublishedDataCacheHeaders(response);
+      response.json(buildArchiveResponse({ type: "high_court", code: resolved.profile.courtCode, name: resolved.profile.courtName }, archive));
+    }),
+  );
+
+  app.get(
     "/v1/supreme-court/stats",
     asyncRoute(async (_request, response) => {
       const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
@@ -392,6 +457,29 @@ export function createApp(
       }
 
       response.json(payload);
+    }),
+  );
+
+  app.get(
+    "/v1/supreme-court/archive",
+    asyncRoute(async (request, response) => {
+      const resolved = resolvePublicSupremeCourtRequest(supremeCourtService);
+      if (!resolved) {
+        response.status(404).json({ error: "Supreme Court not found." });
+        return;
+      }
+      const pagination = readArchivePagination(request.query);
+      if (!pagination) {
+        response.status(400).json({ error: "Use a non-negative integer offset and a limit from 1 to 100." });
+        return;
+      }
+      const archive = await resolved.service.listSnapshotArchive(pagination.offset, pagination.limit);
+      if (archive.total === 0) {
+        response.status(404).json({ error: "No published Supreme Court snapshot history available." });
+        return;
+      }
+      applyPublishedDataCacheHeaders(response);
+      response.json(buildArchiveResponse({ type: "supreme_court", code: resolved.profile.courtCode, name: resolved.profile.courtName }, archive));
     }),
   );
 
@@ -2109,6 +2197,37 @@ function applyPublishedDataCacheHeaders(response: Response) {
     "CDN-Cache-Control": "no-store",
     "Cloudflare-CDN-Cache-Control": "no-store",
   });
+}
+
+function readArchivePagination(query: Request["query"]): { offset: number; limit: number } | null {
+  const readInteger = (value: unknown, fallback: number) => {
+    if (value === undefined) return fallback;
+    if (typeof value !== "string" || !/^\d+$/.test(value)) return null;
+    const parsed = Number(value);
+    return Number.isSafeInteger(parsed) ? parsed : null;
+  };
+  const offset = readInteger(query.offset, 0);
+  const limit = readInteger(query.limit, 20);
+  if (offset === null || limit === null || limit < 1 || limit > 100) return null;
+  return { offset, limit };
+}
+
+function buildArchiveResponse<T extends { total: number; offset: number; limit: number; snapshots: unknown[] }>(
+  scope: { type: string; code: string; name: string },
+  archive: T,
+) {
+  const hasMore = archive.offset + archive.snapshots.length < archive.total;
+  return {
+    scope,
+    pagination: {
+      offset: archive.offset,
+      limit: archive.limit,
+      total: archive.total,
+      hasMore,
+      nextOffset: hasMore ? archive.offset + archive.snapshots.length : null,
+    },
+    snapshots: archive.snapshots,
+  };
 }
 
 function redactSensitiveRequestUrl(originalUrl: string): string {

@@ -70,6 +70,19 @@ export class PublishedHighCourtSnapshotService {
     return record ? { snapshot: record.payload.snapshot, trends: record.payload.trends } : null;
   }
 
+  async listSnapshotArchive(offset = 0, limit = 20) {
+    const ordered = (await this.store.listPublishedHighCourtSnapshots(this.profile.courtCode)).map((record) => record.payload).sort((left, right) =>
+      left.snapshot.referenceDateAt.localeCompare(right.snapshot.referenceDateAt) ||
+      left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt),
+    );
+    return {
+      total: ordered.length,
+      offset,
+      limit,
+      snapshots: ordered.slice(offset, offset + limit),
+    };
+  }
+
   async listRuns(): Promise<RunRecord[]> {
     return this.store.listRuns(this.profile.courtCode, "high_court");
   }
