@@ -81,7 +81,7 @@ describe("AzureBlobArtifactStore", () => {
     const store = new AzureBlobArtifactStore(loadConfig(baseEnv));
     const sourceBody = JSON.stringify({ source: "bytes" });
     const checksum = createHash("sha256").update(sourceBody).digest("hex");
-    azureBlob.download.mockResolvedValue({ readableStreamBody: Readable.from([Buffer.from(sourceBody)]) });
+    azureBlob.download.mockImplementation(async () => ({ readableStreamBody: Readable.from([Buffer.from(sourceBody)]) }));
     azureBlob.upload.mockClear();
 
     await expect(store.copyObject("raw/source.json", "replay/source.json", { checksumsha256: "wrong" }))
