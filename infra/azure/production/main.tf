@@ -37,8 +37,10 @@ locals {
       retry_limit     = 1
     }
     public-alpha-ops-monitor = {
-      name            = "alpha-ops"
-      cron            = "0 * * * *"
+      name = "alpha-ops"
+      # A persistent failure is reported once per day instead of flooding the
+      # operator inbox hourly; the production fetch jobs keep their own alerts.
+      cron            = "0 7 * * *"
       command         = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
       args            = ["--base-url", "https://nyaaywatch.in", "--target-set", "smoke"]
       replica_timeout = 3600
