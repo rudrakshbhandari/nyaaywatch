@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   verify:
-    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && vars.ACTIVE_PRODUCTION_PROVIDER == 'azure')
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && (vars.ACTIVE_PRODUCTION_PROVIDER || 'azure') == 'azure')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -55,7 +55,7 @@ jobs:
           npm test -- --run
 
   provision:
-    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && vars.ACTIVE_PRODUCTION_PROVIDER == 'azure')
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && (vars.ACTIVE_PRODUCTION_PROVIDER || 'azure') == 'azure')
     needs: verify
     runs-on: ubuntu-latest
     concurrency:

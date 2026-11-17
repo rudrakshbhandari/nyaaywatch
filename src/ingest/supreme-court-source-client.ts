@@ -30,17 +30,38 @@ export function createSupremeCourtSourceClient(): SupremeCourtSourceClient {
 }
 
 async function fetchHtml(url: string): Promise<string> {
-  const response = await fetch(url, {
-    headers: {
-      "user-agent": "NyaayWatch/0.1 (+https://github.com/rudrakshbhandari/nyaaywatch)",
-      accept: "text/html,application/xhtml+xml",
-    },
-    signal: AbortSignal.timeout(30_000),
-  });
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "user-agent": "NyaayWatch/0.1 (+https://github.com/rudrakshbhandari/nyaaywatch)",
+        accept: "text/html,application/xhtml+xml",
+      },
+      signal: AbortSignal.timeout(30_000),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch Supreme Court NJDG page ${url}: ${response.status} ${response.statusText}`);
+    if (!response.ok) {
+      throw new Error(`${response.status} ${response.statusText}`);
+    }
+
+    return await response.text();
+  } catch (error) {
+    throw new Error(`Failed to fetch Supreme Court NJDG page ${url}: ${formatFetchError(error)}`, { cause: error });
+  }
+}
+
+function formatFetchError(error: unknown): string {
+  if (!(error instanceof Error)) {
+    return String(error);
   }
 
-  return response.text();
+  const causeCode =
+    error.cause && typeof error.cause === "object" && "code" in error.cause && typeof error.cause.code === "string"
+      ? ` [${error.cause.code}]`
+      : "";
+  const cause =
+    error.cause instanceof Error
+      ? `; cause: ${error.cause.name}${causeCode}: ${error.cause.message}`
+      : "";
+
+  return `${error.name}: ${error.message}${cause}`;
 }
