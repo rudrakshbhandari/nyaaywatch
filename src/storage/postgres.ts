@@ -457,49 +457,104 @@ export class PgWarehouseStore {
     return result.rows.map(mapPublication);
   }
 
-  async listPublishedSnapshots(scopeCode: string, scopeType: ScopeType = inferScopeType(scopeCode)): Promise<PublishedSnapshotRecord[]> {
-    const result = await this.db.query(
-      `SELECT ps.*
-      FROM published_snapshots ps
-      WHERE ps.scope_type = $1 AND ps.scope_code = $2
-        AND ps.id IN (
-          SELECT ph.published_snapshot_id FROM publication_history ph
-          WHERE ph.scope_type = $1 AND ph.scope_code = $2
-        )
-      ORDER BY ps.created_at ASC, ps.id ASC`,
-      [scopeType, scopeCode],
-    );
-    return result.rows.map(mapPublishedSnapshot);
+  async listPublishedSnapshots(
+    scopeCode: string,
+    scopeType: ScopeType = inferScopeType(scopeCode),
+    offset = 0,
+    limit = 20,
+  ): Promise<{ records: PublishedSnapshotRecord[]; total: number }> {
+    const [result, countResult] = await Promise.all([
+      this.db.query(
+        `SELECT ps.*
+        FROM published_snapshots ps
+        WHERE ps.scope_type = $1 AND ps.scope_code = $2
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = $1 AND ph.scope_code = $2
+          )
+        ORDER BY ps.payload->'snapshot'->>'referenceDateAt' ASC,
+          ps.payload->'snapshot'->>'publishedAt' ASC, ps.id ASC
+        LIMIT $3 OFFSET $4`,
+        [scopeType, scopeCode, limit, offset],
+      ),
+      this.db.query(
+        `SELECT COUNT(*) AS total
+        FROM published_snapshots ps
+        WHERE ps.scope_type = $1 AND ps.scope_code = $2
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = $1 AND ph.scope_code = $2
+          )`,
+        [scopeType, scopeCode],
+      ),
+    ]);
+    return { records: result.rows.map(mapPublishedSnapshot), total: Number(countResult.rows[0]?.total ?? 0) };
   }
 
-  async listPublishedHighCourtSnapshots(scopeCode: string): Promise<HighCourtPublishedSnapshotRecord[]> {
-    const result = await this.db.query(
-      `SELECT ps.*
-      FROM published_snapshots ps
-      WHERE ps.scope_type = 'high_court' AND ps.scope_code = $1
-        AND ps.id IN (
-          SELECT ph.published_snapshot_id FROM publication_history ph
-          WHERE ph.scope_type = 'high_court' AND ph.scope_code = $1
-        )
-      ORDER BY ps.created_at ASC, ps.id ASC`,
-      [scopeCode],
-    );
-    return result.rows.map(mapHighCourtPublishedSnapshot);
+  async listPublishedHighCourtSnapshots(
+    scopeCode: string,
+    offset = 0,
+    limit = 20,
+  ): Promise<{ records: HighCourtPublishedSnapshotRecord[]; total: number }> {
+    const [result, countResult] = await Promise.all([
+      this.db.query(
+        `SELECT ps.*
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'high_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'high_court' AND ph.scope_code = $1
+          )
+        ORDER BY ps.payload->'snapshot'->>'referenceDateAt' ASC,
+          ps.payload->'snapshot'->>'publishedAt' ASC, ps.id ASC
+        LIMIT $2 OFFSET $3`,
+        [scopeCode, limit, offset],
+      ),
+      this.db.query(
+        `SELECT COUNT(*) AS total
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'high_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'high_court' AND ph.scope_code = $1
+          )`,
+        [scopeCode],
+      ),
+    ]);
+    return { records: result.rows.map(mapHighCourtPublishedSnapshot), total: Number(countResult.rows[0]?.total ?? 0) };
   }
 
-  async listPublishedSupremeCourtSnapshots(scopeCode: string): Promise<SupremeCourtPublishedSnapshotRecord[]> {
-    const result = await this.db.query(
-      `SELECT ps.*
-      FROM published_snapshots ps
-      WHERE ps.scope_type = 'supreme_court' AND ps.scope_code = $1
-        AND ps.id IN (
-          SELECT ph.published_snapshot_id FROM publication_history ph
-          WHERE ph.scope_type = 'supreme_court' AND ph.scope_code = $1
-        )
-      ORDER BY ps.created_at ASC, ps.id ASC`,
-      [scopeCode],
-    );
-    return result.rows.map(mapSupremeCourtPublishedSnapshot);
+  async listPublishedSupremeCourtSnapshots(
+    scopeCode: string,
+    offset = 0,
+    limit = 20,
+  ): Promise<{ records: SupremeCourtPublishedSnapshotRecord[]; total: number }> {
+    const [result, countResult] = await Promise.all([
+      this.db.query(
+        `SELECT ps.*
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'supreme_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'supreme_court' AND ph.scope_code = $1
+          )
+        ORDER BY ps.payload->'snapshot'->>'referenceDateAt' ASC,
+          ps.payload->'snapshot'->>'publishedAt' ASC, ps.id ASC
+        LIMIT $2 OFFSET $3`,
+        [scopeCode, limit, offset],
+      ),
+      this.db.query(
+        `SELECT COUNT(*) AS total
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'supreme_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'supreme_court' AND ph.scope_code = $1
+          )`,
+        [scopeCode],
+      ),
+    ]);
+    return { records: result.rows.map(mapSupremeCourtPublishedSnapshot), total: Number(countResult.rows[0]?.total ?? 0) };
   }
 
   async getHighCourtSnapshotForRun(runId: string): Promise<HighCourtPublishedSnapshotRecord | null> {

@@ -71,15 +71,12 @@ export class PublishedHighCourtSnapshotService {
   }
 
   async listSnapshotArchive(offset = 0, limit = 20) {
-    const ordered = (await this.store.listPublishedHighCourtSnapshots(this.profile.courtCode)).map((record) => record.payload).sort((left, right) =>
-      left.snapshot.referenceDateAt.localeCompare(right.snapshot.referenceDateAt) ||
-      left.snapshot.publishedAt.localeCompare(right.snapshot.publishedAt),
-    );
+    const page = await this.store.listPublishedHighCourtSnapshots(this.profile.courtCode, offset, limit);
     return {
-      total: ordered.length,
+      total: page.total,
       offset,
       limit,
-      snapshots: ordered.slice(offset, offset + limit),
+      snapshots: page.records.map((record) => record.payload),
     };
   }
 
