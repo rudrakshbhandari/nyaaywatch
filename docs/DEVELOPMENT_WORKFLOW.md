@@ -92,7 +92,6 @@ npm run operator:publish -- <run-id> "Publish latest run"
 npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 npm run operator:remote -- --base-url=https://nyaaywatch.in publications
-npm run operator:production -- --state UP fetch "Internal Uttar Pradesh fetch"
 npm run release:prepublish -- --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:prepublish -- --state-slug=<state-slug> --run-id=<run-id> --base-url=https://nyaaywatch.in
 npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in
@@ -102,15 +101,13 @@ npm run release:record -- --state-slug=<state-slug> --publication-id=<publicatio
 npm test
 ```
 
-For heavier production internal-state live runs, use the ECS-backed operator lane:
+For production operator actions, use the authenticated remote lane through the public hostname:
 
 ```bash
-npm run operator:production -- --state=UP fetch "Internal Uttar Pradesh fetch"
+npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "Internal Uttar Pradesh fetch"
 ```
 
-Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` even locally so the code path matches the AWS deployment target.
-
-Use `npm run operator:remote` for lightweight live remote operator access through the public hostname. Use `npm run operator:production` for live AWS heavy-state work when the operator command should run inside one-off ECS tasks instead of through the public HTTP path. It targets the reality-named production backing stack `nyaaywatch-production`; use it only for recorded release or internal-proof work. After the production public-ingress WAF is enabled, direct ALB `--connect-host=<alb-dns>` traffic is blocked unless the WAF is intentionally disabled or allowlisted for a controlled recovery window.
+Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` and `AWS_ENDPOINT_URL_S3` pointed at LocalStack; these values exercise the local S3-compatible test adapter, not production storage. Azure Blob Storage is the production artifact store.
 
 ## Commit Examples
 
