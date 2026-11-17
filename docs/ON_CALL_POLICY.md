@@ -101,4 +101,4 @@ For every incident, in order:
 - `docs/OPERATING_EVIDENCE.md` — required evidence per release
 - `docs/internal/DEPLOYMENT_STATUS.md` — selected provider and live-state verification pointers
 - `.github/workflows/ops-watchdog.yml` — scheduled watchdog and issue wiring
-- `.github/workflows/ops-publish-pending.yml` — manual gated publish-pending recovery
+- `infra/azure/production/main.tf` — scheduled publish-pending sweep; run `npm run ops:publish-pending` for manual recovery
