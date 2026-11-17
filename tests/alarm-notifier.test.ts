@@ -1,9 +1,15 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { EmailClient } from "@azure/communication-email";
 import { createAlarmNotifier } from "../src/ops/alarm-notifier.js";
+
+vi.mock("@azure/communication-email", () => ({
+  EmailClient: vi.fn(),
+}));
 
 describe("alarm notifier", () => {
   afterEach(() => {
+    vi.clearAllMocks();
     vi.restoreAllMocks();
   });
 
@@ -28,6 +34,44 @@ describe("alarm notifier", () => {
     await expect(
       createAlarmNotifier({ ALARM_WEBHOOK_URL: "https://alerts.example.test/hook" }).publish("subject", "message"),
     ).rejects.toThrow("Alarm webhook returned HTTP 500.");
+  });
+
+  it("sends Azure email alerts and waits for successful delivery", async () => {
+    const pollUntilDone = vi.fn().mockResolvedValue({ status: "Succeeded" });
+    const beginSend = vi.fn().mockResolvedValue({ pollUntilDone });
+    vi.mocked(EmailClient).mockImplementation(function () {
+      return { beginSend } as unknown as EmailClient;
+    });
+
+    await createAlarmNotifier({
+      AZURE_COMMUNICATION_CONNECTION_STRING: "endpoint=https://example.test/;accesskey=test",
+      AZURE_EMAIL_SENDER: "DoNotReply@example.test",
+      ALARM_EMAIL_TO: "operator@example.test",
+    }).publish("subject", "message");
+
+    expect(EmailClient).toHaveBeenCalledWith("endpoint=https://example.test/;accesskey=test");
+    expect(beginSend).toHaveBeenCalledWith({
+      senderAddress: "DoNotReply@example.test",
+      recipients: { to: [{ address: "operator@example.test" }] },
+      content: { subject: "subject", plainText: "message" },
+    });
+    expect(pollUntilDone).toHaveBeenCalledOnce();
+  });
+
+  it("fails when Azure email delivery finishes unsuccessfully", async () => {
+    const pollUntilDone = vi.fn().mockResolvedValue({ status: "Failed" });
+    const beginSend = vi.fn().mockResolvedValue({ pollUntilDone });
+    vi.mocked(EmailClient).mockImplementation(function () {
+      return { beginSend } as unknown as EmailClient;
+    });
+
+    await expect(
+      createAlarmNotifier({
+        AZURE_COMMUNICATION_CONNECTION_STRING: "endpoint=https://example.test/;accesskey=test",
+        AZURE_EMAIL_SENDER: "DoNotReply@example.test",
+        ALARM_EMAIL_TO: "operator@example.test",
+      }).publish("subject", "message"),
+    ).rejects.toThrow("Azure alarm email finished with status Failed.");
   });
 
   it("uses the safe no-op fallback when no notifier is configured", async () => {

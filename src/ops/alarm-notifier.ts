@@ -1,4 +1,5 @@
 import { PublishCommand, SNSClient } from "@aws-sdk/client-sns";
+import { EmailClient } from "@azure/communication-email";
 
 export interface AlarmNotifier {
   publish(subject: string, message: string): Promise<void>;
@@ -39,10 +40,36 @@ class WebhookAlarmNotifier implements AlarmNotifier {
   }
 }
 
+class AzureEmailAlarmNotifier implements AlarmNotifier {
+  constructor(
+    private readonly client: EmailClient,
+    private readonly sender: string,
+    private readonly recipient: string,
+  ) {}
+
+  async publish(subject: string, message: string): Promise<void> {
+    const poller = await this.client.beginSend({
+      senderAddress: this.sender,
+      recipients: { to: [{ address: this.recipient }] },
+      content: { subject, plainText: message },
+    });
+    const result = await poller.pollUntilDone();
+    if (result.status !== "Succeeded") {
+      throw new Error(`Azure alarm email finished with status ${result.status}.`);
+    }
+  }
+}
+
 export function createAlarmNotifier(rawEnv: NodeJS.ProcessEnv = process.env): AlarmNotifier {
   const webhookUrl = rawEnv.ALARM_WEBHOOK_URL?.trim();
   if (webhookUrl) {
     return new WebhookAlarmNotifier(webhookUrl);
+  }
+  const emailConnectionString = rawEnv.AZURE_COMMUNICATION_CONNECTION_STRING?.trim();
+  const emailSender = rawEnv.AZURE_EMAIL_SENDER?.trim();
+  const emailRecipient = rawEnv.ALARM_EMAIL_TO?.trim();
+  if (emailConnectionString && emailSender && emailRecipient) {
+    return new AzureEmailAlarmNotifier(new EmailClient(emailConnectionString), emailSender, emailRecipient);
   }
   const topicArn = rawEnv.ALARM_TOPIC_ARN?.trim();
   if (!topicArn) {

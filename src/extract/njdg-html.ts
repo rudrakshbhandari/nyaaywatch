@@ -43,8 +43,17 @@ export function extractDistrictOptions(html: string): Array<{ districtCode: stri
     .filter((option) => option.districtCode.length > 0);
 }
 
+// District NJDG used to print "Last Reviewed and Updated on : DD-MM-YYYY".
+// The live footer is now "Last Updated :<strong> DD-MM-YYYY</strong>". Match the
+// label in tag-stripped text so either wording, and any inline markup, still parses.
+const SOURCE_SNAPSHOT_DATE_PATTERN =
+  /Last (?:Reviewed and )?Updated(?: on)?\s*:\s*(\d{2}-\d{2}-\d{4})/;
+
 export function extractSourceSnapshotAt(html: string, capturedAt?: string): string | null {
-  const rawDate = captureRaw(html, /Last Reviewed and Updated on\s*:\s*(\d{2}-\d{2}-\d{4})/, "source snapshot date");
+  const rawDate = SOURCE_SNAPSHOT_DATE_PATTERN.exec(stripTags(html))?.[1];
+  if (!rawDate) {
+    throw new Error("Could not extract source snapshot date from NJDG HTML.");
+  }
   const [, day, month, year] = /(\d{2})-(\d{2})-(\d{4})/.exec(rawDate) ?? [];
   if (!day || !month || !year) {
     throw new Error("Could not parse NJDG source snapshot date.");
