@@ -107,19 +107,16 @@ The repository now ships an India-first public alpha implementation of this arch
 - public Supreme Court and High Court beta routes with tier-specific methodology, data, and API surfaces
 - explicit state/Union Territory-scoped public routes for all 36 lower-court NJDG selector geographies via `/states/:stateSlug/...` and `/v1/states/:stateSlug/...`
 - PostgreSQL-backed run, publication, and published-snapshot state plus Azure
-  Blob Storage for production evidence artifacts. The app retains a provider
-  adapter used by local S3-compatible tests and gated legacy AWS recovery.
+  Blob Storage for production and local evidence artifacts.
 - published district-history and CSV export surfaces that stay inside the active public snapshot lineage
 
 Himachal remains only the legacy unscoped lower-court default for compatibility. It is no longer the product scope.
 
 ## Production Infrastructure
 
-Azure is the selected production provider through the protected
-`ACTIVE_PRODUCTION_PROVIDER` repository variable. Production deployment and
-scheduled jobs are managed by `.github/workflows/azure-migration.yml` and
-`infra/azure/production/`. Legacy AWS recovery scripts remain provider-gated;
-they do not define the normal production path.
+Azure is the production provider. Production deployment and scheduled jobs are
+managed by `.github/workflows/azure-production.yml` and
+`infra/azure/production/`.
 
 ## MVP Public Experience
 

@@ -1,4 +1,4 @@
-name: Azure migration target
+name: Azure production
 
 on:
   push:
@@ -7,17 +7,17 @@ on:
   workflow_dispatch:
     inputs:
       apply:
-        description: "Provision or update the Azure migration target"
+        description: "Provision or update Azure production infrastructure"
         required: true
         default: false
         type: boolean
       enable_scheduled_jobs:
-        description: "Enable Azure writers; use only after the documented cutover freeze"
+        description: "Enable the scheduled Azure jobs"
         required: true
         default: false
         type: boolean
       enable_application:
-        description: "Start an Azure application replica; use only after restoring data and artifacts"
+        description: "Start the Azure application replica"
         required: true
         default: false
         type: boolean
@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   verify:
-    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && (vars.ACTIVE_PRODUCTION_PROVIDER || 'azure') == 'azure')
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -55,7 +55,7 @@ jobs:
           npm test -- --run
 
   provision:
-    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && (vars.ACTIVE_PRODUCTION_PROVIDER || 'azure') == 'azure')
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: verify
     runs-on: ubuntu-latest
     concurrency:
@@ -81,9 +81,8 @@ jobs:
       TF_VAR_public_base_url: https://nyaaywatch.in
       TF_VAR_enable_scheduled_jobs: ${{ github.event_name == 'push' && 'true' || inputs.enable_scheduled_jobs }}
       TF_VAR_enable_application: ${{ github.event_name == 'push' && 'true' || inputs.enable_application }}
-      # Once Azure is the active provider, normal main pushes must preserve the
-      # imported and managed public-hostname bindings. Keep this opt-in for
-      # manual provisioning so rehearsal applies cannot claim the live domain.
+      # Normal main pushes preserve the imported public hostname binding. Keep
+      # this opt-in for manual provisioning so rehearsal applies cannot claim it.
       TF_VAR_manage_public_hostname: ${{ github.event_name == 'push' && 'true' || inputs.manage_public_hostname }}
       TF_VAR_project_name: nyaaywatch
       TF_VAR_environment_name: production

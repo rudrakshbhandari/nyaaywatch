@@ -25,7 +25,7 @@ export function resolvePublicAlphaMonitorBaseUrl(args: string[], env: NodeJS.Pro
 }
 
 export function buildPublicAlphaMonitorUsage() {
-  return "Usage: node dist/src/dev/ecs-public-alpha-ops-entrypoint.js [--base-url <https://nyaaywatch.in>] [--daily-fetch-lag-days <2>] [--target-set <all|smoke>]";
+  return "Usage: node dist/src/dev/public-alpha-ops-entrypoint.js [--base-url <https://nyaaywatch.in>] [--daily-fetch-lag-days <2>] [--target-set <all|smoke>]";
 }
 
 export function readPublicAlphaMonitorLagThreshold(args: string[], flag = "--daily-fetch-lag-days") {

@@ -1,17 +1,14 @@
 # Azure production deployment
 
-Azure is the selected production provider. GitHub's `ACTIVE_PRODUCTION_PROVIDER`
-repository variable is set to `azure`; `.github/workflows/azure-migration.yml`
-handles verification and Azure deployment on `main` pushes. The AWS production
-deployment job in `.github/workflows/ci.yml` runs only when the provider is not
-Azure.
+Azure is the production provider. `.github/workflows/azure-production.yml`
+handles verification and Azure deployment on `main` pushes.
 
 ## Source of configuration
 
 - `main.tf`, `variables.tf`, and related Terraform files define the Container
   App, PostgreSQL Flexible Server, Blob Storage, Container Registry, networking,
   logging, and scheduled Container Apps Jobs.
-- `.github/workflows/azure-migration.yml` authenticates through GitHub OIDC,
+- `.github/workflows/azure-production.yml` authenticates through GitHub OIDC,
   initializes the remote Terraform state, plans/applies the configured stack,
   and deploys the application image.
 - GitHub Actions secrets provide Azure identity, database, operator, and

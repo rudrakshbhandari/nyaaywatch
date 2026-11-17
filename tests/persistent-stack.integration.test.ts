@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { Pool } from "pg";
 
@@ -7,12 +6,12 @@ import { runMigrations } from "../src/db/migrate.js";
 import { createFixtureSourceClient } from "../src/dev/fixtures.js";
 import { getStateProfile } from "../src/geographies.js";
 import { PublishedSnapshotService } from "../src/services/published-snapshot-service.js";
-import { S3ArtifactStore } from "../src/storage/artifact-store.js";
+import { AzureBlobArtifactStore } from "../src/storage/artifact-store.js";
 import { PgWarehouseStore } from "../src/storage/postgres.js";
 
 const describePersistent = process.env.RUN_PERSISTENT_STACK_TESTS === "1" ? describe : describe.skip;
 
-describePersistent("persistent Postgres + S3 integration", () => {
+describePersistent("persistent Postgres + Azure Blob integration", () => {
   let adminPool: Pool;
   let testPool: Pool;
   let service: PublishedSnapshotService;
@@ -23,12 +22,8 @@ describePersistent("persistent Postgres + S3 integration", () => {
       NODE_ENV: "test",
       PORT: process.env.PORT ?? "3000",
       DATABASE_URL: process.env.DATABASE_URL ?? "postgres://postgres:postgres@127.0.0.1:5432/postgres",
-      AWS_REGION: process.env.AWS_REGION ?? "ap-south-1",
-      AWS_ENDPOINT_URL_S3: process.env.AWS_ENDPOINT_URL_S3 ?? "http://127.0.0.1:4566",
-      AWS_S3_FORCE_PATH_STYLE: process.env.AWS_S3_FORCE_PATH_STYLE ?? "true",
-      AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID ?? "test",
-      AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY ?? "test",
-      S3_BUCKET: `nyaaywatch-persistent-${randomUUID().replace(/-/g, "").slice(0, 12)}`,
+      AZURE_STORAGE_CONNECTION_STRING: process.env.AZURE_STORAGE_CONNECTION_STRING ?? "UseDevelopmentStorage=true",
+      AZURE_STORAGE_CONTAINER: process.env.AZURE_STORAGE_CONTAINER ?? "nyaaywatch-persistent",
       DEPLOY_ENV: "dev",
       OPERATOR_API_TOKEN: process.env.OPERATOR_API_TOKEN ?? "operator-test-token",
       STATE_CODE: "HP",
@@ -50,7 +45,7 @@ describePersistent("persistent Postgres + S3 integration", () => {
       config,
       getStateProfile(config.STATE_CODE),
       PgWarehouseStore.fromPool(testPool),
-      new S3ArtifactStore(baseConfig),
+      new AzureBlobArtifactStore(baseConfig),
       createFixtureSourceClient(config.STATE_CODE),
     );
   }, 90_000);

@@ -90,6 +90,6 @@ describe("public alpha monitor helpers", () => {
     expect(DEFAULT_PUBLIC_ALPHA_MONITOR_SCHEDULE_EXPRESSION).toBe("cron(0 * * * ? *)");
     expect(DEFAULT_PUBLIC_ALPHA_MONITOR_SCHEDULE_TIMEZONE).toBe("Asia/Kolkata");
     expect(DEFAULT_PUBLIC_ALPHA_MONITOR_SCHEDULE_STATE).toBe("ENABLED");
-    expect(buildPublicAlphaMonitorUsage()).toContain("ecs-public-alpha-ops-entrypoint.js");
+    expect(buildPublicAlphaMonitorUsage()).toContain("public-alpha-ops-entrypoint.js");
   });
 });

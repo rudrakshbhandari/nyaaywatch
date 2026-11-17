@@ -102,7 +102,7 @@ variable "alarm_webhook_url" {
 }
 
 variable "enable_scheduled_jobs" {
-  description = "Create active Azure schedule jobs. Keep false until AWS writers are stopped and cutover is approved."
+  description = "Create the scheduled Azure Container Apps jobs."
   type        = bool
   default     = false
 }

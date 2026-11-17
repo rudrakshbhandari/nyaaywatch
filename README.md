@@ -137,20 +137,18 @@ flowchart TD
   rollback --> current
 ```
 
-- One Azure-hosted containerized app, fronted by Cloudflare. GitHub's protected
-  `ACTIVE_PRODUCTION_PROVIDER` variable selects Azure for production deploys.
+- One Azure-hosted containerized app, fronted by Cloudflare.
 - PostgreSQL is the canonical store for runs, artifacts, subscriptions, and publication state.
-- Azure Blob Storage stores production raw scrape evidence, normalized snapshot
-  candidates, and release evidence. The app retains a provider adapter for
-  local S3-compatible tests and legacy AWS recovery tooling.
+- Azure Blob Storage stores production and local raw scrape evidence,
+  normalized snapshot candidates, and release evidence. Local development uses
+  Azurite, the Azure Storage emulator.
 - Publish requires an operator action or a passing auto-publish gate. The change gate compares each complete run with an agreed median of its recent prior trend points, so one bad historical publication does not poison later comparisons while a sustained jump or conflicted short history still goes to review.
 - Auto-publish validates fresh internal runs against quality and delta guardrails,
   publishes when safe, and sends the provider-configured alarm when blocked.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.
-- Azure is the production target. Provider-specific deployment configuration
-  lives under `infra/azure/production/`; legacy AWS scripts remain in the
-  repository for gated recovery and optional PR previews.
+- Azure is the production target. Deployment configuration lives under
+  `infra/azure/production/`.
 
 ## Repository Map
 
@@ -161,14 +159,13 @@ flowchart TD
 | `src/domain/` | Zod schemas and typed contracts for captured, candidate, and published snapshots |
 | `src/ingest/`, `src/extract/`, `src/normalize/` | Pipeline stages from upstream NJDG capture to deterministic snapshot candidates |
 | `src/services/` | Published snapshot orchestration, newsletter delivery, and cache invalidation |
-| `src/storage/` | PostgreSQL plus Azure Blob production storage and a local S3-compatible test adapter |
+| `src/storage/` | PostgreSQL plus Azure Blob storage |
 | `src/db/` | SQL migrations and migration tooling |
 | `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
 | `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
 | `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
-| `infra/aws/` | Legacy AWS recovery and optional preview scripts; gated when Azure is active |
 | `infra/azure/` | Azure production Terraform and deployment configuration |
-| `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
+| `.github/workflows/` | CI, Azure deployment, watchdog, outreach, and scheduled-operations workflows |
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
 | `docs/` | Design, methodology, release, operations, source reviews, and coverage audit docs |
@@ -191,9 +188,9 @@ npm run dev
 
 Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
-The local stack starts PostgreSQL and LocalStack S3. `dev:bootstrap` loads the development fixtures and creates a local published snapshot, so the public routes are useful immediately. `AWS_REGION=ap-south-1` configures the local S3-compatible test adapter.
+The local stack starts PostgreSQL and Azurite Blob Storage. `dev:bootstrap` loads the development fixtures and creates a local published snapshot, so the public routes are useful immediately.
 
-If ports `5432` or `4566` are already in use, set `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env`, then keep `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` aligned with those ports.
+If ports `5432` or `10000` are already in use, set `POSTGRES_PORT` and `AZURITE_BLOB_PORT` in `.env`.
 
 Stop the local services with:
 
@@ -209,7 +206,7 @@ npm test
 npm run test:e2e
 ```
 
-For the persistent PostgreSQL and LocalStack integration suite:
+For the persistent PostgreSQL and Azurite integration suite:
 
 ```bash
 RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
@@ -255,14 +252,11 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court=gujarat fetch "Internal Gujarat HC fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal SC fetch"
-npm run infra:production-preflight
-npm run infra:production-cutover-inventory
 npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
 ```
 
-Use `npm run operator:remote` for production operator actions. The AWS-only
-`npm run operator:production` path is disabled while Azure is selected; AWS
-recovery code is retained for an explicitly approved rollback only.
+Use `npm run operator:remote` for production operator actions. AWS is retired;
+the previous implementation remains recoverable from Git history.
 
 - [NyaayWatch design](docs/NYAAYWATCH_DESIGN.md): product definition, public information architecture, and constraints
 - [India court coverage audit](docs/INDIA_COURT_COVERAGE_AUDIT.md): current court and geography coverage boundary
@@ -279,10 +273,7 @@ recovery code is retained for an explicitly approved rollback only.
 ## Data sources
 
 NyaayWatch starts from official aggregate dashboards and documents its source boundary in the repository and on the public methodology pages:
-Azure is the selected production provider. The AWS deploy job is gated off while
-`ACTIVE_PRODUCTION_PROVIDER=azure`; local development still uses LocalStack S3.
-
-Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `SES_SOURCE_EMAIL` is an authenticated `@nyaaywatch.in` sender and `NJDG_OUTREACH_ARCHIVE_BUCKET` is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, writes the exact outbound payload to S3 under `ops/njdg-missing-zero-outreach/`, and fails loudly if email or archive configuration is incomplete.
+Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `AZURE_EMAIL_SENDER` is an authenticated `@nyaaywatch.in` sender and Azure Blob Storage is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, and archives the outbound payload in Azure Blob Storage.
 
 - [Supreme Court NJDG](https://scdg.sci.gov.in/scnjdg/)
 - [High Court NJDG](https://njdg.ecourts.gov.in/hcnjdg_v2/)

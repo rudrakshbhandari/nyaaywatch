@@ -78,7 +78,7 @@ describe("NJDG missing zero outreach", () => {
     ]);
   });
 
-  it("requires authenticated NyaayWatch domain mail for SES outreach", () => {
+  it("requires authenticated NyaayWatch domain mail for outreach", () => {
     expect(validateOutreachSourceEmail(" data@nyaaywatch.in ")).toBe("data@nyaaywatch.in");
     expect(() => validateOutreachSourceEmail("rudrakshbhandari99@gmail.com")).toThrow("@nyaaywatch.in sender");
   });
@@ -91,7 +91,7 @@ describe("NJDG missing zero outreach", () => {
     ]);
   });
 
-  it("builds stable S3 archive keys for outbound email records", () => {
+  it("builds stable archive object keys for outbound email records", () => {
     expect(buildOutreachArchiveKey("2026-05-01T06:02:51.350Z")).toBe(
       "ops/njdg-missing-zero-outreach/2026/05/01/2026-05-01T06-02-51-350Z.json",
     );

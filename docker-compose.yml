@@ -16,18 +16,26 @@ services:
     volumes:
       - nyaaywatch-postgres:/var/lib/postgresql/data
 
-  localstack:
-    image: localstack/localstack:4.8.1
-    container_name: nyaaywatch-localstack
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.33.0
+    container_name: nyaaywatch-azurite
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000 --location /data --skipApiVersionCheck
     environment:
-      SERVICES: s3
-      AWS_DEFAULT_REGION: ap-south-1
-      DEBUG: "0"
+      AZURITE_ACCOUNTS: devstoreaccount1:Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUz1gA==
     ports:
-      - "${LOCALSTACK_PORT:-4566}:4566"
+      - "${AZURITE_BLOB_PORT:-10000}:10000"
     volumes:
-      - localstack-data:/var/lib/localstack
+      - azurite-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:10000/devstoreaccount1?comp=list').then(r => process.exit(r.status < 500 ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
 volumes:
   nyaaywatch-postgres:
-  localstack-data:
+  azurite-data:

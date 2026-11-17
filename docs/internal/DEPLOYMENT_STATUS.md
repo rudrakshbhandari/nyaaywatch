@@ -2,14 +2,12 @@
 
 ## Production selection
 
-- Provider selected in GitHub: `ACTIVE_PRODUCTION_PROVIDER=azure` (checked
-  2026-10-30).
+- Production provider: Azure.
 - Azure production configuration: `infra/azure/production/`.
-- Deployment workflow: `.github/workflows/azure-migration.yml`.
+- Deployment workflow: `.github/workflows/azure-production.yml`.
 - Public hostname: `https://nyaaywatch.in`.
-- AWS deploy workflow is provider-gated and is not the normal production path
-  while Azure is selected. AWS recovery and preview code remains in the repo;
-  do not invoke it as routine production operation.
+- AWS is retired. Deployment, preview, and operator code for AWS is kept in Git
+  history rather than in the active production path.
 
 This file records repository configuration and operating pointers. It does not
 claim that a deployment, scheduled job, or public endpoint is healthy right
@@ -30,7 +28,7 @@ now. Use the Azure portal and deployment workflow run for live resource state.
 
 PostgreSQL is canonical for run, publication, and snapshot state. Production
 artifacts use Azure Blob Storage. Local development and CI use PostgreSQL with
-LocalStack S3 to exercise the provider adapter without cloud credentials.
+Azurite Blob Storage to exercise the production adapter without cloud credentials.
 
 ## Related operating records
 

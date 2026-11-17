@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-docker compose up -d postgres localstack
+docker compose up -d postgres azurite
 echo "Waiting for postgres..."
 until pg_isready -h localhost -p 5432 -U postgres -d nyaaywatch >/dev/null 2>&1; do
   sleep 1

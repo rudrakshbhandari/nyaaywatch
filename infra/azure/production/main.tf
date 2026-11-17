@@ -7,7 +7,7 @@ locals {
     weekday-internal-fetch = {
       name            = "fetch"
       cron            = "30 2 * * *"
-      command         = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
+      command         = ["node", "dist/src/dev/scheduled-fetch-entrypoint.js"]
       args            = []
       replica_timeout = 14400
       retry_limit     = 1
@@ -15,7 +15,7 @@ locals {
     supreme-court-internal-fetch = {
       name            = "sc-fetch"
       cron            = "40 2 * * *"
-      command         = ["node", "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js"]
+      command         = ["node", "dist/src/dev/scheduled-supreme-court-fetch-entrypoint.js"]
       args            = []
       replica_timeout = 3600
       retry_limit     = 1
@@ -23,7 +23,7 @@ locals {
     high-courts-internal-fetch = {
       name            = "hc-fetch"
       cron            = "50 2 * * *"
-      command         = ["node", "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js"]
+      command         = ["node", "dist/src/dev/scheduled-high-court-fetch-entrypoint.js"]
       args            = []
       replica_timeout = 3600
       retry_limit     = 1
@@ -31,7 +31,7 @@ locals {
     publish-pending-sweep = {
       name            = "publish"
       cron            = "0 3 * * *"
-      command         = ["node", "dist/src/dev/ecs-publish-pending-entrypoint.js"]
+      command         = ["node", "dist/src/dev/publish-pending-entrypoint.js"]
       args            = []
       replica_timeout = 3600
       retry_limit     = 1
@@ -41,7 +41,7 @@ locals {
       # A persistent failure is reported once per day instead of flooding the
       # operator inbox hourly; the production fetch jobs keep their own alerts.
       cron            = "0 7 * * *"
-      command         = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
+      command         = ["node", "dist/src/dev/public-alpha-ops-entrypoint.js"]
       args            = ["--base-url", "https://nyaaywatch.in", "--target-set", "smoke"]
       replica_timeout = 3600
       retry_limit     = 0
@@ -301,11 +301,6 @@ resource "azurerm_container_app" "this" {
       }
 
       env {
-        name  = "STORAGE_PROVIDER"
-        value = "azure"
-      }
-
-      env {
         name  = "AZURE_CLIENT_ID"
         value = azurerm_user_assigned_identity.container_app.client_id
       }
@@ -328,11 +323,6 @@ resource "azurerm_container_app" "this" {
       env {
         name  = "RUNTIME_REGION"
         value = var.location
-      }
-
-      env {
-        name  = "EMAIL_PROVIDER"
-        value = "azure"
       }
 
       dynamic "env" {
@@ -511,11 +501,6 @@ resource "azurerm_container_app_job" "scheduled" {
       }
 
       env {
-        name  = "STORAGE_PROVIDER"
-        value = "azure"
-      }
-
-      env {
         name  = "AZURE_CLIENT_ID"
         value = azurerm_user_assigned_identity.container_app.client_id
       }
@@ -538,11 +523,6 @@ resource "azurerm_container_app_job" "scheduled" {
       env {
         name  = "RUNTIME_REGION"
         value = var.location
-      }
-
-      env {
-        name  = "EMAIL_PROVIDER"
-        value = "azure"
       }
 
       dynamic "env" {
@@ -589,11 +569,6 @@ resource "azurerm_container_app_job" "scheduled" {
       env {
         name  = "PUBLIC_BASE_URL"
         value = var.public_base_url
-      }
-
-      env {
-        name  = "AWS_REGION"
-        value = "ap-south-1"
       }
 
       dynamic "env" {

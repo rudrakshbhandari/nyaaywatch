@@ -44,10 +44,10 @@ Downloadable public evidence packs that bundle raw upstream HTML are out of scop
 | Supreme Court, High Court, and lower-court public JSON endpoints | PostgreSQL published snapshot payload | Yes | Narrow machine-readable published snapshot boundary |
 | Lower-court and district history CSV exports | Published snapshot payload plus published history | Yes | Normalized exports with snapshot date, methodology version, freshness, and source attribution |
 | District permalinks and citation metadata | Published snapshot payload | Yes | Needed for durable public citation and responsible sharing |
-| Raw NJDG HTML capture bundles | S3 raw artifacts | No | Redistribution posture is not cleared for public bulk exposure |
-| Replay copies of raw artifacts | S3 replay prefixes | No | Internal operator artifacts only |
-| Snapshot candidate JSON before publish | S3 normalized candidate artifacts | No | Unpublished run state must stay private |
-| Operator run inspection payloads | PostgreSQL plus S3 | No | Internal review surface only |
+| Raw NJDG HTML capture bundles | Private Azure Blob artifacts | No | Redistribution posture is not cleared for public bulk exposure |
+| Replay copies of raw artifacts | Private Azure Blob replay objects | No | Internal operator artifacts only |
+| Snapshot candidate JSON before publish | Private Azure Blob candidate artifacts | No | Unpublished run state must stay private |
+| Operator run inspection payloads | PostgreSQL plus private Azure Blob Storage | No | Internal review surface only |
 | Bundled evidence packs containing raw HTML, screenshots, or unpublished operator context | Would combine multiple internal artifacts | No | Too close to raw redistribution and operator-only material for alpha |
 
 ## Public Exposure Rules

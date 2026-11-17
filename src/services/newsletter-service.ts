@@ -1,5 +1,4 @@
 import { randomBytes, randomUUID } from "node:crypto";
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import { EmailClient } from "@azure/communication-email";
 import type { Pool } from "pg";
 
@@ -17,28 +16,15 @@ export interface Subscriber {
 }
 
 export class NewsletterService {
-  private readonly ses: SESClient | null;
-  private readonly azureEmail: EmailClient | null;
-  private readonly emailProvider: "aws" | "azure";
+  private readonly emailClient: EmailClient | null;
   private readonly sourceEmail: string | undefined;
 
   constructor(
     private readonly pool: Pool,
-    config: Pick<
-      AppConfig,
-      | "AWS_REGION"
-      | "SES_SOURCE_EMAIL"
-      | "EMAIL_PROVIDER"
-      | "AZURE_COMMUNICATION_CONNECTION_STRING"
-      | "AZURE_EMAIL_SENDER"
-    >,
+    config: Pick<AppConfig, "AZURE_COMMUNICATION_CONNECTION_STRING" | "AZURE_EMAIL_SENDER">,
   ) {
-    this.emailProvider = config.EMAIL_PROVIDER;
-    this.sourceEmail = config.EMAIL_PROVIDER === "aws" ? config.SES_SOURCE_EMAIL : config.AZURE_EMAIL_SENDER;
-    this.ses = config.EMAIL_PROVIDER === "aws" && this.sourceEmail
-      ? new SESClient({ region: config.AWS_REGION })
-      : null;
-    this.azureEmail = config.EMAIL_PROVIDER === "azure" && config.AZURE_COMMUNICATION_CONNECTION_STRING
+    this.sourceEmail = config.AZURE_EMAIL_SENDER;
+    this.emailClient = config.AZURE_COMMUNICATION_CONNECTION_STRING
       ? new EmailClient(config.AZURE_COMMUNICATION_CONNECTION_STRING)
       : null;
   }
@@ -134,7 +120,7 @@ export class NewsletterService {
     stateSlug: string,
   ): Promise<number> {
     if (!this.isConfigured()) {
-      logInfo(`[newsletter] ${this.emailProvider} email is not configured — skipping digest for scope ${scope}`);
+      logInfo(`[newsletter] Azure email is not configured — skipping digest for scope ${scope}`);
       return 0;
     }
 
@@ -192,21 +178,7 @@ export class NewsletterService {
 
   private async sendEmail(opts: { to: string; subject: string; text: string }): Promise<void> {
     if (!this.isConfigured() || !this.sourceEmail) return;
-    if (this.emailProvider === "aws") {
-      await this.ses!.send(
-        new SendEmailCommand({
-          Source: this.sourceEmail,
-          Destination: { ToAddresses: [opts.to] },
-          Message: {
-            Subject: { Data: opts.subject, Charset: "UTF-8" },
-            Body: { Text: { Data: opts.text, Charset: "UTF-8" } },
-          },
-        }),
-      );
-      return;
-    }
-
-    const poller = await this.azureEmail!.beginSend({
+    const poller = await this.emailClient!.beginSend({
       senderAddress: this.sourceEmail,
       recipients: { to: [{ address: opts.to }] },
       content: { subject: opts.subject, plainText: opts.text },
@@ -218,8 +190,6 @@ export class NewsletterService {
   }
 
   private isConfigured(): boolean {
-    return this.emailProvider === "aws"
-      ? this.ses !== null && this.sourceEmail !== undefined
-      : this.azureEmail !== null && this.sourceEmail !== undefined;
+    return this.emailClient !== null && this.sourceEmail !== undefined;
   }
 }

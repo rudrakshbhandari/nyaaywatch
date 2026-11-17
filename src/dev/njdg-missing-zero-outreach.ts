@@ -1,5 +1,6 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { DefaultAzureCredential } from "@azure/identity";
+import { BlobServiceClient } from "@azure/storage-blob";
+import { EmailClient } from "@azure/communication-email";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -53,7 +54,7 @@ interface NjdgOutreachMessage {
 }
 
 interface SendOutreachResult {
-  archiveBucket: string;
+  archiveContainer: string;
   archiveKey: string;
   bcc: string[];
   messageId: string | null;
@@ -118,8 +119,8 @@ async function main() {
     replyToRecipients: [] as string[],
     sendRequested: send,
     sent: false,
-    sesMessageId: null as string | null,
-    archiveBucket: null as string | null,
+    emailMessageId: null as string | null,
+    archiveContainer: null as string | null,
     archiveKey: null as string | null,
     issues,
   };
@@ -135,8 +136,8 @@ async function main() {
     summary.bccRecipientCount = result.bcc.length;
     summary.bccRecipients = result.bcc;
     summary.replyToRecipients = result.replyTo;
-    summary.sesMessageId = result.messageId;
-    summary.archiveBucket = result.archiveBucket;
+    summary.emailMessageId = result.messageId;
+    summary.archiveContainer = result.archiveContainer;
     summary.archiveKey = result.archiveKey;
   } else {
     console.log(message.text);
@@ -256,7 +257,7 @@ export function deriveOutreachBcc(sourceEmail: string, extraBcc = process.env.NJ
 export function validateOutreachSourceEmail(sourceEmail: string): string {
   const normalized = sourceEmail.trim().toLowerCase();
   if (!normalized.endsWith("@nyaaywatch.in")) {
-    throw new Error("NJDG outreach must use an authenticated @nyaaywatch.in sender. Do not send this outreach from a personal mailbox through SES.");
+    throw new Error("NJDG outreach must use an authenticated @nyaaywatch.in sender. Do not send this outreach from a personal mailbox.");
   }
   return normalized;
 }
@@ -280,23 +281,27 @@ async function sendOutreachEmail(
   message: NjdgOutreachMessage,
   context: { baseUrl: string; checkedAt: string; issues: MissingMonthlyMovementIssue[] },
 ): Promise<SendOutreachResult> {
-  const source = validateOutreachSourceEmail(process.env.SES_SOURCE_EMAIL ?? "");
-  const region = process.env.AWS_REGION?.trim() || "ap-south-1";
-  const archiveBucket = process.env.NJDG_OUTREACH_ARCHIVE_BUCKET?.trim();
+  const source = validateOutreachSourceEmail(process.env.AZURE_EMAIL_SENDER ?? "");
+  const emailConnectionString = process.env.AZURE_COMMUNICATION_CONNECTION_STRING?.trim();
+  const storageAccountUrl = process.env.AZURE_STORAGE_ACCOUNT_URL?.trim();
+  const archiveContainer = process.env.AZURE_STORAGE_CONTAINER?.trim();
   if (message.to.length === 0) {
     throw new Error("At least one NJDG outreach recipient is required when --send is set.");
   }
-  if (!archiveBucket) {
-    throw new Error("NJDG_OUTREACH_ARCHIVE_BUCKET is required when --send is set.");
+  if (!emailConnectionString) {
+    throw new Error("AZURE_COMMUNICATION_CONNECTION_STRING is required when --send is set.");
+  }
+  if (!storageAccountUrl || !archiveContainer) {
+    throw new Error("AZURE_STORAGE_ACCOUNT_URL and AZURE_STORAGE_CONTAINER are required when --send is set.");
   }
 
   const bcc = deriveOutreachBcc(source);
   const replyTo = deriveOutreachReplyTo(source);
   const archiveKey = buildOutreachArchiveKey(context.checkedAt);
   await archiveOutreachEmail({
-    bucket: archiveBucket,
+    accountUrl: storageAccountUrl,
+    container: archiveContainer,
     key: archiveKey,
-    region,
     record: buildOutreachArchiveRecord({
       ...context,
       bcc,
@@ -309,23 +314,25 @@ async function sendOutreachEmail(
     }),
   });
 
-  const client = new SESClient({ region });
-  const response = await client.send(
-    new SendEmailCommand({
-      Source: source,
-      Destination: { ToAddresses: message.to, BccAddresses: bcc },
-      ReplyToAddresses: replyTo,
-      Message: {
-        Subject: { Data: message.subject },
-        Body: { Text: { Data: message.text } },
-      },
-    }),
-  );
+  const client = new EmailClient(emailConnectionString);
+  const poller = await client.beginSend({
+    senderAddress: source,
+    recipients: {
+      to: message.to.map((address) => ({ address })),
+      bcc: bcc.map((address) => ({ address })),
+    },
+    replyTo: replyTo.map((address) => ({ address })),
+    content: { subject: message.subject, plainText: message.text },
+  });
+  const response = await poller.pollUntilDone();
+  if (response.status !== "Succeeded") {
+    throw new Error(`Azure outreach email finished with status ${response.status}.`);
+  }
   const sentAt = new Date().toISOString();
   await archiveOutreachEmail({
-    bucket: archiveBucket,
+    accountUrl: storageAccountUrl,
+    container: archiveContainer,
     key: archiveKey,
-    region,
     record: buildOutreachArchiveRecord({
       ...context,
       bcc,
@@ -333,12 +340,12 @@ async function sendOutreachEmail(
       replyTo,
       source,
       status: "sent",
-      messageId: response.MessageId ?? null,
+      messageId: response.id ?? null,
       sentAt,
     }),
   });
 
-  return { archiveBucket, archiveKey, bcc, messageId: response.MessageId ?? null, replyTo };
+  return { archiveContainer, archiveKey, bcc, messageId: response.id ?? null, replyTo };
 }
 
 function buildOutreachArchiveRecord(input: {
@@ -360,7 +367,7 @@ function buildOutreachArchiveRecord(input: {
     baseUrl: input.baseUrl,
     checkedAt: input.checkedAt,
     sentAt: input.sentAt,
-    sesMessageId: input.messageId,
+    emailMessageId: input.messageId,
     source: input.source,
     to: input.message.to,
     bcc: input.bcc,
@@ -372,16 +379,14 @@ function buildOutreachArchiveRecord(input: {
   };
 }
 
-async function archiveOutreachEmail(input: { bucket: string; key: string; region: string; record: unknown }): Promise<void> {
-  const client = new S3Client({ region: input.region });
-  await client.send(
-    new PutObjectCommand({
-      Bucket: input.bucket,
-      Key: input.key,
-      Body: JSON.stringify(input.record, null, 2),
-      ContentType: "application/json",
-    }),
-  );
+async function archiveOutreachEmail(input: { accountUrl: string; container: string; key: string; record: unknown }): Promise<void> {
+  const service = new BlobServiceClient(input.accountUrl, new DefaultAzureCredential());
+  const container = service.getContainerClient(input.container);
+  await container.createIfNotExists();
+  const body = JSON.stringify(input.record, null, 2);
+  await container.getBlockBlobClient(input.key).upload(body, Buffer.byteLength(body), {
+    blobHTTPHeaders: { blobContentType: "application/json" },
+  });
 }
 
 function buildStateApiRoutes(stateSlug: string) {
