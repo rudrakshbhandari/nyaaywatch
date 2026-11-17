@@ -131,6 +131,19 @@ describe("HTTP routes", () => {
     expect(statsResponse.status).toBe(200);
     expect(statsResponse.body.stats.pendingCases).toBe(617086);
 
+    const archivePage = await request(app).get("/v1/archive?limit=1&offset=0");
+    expect(archivePage.status).toBe(200);
+    expect(archivePage.body.scope).toEqual({ type: "lower_court_state", code: "HP", name: "Himachal Pradesh" });
+    expect(archivePage.body.pagination).toEqual({ offset: 0, limit: 1, total: 2, hasMore: true, nextOffset: 1 });
+    expect(archivePage.body.snapshots).toHaveLength(1);
+    expect(archivePage.body.snapshots[0].snapshot.referenceDateAt).toBe("2026-03-31T00:00:00.000Z");
+    expect(archivePage.body.snapshots[0]).toHaveProperty("districts");
+    expect(archivePage.body.snapshots[0]).not.toHaveProperty("rawCapture");
+    const secondArchivePage = await request(app).get("/v1/states/himachal/archive?limit=1&offset=1");
+    expect(secondArchivePage.status).toBe(200);
+    expect(secondArchivePage.body.snapshots[0].snapshot.referenceDateAt).toBe("2026-04-10T00:00:00.000Z");
+    expect((await request(app).get("/v1/archive?limit=101")).status).toBe(400);
+
     const homepage = await request(app).get("/");
     expect(homepage.status).toBe(200);
     expect(homepage.text).toContain('rel="icon"');
@@ -324,8 +337,8 @@ describe("HTTP routes", () => {
     expect(apiPage.text).not.toContain("Viewing Himachal Pradesh");
     expect(apiPage.text).toContain("State or Union Territory-wide backlog");
     expect(apiPage.text).toContain("state or Union Territory-wide trend surface");
-    expect(apiPage.text).toContain("/v1/supreme-court/{stats,trends}");
-    expect(apiPage.text).toContain("/v1/high-courts/:courtSlug/{stats,trends}");
+    expect(apiPage.text).toContain("/v1/supreme-court/{stats,trends,archive}");
+    expect(apiPage.text).toContain("/v1/high-courts/:courtSlug/{stats,trends,archive}");
     expect(apiPage.text).toContain('href="/supreme-court/api"');
     expect(apiPage.text).toContain('href="/high-courts"');
     expect(apiPage.text).toContain("/states/:stateSlug/data/districts.csv");
@@ -939,6 +952,7 @@ describe("HTTP routes", () => {
     expect(data.status).toBe(200);
     expect(data.text).toContain("across Himachal Pradesh");
     expect(data.text).toContain("/v1/high-courts/himachal/stats");
+    expect(data.text).toContain("/v1/high-courts/himachal/archive?limit=20&amp;offset=0");
     expect(data.text).toContain("This public High Court page ships the JSON surface before adding download formats.");
 
     const methodology = await request(app).get("/high-courts/himachal/methodology");
@@ -963,6 +977,11 @@ describe("HTTP routes", () => {
     expect(trends.status).toBe(200);
     expect(trends.body.snapshot.referenceDateKind).toBe("captured_at");
     expect(trends.body.trends.length).toBeGreaterThan(0);
+    const archive = await request(app).get("/v1/high-courts/himachal/archive?limit=1");
+    expect(archive.status).toBe(200);
+    expect(archive.body.scope.type).toBe("high_court");
+    expect(archive.body.snapshots).toHaveLength(1);
+    expect(archive.body.snapshots[0].snapshot.courtCode).toBe("HPHC");
 
     const uttarPradeshOverview = await request(app).get("/high-courts/uttar-pradesh");
     expect(uttarPradeshOverview.status).toBe(200);
@@ -1136,6 +1155,7 @@ describe("HTTP routes", () => {
     const data = await request(app).get("/supreme-court/data");
     expect(data.status).toBe(200);
     expect(data.text).toContain("/v1/supreme-court/stats");
+    expect(data.text).toContain("/v1/supreme-court/archive?limit=20&amp;offset=0");
     expect(data.text).toContain("This public Supreme Court page ships the JSON surface before adding download formats.");
 
     const methodology = await request(app).get("/supreme-court/methodology");
@@ -1157,6 +1177,11 @@ describe("HTTP routes", () => {
     expect(trends.status).toBe(200);
     expect(trends.body.snapshot.referenceDateKind).toBe("captured_at");
     expect(trends.body.trends.length).toBeGreaterThan(0);
+    const archive = await request(app).get("/v1/supreme-court/archive?limit=1");
+    expect(archive.status).toBe(200);
+    expect(archive.body.scope.type).toBe("supreme_court");
+    expect(archive.body.snapshots).toHaveLength(1);
+    expect(archive.body.snapshots[0].snapshot.courtCode).toBe("SCI");
   });
 
   it("serves Punjab through explicit state-scoped public routes once Punjab has a published snapshot", async () => {

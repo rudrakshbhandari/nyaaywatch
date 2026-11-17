@@ -462,10 +462,9 @@ export class PgWarehouseStore {
       `SELECT ps.*
       FROM published_snapshots ps
       WHERE ps.scope_type = $1 AND ps.scope_code = $2
-        AND EXISTS (
-          SELECT 1 FROM publication_history ph
-          WHERE ph.published_snapshot_id = ps.id
-            AND ph.scope_type = $1 AND ph.scope_code = $2
+        AND ps.id IN (
+          SELECT ph.published_snapshot_id FROM publication_history ph
+          WHERE ph.scope_type = $1 AND ph.scope_code = $2
         )
       ORDER BY ps.created_at ASC, ps.id ASC`,
       [scopeType, scopeCode],
@@ -478,10 +477,9 @@ export class PgWarehouseStore {
       `SELECT ps.*
       FROM published_snapshots ps
       WHERE ps.scope_type = 'high_court' AND ps.scope_code = $1
-        AND EXISTS (
-          SELECT 1 FROM publication_history ph
-          WHERE ph.published_snapshot_id = ps.id
-            AND ph.scope_type = 'high_court' AND ph.scope_code = $1
+        AND ps.id IN (
+          SELECT ph.published_snapshot_id FROM publication_history ph
+          WHERE ph.scope_type = 'high_court' AND ph.scope_code = $1
         )
       ORDER BY ps.created_at ASC, ps.id ASC`,
       [scopeCode],
@@ -494,10 +492,9 @@ export class PgWarehouseStore {
       `SELECT ps.*
       FROM published_snapshots ps
       WHERE ps.scope_type = 'supreme_court' AND ps.scope_code = $1
-        AND EXISTS (
-          SELECT 1 FROM publication_history ph
-          WHERE ph.published_snapshot_id = ps.id
-            AND ph.scope_type = 'supreme_court' AND ph.scope_code = $1
+        AND ps.id IN (
+          SELECT ph.published_snapshot_id FROM publication_history ph
+          WHERE ph.scope_type = 'supreme_court' AND ph.scope_code = $1
         )
       ORDER BY ps.created_at ASC, ps.id ASC`,
       [scopeCode],
