@@ -13,6 +13,17 @@ describe("Supreme Court source client", () => {
     vi.restoreAllMocks();
   });
 
+  it("includes the underlying network cause when the NJDG request fails", async () => {
+    const cause = Object.assign(new Error("connect timed out"), { code: "ETIMEDOUT" });
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("fetch failed", { cause })));
+
+    const client = new SupremeCourtNjdgSourceClient();
+
+    await expect(client.captureLatest()).rejects.toThrow(
+      "Failed to fetch Supreme Court NJDG page https://scdg.sci.gov.in/scnjdg/: TypeError: fetch failed; cause: Error [ETIMEDOUT]: connect timed out",
+    );
+  });
+
   it("captures the Supreme Court NJDG dashboard page", async () => {
     vi.stubGlobal(
       "fetch",

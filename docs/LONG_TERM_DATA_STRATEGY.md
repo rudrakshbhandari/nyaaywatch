@@ -8,7 +8,7 @@ This doc exists to answer three questions clearly:
 2. When should NyaayWatch add case-level records, orders, judgments, or faster-moving feeds?
 3. Which public metrics come directly from government dashboards versus NyaayWatch's own calculations?
 
-Use `docs/METRIC_STRATEGY.md` for the product-level metric inventory and the ranked list of metric additions.
+This document also records the current metric boundary and candidate directions so source and metric strategy stay in one place. Candidate metrics are not approved for implementation unless they appear in `TODOS.md`.
 
 ## Bottom Line
 
@@ -113,9 +113,11 @@ Even then, public trust-critical surfaces should continue to publish reviewed sn
 
 ## Roadmap
 
+This is a strategic direction, not an approved delivery schedule. Stage 1 is complete for the current aggregate observability layer: the configured Supreme Court, all 25 High Courts, and all 36 lower-court state and Union Territory geographies are represented in the public product. The future directions in stages 2 and 3 do not authorize implementation by themselves. Two product directions are approved for roadmap planning, but have no implementation start or delivery date: [public accountability timelines](https://github.com/rudrakshbhandari/nyaaywatch/issues/407) and [representative profiles and change alerts](https://github.com/rudrakshbhandari/nyaaywatch/issues/408). Use `TODOS.md` for the current planning status and in-flight work.
+
 ### Stage 1: Strengthen The Snapshot Observatory
 
-Target horizon: `now -> next 6 months`
+Status: complete for the current aggregate observability layer.
 
 Primary goal:
 
@@ -139,7 +141,7 @@ Public product posture:
 
 ### Stage 2: Add Internal Deeper Data Pilots
 
-Target horizon: `~6 to 18 months`
+Status: future option; requires a separate approval before implementation.
 
 Primary goal:
 
@@ -160,7 +162,7 @@ Public product posture:
 
 ### Stage 3: Expand To A Hybrid Multi-Layer Platform
 
-Target horizon: `18 months+`
+Status: longer-term option; requires a separate approval before implementation.
 
 Primary goal:
 
@@ -184,7 +186,7 @@ Public product posture:
 The current implementation takes these fields from public NJDG district dashboard pages:
 
 - state and district names/codes from the district selector
-- source snapshot date from the dashboard's own "Last Reviewed and Updated on" field
+- source snapshot date from the dashboard footer. The live label is "Last Updated"; older captures used "Last Reviewed and Updated on"
 - total pending/open cases
 - cases instituted in the last month
 - cases disposed in the last month
@@ -223,6 +225,24 @@ NyaayWatch currently calculates or assigns the following:
   - assigned by NyaayWatch to version the transform logic behind the publication
 - publication timestamp and lineage
   - assigned by NyaayWatch during publish/replay/rollback flows
+
+## Metric Directions
+
+The current public metric set is sufficient for the snapshot observatory. The
+following are research candidates, not approved product work:
+
+- **Derivable from current snapshots:** backlog movement as a share of pending
+  load, break-even clearances, catch-up burden, age-bucket shares where source
+  fields support them, persistence of watchlist placement, backlog
+  concentration, and civil/criminal mix where both categories are comparable.
+- **Needs source/schema work:** preserved age-bucket fields, consistent filed
+  and cleared counts, and comparable High Court case-type detail.
+- **Needs new sources and methodology:** judge-adjusted or
+  population-normalized pressure, case-level duration, and conviction rates.
+
+Do not publish a candidate until its source coverage, denominator, cross-court
+comparability, missing-data behavior, and public wording are defensible. Move a
+metric into `TODOS.md` before treating it as approved implementation work.
 
 ## What NyaayWatch Is Committing Itself To
 

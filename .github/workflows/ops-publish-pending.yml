@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ap-south-1
-      ACTIVE_PRODUCTION_PROVIDER: ${{ vars.ACTIVE_PRODUCTION_PROVIDER || 'aws' }}
+      ACTIVE_PRODUCTION_PROVIDER: ${{ vars.ACTIVE_PRODUCTION_PROVIDER || 'azure' }}
       STACK_NAME: ${{ inputs.stack_name || 'nyaaywatch-production' }}
       PUBLIC_BASE_URL: https://nyaaywatch.in
 

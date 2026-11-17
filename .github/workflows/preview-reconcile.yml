@@ -11,6 +11,10 @@ permissions:
 
 jobs:
   reconcile:
+    # Production is Azure-native. This job still talks to the retired AWS preview
+    # role, so it must follow the same opt-in gate as the PR preview job.
+    # Without the gate it assumes that role every hour and fails closed.
+    if: vars.ENABLE_AWS_PREVIEWS == 'true'
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ap-south-1
