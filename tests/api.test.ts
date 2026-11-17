@@ -337,8 +337,8 @@ describe("HTTP routes", () => {
     expect(apiPage.text).not.toContain("Viewing Himachal Pradesh");
     expect(apiPage.text).toContain("State or Union Territory-wide backlog");
     expect(apiPage.text).toContain("state or Union Territory-wide trend surface");
-    expect(apiPage.text).toContain("/v1/supreme-court/{stats,trends,archive}");
-    expect(apiPage.text).toContain("/v1/high-courts/:courtSlug/{stats,trends,archive}");
+    expect(apiPage.text).toContain("/v1/supreme-court/archive");
+    expect(apiPage.text).toContain("/v1/high-courts/:courtSlug/archive");
     expect(apiPage.text).toContain('href="/supreme-court/api"');
     expect(apiPage.text).toContain('href="/high-courts"');
     expect(apiPage.text).toContain("/states/:stateSlug/data/districts.csv");

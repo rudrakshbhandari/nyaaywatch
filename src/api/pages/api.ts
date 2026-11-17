@@ -52,12 +52,12 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Supreme Court</h3>
-          <p><code>/v1/supreme-court/{stats,trends,archive}</code></p>
+          <p><code>/v1/supreme-court/stats</code><br /><code>/v1/supreme-court/trends</code><br /><code>/v1/supreme-court/archive</code></p>
           <p><a href="/supreme-court/api">Open Supreme Court API reference</a></p>
         </article>
         <article class="card">
           <h3>High Courts</h3>
-          <p><code>/v1/high-courts/:courtSlug/{stats,trends,archive}</code></p>
+          <p><code>/v1/high-courts/:courtSlug/stats</code><br /><code>/v1/high-courts/:courtSlug/trends</code><br /><code>/v1/high-courts/:courtSlug/archive</code></p>
           <p><a href="/high-courts">Choose a High Court</a></p>
         </article>
       </div>
@@ -217,7 +217,6 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${documentedRoutes.archive}?limit=20&amp;offset=0</code>
           <p>Page through the full normalized payloads of snapshots that were published for this scope. <code>limit</code> accepts 1–100; <code>offset</code> starts at 0. The response includes the total count and the next offset when more records are available.</p>
-          <pre class="code-sample">curl "https://nyaaywatch.in${documentedRoutes.archive}?limit=20&amp;offset=0"</pre>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
