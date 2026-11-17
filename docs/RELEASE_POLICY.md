@@ -2,7 +2,7 @@
 
 Operating policy for keeping the India-first public alpha trustworthy.
 
-This policy sets cadence, publisher rules, and blocking criteria. Use `docs/ALPHA_RELEASE_CHECKLIST.md` as the release go/no-go runbook, `docs/internal/DEPLOYMENT_STATUS.md` as the live environment map, and `docs/DOMAIN_CUTOVER_CHECKLIST.md` only for hostname, certificate, or DNS changes.
+This policy sets cadence, publisher rules, and blocking criteria. Use `docs/ALPHA_RELEASE_CHECKLIST.md` as the release go/no-go runbook and `docs/internal/DEPLOYMENT_STATUS.md` for provider selection and live-state verification pointers. Azure deployment configuration is in `infra/azure/production/`.
 
 This document answers four practical questions:
 
@@ -49,7 +49,7 @@ The environment split is:
 
 - local development for implementation and fixture-backed checks
 - PR previews for public UI, copy, and responsive review only
-- dedicated AWS staging for isolated release rehearsal as `nyaaywatch-staging`
+- an isolated environment suitable for release rehearsal when the scope requires one
 - production public alpha at `https://nyaaywatch.in` as `nyaaywatch-production`
 
 Do not treat production as a sandbox for destructive rehearsal. Production operator actions should use `npm run operator:production`, be release-scoped, be recorded, and be backed by an explicit rollback target.
@@ -61,7 +61,7 @@ For alpha, keep the allowlist short.
 Allowed publishers must have all of the following:
 
 - GitHub write access to the repo
-- AWS access to the NyaayWatch account and production public-alpha stack
+- Azure production access and GitHub deployment permissions
 - the operator token for the target environment
 - responsibility for completing `docs/ALPHA_RELEASE_CHECKLIST.md`
 
@@ -78,14 +78,14 @@ If a release changes methodology, public wording, or the publish/rollback flow i
 Treat a release as blocked if any one of these is true:
 
 - `/health` is failing through the public hostname
-- ALB target health is not fully healthy
+- the production Container App health route is failing
 - a new run is `partial`, `failed`, or missing required artifacts
 - dedicated staging exists and the operator cannot complete `fetch -> inspect -> publish -> replay -> rollback` there before production release work
 - production-lane operator validation is not release-scoped, recorded, or backed by a clear rollback target
 - the homepage, court-tier pages, district pages, CSVs, evidence packs, and APIs do not agree on the active publication for the checked scope
 - freshness, methodology version, source attribution, or quality state are missing from trust-critical surfaces
 - the public copy implies real-time monitoring, prediction, or verdicts
-- a structured app-error alarm or ALB 5xx alarm is firing and the cause is not understood
+- an application error or provider alert is firing and the cause is not understood
 - the log review routine below has not been completed for the release window
 - there is no clear rollback target in publication history
 
@@ -94,9 +94,7 @@ Treat a release as blocked if any one of these is true:
 ### Before publish
 
 1. Open the production dashboard for the current public-alpha stack and confirm:
-   - healthy host count is steady
-   - unhealthy host count is `0`
-   - ALB 5xx counts are `0`
+   - the Container App is healthy and serving the expected revision
    - structured app errors are `0` or understood
 2. Review all console logs from the last 30 minutes across Azure app replicas. For Azure production:
    ```bash
@@ -116,10 +114,7 @@ Treat a release as blocked if any one of these is true:
      --timespan PT30M \
      --output table
    ```
-   `ContainerGroupName_g` identifies the replica. Use this AWS command only when AWS is the active production provider:
-   ```bash
-   aws logs tail /ecs/nyaaywatch-production --since 30m --region ap-south-1
-   ```
+   `ContainerGroupName_g` identifies the replica.
 3. If any `level=error` log line appears, either fix it first or explicitly record why it is safe to ignore for this release.
 4. Run the public verification script against the target hostname:
    ```bash
@@ -160,7 +155,7 @@ For the next 15 minutes:
 - if rolling out a High Court or Supreme Court publication, confirm the matching `/v1/high-courts/:courtSlug/stats` or `/v1/supreme-court/stats` route reflects the intended active publication
 - rerun `npm run release:verify -- --base-url=https://nyaaywatch.in` and keep the JSON summary with the release notes
 - rerun `release:verify` with `--supreme-court`, `--high-court=<court-slug>`, or `--state-slug=<state-slug>` for the tier actually published
-- if `CLOUDFLARE_API_TOKEN` is configured for the live runtime via ECS `secrets`, confirm the public data page and CSV verification no longer require manual cache-busting and that `release:verify` passes on the stable URL alone
+- if `CLOUDFLARE_API_TOKEN` is configured for the live runtime in the active Container App configuration, confirm the public data page and CSV verification no longer require manual cache-busting and that `release:verify` passes on the stable URL alone
 - run `npm run release:postpublish -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in` and keep the generated markdown evidence file
 - run the same postpublish command with `--state-slug=<state-slug>` for any approved state-scoped rollout
 - run `npm run release:record -- --publication-id=<publication-id> --base-url=https://nyaaywatch.in --reviewer="<name>"` so `docs/internal/RELEASE_HISTORY.md` stays current
@@ -174,8 +169,8 @@ At least once each week, even without a publish:
 - review app errors for recurring patterns
 - confirm the dashboard still reflects the real stack resources
 - run `npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in`
-- for Azure production, confirm the latest `nyaaywatch-production-alpha-ops` Container Apps execution succeeded and review any provider-configured failure notification; use the `nyaaywatch-production-public-alpha-ops` CloudWatch alarm only when AWS is the active production provider
-- if the repo-level ops watchdog is being audited or repaired, run `npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in` only when AWS is the active provider; the Azure path checks Container Apps job configuration and recent executions in `.github/workflows/ops-watchdog.yml`
+- confirm the latest Azure Container Apps monitoring execution succeeded and review any provider-configured failure notification
+- if the repo-level ops watchdog is being audited or repaired, verify Azure Container Apps job configuration and recent executions through `.github/workflows/ops-watchdog.yml`
 - treat any reported daily-fetch lag as an operator issue even if the public snapshot is not yet old enough to count as stale by the product trust model, because the sweep now checks internal run history rather than published snapshot age
 
 ## Practical Release Rule
