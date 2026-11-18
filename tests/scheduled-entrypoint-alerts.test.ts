@@ -18,7 +18,7 @@ describe("scheduled entrypoint failure alerts", () => {
     }));
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
-    const { main } = await import("../src/dev/ecs-scheduled-fetch-entrypoint.js");
+    const { main } = await import("../src/dev/scheduled-fetch-entrypoint.js");
 
     await expect(main()).rejects.toBe(error);
     expect(publish).toHaveBeenCalledWith("NyaayWatch scheduled fetch failed", "lower-court failed");
@@ -36,7 +36,7 @@ describe("scheduled entrypoint failure alerts", () => {
     }));
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
-    const { main } = await import("../src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js");
+    const { main } = await import("../src/dev/scheduled-supreme-court-fetch-entrypoint.js");
 
     await expect(main()).rejects.toBe(error);
     expect(publish).toHaveBeenCalledWith("NyaayWatch Supreme Court fetch failed", "Supreme Court failed");
@@ -54,7 +54,7 @@ describe("scheduled entrypoint failure alerts", () => {
     }));
     vi.spyOn(console, "error").mockImplementation(() => undefined);
 
-    const { main } = await import("../src/dev/ecs-scheduled-high-court-fetch-entrypoint.js");
+    const { main } = await import("../src/dev/scheduled-high-court-fetch-entrypoint.js");
 
     await expect(main()).rejects.toBe(error);
     expect(publish).toHaveBeenCalledWith("NyaayWatch High Court fetch failed", "High Court failed");

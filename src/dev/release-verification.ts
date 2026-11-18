@@ -135,7 +135,7 @@ export async function verifyPublicRelease(
   const target = resolveReleaseTarget(options);
   const checkedAt = options.now ?? new Date();
   const retryDelayMs = options.csvParityRetryDelayMs ?? CSV_PARITY_RETRY_DELAY_MS;
-  const expectedRegion = options.expectedRegion ?? process.env.RUNTIME_REGION?.trim() ?? "ap-south-1";
+  const expectedRegion = options.expectedRegion ?? process.env.RUNTIME_REGION?.trim() ?? "centralindia";
   if (target.tier === "high_court") {
     return verifyHighCourtRelease(normalizedBaseUrl, target, checkedAt, expectedRegion);
   }

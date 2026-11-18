@@ -25,8 +25,8 @@ export function renderSupremeCourtDataPage(
     <section class="stat-grid">
       ${renderStatTile({
         label: "Public endpoints",
-        value: "2",
-        note: "Stats and trends for the active Supreme Court publication.",
+        value: "3",
+        note: "Stats, trends, and published history for the Supreme Court.",
       })}
       ${renderStatTile({
         label: "Trend points",
@@ -48,7 +48,7 @@ export function renderSupremeCourtDataPage(
 
     <section class="sc-section">
       ${renderSectionHead({ headline: "Available machine-readable routes" })}
-      <div class="card-grid card-grid--2">
+      <div class="card-grid card-grid--3">
         <article class="card">
           <h3>Supreme Court stats</h3>
           <p><code>${context.routes.statsApi}</code></p>
@@ -60,6 +60,12 @@ export function renderSupremeCourtDataPage(
           <p><code>${context.routes.trendsApi}</code></p>
           <p>Published trend points for pending load and last-month institution or disposal totals only.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.trendsApi}">Open trends JSON</a></p>
+        </article>
+        <article class="card">
+          <h3>Published snapshot archive</h3>
+          <p><code>${context.routes.archiveApi}?limit=20&amp;offset=0</code></p>
+          <p>Paginated full normalized snapshots that were published, with dates, methodology versions, and quality labels.</p>
+          <p><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open archive JSON</a></p>
         </article>
       </div>
     </section>

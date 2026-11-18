@@ -88,6 +88,12 @@ describe("PublishedHighCourtSnapshotService", () => {
     expect(history[0]?.isActive).toBe(true);
     expect(history[0]?.snapshot.id).toBe(seeded.snapshot.id);
     expect(history[1]?.publication.id).toBe(replayed.publication.id);
+
+    const firstArchivePage = await context.service.listSnapshotArchive(0, 1);
+    const secondArchivePage = await context.service.listSnapshotArchive(1, 1);
+    expect(firstArchivePage.total).toBe(2);
+    expect(firstArchivePage.snapshots).toHaveLength(1);
+    expect(secondArchivePage.snapshots).toHaveLength(1);
   });
 });
 
@@ -130,10 +136,8 @@ function createTestConfig(): AppConfig {
     NODE_ENV: "test",
     PORT: "3000",
     DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-    AWS_REGION: "ap-south-1",
-    AWS_ACCESS_KEY_ID: "test",
-    AWS_SECRET_ACCESS_KEY: "test",
-    S3_BUCKET: "nyaaywatch-test-artifacts",
+    AZURE_STORAGE_ACCOUNT_URL: "https://nyaaywatchtest.blob.core.windows.net",
+    AZURE_STORAGE_CONTAINER: "artifacts",
     DEPLOY_ENV: "dev",
     OPERATOR_API_TOKEN: "operator-test-token",
     STATE_CODE: "HP",

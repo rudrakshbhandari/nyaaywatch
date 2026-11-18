@@ -135,6 +135,7 @@ export async function insertHistoricalPublishedSnapshot(
     publishedAt: string;
     methodologyVersion?: string;
     qualityState?: "complete" | "partial" | "stale";
+    omitReferenceDateAt?: boolean;
     pendingCases?: number;
     flaggedDistricts?: number;
     districtOverrides?: Partial<Record<string, Partial<PublishedSnapshot["districts"][number]>>>;
@@ -143,6 +144,9 @@ export async function insertHistoricalPublishedSnapshot(
   const payload = loadFixturePublishedSnapshot();
   payload.snapshot.sourceSnapshotAt = overrides.sourceSnapshotAt;
   payload.snapshot.referenceDateAt = overrides.sourceSnapshotAt;
+  if (overrides.omitReferenceDateAt) {
+    delete (payload.snapshot as Partial<typeof payload.snapshot>).referenceDateAt;
+  }
   payload.snapshot.referenceDateKind = "source_snapshot_at";
   payload.snapshot.publishedAt = overrides.publishedAt;
   payload.snapshot.methodologyVersion = overrides.methodologyVersion ?? payload.snapshot.methodologyVersion;
@@ -316,10 +320,8 @@ function createTestConfig(stateCode: SupportedStateCode = "HP"): AppConfig {
     NODE_ENV: "test",
     PORT: "3000",
     DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-    AWS_REGION: "ap-south-1",
-    AWS_ACCESS_KEY_ID: "test",
-    AWS_SECRET_ACCESS_KEY: "test",
-    S3_BUCKET: "nyaaywatch-test-artifacts",
+    AZURE_STORAGE_ACCOUNT_URL: "https://nyaaywatchtest.blob.core.windows.net",
+    AZURE_STORAGE_CONTAINER: "artifacts",
     DEPLOY_ENV: "dev",
     OPERATOR_API_TOKEN: "operator-test-token",
     STATE_CODE: stateCode,

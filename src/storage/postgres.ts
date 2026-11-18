@@ -36,8 +36,8 @@ export interface ArtifactRecord {
   id: string;
   runId: string;
   artifactType: string;
-  s3Bucket: string;
-  s3Key: string;
+  storageContainer: string;
+  objectKey: string;
   checksumSha256: string;
   sizeBytes: number;
   metadata: Record<string, unknown>;
@@ -116,8 +116,8 @@ interface ArtifactInsert {
   id: string;
   runId: string;
   artifactType: string;
-  s3Bucket: string;
-  s3Key: string;
+  storageContainer: string;
+  objectKey: string;
   checksumSha256: string;
   sizeBytes: number;
   metadata?: Record<string, unknown>;
@@ -251,8 +251,8 @@ export class PgWarehouseStore {
         input.id,
         input.runId,
         input.artifactType,
-        input.s3Bucket,
-        input.s3Key,
+        input.storageContainer,
+        input.objectKey,
         input.checksumSha256,
         input.sizeBytes,
         JSON.stringify(input.metadata ?? {}),
@@ -457,6 +457,109 @@ export class PgWarehouseStore {
     return result.rows.map(mapPublication);
   }
 
+  async listPublishedSnapshots(
+    scopeCode: string,
+    scopeType: ScopeType = inferScopeType(scopeCode),
+    offset = 0,
+    limit = 20,
+  ): Promise<{ records: PublishedSnapshotRecord[]; total: number }> {
+    const [result, countResult] = await Promise.all([
+      this.db.query(
+        `SELECT ps.*
+        FROM published_snapshots ps
+        WHERE ps.scope_type = $1 AND ps.scope_code = $2
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = $1 AND ph.scope_code = $2
+          )
+        ORDER BY COALESCE(
+          ps.payload->'snapshot'->>'referenceDateAt',
+          ps.payload->'snapshot'->>'sourceSnapshotAt'
+        ) ASC,
+          ps.payload->'snapshot'->>'publishedAt' ASC, ps.id ASC
+        LIMIT $3 OFFSET $4`,
+        [scopeType, scopeCode, limit, offset],
+      ),
+      this.db.query(
+        `SELECT COUNT(*) AS total
+        FROM published_snapshots ps
+        WHERE ps.scope_type = $1 AND ps.scope_code = $2
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = $1 AND ph.scope_code = $2
+          )`,
+        [scopeType, scopeCode],
+      ),
+    ]);
+    return { records: result.rows.map(mapPublishedSnapshot), total: Number(countResult.rows[0]?.total ?? 0) };
+  }
+
+  async listPublishedHighCourtSnapshots(
+    scopeCode: string,
+    offset = 0,
+    limit = 20,
+  ): Promise<{ records: HighCourtPublishedSnapshotRecord[]; total: number }> {
+    const [result, countResult] = await Promise.all([
+      this.db.query(
+        `SELECT ps.*
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'high_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'high_court' AND ph.scope_code = $1
+          )
+        ORDER BY ps.payload->'snapshot'->>'referenceDateAt' ASC,
+          ps.payload->'snapshot'->>'publishedAt' ASC, ps.id ASC
+        LIMIT $2 OFFSET $3`,
+        [scopeCode, limit, offset],
+      ),
+      this.db.query(
+        `SELECT COUNT(*) AS total
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'high_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'high_court' AND ph.scope_code = $1
+          )`,
+        [scopeCode],
+      ),
+    ]);
+    return { records: result.rows.map(mapHighCourtPublishedSnapshot), total: Number(countResult.rows[0]?.total ?? 0) };
+  }
+
+  async listPublishedSupremeCourtSnapshots(
+    scopeCode: string,
+    offset = 0,
+    limit = 20,
+  ): Promise<{ records: SupremeCourtPublishedSnapshotRecord[]; total: number }> {
+    const [result, countResult] = await Promise.all([
+      this.db.query(
+        `SELECT ps.*
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'supreme_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'supreme_court' AND ph.scope_code = $1
+          )
+        ORDER BY ps.payload->'snapshot'->>'referenceDateAt' ASC,
+          ps.payload->'snapshot'->>'publishedAt' ASC, ps.id ASC
+        LIMIT $2 OFFSET $3`,
+        [scopeCode, limit, offset],
+      ),
+      this.db.query(
+        `SELECT COUNT(*) AS total
+        FROM published_snapshots ps
+        WHERE ps.scope_type = 'supreme_court' AND ps.scope_code = $1
+          AND ps.id IN (
+            SELECT ph.published_snapshot_id FROM publication_history ph
+            WHERE ph.scope_type = 'supreme_court' AND ph.scope_code = $1
+          )`,
+        [scopeCode],
+      ),
+    ]);
+    return { records: result.rows.map(mapSupremeCourtPublishedSnapshot), total: Number(countResult.rows[0]?.total ?? 0) };
+  }
+
   async getHighCourtSnapshotForRun(runId: string): Promise<HighCourtPublishedSnapshotRecord | null> {
     const result = await this.db.query(
       "SELECT * FROM published_snapshots WHERE run_id = $1 ORDER BY created_at DESC LIMIT 1",
@@ -504,8 +607,8 @@ function mapArtifact(row: QueryResultRow): ArtifactRecord {
     id: row.id,
     runId: row.run_id,
     artifactType: row.artifact_type,
-    s3Bucket: row.s3_bucket,
-    s3Key: row.s3_key,
+    storageContainer: row.s3_bucket,
+    objectKey: row.s3_key,
     checksumSha256: row.checksum_sha256,
     sizeBytes: Number(row.size_bytes),
     metadata: typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata,

@@ -235,7 +235,7 @@ describe("runAutoPublish", () => {
 
   it("reports cache-warning delivery failure while preserving the committed publication", async () => {
     const notifier = makeNotifier();
-    notifier.publish = vi.fn().mockRejectedValue(new Error("SNS unavailable"));
+    notifier.publish = vi.fn().mockRejectedValue(new Error("email delivery unavailable"));
     const runOperator = vi.fn()
       .mockRejectedValueOnce(new Error("Cloudflare purge failed"))
       .mockResolvedValueOnce([{ run: { id: "run_abc" } }]);
@@ -251,6 +251,6 @@ describe("runAutoPublish", () => {
     );
 
     expect(outcome.action).toBe("published");
-    expect(outcome.warningDeliveryError).toBe("Cache invalidation warning delivery failed: SNS unavailable");
+    expect(outcome.warningDeliveryError).toBe("Cache invalidation warning delivery failed: email delivery unavailable");
   });
 });

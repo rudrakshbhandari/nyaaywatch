@@ -45,6 +45,7 @@ The project is built for people who need to inspect, explain, or cite court data
 - Compare districts within the same lower-court geography instead of collapsing unlike court tiers into one ranking.
 - Inspect flagged pressure signals and the reasons behind them.
 - Download evidence packs, use the JSON API, subscribe to snapshot updates, or embed a district or state view.
+- Page through the historical archive of published normalized snapshots for each court or lower-court geography.
 
 NyaayWatch is a public alpha publishing reviewed snapshots. Coverage means that a court or geography has a configured public snapshot surface. It does not mean case-level search, a live feed, or a claim that every court tier can be compared directly.
 
@@ -59,6 +60,16 @@ NyaayWatch is a public alpha publishing reviewed snapshots. Coverage means that 
 The home page is the national entry point, followed by explicit state, Union Territory, High Court, and Supreme Court routes.
 
 Legacy compatibility note: `/districts`, `/data`, and `/methodology` are unscoped Himachal Pradesh lower-court shortcuts. Use the homepage geography selector and `/states/:stateSlug/...` routes for a specific geography. `/api` is the national API reference; state-specific API pages use `/states/:stateSlug/api`.
+
+## Roadmap
+
+The current approved scope is to operate and maintain this snapshot-based coverage; no new court-geography rollout is queued.
+
+- **Current:** keep the existing aggregate snapshots, public coverage, and evidence-backed publishing reliable.
+- **Planned for roadmap review:** public accountability timelines and representative profiles with change alerts are recorded as future directions. Their source pilots, implementation scope, and delivery timing still need separate decisions.
+- **Longer term:** add order or judgment details, or document text, only where source terms, quality, and reproducibility support them. Published snapshots remain the public citation baseline.
+
+These are planning directions, not implementation commitments. See the issues for [accountability timelines](https://github.com/rudrakshbhandari/nyaaywatch/issues/407) and [representative profiles](https://github.com/rudrakshbhandari/nyaaywatch/issues/408), the [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md), the [maintainer roadmap](TODOS.md), and [the expansion gates](docs/MULTI_STATE_EXPANSION_GATES.md). Completed rollout plans are removed from the active docs tree; Git history retains them when audit context is needed.
 
 ## The trust model
 
@@ -101,6 +112,7 @@ COURT_SLUG=your-court-slug
 curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/stats" | jq
 curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/districts" | jq '.districts[0]'
 curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/trends" | jq
+curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/archive?limit=20&offset=0" | jq
 curl "https://nyaaywatch.in/v1/high-courts/$COURT_SLUG/trends" | jq
 curl https://nyaaywatch.in/v1/supreme-court/stats | jq
 ```
@@ -108,12 +120,14 @@ curl https://nyaaywatch.in/v1/supreme-court/stats | jq
 Useful public routes include:
 
 ```text
-GET /v1/states/:stateSlug/{stats,districts,trends}
-GET /v1/high-courts/:courtSlug/{stats,trends}
-GET /v1/supreme-court/{stats,trends}
+GET /v1/states/:stateSlug/{stats,districts,trends,archive}
+GET /v1/high-courts/:courtSlug/{stats,trends,archive}
+GET /v1/supreme-court/{stats,trends,archive}
 GET /states/:stateSlug/data/evidence/state.json
 GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
+
+Archive endpoints return full published normalized snapshot payloads in pages (`limit` 1–100, default 20; `offset` default 0). They include publication metadata and never serve raw captures or unpublished candidates.
 
 ```mermaid
 flowchart TD
@@ -127,20 +141,18 @@ flowchart TD
   rollback --> current
 ```
 
-- One provider-selected containerized app, fronted by Cloudflare. The active
-  production provider is controlled by the protected `ACTIVE_PRODUCTION_PROVIDER`
-  repository variable; AWS remains the documented rollback origin while Azure
-  is being cut over.
+- One Azure-hosted containerized app, fronted by Cloudflare.
 - PostgreSQL is the canonical store for runs, artifacts, subscriptions, and publication state.
-- The active provider's object storage stores raw scrape evidence, normalized
-  snapshot candidates, release evidence, and outreach archives. AWS uses S3;
-  Azure uses Blob Storage.
+- Azure Blob Storage stores production and local raw scrape evidence,
+  normalized snapshot candidates, and release evidence. Local development uses
+  Azurite, the Azure Storage emulator.
 - Publish requires an operator action or a passing auto-publish gate. The change gate compares each complete run with an agreed median of its recent prior trend points, so one bad historical publication does not poison later comparisons while a sustained jump or conflicted short history still goes to review.
 - Auto-publish validates fresh internal runs against quality and delta guardrails,
   publishes when safe, and sends the provider-configured alarm when blocked.
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.
-- The production target supports AWS/S3 and Azure Blob storage behind the same artifact-store interface; the Azure deployment lives under `infra/azure/production/`.
+- Azure is the production target. Deployment configuration lives under
+  `infra/azure/production/`.
 
 ## Repository Map
 
@@ -151,14 +163,13 @@ flowchart TD
 | `src/domain/` | Zod schemas and typed contracts for captured, candidate, and published snapshots |
 | `src/ingest/`, `src/extract/`, `src/normalize/` | Pipeline stages from upstream NJDG capture to deterministic snapshot candidates |
 | `src/services/` | Published snapshot orchestration, newsletter delivery, and cache invalidation |
-| `src/storage/` | PostgreSQL plus AWS S3 and Azure Blob adapters |
+| `src/storage/` | PostgreSQL plus Azure Blob storage |
 | `src/db/` | SQL migrations and migration tooling |
 | `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
 | `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
 | `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
-| `infra/aws/` | AWS dev, preview, staging, production, schedule, and cutover scripts/templates |
-| `infra/azure/` | Azure production migration target, Terraform, transfer scripts, and cutover runbook |
-| `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
+| `infra/azure/` | Azure production Terraform and deployment configuration |
+| `.github/workflows/` | CI, Azure deployment, watchdog, outreach, and scheduled-operations workflows |
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
 | `docs/` | Design, methodology, release, operations, source reviews, and coverage audit docs |
@@ -181,9 +192,9 @@ npm run dev
 
 Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
-The local stack starts PostgreSQL and LocalStack S3. `dev:bootstrap` loads the development fixtures and creates a local published snapshot, so the public routes are useful immediately. Keep `AWS_REGION=ap-south-1` in `.env` to exercise the same region-specific code path used by the AWS deployment.
+The local stack starts PostgreSQL and Azurite Blob Storage. `dev:bootstrap` loads the development fixtures and creates a local published snapshot, so the public routes are useful immediately.
 
-If ports `5432` or `4566` are already in use, set `POSTGRES_PORT` and `LOCALSTACK_PORT` in `.env`, then keep `DATABASE_URL` and `AWS_ENDPOINT_URL_S3` aligned with those ports.
+If ports `5432` or `10000` are already in use, set `POSTGRES_PORT` and `AZURITE_BLOB_PORT` in `.env`.
 
 Stop the local services with:
 
@@ -199,7 +210,7 @@ npm test
 npm run test:e2e
 ```
 
-For the persistent PostgreSQL and LocalStack integration suite:
+For the persistent PostgreSQL and Azurite integration suite:
 
 ```bash
 RUN_PERSISTENT_STACK_TESTS=1 npm run test:persistent
@@ -234,7 +245,7 @@ npm run operator:replay -- <run-id>
 npm run operator:rollback -- <publication-id>
 ```
 
-Scheduled internal fetches and release verification run through the AWS and GitHub Actions automation. Read [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md), [Development workflow](docs/DEVELOPMENT_WORKFLOW.md), and [Release policy](docs/RELEASE_POLICY.md) before using those paths. Production operation requires separate credentials and access; it is not part of the local quickstart.
+Scheduled internal fetches run as Azure Container Apps Jobs; repository verification and watchdogs run through GitHub Actions. Read [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md), [Development workflow](docs/DEVELOPMENT_WORKFLOW.md), and [Release policy](docs/RELEASE_POLICY.md) before using those paths. Production operation requires separate credentials and access; it is not part of the local quickstart.
 
 </details>
 
@@ -245,15 +256,15 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in publications
 npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "Internal Uttar Pradesh fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --high-court=gujarat fetch "Internal Gujarat HC fetch"
 npm run operator:remote -- --base-url=https://nyaaywatch.in --supreme-court fetch "Internal SC fetch"
-npm run infra:production-preflight
-npm run infra:production-cutover-inventory
 npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in
 ```
 
-The AWS-only `npm run operator:production` path is retired after the Azure cutover. Use `npm run operator:remote` for supported production lanes. Do not run the AWS one-off ECS operator unless you are deliberately performing an AWS rollback rehearsal with `ACTIVE_PRODUCTION_PROVIDER=aws` and an explicitly restored AWS stack.
+Use `npm run operator:remote` for production operator actions. AWS is retired;
+the previous implementation remains recoverable from Git history.
 
 - [NyaayWatch design](docs/NYAAYWATCH_DESIGN.md): product definition, public information architecture, and constraints
 - [India court coverage audit](docs/INDIA_COURT_COVERAGE_AUDIT.md): current court and geography coverage boundary
+- [Long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md): current source boundary and future data and metric directions
 - [Copy voice](docs/COPY_VOICE.md): public language rules
 - [Engineering test plan](docs/ENG_REVIEW_TEST_PLAN.md): critical flows and required test types
 - [Storage and operator flow](docs/STORAGE_AND_OPERATIONS.md): evidence, publication, replay, and rollback
@@ -261,16 +272,12 @@ The AWS-only `npm run operator:production` path is retired after the Azure cutov
 - [Development workflow](docs/DEVELOPMENT_WORKFLOW.md): branches, worktrees, and local commands
 - [Design system](DESIGN.md): visual and accessibility rules
 - [Brand system](brand/BRAND.md): logos, type, color, and press assets
-- [Working backlog](TODOS.md): current follow-up work
+- [Maintainer roadmap](TODOS.md): approved open work and current scope
 
 ## Data sources
 
 NyaayWatch starts from official aggregate dashboards and documents its source boundary in the repository and on the public methodology pages:
-After Azure becomes the active production provider, set the repository variable
-`ACTIVE_PRODUCTION_PROVIDER=azure`. The main deploy job is gated on that value
-so later pushes do not restart the AWS service or re-enable its schedules.
-
-Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `SES_SOURCE_EMAIL` is an authenticated `@nyaaywatch.in` sender and `NJDG_OUTREACH_ARCHIVE_BUCKET` is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, writes the exact outbound payload to S3 under `ops/njdg-missing-zero-outreach/`, and fails loudly if email or archive configuration is incomplete.
+Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `NJDG_OUTREACH_SENDER` is an authenticated `@nyaaywatch.in` or `@outreach.nyaaywatch.in` sender and Azure Blob Storage is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, and archives the outbound payload in Azure Blob Storage.
 
 - [Supreme Court NJDG](https://scdg.sci.gov.in/scnjdg/)
 - [High Court NJDG](https://njdg.ecourts.gov.in/hcnjdg_v2/)
