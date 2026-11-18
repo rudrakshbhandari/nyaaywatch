@@ -201,7 +201,7 @@ describe("HTTP routes", () => {
 
     const districtPage = await request(app).get("/districts/kangra");
     expect(districtPage.status).toBe(200);
-    expect(districtPage.text).toContain("Published district history");
+    expect(districtPage.text).toContain("District history");
     expect(districtPage.text).toContain("What to check next.");
     expect(districtPage.text).toContain("Download and cite this district.");
     expect(districtPage.text).toContain("Raw captures and operator notes stay private.");
