@@ -90,17 +90,17 @@ describe("Arunachal Pradesh public rollout preflight", () => {
 
     const routes = [
       { path: "/states/arunachal-pradesh", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
-      { path: "/states/arunachal-pradesh/districts", requiredText: "Scan the districts under the most pressure." },
+      { path: "/states/arunachal-pradesh/districts", requiredText: "Browse district data." },
       {
         path: "/states/arunachal-pradesh/districts/lohit",
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
       },
       {
         path: "/states/arunachal-pradesh/data",
-        requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
+        requiredText: "Raw NJDG page captures and internal operator files are not available for download",
       },
       { path: "/states/arunachal-pradesh/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/arunachal-pradesh/api", requiredText: "currently on the public site" },
+      { path: "/states/arunachal-pradesh/api", requiredText: "currently shown on the site" },
     ] as const;
 
     for (const route of routes) {

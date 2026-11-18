@@ -18,7 +18,7 @@ test("citizen flow loads the homepage, district workspace, and district permalin
   await expect(page).toHaveURL(/\/states\/[a-z-]+$/);
   await page.getByRole("navigation").getByRole("link", { name: "Districts" }).click();
   await expect(page).toHaveURL(/(\/states\/[a-z-]+\/districts|\/districts)$/);
-  await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Browse district data." })).toBeVisible();
   await expect(page.getByLabel("View")).toBeVisible();
 
   await page.getByRole("link", { name: /Faridabad|Ludhiana|Kangra/ }).first().click();
@@ -35,7 +35,7 @@ test("reporter flow reaches methodology and public download surfaces from distri
   await page.getByRole("navigation").getByRole("link", { name: "Data" }).click();
 
   await expect(page).toHaveURL(/\/data$/);
-  await expect(page.getByRole("heading", { name: "Download exactly what the public site is showing." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Download court data and past snapshots." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download CSV" })).toBeVisible();
 
   await page.getByRole("navigation").getByRole("link", { name: "Method" }).click();

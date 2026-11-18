@@ -77,9 +77,9 @@ export function renderDistrictsPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "DISTRICT WORKSPACE",
-      headline: "Scan the districts under the most pressure.",
+      headline: "Browse district data.",
       lede:
-        "Sort the current publication by backlog, clearance pace, typical wait, or file-clear gap. When a district looks unusual, open its evidence page for history, caveats, and exports.",
+        "Sort by pending cases, clearance pace, typical wait, or the gap between cases filed and cleared. Open a district for its history, caveats, and downloads.",
       isHero: true,
     })}
 
@@ -130,35 +130,35 @@ export function renderDistrictsPage(
     ${renderControls(options, context)}
 
     ${renderInvestigationWorkflow({
-      headline: "Turn a district list into a trail.",
+      headline: "Explore the district list.",
       lede:
-        "Use the table to find a pressure signal, then open evidence, compare districts inside this geography, or check what moved between published snapshots.",
+        "Sort the table, open a district page, compare two districts in this geography, or check how the numbers changed over time.",
       steps: [
         {
           eyebrow: "01",
           title: "Sort for pressure",
-          body: "Switch between backlog, clearance pace, typical wait, and file-clear gap instead of relying on one headline rank.",
+          body: "Sort by pending cases, clearance pace, typical wait, or the gap between cases filed and cleared.",
           href: context.routes.districts,
           cta: "Reset workspace",
         },
         {
           eyebrow: "02",
           title: "Open a district",
-          body: "Every district row links to a standalone evidence page with history, caveats, citation text, and CSV downloads.",
+          body: "Each district row links to its page with history, caveats, citation text, and CSV downloads.",
           href: highestBacklog ? context.routes.district(highestBacklog.districtId) : context.routes.districts,
           cta: "Inspect biggest backlog",
         },
         {
           eyebrow: "03",
           title: "Compare two signals",
-          body: "Put two districts side by side when you need a cleaner local contrast, without turning it into a statewide finding.",
+          body: "Compare two districts within this geography. The comparison does not represent the whole state or Union Territory.",
           href: comparisonHref,
           cta: "Open comparison",
         },
         {
           eyebrow: "04",
           title: "Check movement",
-          body: "Use movers when there are at least two published snapshots, so you can separate scale from recent change.",
+          body: "Movers compares two readings when at least two are available, showing recent change alongside case counts.",
           href: context.routes.movers,
           cta: "Open movers",
         },

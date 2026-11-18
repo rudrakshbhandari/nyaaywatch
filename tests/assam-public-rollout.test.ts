@@ -89,14 +89,14 @@ describe("Assam public rollout preflight", () => {
 
     const routes = [
       { path: "/states/assam", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
-      { path: "/states/assam/districts", requiredText: "Scan the districts under the most pressure." },
+      { path: "/states/assam/districts", requiredText: "Browse district data." },
       {
         path: "/states/assam/districts/tinsukia",
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
       },
-      { path: "/states/assam/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
+      { path: "/states/assam/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/assam/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/assam/api", requiredText: "currently on the public site" },
+      { path: "/states/assam/api", requiredText: "currently shown on the site" },
     ] as const;
 
     for (const route of routes) {

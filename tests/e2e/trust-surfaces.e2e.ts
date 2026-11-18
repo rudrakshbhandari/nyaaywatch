@@ -47,7 +47,7 @@ test.describe("responsive trust surfaces", () => {
   test("keeps district scanning and trust metadata usable on mobile", async ({ page }) => {
     await page.goto("/districts?view=flagged");
 
-    await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Browse district data." })).toBeVisible();
     await expect(page.getByText(/Numbers published/i)).toBeVisible();
     await expect(page.getByLabel("Search")).toBeVisible();
     await expect(page.getByRole("link", { name: "Kangra" }).first()).toBeVisible();

@@ -69,7 +69,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/districts",
-        requiredText: "Scan the districts under the most pressure.",
+        requiredText: "Browse district data.",
       },
       {
         path: "/districts/kangra",
@@ -77,11 +77,11 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/compare/kangra-vs-shimla",
-        requiredText: "Use this comparison as a starting point.",
+        requiredText: "Compare the district records.",
       },
       {
         path: "/data",
-        requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
+        requiredText: "Raw NJDG page captures and internal operator files are not available for download",
       },
       {
         path: "/methodology",
@@ -89,7 +89,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/api",
-        requiredText: "currently on the public site",
+        requiredText: "currently shown on the site",
       },
       {
         path: "/learn",
@@ -165,7 +165,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/districts",
-        requiredText: "Scan the districts under the most pressure.",
+        requiredText: "Browse district data.",
       },
       {
         path: "/states/punjab/districts/ludhiana",
@@ -173,11 +173,11 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/compare/ludhiana-vs-amritsar",
-        requiredText: "Use this comparison as a starting point.",
+        requiredText: "Compare the district records.",
       },
       {
         path: "/states/punjab/data",
-        requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
+        requiredText: "Raw NJDG page captures and internal operator files are not available for download",
       },
       {
         path: "/states/punjab/methodology",
@@ -185,7 +185,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/api",
-        requiredText: "currently on the public site",
+        requiredText: "currently shown on the site",
       },
     ] as const;
 

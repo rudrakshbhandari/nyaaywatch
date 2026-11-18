@@ -18,70 +18,70 @@ export function renderHighCourtDataPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURT DATA",
-      headline: "Fetch the same published High Court snapshot the page is showing.",
+      headline: "High Court data and history",
       lede:
-        `This High Court page is JSON-first. It exposes the current published stats and trend points for ${profile.courtName} across ${context.coverageLabel}, while raw captures and operator evidence stay private.`,
+        `Use the JSON links below for current figures and earlier snapshots for ${profile.courtName} across ${context.coverageLabel}.`,
       isHero: true,
     })}
 
     <section class="stat-grid">
       ${renderStatTile({
-        label: "Public endpoints",
+        label: "JSON routes",
         value: "3",
-        note: `Stats, trends, and published history for ${profile.courtName}.`,
+        note: `Stats, trends, and earlier snapshots for ${profile.courtName}.`,
       })}
       ${renderStatTile({
         label: "Trend points",
         value: snapshot.trends.length.toLocaleString("en-IN"),
-        note: "Historical points are limited to published High Court snapshots only.",
+        note: "Each trend point matches a snapshot in the archive.",
       })}
       ${renderStatTile({
-        label: "Reference basis",
+        label: "Date shown",
         value: snapshot.snapshot.referenceDateKind === "captured_at" ? "Captured page" : "Source date",
         note: referenceLabel,
       })}
       ${renderStatTile({
-        label: "CSV posture",
-        value: "Not yet",
-        note: "This public High Court page ships the JSON surface before adding download formats.",
+        label: "CSV downloads",
+        value: "Unavailable",
+        note: "CSV downloads are not available for this High Court.",
         tone: "flag",
       })}
     </section>
 
     <section class="hc-section">
-      ${renderSectionHead({ headline: "Available machine-readable routes" })}
+      ${renderSectionHead({ headline: "JSON routes" })}
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>High Court stats</h3>
           <p><code>${context.routes.statsApi}</code></p>
-          <p>Headline metadata plus <code>coveredGeographies[]</code> and aggregate civil, criminal, and total pending / instituted / disposed values for this one High Court publication.</p>
+          <p>Court details, covered geographies, and total pending, filed, and cleared cases.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.statsApi}">Open stats JSON</a></p>
         </article>
         <article class="card">
           <h3>High Court trends</h3>
           <p><code>${context.routes.trendsApi}</code></p>
-          <p>Published court-wide trend points for pending load and last-month institution / disposal totals. This page does not split trends by covered geography.</p>
+          <p>Court-wide trends for pending cases and cases filed or cleared last month. Trends are not split by geography.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.trendsApi}">Open trends JSON</a></p>
         </article>
         <article class="card">
-          <h3>Published snapshot archive</h3>
+          <h3>Earlier snapshots</h3>
           <p><code>${context.routes.archiveApi}?limit=20&amp;offset=0</code></p>
-          <p>Paginated full normalized snapshots that were published, with dates, methodology versions, and quality labels.</p>
+          <p>Each record includes its dates, method version, and quality status. Use the archive URL to fetch more records.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open archive JSON</a></p>
         </article>
       </div>
     </section>
 
     <section class="hc-section">
-      ${renderSectionHead({ headline: "What this page does not expose" })}
+      ${renderSectionHead({ headline: "Other data" })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Raw artifacts stay private</h3>
-          <p>Stored HTML captures, operator notes, and replay evidence remain inside the internal review boundary.</p>
+          <h3>Source files and review records</h3>
+          <p>Stored HTML files, operator notes, and replay files are private.</p>
         </article>
         <article class="card">
-          <h3>No case-level export yet</h3>
-          <p>NyaayWatch links to official High Court Services and the official court site instead of pretending this page is a case-search system.</p>
+          <h3>Case-level data</h3>
+          <p>This page has no case-level data. Use the official High Court Services for case searches.</p>
           <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.hcServices}">Open official High Court Services</a></p>
         </article>
       </div>

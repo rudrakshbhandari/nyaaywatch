@@ -102,7 +102,7 @@ export function renderDistrictPage(
         label: "Cases waiting",
         value: district.backlogCases.toLocaleString("en-IN"),
         infoKey: "backlog",
-        note: formatNumericDelta(backlogDelta, "vs. prior published snapshot"),
+        note: formatNumericDelta(backlogDelta, "vs. prior reading"),
         tone: "accent",
         methodologyHref: `${context.routes.methodology}#metric-backlog`,
         anchorId: "stat-backlog",
@@ -173,33 +173,33 @@ export function renderDistrictPage(
     ${renderInvestigationWorkflow({
       headline: "What to check next.",
       lede:
-        `Use ${district.districtName} as the evidence page, then move outward to the district list, snapshot movement, and citation material.`,
+        `Check ${district.districtName}'s history, compare it with other districts, or download its data.`,
       steps: [
         {
           eyebrow: "01",
           title: "Go back to the workspace",
-          body: "Return to the district table when you need to see whether this pressure signal is unusual inside the same published snapshot.",
+          body: "Compare this district with others in the same geography.",
           href: context.routes.districts,
           cta: "Open all districts",
         },
         {
           eyebrow: "02",
           title: "Check movement",
-          body: "Use movers to see whether the district changed since the previous published snapshot, when enough history is available.",
+          body: "Movers compares this district with the previous reading when enough history is available.",
           href: context.routes.movers,
           cta: "Open movers",
         },
         {
           eyebrow: "03",
           title: "Export evidence",
-          body: "Download this district's history CSV or copy the citation text before quoting any number.",
+          body: "Download this district's history CSV or copy its citation.",
           href: context.routes.districtCsv(district.districtId),
           cta: "Download CSV",
         },
         {
           eyebrow: "04",
-          title: "Reuse safely",
-          body: "Use the press kit for captions, embed examples, and careful wording that keeps snapshots separate from continuously changing feeds.",
+          title: "Press kit",
+          body: "Find suggested captions and embed code.",
           href: "/press",
           cta: "Open press kit",
         },
@@ -209,25 +209,25 @@ export function renderDistrictPage(
     ${renderEvidenceEntryPoints({
       headline: "Download and cite this district.",
       lede:
-        "The JSON pack keeps the public metrics, reference date, source date when available, method, CSV links, citation text, and caveats together. Raw captures and operator notes stay private.",
+        "The JSON pack includes district metrics, dates, method, CSV links, citation text, and caveats. Raw captures and operator notes are private.",
       entries: [
         {
           title: "District evidence pack",
-          body: "Best for reuse when this district is the claim you need to support.",
+          body: "District metrics, history, dates, and caveats in JSON.",
           href: context.routes.districtEvidencePack(district.districtId),
           cta: "Download JSON",
           codeLabel: context.routes.districtEvidencePack(district.districtId),
         },
         {
           title: "District history CSV",
-          body: "Best for checking how this district changed across published snapshots.",
+          body: "This district's history, one row per reading.",
           href: context.routes.districtCsv(district.districtId),
           cta: "Download CSV",
           codeLabel: context.routes.districtCsv(district.districtId),
         },
         {
           title: "State evidence pack",
-          body: "Best for reading this district beside the rest of the lower-court geography.",
+          body: "State or Union Territory totals and district rows.",
           href: context.routes.stateEvidencePack,
           cta: "Download state JSON",
           codeLabel: context.routes.stateEvidencePack,
@@ -240,7 +240,7 @@ export function renderDistrictPage(
         <article class="card" id="district-flag">
           <header class="card__head">
             <p class="card__eyebrow">WHY IT IS FLAGGED</p>
-            <h3>What this district is telling us</h3>
+            <h3>Why this district is flagged</h3>
           </header>
           <p>${escapeHtml(district.flagReason)}</p>
           <p class="card__meta">File-clear gap ${infoIcon("fileClearGap")}: <strong>${formatFileClearGap(monthlyActivity)}</strong>${monthlyActivityMissing ? " because NJDG reports 0 filed and 0 cleared cases for last month." : " percentage points in the latest data."}</p>
@@ -250,9 +250,9 @@ export function renderDistrictPage(
         <article class="card" id="district-history">
           <header class="card__head">
             <p class="card__eyebrow">HISTORICAL CONTEXT</p>
-            <h3>Published district history</h3>
+          <h3>District history</h3>
           </header>
-          <p>Every row is a previously published snapshot for ${escapeHtml(district.districtName)}. This page never shows unpublished or partial runs.</p>
+          <p>Each row shows the figures for ${escapeHtml(district.districtName)} on that date. Incomplete data is not shown.</p>
           ${renderHistoryBars(history)}
           ${renderHistoryTable(history)}
         </article>
@@ -294,11 +294,11 @@ export function renderDistrictPage(
 
         <article class="card">
           <header class="card__head">
-            <p class="card__eyebrow">HOW TO READ THIS PAGE</p>
+            <p class="card__eyebrow">LIMITS</p>
             <h3>Caveats</h3>
           </header>
-          <p>District signals are descriptive flags from the current published snapshot. They do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed.</p>
-          <p>If freshness turns stale, this page stays pinned to the last operator-published snapshot instead of slipping into unpublished or partial data.</p>
+          <p>District flags describe these figures. They do not assign responsibility or explain why cases are pending. Court records may have changed since the date shown.</p>
+          <p>When the data is stale, this page continues to show the last complete reading and marks it stale.</p>
         </article>
       </aside>
     </section>
@@ -438,7 +438,7 @@ function renderHistoryBars(history: DistrictHistoryPoint[]): string {
 
 function renderHistoryTable(history: DistrictHistoryPoint[]): string {
   if (history.length === 0) {
-    return `<p class="card__meta">No earlier published snapshots are available yet.</p>`;
+    return `<p class="card__meta">No earlier readings are available yet.</p>`;
   }
   const rows = history
     .map(
@@ -478,7 +478,7 @@ function renderHistoryTable(history: DistrictHistoryPoint[]): string {
 
 function formatNumericDelta(value: number | null, suffix: string): string {
   if (value === null) {
-    return "No earlier published snapshot yet.";
+    return "No earlier reading yet.";
   }
   if (value === 0) {
     return `No change ${suffix}.`;
@@ -489,7 +489,7 @@ function formatNumericDelta(value: number | null, suffix: string): string {
 
 function formatDeltaWithUnit(value: number | null, suffix: string): string {
   if (value === null) {
-    return "No earlier published snapshot yet.";
+    return "No earlier reading yet.";
   }
   if (value === 0) {
     return `No change ${suffix}.`;

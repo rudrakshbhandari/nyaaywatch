@@ -59,8 +59,8 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
     <section class="watchroom-hero">
       <p class="watchroom-hero__eyebrow">ISSUE WATCHROOMS</p>
       <h1>Watchrooms</h1>
-      <p class="watchroom-hero__lede">Start with the pressure signals that deserve closer inspection.</p>
-      <p class="watchroom-hero__body">Watchrooms collect lower-court signals that are easy to misread in isolation. Each page keeps the source date, scale, caveats, and evidence links close to the numbers.</p>
+      <p class="watchroom-hero__lede">Explore long waits, repeated flags, and concentrated backlogs in lower courts.</p>
+      <p class="watchroom-hero__body">Each page covers one pattern in the published lower-court data and links to the source dates and measures behind it.</p>
       <p class="watchroom-hero__meta">${entries.length.toLocaleString("en-IN")} lower-court geographies checked · Source: National Judicial Data Grid public district dashboards</p>
     </section>
 
@@ -86,8 +86,8 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
     <section class="watchroom-section">
       <header class="watchroom-section__head">
         <p class="watchroom-section__eyebrow">OPEN WATCHROOMS</p>
-        <h2>Choose the question first.</h2>
-        <p>These pages do not rank every court tier together. They keep each issue inside the lower-court source family and point back to reusable evidence.</p>
+        <h2>Choose a topic.</h2>
+        <p>These pages cover lower-court data only. They do not rank lower courts against High Courts or the Supreme Court.</p>
       </header>
       <div class="watchroom-card-grid">
         <article class="watchroom-decision-card">
@@ -98,7 +98,7 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
           </div>
           <div class="watchroom-decision-card__meta">
             <p><span>Top signal</span>${escapeHtml(describeOldCaseSignal(topOldCaseSignal))}</p>
-            <p><span>Use when</span>You need to separate long waits from the size of the pending pile.</p>
+            <p><span>Use when</span>You want to compare long waits with the number of pending cases.</p>
           </div>
           <a class="watchroom-decision-card__cta" href="/watch/old-case-burden">Open watchroom</a>
         </article>
@@ -110,7 +110,7 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
           </div>
           <div class="watchroom-decision-card__meta">
             <p><span>Top signal</span>${escapeHtml(describePersistentSignal(topPersistentSignal))}</p>
-            <p><span>Use when</span>You want repeated pressure, not a one-reading spike.</p>
+            <p><span>Use when</span>You want to see how often districts were flagged in recent readings.</p>
           </div>
           <a class="watchroom-decision-card__cta" href="/watch/persistent-pressure">Open watchroom</a>
         </article>
@@ -122,7 +122,7 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
           </div>
           <div class="watchroom-decision-card__meta">
             <p><span>Top signal</span>${escapeHtml(describeConcentrationSignal(topConcentrationSignal))}</p>
-            <p><span>Use when</span>You need to choose between district-level inspection and wider geography pressure.</p>
+            <p><span>Use when</span>You want to see whether pending cases cluster in a few districts.</p>
           </div>
           <a class="watchroom-decision-card__cta" href="/watch/backlog-concentration">Open watchroom</a>
         </article>
@@ -132,8 +132,8 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
     <section class="watchroom-section">
       <header class="watchroom-section__head">
         <p class="watchroom-section__eyebrow">QUICK COUNTS</p>
-        <h2>What the watchrooms can read right now.</h2>
-        <p>These counts only show available lower-court signals. Missing source fields stay out of the ranking until the public data can support them.</p>
+        <h2>Available data by measure.</h2>
+        <p>Geographies without the fields needed for a measure are left out of that table.</p>
       </header>
       <div class="watchroom-card-grid">
         <article>
@@ -154,20 +154,20 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
     <section class="watchroom-section watchroom-caveat">
       <header class="watchroom-section__head">
         <p class="watchroom-section__eyebrow">HOW TO READ</p>
-        <h2>Watchrooms are prompts for evidence, not conclusions.</h2>
+        <h2>Check the dates and case counts.</h2>
       </header>
       <div class="watchroom-caveat__grid">
         <article>
-          <h3>Start with the signal.</h3>
-          <p>Use the watchroom to choose a geography or district that deserves closer reading.</p>
+          <h3>Check the source date.</h3>
+          <p>Each geography may have data from a different date.</p>
         </article>
         <article>
-          <h3>Check the scale.</h3>
-          <p>Read the case count beside the signal so small and large districts do not look the same.</p>
+          <h3>Compare case counts.</h3>
+          <p>Districts vary in size, so read the count with the percentage.</p>
         </article>
         <article>
-          <h3>Carry the caveat.</h3>
-          <p>Open the evidence pack or district page before quoting a number outside NyaayWatch.</p>
+          <h3>Read the caveats.</h3>
+          <p>Open the evidence pack or district page for the method and source details.</p>
         </article>
       </div>
     </section>
@@ -194,7 +194,7 @@ export function renderWatchIndexPage(entries: WatchIndexEntry[]): string {
     pageCss: WATCHROOM_PAGE_CSS,
     og: {
       title: "Watchrooms — NyaayWatch",
-      description: "Lower-court issue watchrooms for old cases, repeated pressure, and evidence-first inspection.",
+      description: "Lower-court data pages on long waits, repeated flags, and backlog concentration.",
       url: `${SITE_ORIGIN}/watch`,
     },
   });

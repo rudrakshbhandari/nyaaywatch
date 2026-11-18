@@ -14,19 +14,19 @@ export function renderPressPage(): string {
   const body = `
     <section class="press-hero">
       <p class="press-hero__eyebrow">PRESS & EMBED KIT</p>
-      <h1 class="press-hero__hed">For journalists,<br>researchers,<br>and civic groups.</h1>
-      <p class="press-hero__lede">Everything you need to cite, embed, or republish NyaayWatch data — logos, embed codes, suggested captions, and methodology links. All numbers come from public NJDG data with full methodology disclosure.</p>
+      <h1 class="press-hero__hed">Cite, embed, and download NyaayWatch data.</h1>
+      <p class="press-hero__lede">Logo files, embed code, suggested captions, API examples, and links to the methods behind each metric.</p>
     </section>
 
     ${renderInvestigationWorkflow({
-      headline: "Start a reporting trail from the right layer.",
+      headline: "Choose the court data you need.",
       lede:
-        "NyaayWatch has separate public surfaces for Supreme Court, High Courts, lower-court geographies, district evidence, and snapshot movement. Choose the surface that matches the claim you want to make.",
+        "The site has separate pages for the Supreme Court, High Courts, lower-court geographies, districts, and changes over time.",
       steps: [
         {
           eyebrow: "01",
           title: "National entry point",
-          body: "Use the homepage or Supreme Court page for top-level court-system context without flattening every tier into one league table.",
+          body: "See the national overview or open the Supreme Court page.",
           href: "/",
           cta: "Open homepage",
         },
@@ -40,14 +40,14 @@ export function renderPressPage(): string {
         {
           eyebrow: "03",
           title: "District evidence",
-          body: "Use district pages, CSVs, movers, and comparisons for local reporting from published lower-court snapshots.",
+          body: "Open district pages, CSV downloads, movers, or comparisons.",
           href: nationalCoverageHref,
           cta: "Choose a geography",
         },
         {
           eyebrow: "04",
           title: "Reusable data",
-          body: "Use CSV and API outputs where safe; raw scrape artifacts are not public evidence packs.",
+          body: "Download published CSV and JSON data. Raw source captures are private.",
           href: nationalCoverageHref,
           cta: "Choose a geography",
         },
@@ -57,8 +57,8 @@ export function renderPressPage(): string {
     <section class="press-section">
       ${renderSectionHead({ headline: "One-paragraph description.", lede: "Paste this into bylines, story intros, or grant applications." })}
       <div class="card press-quote-card">
-        <p class="press-quote">NyaayWatch is an independent court-transparency project that publishes reviewed snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, High Courts, and district courts. All data is drawn from public NJDG (National Judicial Data Grid) records and released under a documented, versioned methodology. Numbers are never shown without a dated source citation and a click-reachable methodology link.</p>
-        <button class="btn btn--ghost btn--small press-copy-btn" data-copy="NyaayWatch is an independent court-transparency project that publishes reviewed snapshots of pending caseloads, clearance rates, and wait times across India's Supreme Court, High Courts, and district courts. All data is drawn from public NJDG (National Judicial Data Grid) records and released under a documented, versioned methodology. Numbers are never shown without a dated source citation and a click-reachable methodology link.">Copy text</button>
+        <p class="press-quote">NyaayWatch is an independent court-transparency project that publishes reviewed readings of public aggregate data from India's Supreme Court, High Courts, and district courts. It calculates measures such as typical wait using documented methods. Public pages show a reference date, source attribution, and a link to the method.</p>
+        <button class="btn btn--ghost btn--small press-copy-btn" data-copy="NyaayWatch is an independent court-transparency project that publishes reviewed readings of public aggregate data from India's Supreme Court, High Courts, and district courts. It calculates measures such as typical wait using documented methods. Public pages show a reference date, source attribution, and a link to the method.">Copy text</button>
       </div>
     </section>
 
@@ -115,11 +115,11 @@ export function renderPressPage(): string {
     </section>
 
     <section class="press-section">
-      ${renderSectionHead({ headline: "Citation-ready starting points.", lede: "Use these links when you need a page, file, or API response that carries a source date and methodology path." })}
+      ${renderSectionHead({ headline: "Pages and files to cite.", lede: "These links include source dates, methods, and caveats." })}
       <div class="card-grid card-grid--3">
         <article class="card">
           <h3>Evidence pages</h3>
-          <p>District and court pages are the safest citation targets because they keep the visible metric, source date, and methodology link together.</p>
+          <p>District and court pages show their metrics, reference dates, and source details.</p>
           <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
         <article class="card">
@@ -129,14 +129,14 @@ export function renderPressPage(): string {
         </article>
         <article class="card">
           <h3>Movement and contrast</h3>
-          <p>Use movers for snapshot-to-snapshot changes and compare pages for two-district contrasts inside the same geography.</p>
+          <p>Use Movers to check changes over time and comparison pages to compare two districts in the same geography.</p>
           <p><a class="btn btn--ghost btn--small" href="${nationalCoverageHref}">Choose a geography</a></p>
         </article>
       </div>
     </section>
 
     <section class="press-section">
-      ${renderSectionHead({ headline: "Journalist quickstart.", lede: "Pull the numbers directly from the API. No authentication, no rate limits for reasonable use." })}
+      ${renderSectionHead({ headline: "API quickstart.", lede: "Use curl or another HTTP client to request the public API." })}
       <div class="card">
         <p class="press-api__intro">Set <code>YOUR_STATE_SLUG</code> and <code>YOUR_DISTRICT_ID</code> to the scope you want. See <a href="/api">/api</a> for the full route list and supported scopes.</p>
         <div class="press-api-row">
@@ -159,7 +159,7 @@ export function renderPressPage(): string {
     </section>
 
     <section class="press-section">
-      ${renderSectionHead({ headline: "Suggested captions.", lede: "These are starting points. Always verify numbers against the latest data before publishing." })}
+      ${renderSectionHead({ headline: "Suggested captions.", lede: "Check the source date on the evidence page before publishing a number." })}
       <div class="card press-caption-card">
         <p class="press-caption__lang">English</p>
         <p class="press-caption">According to NyaayWatch (nyaaywatch.in), which tracks pending caseloads using public NJDG data, [DISTRICT] district courts had [NUMBER] cases waiting as of [DATE]. The median case in this district has been pending for approximately [MONTHS] months.</p>
@@ -176,7 +176,7 @@ export function renderPressPage(): string {
           <h3>What it is</h3>
           <ul class="press-list">
             <li>An independent, non-partisan court-data transparency project</li>
-            <li>A publisher of reviewed, versioned snapshots from public NJDG records</li>
+            <li>A publisher of dated readings from public NJDG records</li>
             <li>A tool for tracking backlog pressure, clearance pace, and delay trends</li>
             <li>Built for citation: every number links to a dated source and methodology</li>
           </ul>

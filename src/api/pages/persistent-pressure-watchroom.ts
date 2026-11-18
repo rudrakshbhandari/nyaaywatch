@@ -66,7 +66,7 @@ export function renderPersistentPressureWatchroomPage(entries: PersistentPressur
       <p class="watchroom-hero__eyebrow">ISSUE WATCHROOM</p>
       <h1>Persistent pressure watchroom</h1>
       <p class="watchroom-hero__lede">Which districts keep appearing under pressure?</p>
-      <p class="watchroom-hero__body">This page follows lower-court districts that were flagged repeatedly across recent published snapshots. It helps separate repeated pressure from a one-snapshot spike.</p>
+      <p class="watchroom-hero__body">The table shows how often each lower-court district was flagged in the available recent snapshots. A short history has a shorter counting window.</p>
       <p class="watchroom-hero__meta">${entries.length.toLocaleString("en-IN")} lower-court geographies checked · ${rankedDistricts.length.toLocaleString("en-IN")} district signals shown · Source: National Judicial Data Grid public district dashboards</p>
     </section>
     ${renderWatchroomSiblingNav("persistent-pressure")}
@@ -91,35 +91,35 @@ export function renderPersistentPressureWatchroomPage(entries: PersistentPressur
     </section>
 
     ${renderInvestigationWorkflow({
-      headline: "Use persistence before treating pressure as a story.",
+      headline: "Read each flag count with its window.",
       lede:
-        "A repeated flag is a stronger inspection prompt than a one-month movement. It still needs district evidence, scale, and caveats before it becomes a public claim.",
+        "The count shows how often a district met the pressure criteria. Check the pending case count and caveats; the flag does not explain the cause.",
       steps: [
         {
           eyebrow: "01",
           title: "Start with persistence",
-          body: "Read how many recent snapshots flagged the district. A full window is stronger than a short one.",
+          body: "Read the count as 3 of 6: the second number shows how many snapshots were available.",
           href: "#district-table",
           cta: "See districts",
         },
         {
           eyebrow: "02",
           title: "Check pending load",
-          body: "Use the case count beside the repeat signal so scale is visible.",
+          body: "Read the pending case count beside the flag count to see the size of the caseload.",
           href: "#district-table",
           cta: "Check scale",
         },
         {
           eyebrow: "03",
           title: "Open the district",
-          body: "Read the district page for rank, change, old-case burden, and caveats in one place.",
+          body: "The district page shows its rank, changes, age profile, and caveats.",
           href: topDistrictRoutes && topDistrict ? topDistrictRoutes.district(topDistrict.district.districtId) : "/districts",
           cta: "Open top district",
         },
         {
           eyebrow: "04",
           title: "Cite evidence",
-          body: "Use the evidence pack so the source date, method, and public-data boundary travel with the signal.",
+          body: "Check the source date, method, and caveats in the evidence pack.",
           href: "#evidence",
           cta: "Use evidence",
         },
@@ -128,9 +128,9 @@ export function renderPersistentPressureWatchroomPage(entries: PersistentPressur
 
     <div id="evidence">
     ${renderEvidenceEntryPoints({
-      headline: "Carry the evidence with the repeat signal.",
+      headline: "Check the source data.",
       lede:
-        "Use these links when a repeated pressure signal needs to be checked, cited, or exported. Raw captures and operator notes stay outside the public boundary.",
+        "The JSON packs include source dates, methods, and caveats. Raw captures and operator notes are not public.",
       entries: [
         {
           title: "Watchroom citation",
@@ -143,8 +143,8 @@ export function renderPersistentPressureWatchroomPage(entries: PersistentPressur
         {
           title: "Top district pack",
           body: topDistrict
-            ? `Use this before quoting ${topDistrict.district.districtName}'s repeated pressure signal.`
-            : "Use district evidence packs when repeat signals are available.",
+            ? `Includes ${topDistrict.district.districtName}'s district data, source date, and caveats.`
+            : "No district evidence pack is available.",
           href: topDistrict && topDistrictRoutes ? topDistrictRoutes.districtEvidencePack(topDistrict.district.districtId) : "/districts",
           cta: topDistrict ? "Download district JSON" : "Open districts",
           codeLabel: topDistrict && topDistrictRoutes ? topDistrictRoutes.districtEvidencePack(topDistrict.district.districtId) : "/districts",
@@ -152,8 +152,8 @@ export function renderPersistentPressureWatchroomPage(entries: PersistentPressur
         {
           title: "Top geography pack",
           body: topGeography
-            ? `Use this to check ${topGeography.entry.profile.stateName} with source date, method, links, and caveats.`
-            : "Use state evidence packs when repeat signals are available.",
+            ? `Includes ${topGeography.entry.profile.stateName} data, source date, and caveats.`
+            : "No state evidence pack is available.",
           href: topGeography ? buildPublicStateRoutes(topGeography.entry.profile).stateEvidencePack : "/data",
           cta: topGeography ? "Download state JSON" : "Open data",
           codeLabel: topGeography ? buildPublicStateRoutes(topGeography.entry.profile).stateEvidencePack : "/data",

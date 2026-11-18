@@ -89,14 +89,14 @@ describe("Tripura public rollout preflight", () => {
 
     const routes = [
       { path: "/states/tripura", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
-      { path: "/states/tripura/districts", requiredText: "Scan the districts under the most pressure." },
+      { path: "/states/tripura/districts", requiredText: "Browse district data." },
       {
         path: "/states/tripura/districts/west-tripura",
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
       },
-      { path: "/states/tripura/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
+      { path: "/states/tripura/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/tripura/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/tripura/api", requiredText: "currently on the public site" },
+      { path: "/states/tripura/api", requiredText: "currently shown on the site" },
     ] as const;
 
     for (const route of routes) {

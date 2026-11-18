@@ -19,12 +19,12 @@ export function renderHighCourtMethodologyPage(
       eyebrow: "HIGH COURT METHOD",
       headline: "Every public High Court number comes from one published aggregate snapshot.",
       lede:
-        "The public High Court pages keep the same trust discipline as the rest of NyaayWatch: stored evidence, published snapshots, explicit methodology versioning, and no leakage from unpublished operator runs.",
+        "Only reviewed aggregate snapshots appear here. Each carries a methodology version; new captures stay private until reviewed and published.",
       isHero: true,
     })}
 
     <section class="method">
-      ${renderSectionHead({ headline: "Scope and posture" })}
+      ${renderSectionHead({ headline: "Scope" })}
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>What this page covers</h3>
@@ -34,7 +34,7 @@ export function renderHighCourtMethodologyPage(
         <article class="card">
           <h3>What it does not do</h3>
           <p>It does not predict outcomes, judge judges, or imply cross-tier comparability with district or Supreme Court surfaces.</p>
-          <p>When the source does not expose a trustworthy source snapshot timestamp, the page says so directly and shows capture time instead.</p>
+          <p>When the source has no source date, the page shows when it was captured.</p>
         </article>
       </div>
     </section>
@@ -43,14 +43,13 @@ export function renderHighCourtMethodologyPage(
       ${renderSectionHead({ headline: "Coverage boundary" })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Explicit court-first coverage</h3>
+          <h3>Coverage across states and Union Territories</h3>
           <p>Current coverage on this page: ${escapeHtml(context.coverageLabel)}.</p>
-          <p>The public schema carries this boundary explicitly through <code>coveredGeographies[]</code>, so a High Court page can represent one court across multiple geographies without pretending it is a single-state surface.</p>
+          <p>The API lists each state or Union Territory served by this High Court in <code>coveredGeographies[]</code>.</p>
         </article>
         <article class="card">
           <h3>Separate from lower-court geography pages</h3>
-          <p>A lower-court state page is a different scope from a High Court page. NyaayWatch does not reuse district-layer language to describe a High Court publication.</p>
-          <p>That keeps the hierarchy honest: district and subordinate courts sit under High Courts, but this page still reports one High Court aggregate publication.</p>
+          <p>This page reports one High Court aggregate. Lower-court pages report district and subordinate court figures by state or Union Territory.</p>
         </article>
       </div>
     </section>
@@ -58,7 +57,7 @@ export function renderHighCourtMethodologyPage(
     <section class="method" id="source-caveats">
       ${renderSectionHead({
         headline: "Source caveats",
-        lede: "High Court caveats are separate because a High Court page is one court publication, not a lower-court state page.",
+        lede: "High Court coverage and dates follow the High Court NJDG dashboard.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card" id="source-caveat-coverage">
@@ -69,7 +68,7 @@ export function renderHighCourtMethodologyPage(
         <article class="card" id="source-caveat-reference-date">
           ${renderAnchorLink("source-caveat-reference-date", "Reference date fallback")}
           <h3>Reference date fallback</h3>
-          <p>When HC NJDG does not expose a trustworthy source snapshot date, NyaayWatch uses the captured page timestamp and labels it as <code>captured_at</code>.</p>
+          <p>When HC NJDG has no source date, NyaayWatch shows when the page was captured and labels it as <code>captured_at</code>.</p>
         </article>
       </div>
     </section>
@@ -83,14 +82,14 @@ export function renderHighCourtMethodologyPage(
           <p>Pending civil, pending criminal, pending total, instituted last month, disposed last month, and age buckets come directly from the official HC NJDG High Court dashboard.</p>
         </article>
         <article class="card" id="metric-framing">
-          ${renderAnchorLink("metric-framing", "NyaayWatch framing")}
-          <h3>NyaayWatch framing</h3>
-          <p>NyaayWatch adds publication timestamps, freshness, methodology versioning, and an explicit rule for which date to show so the snapshot is citeable and auditable.</p>
+          ${renderAnchorLink("metric-framing", "Fields added by NyaayWatch")}
+          <h3>Fields added by NyaayWatch</h3>
+          <p>NyaayWatch adds the publication date, freshness, methodology version, and date basis.</p>
         </article>
         <article class="card" id="metric-backlog-movement">
           ${renderAnchorLink("metric-backlog-movement", "Backlog movement")}
           <h3>Backlog movement as share of pending load</h3>
-          <p>Calculated as cases filed last month minus cases cleared last month, divided by pending cases. It gives a scale-aware view of whether the pending pile grew or shrank.</p>
+          <p>Calculated as cases filed last month minus cases cleared last month, divided by pending cases. A positive value means the backlog grew; a negative value means it shrank.</p>
         </article>
         <article class="card" id="metric-break-even-clearances">
           ${renderAnchorLink("metric-break-even-clearances", "Break-even clearances")}
@@ -105,12 +104,12 @@ export function renderHighCourtMethodologyPage(
         <article class="card" id="metric-civil-criminal-imbalance">
           ${renderAnchorLink("metric-civil-criminal-imbalance", "Civil-criminal imbalance")}
           <h3>Civil-criminal imbalance</h3>
-          <p>Compares the criminal share of pending cases with the criminal share of last-month clearances. The result is a docket signal for inspection, not a cause or blame claim.</p>
+          <p>Compares the criminal share of pending cases with the criminal share of last-month clearances. This describes a difference in the published data; it does not explain why the difference exists.</p>
         </article>
         <article class="card" id="metric-backlog-concentration">
           ${renderAnchorLink("metric-backlog-concentration", "Backlog concentration")}
           <h3>Case-type concentration</h3>
-          <p>When the source exposes case-type rows, NyaayWatch shows how much of the pending load sits in the five largest case types. It is omitted when the source does not provide a defensible case-type breakdown.</p>
+          <p>When the source provides case-type rows, NyaayWatch shows the share of pending cases in the five largest case types. This measure is omitted when those rows are unavailable.</p>
         </article>
       </div>
     </section>
@@ -119,15 +118,15 @@ export function renderHighCourtMethodologyPage(
       ${renderSectionHead({ headline: "Which date we show" })}
       <div class="card-grid card-grid--2">
         <article class="card" id="reference-date-source">
-          ${renderAnchorLink("reference-date-source", "Source-exposed reference date")}
-          <h3>When HC NJDG exposes a source date</h3>
+          ${renderAnchorLink("reference-date-source", "Source date available")}
+          <h3>When HC NJDG provides a source date</h3>
           <p>The page can show a source snapshot date directly.</p>
         </article>
         <article class="card" id="reference-date-captured">
-          ${renderAnchorLink("reference-date-captured", "Captured-at reference date")}
+          ${renderAnchorLink("reference-date-captured", "Capture-time reference date")}
           <h3>When HC NJDG does not expose one</h3>
-          <p>The page uses the captured page timestamp as <code>referenceDateAt</code> and labels it as <code>captured_at</code> instead of inventing a source date.</p>
-          <p>This is the current posture for the live public High Court pages.</p>
+          <p>The page uses the capture time as <code>referenceDateAt</code> and labels it <code>captured_at</code>.</p>
+          <p>Current High Court pages use the capture time.</p>
         </article>
       </div>
     </section>
@@ -135,7 +134,7 @@ export function renderHighCourtMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published snapshot lineage",
-        lede: "One row per High Court reference date, sorted newest first, showing the publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
+        lede: "One row per High Court reference date, newest first. The table shows the snapshot selected for each date. Rollbacks and same-day republishes appear in operator publication history.",
       })}
       ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
         referenceDateLabel: (entry) => describeReferenceDate(entry.snapshot),

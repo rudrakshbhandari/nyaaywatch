@@ -15,7 +15,7 @@ export function renderLearnPage(): string {
       isHero: true,
       headline: "Understand India's courts before reading the numbers.",
       lede:
-        "A simple guide to the court system, the words used on NyaayWatch, and the safest way to read public court data.",
+        "Court levels, terms used on NyaayWatch, and how to read public court data.",
     })}
 
     <section class="learn-map" aria-labelledby="learn-map-title">
@@ -39,7 +39,7 @@ export function renderLearnPage(): string {
         <li>
           <span class="learn-steps__index">03</span>
           <h3>District and subordinate courts</h3>
-          <p>District and subordinate courts are where many ordinary civil and criminal cases begin. They carry a large share of the day-to-day pressure people feel.</p>
+        <p>Many civil and criminal cases begin in district and subordinate courts.</p>
           <p><a href="/districts">Browse district courts</a></p>
         </li>
       </ol>
@@ -176,15 +176,15 @@ export function renderLearnPage(): string {
         ${renderSectionHead({
           headline: "How to read a NyaayWatch page",
           lede:
-            "Start with the court level, then the date, then the metric. Do not compare different court levels as if they are one league table.",
+            "Start with the court level, then the date, then the metric. Do not rank unlike court levels together.",
         })}
       </div>
       <div class="card learn-reading__card">
         <ol>
           <li><strong>Check the court level.</strong> Supreme Court, High Court, and district court numbers describe different institutions.</li>
-          <li><strong>Check the date.</strong> NyaayWatch pages are reviewed snapshots, not a running ticker.</li>
+          <li><strong>Check the date.</strong> Each page shows figures from a dated reading; it does not update live.</li>
           <li><strong>Check the source line.</strong> Every public number should point back to a dated public source and method.</li>
-          <li><strong>Read signals carefully.</strong> A flag means "look closer", not "someone is at fault".</li>
+          <li><strong>Check what a flag means.</strong> A flag marks a pattern for review. It does not show who is responsible.</li>
           <li><strong>Use methodology for detail.</strong> Formula choices, caveats, and source limits belong on the method pages.</li>
         </ol>
       </div>
@@ -200,7 +200,7 @@ export function renderLearnPage(): string {
         <article class="learn-pressure-card">
           <span>Age</span>
           <h3>Old-case burden</h3>
-          <p>Shows how much of the pending pile has already waited for years. A high share means long waits are not just a few isolated cases.</p>
+          <p>Shows what share of pending cases has waited for years. A high share means many cases have waited a long time.</p>
         </article>
         <article class="learn-pressure-card">
           <span>Movement</span>
@@ -228,7 +228,7 @@ export function renderLearnPage(): string {
       ${renderSectionHead({
         headline: "How to read delay data",
         lede:
-          "Court numbers are useful only when the limits are visible. These rules stop a rough signal from becoming a false claim.",
+          "Read each number with its source date and caveats.",
       })}
       <div class="learn-rule-grid">
         <article class="learn-rule">
@@ -254,7 +254,7 @@ export function renderLearnPage(): string {
       ${renderSectionHead({
         headline: "Common mistakes to avoid",
         lede:
-          "These are the traps that make court-data numbers sound stronger than they are.",
+          "Avoid these mistakes when reading court data.",
       })}
       <div class="card learn-mistakes__card">
         <ul>
@@ -272,7 +272,7 @@ export function renderLearnPage(): string {
         ${renderSectionHead({
           headline: "A simple way to cite a number",
           lede:
-            "A good citation includes the court, the number, the date, and the method link. That makes the claim checkable later.",
+            "Include the court, number, date, and method link in a citation.",
         })}
       </div>
       <div class="learn-citation__example" aria-label="Example citation">
@@ -295,11 +295,11 @@ export function renderLearnPage(): string {
         </article>
         <article class="card">
           <h3>Why not show case-level details?</h3>
-          <p>This product is built around aggregate public data and stored evidence. It avoids exposing raw artifacts or case-level material as a public product surface.</p>
+          <p>The site publishes aggregate court data, not case-level records or raw source files.</p>
         </article>
         <article class="card">
           <h3>Can I compare one High Court with one district court?</h3>
-          <p>You can read both, but be careful. Court levels handle different work, and the metrics are not a single national ranking.</p>
+          <p>Read them separately. High Courts and district courts handle different work, so their measures are not directly comparable.</p>
         </article>
         <article class="card">
           <h3>Why do some High Courts cover more than one place?</h3>
@@ -307,7 +307,7 @@ export function renderLearnPage(): string {
         </article>
         <article class="card">
           <h3>Why are some numbers rounded or simplified?</h3>
-          <p>NyaayWatch uses public aggregate data. The page explains pressure clearly, while the method page carries formula details and caveats.</p>
+          <p>NyaayWatch uses public aggregate data. The methodology page lists formulas and caveats.</p>
         </article>
         <article class="card">
           <h3>Where can I check the official sources?</h3>
@@ -331,7 +331,7 @@ export function renderLearnPage(): string {
     og: {
       title: "Learn the Indian court system | NyaayWatch",
       description:
-        "A simple guide to India's court hierarchy, common court-data terms, and how to read NyaayWatch without mistaking snapshots for legal advice.",
+        "A guide to India's court hierarchy, common court-data terms, and NyaayWatch's dated aggregate data.",
       url: `${SITE_ORIGIN}/learn`,
     },
     pageCss: LEARN_PAGE_CSS,

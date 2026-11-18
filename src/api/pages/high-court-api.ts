@@ -8,7 +8,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
       eyebrow: "HIGH COURT API",
       headline: `${context.profile.courtName} — API reference`,
       lede:
-        `The API matches what's on the public page for ${context.profile.courtName} (${context.coverageLabel}). If the page shows a number, the JSON can expose it; if it's still in operator review, it stays private.`,
+        `The API returns the figures shown on the ${context.profile.courtName} page for ${context.coverageLabel}.`,
       isHero: true,
       variant: "compact",
     })}
@@ -19,7 +19,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
-          <p>High Court metadata plus <code>coveredGeographies[]</code> and aggregate pending, institution, and disposal fields for the active publication.</p>
+          <p>Court details, <code>coveredGeographies[]</code>, pending cases, and monthly cases filed and cleared.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -65,7 +65,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
-          <p>Published High Court trend points only. They stay court-wide rather than geography-split, and no unpublished operator runs leak through this surface.</p>
+          <p>Court-wide trends for pending cases and cases filed or cleared last month. Trends are not split by geography.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -91,7 +91,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.archiveApi}?limit=20&amp;offset=0</code>
-          <p>Paginated full normalized snapshot payloads that were published for this High Court. Use <code>limit</code> from 1 to 100 and a non-negative <code>offset</code>.</p>
+          <p>Earlier snapshots for this High Court. Each record contains the full data shown for that date. Set <code>limit</code> from 1 to 100 and use <code>offset</code> to fetch more records.</p>
         </article>
       </div>
     </section>
@@ -100,12 +100,12 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
       ${renderSectionHead({ headline: "What this API guarantees" })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Published only</h3>
-          <p>The API stays pinned to the active published High Court snapshot. Newer internal fetches remain private until a publish succeeds.</p>
+          <h3>Current public data</h3>
+          <p>The API returns figures shown on the High Court page. Data under review is not included.</p>
         </article>
         <article class="card">
-          <h3>Tier-aware semantics</h3>
-          <p>This API is High Court-specific. A High Court page is not the same scope as a lower-court state page, so the API does not reuse district-only fields or imply cross-tier ranking comparability.</p>
+          <h3>Separate court tiers</h3>
+          <p>High Court pages report one High Court. Lower-court pages report state or Union Territory totals and district figures. Their measures are not directly comparable.</p>
         </article>
       </div>
     </section>

@@ -86,35 +86,35 @@ export function renderOldCaseWatchroomPage(entries: OldCaseWatchroomEntry[]): st
     </section>
 
     ${renderInvestigationWorkflow({
-      headline: "Use the watchroom to choose what to inspect.",
+      headline: "Compare age shares and case counts.",
       lede:
-        "A high old-case share is a flagged signal. It asks for closer reading of the state page, district page, source date, and caveats before anyone turns it into a public claim.",
+        "A high share of cases older than three years flags long waits for review. Check the case counts, source date, and caveats before citing it.",
       steps: [
         {
           eyebrow: "01",
           title: "Start with share",
-          body: "Look at the 3+ year share first. It shows where long waits are concentrated, not just where the pending pile is large.",
+          body: "The 3+ year share shows what part of the pending caseload has waited more than three years.",
           href: "#geography-table",
           cta: "See geographies",
         },
         {
           eyebrow: "02",
           title: "Check scale",
-          body: "Read the case count beside the share so a small court does not look the same as a large lower-court geography.",
+          body: "Compare the share with the case count. A smaller caseload can have a high share of older cases.",
           href: "#geography-table",
           cta: "Check counts",
         },
         {
           eyebrow: "03",
           title: "Open districts",
-          body: "Use the district table to find where the signal is concentrated inside the geography.",
+          body: "Open a district to see where older cases are concentrated within the geography.",
           href: "#district-table",
           cta: "See districts",
         },
         {
           eyebrow: "04",
           title: "Cite evidence",
-          body: "Use the evidence pack, CSV, and methodology links so the date, source, and caveat travel with the number.",
+          body: "Check the source date, method, and caveats in the evidence pack before quoting a number.",
           href: "#evidence",
           cta: "Use evidence",
         },
@@ -123,9 +123,9 @@ export function renderOldCaseWatchroomPage(entries: OldCaseWatchroomEntry[]): st
 
     <div id="evidence">
     ${renderEvidenceEntryPoints({
-      headline: "Carry the evidence with the claim.",
+      headline: "Check the source data.",
       lede:
-        "Use these links when the old-case signal needs to be checked, cited, or exported. Raw captures and operator notes stay outside the public boundary.",
+        "State and district JSON packs include source dates, methods, and caveats. Raw captures and operator notes are not public.",
       entries: [
         {
           title: "Watchroom citation",
@@ -138,8 +138,8 @@ export function renderOldCaseWatchroomPage(entries: OldCaseWatchroomEntry[]): st
         {
           title: "Top geography pack",
           body: topState
-            ? `Use this to check ${topState.entry.profile.stateName} with source date, method, links, and caveats.`
-            : "Use state evidence packs when old-case age buckets are available.",
+            ? `Includes ${topState.entry.profile.stateName} age-bucket data, source date, and caveats.`
+            : "No state age-bucket data is available.",
           href: topStateRoutes?.stateEvidencePack ?? "/data",
           cta: topState ? "Download state JSON" : "Open data",
           codeLabel: topStateRoutes?.stateEvidencePack ?? "/data",
@@ -147,8 +147,8 @@ export function renderOldCaseWatchroomPage(entries: OldCaseWatchroomEntry[]): st
         {
           title: "Top district pack",
           body: topDistrict
-            ? `Use this before quoting ${topDistrict.district.districtName}'s old-case signal.`
-            : "Use district evidence packs when district-level age buckets are available.",
+            ? `Includes ${topDistrict.district.districtName} age-bucket data, source date, and caveats.`
+            : "No district age-bucket data is available.",
           href: topDistrictRoutes?.districtEvidencePack(topDistrict?.district.districtId ?? "") ?? "/districts",
           cta: topDistrict ? "Download district JSON" : "Open districts",
           codeLabel: topDistrictRoutes?.districtEvidencePack(topDistrict?.district.districtId ?? "") ?? "/districts",

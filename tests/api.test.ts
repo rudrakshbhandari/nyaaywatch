@@ -154,7 +154,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("This month&#39;s clearance pace is shown separately.");
     expect(homepage.text).not.toContain("Pending trend");
     expect(homepage.text).toContain("Backlog growing");
-    expect(homepage.text).toContain("Follow the court system without flattening it.");
+    expect(homepage.text).toContain("Explore each court tier.");
     expect(homepage.text).toContain('href="/learn#pressure-signals"');
     expect(homepage.text).toContain("Lower courts show the broadest pressure.");
     expect(homepage.text).toContain("Where is delay piling up across India?");
@@ -191,7 +191,7 @@ describe("HTTP routes", () => {
 
     const districtsPage = await request(app).get("/districts?view=flagged&sort=gap&q=kang");
     expect(districtsPage.status).toBe(200);
-    expect(districtsPage.text).toContain("Scan the districts under the most pressure.");
+    expect(districtsPage.text).toContain("Browse district data.");
     expect(districtsPage.text).toContain("Only districts to watch");
     expect(districtsPage.text).toContain("Snapshot movers");
     expect(districtsPage.text).toContain("Turn a district list into a trail.");
@@ -237,7 +237,7 @@ describe("HTTP routes", () => {
 
     const comparePage = await request(app).get("/compare/kangra-vs-shimla");
     expect(comparePage.status).toBe(200);
-    expect(comparePage.text).toContain("Use this comparison as a starting point.");
+    expect(comparePage.text).toContain("Compare the district records.");
     expect(comparePage.text).toContain("Download both evidence packs.");
     expect(comparePage.text).toContain("Comparison citation");
     expect(comparePage.text).toContain("Kangra vs. Shimla District Comparison");
@@ -260,7 +260,7 @@ describe("HTTP routes", () => {
     const watchIndex = await request(app).get("/watch");
     expect(watchIndex.status).toBe(200);
     expect(watchIndex.text).toContain("Watchrooms");
-    expect(watchIndex.text).toContain("Start with the pressure signals that deserve closer inspection.");
+    expect(watchIndex.text).toContain("Explore long waits, repeated flags, and concentrated backlogs in lower courts.");
     expect(watchIndex.text).toContain("Old-case burden");
     expect(watchIndex.text).toContain("Where are old cases concentrated?");
     expect(watchIndex.text).toContain("Top signal");
@@ -319,8 +319,8 @@ describe("HTTP routes", () => {
     expect(dataPage.status).toBe(200);
     expect(dataPage.headers["cache-control"]).toContain("no-store");
     expect(dataPage.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
-    expect(dataPage.text).toContain("Download exactly what the public site is showing.");
-    expect(dataPage.text).toContain("CSV/API parity");
+    expect(dataPage.text).toContain("Download court data and past snapshots.");
+    expect(dataPage.text).toContain("CSV + JSON");
     expect(dataPage.text).toContain("Evidence packs");
     expect(dataPage.text).toContain("/data/evidence/state.json");
 
@@ -383,7 +383,7 @@ describe("HTTP routes", () => {
 
     const pressPage = await request(app).get("/press");
     expect(pressPage.status).toBe(200);
-    expect(pressPage.text).toContain("Citation-ready starting points.");
+    expect(pressPage.text).toContain("Pages and files to cite.");
     expect(pressPage.text).toContain("currently published numbers");
     expect(pressPage.text).toContain("/states/YOUR_STATE_SLUG/embed/district/YOUR_DISTRICT_ID");
     expect(pressPage.text).toContain('href="/">national coverage page</a>');
@@ -943,17 +943,17 @@ describe("HTTP routes", () => {
     expect(overview.text).toContain("High Court of Himachal Pradesh");
     expect(overview.text).toContain("Coverage");
     expect(overview.text).toContain("Current coverage:</strong> Himachal Pradesh");
-    expect(overview.text).toContain("HC NJDG did not expose a trustworthy source snapshot timestamp");
+    expect(overview.text).toContain("HC NJDG does not provide a source date, so this page shows when it was captured.");
     expect(overview.text).toContain("Cleared / 100 filed");
     expect(overview.text).toContain("Last-month backlog change");
-    expect(overview.text).toContain("Read this High Court in context.");
+    expect(overview.text).toContain("Explore this High Court");
 
     const data = await request(app).get("/high-courts/himachal/data");
     expect(data.status).toBe(200);
     expect(data.text).toContain("across Himachal Pradesh");
     expect(data.text).toContain("/v1/high-courts/himachal/stats");
     expect(data.text).toContain("/v1/high-courts/himachal/archive?limit=20&amp;offset=0");
-    expect(data.text).toContain("This public High Court page ships the JSON surface before adding download formats.");
+    expect(data.text).toContain("CSV downloads are not available for this High Court.");
 
     const methodology = await request(app).get("/high-courts/himachal/methodology");
     expect(methodology.status).toBe(200);
@@ -1147,16 +1147,16 @@ describe("HTTP routes", () => {
     const overview = await request(app).get("/supreme-court");
     expect(overview.status).toBe(200);
     expect(overview.text).toContain("Where is pressure building at the Supreme Court?");
-    expect(overview.text).toContain("The official aggregate page did not expose a defensible source snapshot timestamp");
+    expect(overview.text).toContain("The official page has no source date, so NyaayWatch shows when it was captured.");
     expect(overview.text).toContain("Cleared / 100 filed");
     expect(overview.text).toContain("Last-month backlog change");
-    expect(overview.text).toContain("Move down the court system carefully.");
+    expect(overview.text).toContain("Explore other court tiers");
 
     const data = await request(app).get("/supreme-court/data");
     expect(data.status).toBe(200);
     expect(data.text).toContain("/v1/supreme-court/stats");
     expect(data.text).toContain("/v1/supreme-court/archive?limit=20&amp;offset=0");
-    expect(data.text).toContain("This public Supreme Court page ships the JSON surface before adding download formats.");
+    expect(data.text).toContain("there are no district-level rows");
 
     const methodology = await request(app).get("/supreme-court/methodology");
     expect(methodology.status).toBe(200);
@@ -1277,7 +1277,7 @@ describe("HTTP routes", () => {
 
     const punjabCompare = await request(app).get("/states/punjab/compare/ludhiana-vs-amritsar");
     expect(punjabCompare.status).toBe(200);
-    expect(punjabCompare.text).toContain("Use this comparison as a starting point.");
+    expect(punjabCompare.text).toContain("Compare the district records.");
     expect(punjabCompare.text).toContain("Download both evidence packs.");
     expect(punjabCompare.text).toContain("Ludhiana vs. Amritsar District Comparison");
     expect(punjabCompare.text).toContain("Copy citation");

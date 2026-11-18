@@ -8,7 +8,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
       eyebrow: "SUPREME COURT API",
       headline: "Supreme Court API reference",
       lede:
-        "The API matches the latest published Supreme Court snapshot. If the public page shows a number, the JSON can expose it; if it is still in operator review, it stays private.",
+        "The API returns the figures shown on the Supreme Court page.",
       isHero: true,
       variant: "compact",
     })}
@@ -19,7 +19,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.statsApi}</code>
-          <p>Supreme Court metadata plus aggregate registered, unregistered, civil, criminal, institution, and disposal fields for the active publication.</p>
+          <p>Supreme Court totals for registered and unregistered cases, pending cases, and cases filed or cleared.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -59,7 +59,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
-          <p>Published trend points only. No unpublished operator runs leak through this surface.</p>
+          <p>Trend points show pending cases and cases filed or cleared last month.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -85,7 +85,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.archiveApi}?limit=20&amp;offset=0</code>
-          <p>Paginated full normalized snapshot payloads that were published for the Supreme Court. Use <code>limit</code> from 1 to 100 and a non-negative <code>offset</code>.</p>
+          <p>Earlier Supreme Court-wide snapshots. Each record contains aggregate data for that date; there are no district-level rows. Set <code>limit</code> from 1 to 100 and use <code>offset</code> to fetch more records.</p>
         </article>
       </div>
     </section>
@@ -94,12 +94,12 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
       ${renderSectionHead({ headline: "What this API guarantees" })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Published only</h3>
-          <p>The API stays pinned to the active published Supreme Court snapshot. Newer internal fetches remain private until a publish succeeds.</p>
+          <h3>Current public data</h3>
+          <p>The API returns figures shown on the Supreme Court page. Data under review is not included.</p>
         </article>
         <article class="card">
-          <h3>Tier-aware semantics</h3>
-          <p>This API is Supreme Court-specific. It does not pretend to be a national all-courts leaderboard or a cross-tier ranking framework.</p>
+          <h3>Supreme Court totals</h3>
+          <p>These records contain court-wide totals. The API has no district-level data.</p>
         </article>
       </div>
     </section>

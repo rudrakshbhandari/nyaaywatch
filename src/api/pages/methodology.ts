@@ -24,24 +24,24 @@ export function renderMethodologyPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HOW THE NUMBERS ARE BUILT",
-      headline: "Every public number comes from one stored published snapshot.",
+      headline: "Public figures come from reviewed snapshots.",
       lede:
-        "Operators can capture newer runs in private, but the public site stays pinned to the last reviewed publication until a publish succeeds. That keeps every public claim reproducible and auditable.",
+        "The site shows the latest reviewed publication. Each number carries its source date and methodology version.",
       isHero: true,
     })}
 
     <section class="method">
-      ${renderSectionHead({ headline: "Scope and posture" })}
+      ${renderSectionHead({ headline: "What's covered" })}
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Current public scope</h3>
-          <p>${escapeHtml(context.publicScopeDescription)} NyaayWatch publishes dated aggregates after operator review and keeps unpublished run state private.</p>
-          <p>Historical context comes from earlier published snapshots, not from raw captured pages shown directly to the public.</p>
+          <p>${escapeHtml(context.publicScopeDescription)} The site publishes dated aggregates after review. Unpublished data stays private.</p>
+          <p>Earlier published snapshots provide historical context. Raw source pages are not public.</p>
         </article>
         <article class="card">
           <h3>What the site does not do</h3>
-          <p>It does not predict outcomes, rank officials, or assign blame. The public surface is a descriptive, citeable view of court-published aggregates.</p>
-          <p>If a newer source run is incomplete or fails review, the site remains on the last safe publication rather than slipping into partial data.</p>
+          <p>The site reports aggregate counts. It does not predict outcomes, rank officials, or assign blame.</p>
+          <p>If a newer run fails review, the site keeps showing the last reviewed publication.</p>
         </article>
       </div>
     </section>
@@ -126,7 +126,7 @@ export function renderMethodologyPage(
     <section class="method" id="source-caveats">
       ${renderSectionHead({
         headline: "Source caveats",
-        lede: "A page-level caveat is added only when the source page changes how a reader should understand the numbers.",
+        lede: "We add a caveat when a source issue changes how the numbers should be read.",
       })}
       <div class="card-grid card-grid--3">
         <article class="card" id="source-caveat-geography-labels">
@@ -142,7 +142,7 @@ export function renderMethodologyPage(
         <article class="card" id="source-caveat-future-changes">
           ${renderAnchorLink("source-caveat-future-changes", "Future source changes")}
           <h3>Future source changes</h3>
-          <p>If a source page changes district coverage, date labels, or geography names in a way that affects interpretation, NyaayWatch will add a page-level caveat for that geography.</p>
+          <p>If a source changes its district list, date labels, or geography names, the affected page will explain what changed.</p>
         </article>
       </div>
     </section>
@@ -150,7 +150,7 @@ export function renderMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published methodology and snapshot lineage",
-        lede: "One row per reference date, sorted newest first, showing the publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
+        lede: "One row per reference date, newest first. The table shows the snapshot selected for each date. Rollbacks and same-day republishes appear in operator publication history.",
       })}
       ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
         referenceDateLabel: (entry) => formatDate(entry.snapshot.referenceDateAt),

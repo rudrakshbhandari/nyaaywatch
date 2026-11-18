@@ -89,14 +89,14 @@ describe("Haryana public rollout preflight", () => {
 
     const routes = [
       { path: "/states/haryana", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
-      { path: "/states/haryana/districts", requiredText: "Scan the districts under the most pressure." },
+      { path: "/states/haryana/districts", requiredText: "Browse district data." },
       {
         path: "/states/haryana/districts/faridabad",
         requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
       },
-      { path: "/states/haryana/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
+      { path: "/states/haryana/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/haryana/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/haryana/api", requiredText: "currently on the public site" },
+      { path: "/states/haryana/api", requiredText: "currently shown on the site" },
     ] as const;
 
     for (const route of routes) {

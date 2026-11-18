@@ -69,7 +69,7 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
       eyebrow: "DEVELOPER ACCESS",
       headline: "API reference",
       lede:
-        "The API matches what's currently on the public site. If a number is public on the site, you can fetch it here; if it hasn't been published yet, the API doesn't expose it.",
+        "The API returns the data currently shown on the site. It includes published data only.",
       isHero: true,
       variant: "compact",
     })}
@@ -202,7 +202,7 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${documentedRoutes.trends}</code>
-          <p>Published snapshot history for the ${aggregateAdjective} trend surface.</p>
+          <p>Trend points from earlier snapshots for the ${aggregateAdjective} data.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -216,7 +216,7 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${documentedRoutes.archive}?limit=20&amp;offset=0</code>
-          <p>Page through the full normalized payloads of snapshots that were published for this scope. <code>limit</code> accepts 1–100; <code>offset</code> starts at 0. The response includes the total count and the next offset when more records are available.</p>
+          <p>Fetch the full snapshot records for this scope. Set <code>limit</code> from 1 to 100 and use <code>offset</code> to move through the archive. The response gives the total and next offset.</p>
         </article>
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
@@ -224,7 +224,7 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
             <code class="endpoint__path">${documentedRoutes.stateEvidencePack}</code>
             <code class="endpoint__path">${documentedRoutes.districtEvidencePack}</code>
           </div>
-          <p>Evidence packs for citation and reuse. They bundle public metrics with reference date, source date when available, methodology version, CSV/API links, plain citation text, caveats, and the public-data safety boundary.</p>
+          <p>Evidence packs include metrics, data and source dates, method version, CSV and API links, citation text, and caveats.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
@@ -264,12 +264,12 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
       ${renderSectionHead({ headline: "What the API guarantees" })}
       <div class="card-grid card-grid--3">
         <article class="card">
-          <h3>CSV parity</h3>
-          <p>The <code>${csvParityPath}</code> downloads stay aligned with the same published read model, so the CSV columns and the JSON fields mean the same thing.</p>
+          <h3>CSV downloads</h3>
+          <p>Download the district table as CSV at <code>${csvParityPath}</code>. Use the API routes above for JSON data.</p>
         </article>
         <article class="card">
-          <h3>Published only</h3>
-          <p>The API never exposes fresher unpublished data than the public pages themselves. Operator captures in review stay private.</p>
+          <h3>Current public data</h3>
+          <p>The API returns data shown on the site. Data under review is not included.</p>
         </article>
         <article class="card">
           <h3>Missing data</h3>

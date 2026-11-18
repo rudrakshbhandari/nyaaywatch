@@ -52,7 +52,7 @@ export function renderSupremeCourtOverviewPage(
         eyebrow: "SUPREME COURT",
         headline: "Where is pressure building at the Supreme Court?",
         lede:
-          "This page shows one published aggregate Supreme Court snapshot, but focuses the first view on backlog pressure, clearance pace, and monthly backlog change so the current direction is obvious at a glance.",
+          "The figures below show the Supreme Court's pending cases, clearance pace, and monthly backlog change.",
         isHero: true,
       })}
 
@@ -60,7 +60,7 @@ export function renderSupremeCourtOverviewPage(
         ${renderStatTile({
           label: "Pending total",
           value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
-          note: "Registered and unregistered pending matters combined in the active publication.",
+          note: "Registered and unregistered pending cases combined.",
         })}
         ${renderStatTile({
           label: "Cleared / 100 filed",
@@ -83,16 +83,16 @@ export function renderSupremeCourtOverviewPage(
         ${renderStatTile({
           label: "Pending unregistered",
           value: snapshot.stats.pendingUnregisteredCases.toLocaleString("en-IN"),
-          note: "Unregistered matters remain visible instead of being folded away.",
+          note: "Unregistered pending cases.",
           tone: "accent",
         })}
       </section>
     </div>
 
     ${renderInvestigationWorkflow({
-      headline: "Move down the court system carefully.",
+      headline: "Explore other court tiers",
       lede:
-        "Use the Supreme Court aggregate as the national entry point, then move to High Courts and lower-court geographies while keeping each tier's method separate.",
+        "Supreme Court totals are separate from High Court and district figures, which use different measures.",
       steps: [
         {
           eyebrow: "01",
@@ -117,8 +117,8 @@ export function renderSupremeCourtOverviewPage(
         },
         {
           eyebrow: "04",
-          title: "Cite carefully",
-          body: "Use data, API, and press materials so the published snapshot and caveats travel with the number.",
+          title: "Data and citations",
+          body: "Use the data, API, and press pages to cite these figures.",
           href: context.routes.data,
           cta: "Open data",
         },
@@ -127,9 +127,9 @@ export function renderSupremeCourtOverviewPage(
 
     <section class="sc-section">
       ${renderSectionHead({
-        headline: "Scale-aware pressure signals",
+        headline: "How to read these metrics",
         lede:
-          "These derived metrics put the month-to-date movement in context. They are scenario and imbalance signals, not forecasts or causal claims.",
+          "These measures describe filing and clearance patterns. They do not predict outcomes or explain causes.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
@@ -163,14 +163,14 @@ export function renderSupremeCourtOverviewPage(
 
     <section class="sc-section">
       ${renderSectionHead({
-        headline: "How to read this page",
+        headline: "Snapshot and source date",
         lede:
-          "This Supreme Court page stays anchored to one published aggregate snapshot, with tier-specific caveats, clear reference dates, and no hidden leap into all-courts comparability.",
+          "The figures on this page come from one published Supreme Court aggregate snapshot. The source date and methodology appear below.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>Snapshot basis</h3>
-          <p>Supreme Court data is snapshot-based, not live. Every public number comes from a stored published artifact and stays pinned until a later reviewed publication replaces it.</p>
+          <p>Supreme Court data is snapshot-based, not live. Each number comes from a stored, reviewed publication.</p>
           <p>${renderBadge({ label: snapshot.snapshot.qualityState, tone: snapshot.snapshot.qualityState === "complete" ? "complete" : "flag" })}</p>
         </article>
         <article class="card">
@@ -178,7 +178,7 @@ export function renderSupremeCourtOverviewPage(
           <p>${referenceLabel}</p>
           <p>${
             snapshot.snapshot.referenceDateKind === "captured_at"
-              ? "The official aggregate page did not expose a defensible source snapshot timestamp, so NyaayWatch shows the page capture time instead of inventing one."
+              ? "The official page has no source date, so NyaayWatch shows when it was captured."
               : "The official source exposed a usable source snapshot timestamp, so that source date is shown directly."
           }</p>
         </article>
@@ -187,9 +187,9 @@ export function renderSupremeCourtOverviewPage(
 
     <section class="sc-section">
       ${renderSectionHead({
-        headline: "Movement in the current publication",
+        headline: "Monthly and year-to-date filings and clearances",
         lede:
-          "This page keeps registered and unregistered backlog visible, while showing month and year movement directly from the aggregate source boundary.",
+          "Supreme Court NJDG reports totals for last month and the current year.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
@@ -202,16 +202,16 @@ export function renderSupremeCourtOverviewPage(
           <h3>Current year</h3>
           <p><strong>Instituted:</strong> ${snapshot.stats.institutedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
           <p><strong>Disposed:</strong> ${snapshot.stats.disposedCurrentYearTotalCases.toLocaleString("en-IN")}</p>
-          <p>This page exposes the year-to-date aggregate counts without implying long-range causal explanations.</p>
+          <p>These are year-to-date totals, not case-level counts.</p>
         </article>
       </div>
     </section>
 
     <section class="sc-section">
       ${renderSectionHead({
-        headline: "Official source links",
+        headline: "Official Supreme Court sources",
         lede:
-          "Use these links to move from public accountability data to the official court systems and reference material behind it.",
+          "Check these figures on Supreme Court NJDG or visit the official court site.",
       })}
       <div class="card-grid card-grid--4">
         <article class="card">
@@ -231,7 +231,7 @@ export function renderSupremeCourtOverviewPage(
         </article>
         <article class="card">
           <h3>FAQ / ready reckoner</h3>
-          <p>Official guidance for obtaining Supreme Court information without pretending this page replaces those record-level workflows.</p>
+          <p>Official guidance on obtaining Supreme Court information.</p>
           <p><a class="btn btn--ghost btn--small" href="${profile.sourceUrls.faq}">Open FAQ</a></p>
         </article>
       </div>

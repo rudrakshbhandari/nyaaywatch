@@ -158,21 +158,21 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
     </section>
 
     ${renderInvestigationWorkflow({
-      headline: `Follow the ${context.lowerCourtCopy.geographyLabelLower} trail.`,
+      headline: `Explore ${snapshot.snapshot.stateName}'s district courts.`,
       lede:
-        `Start with the headline pressure, then inspect districts, snapshot movement, comparisons, and citation-ready exports for ${snapshot.snapshot.stateName}.`,
+        `See the main figures, compare districts, check changes over time, and download data for ${snapshot.snapshot.stateName}.`,
       steps: [
         {
           eyebrow: "01",
           title: "Scan districts",
-          body: "Sort by backlog, clearance pace, typical wait, or file-clear gap to find the first pressure signal worth inspecting.",
+          body: "Sort by pending cases, clearance pace, typical wait, or the gap between cases filed and cleared.",
           href: context.routes.districts,
           cta: "Open district workspace",
         },
         {
           eyebrow: "02",
           title: "Check movers",
-          body: "Compare the two most recent published snapshots when history is available, so a one-month change does not get lost in the table.",
+          body: "Compare the two most recent readings when history is available.",
           href: context.routes.movers,
           cta: "Open movers",
         },
@@ -181,12 +181,12 @@ export function renderHome(snapshot: PublishedSnapshot, context: PublicPageConte
           title: "Open evidence",
           body: "Use the district page for history, caveats, citations, downloadable CSVs, and the metric definitions behind each number.",
           href: context.routes.district(model.topDistrict.districtId),
-          cta: "Inspect top district",
+          cta: "Open district",
         },
         {
           eyebrow: "04",
-          title: "Reuse safely",
-          body: "Use the public data, API, and press kit instead of raw capture files or unpublished runs.",
+          title: "Download and cite",
+          body: "Use the CSV, JSON API, and press kit when citing these figures.",
           href: "/press",
           cta: "Open press kit",
         },
