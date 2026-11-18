@@ -11,11 +11,11 @@ The signals below are what "on-call" is responsible for. Everything else is norm
 | Signal | Source | How it surfaces |
 | --- | --- | --- |
 | Public-alpha ops sweep failure | Azure Container Apps `alpha-ops` smoke monitor (daily 07:00 UTC after this schedule change is applied) and `.github/workflows/ops-watchdog.yml` full sweep (daily 05:00 UTC) | Provider-configured failure email and durable GitHub issue `Ops watchdog failure` |
-| Internal fetch schedule failure | `npm run ops:verify-internal-fetch-schedule` inside the watchdog | Same GitHub issue, `failingTiers` section |
+| Internal fetch schedule failure | Azure Container Apps Job execution checks in the daily watchdog | Same GitHub issue, `failingTiers` section |
 | Public hostname health | Azure Monitor and Container Apps health/logs | Provider-configured notification and watchdog issue |
-| Structured app errors | `nyaaywatch-production-app-errors` | SNS topic `nyaaywatch-production-alerts` |
-| Missed daily internal fetch at 08:00, 08:10, or 08:20 Asia/Kolkata | `ops:verify-internal-fetch-schedule` tier outcome | Same GitHub issue, per-tier block |
-| NJDG missing-zero outreach send failure | `.github/workflows/njdg-missing-zero-outreach.yml` Monday, Wednesday, and Friday schedule | Durable GitHub issue `NJDG outreach failure` and SNS topic `nyaaywatch-production-alerts` |
+| Structured app errors | Azure production app alert | Azure email or configured webhook and the durable GitHub issue |
+| Missed daily internal fetch at 08:00, 08:10, or 08:20 Asia/Kolkata | Azure Container Apps Job execution checks | Same GitHub issue, per-tier block |
+| NJDG missing-zero outreach send failure | `.github/workflows/njdg-missing-zero-outreach.yml` Monday, Wednesday, and Friday schedule | Durable GitHub issue `NJDG outreach failure` |
 
 ## Roles
 
@@ -72,7 +72,8 @@ For every incident, in order:
    export OPERATOR_API_TOKEN=...
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in --target-set=smoke
    npm run ops:verify-public-alpha -- --base-url=https://nyaaywatch.in
-   npm run ops:verify-internal-fetch-schedule -- --base-url=https://nyaaywatch.in
+   Review the latest `ops-watchdog` GitHub Actions run and Azure Container Apps
+   Job executions for the fetch and publish jobs.
    npm run release:verify -- --base-url=https://nyaaywatch.in
    ```
 4. For an origin timeout, request burst, or unexplained 5xx incident, inspect
@@ -100,4 +101,4 @@ For every incident, in order:
 - `docs/OPERATING_EVIDENCE.md` — required evidence per release
 - `docs/internal/DEPLOYMENT_STATUS.md` — selected provider and live-state verification pointers
 - `.github/workflows/ops-watchdog.yml` — scheduled watchdog and issue wiring
-- `.github/workflows/ops-publish-pending.yml` — manual gated publish-pending recovery
+- `infra/azure/production/main.tf` — scheduled publish-pending sweep; run `npm run ops:publish-pending` for manual recovery

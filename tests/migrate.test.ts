@@ -20,6 +20,7 @@ describe("runMigrations", () => {
 
     await expect(pool.query("SELECT * FROM runs LIMIT 0")).resolves.toBeDefined();
     await expect(pool.query("SELECT * FROM run_artifacts LIMIT 0")).resolves.toBeDefined();
+    await expect(pool.query("SELECT s3_bucket, s3_key FROM run_artifacts LIMIT 0")).resolves.toBeDefined();
     await expect(pool.query("SELECT * FROM published_snapshots LIMIT 0")).resolves.toBeDefined();
     await expect(pool.query("SELECT * FROM publication_history LIMIT 0")).resolves.toBeDefined();
 

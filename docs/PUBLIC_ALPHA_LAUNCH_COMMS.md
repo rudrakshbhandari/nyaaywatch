@@ -48,8 +48,8 @@ Analytics, paid distribution, and SEO-for-scale are deliberately out of scope fo
 
 - screenshots of operator-only routes
 - internal readiness-review doc names, file paths, or run ids
-- AWS stack names, task definition numbers, or alarm names
-- the operator token, secret ARNs, or any Cloudflare or AWS identifiers
+- cloud resource names, deployment revision numbers, or alarm identifiers
+- the operator token, secret identifiers, or private infrastructure details
 - the names of individual reviewers who have not explicitly opted in to being named publicly
 - aspirational scope ("we plan to cover every court in India by <date>") — describe current scope only
 

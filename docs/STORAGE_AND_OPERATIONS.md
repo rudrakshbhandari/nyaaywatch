@@ -6,8 +6,8 @@
   history.
 - Azure Blob Storage stores production raw captures and normalized candidates.
 - The public site and API read only published snapshots.
-- Local development and CI use PostgreSQL and LocalStack S3 to exercise the
-  object-storage adapter without cloud credentials.
+- Local development and CI use PostgreSQL and Azurite Blob Storage to exercise
+  the production storage adapter without cloud credentials.
 
 ## Operator lifecycle
 
@@ -35,8 +35,7 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "In
 
 For local work, copy `.env.example` to `.env`, run `npm run docker:up`,
 `npm install`, and `npm run dev:bootstrap`, then start the app with
-`npm run dev`. LocalStack is configured for the development S3 endpoint; it is
-not the production artifact store.
+`npm run dev`. Azurite emulates the Azure Blob endpoint used by production.
 
 ## Release evidence
 

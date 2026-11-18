@@ -102,7 +102,7 @@ variable "alarm_webhook_url" {
 }
 
 variable "enable_scheduled_jobs" {
-  description = "Create active Azure schedule jobs. Keep false until AWS writers are stopped and cutover is approved."
+  description = "Create the scheduled Azure Container Apps jobs."
   type        = bool
   default     = false
 }
@@ -111,6 +111,18 @@ variable "enable_application" {
   description = "Run an application replica. Keep false until the target database and artifacts have been restored."
   type        = bool
   default     = false
+}
+
+variable "preserve_legacy_azure_runtime_env" {
+  description = "Keep Azure provider selectors for the currently deployed image during the infrastructure bootstrap apply."
+  type        = bool
+  default     = false
+}
+
+variable "preserved_scheduled_job_commands" {
+  description = "Keep each currently deployed Azure job command during the infrastructure bootstrap apply."
+  type        = map(list(string))
+  default     = {}
 }
 
 variable "container_cpu" {

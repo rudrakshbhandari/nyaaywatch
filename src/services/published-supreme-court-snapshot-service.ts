@@ -138,7 +138,7 @@ export class PublishedSupremeCourtSnapshotService {
     const candidateArtifact = artifacts.find((artifact) => artifact.artifactType === SNAPSHOT_CANDIDATE_ARTIFACT_TYPE);
     const candidate = candidateArtifact
       ? SupremeCourtSnapshotCandidateSchema.parse(
-          await this.artifactStore.downloadJson(candidateArtifact.s3Key, {
+          await this.artifactStore.downloadJson(candidateArtifact.objectKey, {
             expectedChecksumSha256: candidateArtifact.checksumSha256,
           }),
         )
@@ -153,7 +153,7 @@ export class PublishedSupremeCourtSnapshotService {
   }
 
   async captureRun(note?: string): Promise<SupremeCourtRunInspection> {
-    await this.artifactStore.ensureBucket();
+    await this.artifactStore.ensureContainer();
     logInfo("supreme_court_operator_fetch_started", { note: note ?? null });
 
     const bundle = await this.sourceClient.captureLatest();
@@ -189,8 +189,8 @@ export class PublishedSupremeCourtSnapshotService {
         id: createId("artifact"),
         runId: run.id,
         artifactType: RAW_CAPTURE_ARTIFACT_TYPE,
-        s3Bucket: rawArtifact.bucket,
-        s3Key: rawArtifact.key,
+        storageContainer: rawArtifact.container,
+        objectKey: rawArtifact.key,
         checksumSha256: rawArtifact.checksumSha256,
         sizeBytes: rawArtifact.sizeBytes,
         metadata: {
@@ -304,7 +304,7 @@ export class PublishedSupremeCourtSnapshotService {
     }
 
     const rawArtifact = requireArtifact(sourceInspection.artifacts, RAW_CAPTURE_ARTIFACT_TYPE);
-    await this.artifactStore.ensureBucket();
+    await this.artifactStore.ensureContainer();
 
     const replayRun = await this.store.insertRun({
       id: createId("run"),
@@ -326,8 +326,8 @@ export class PublishedSupremeCourtSnapshotService {
 
     try {
       const copiedArtifact = await this.artifactStore.copyObject(
-        rawArtifact.s3Key,
-        buildReplayRawArtifactKey(this.config.DEPLOY_ENV, this.profile.courtCode, replayRun.id, rawArtifact.s3Key),
+        rawArtifact.objectKey,
+        buildReplayRawArtifactKey(this.config.DEPLOY_ENV, this.profile.courtCode, replayRun.id, rawArtifact.objectKey),
         {
           checksumsha256: rawArtifact.checksumSha256,
           replayofrunid: sourceInspection.run.id,
@@ -338,8 +338,8 @@ export class PublishedSupremeCourtSnapshotService {
         id: createId("artifact"),
         runId: replayRun.id,
         artifactType: RAW_CAPTURE_ARTIFACT_TYPE,
-        s3Bucket: copiedArtifact.bucket,
-        s3Key: copiedArtifact.key,
+        storageContainer: copiedArtifact.container,
+        objectKey: copiedArtifact.key,
         checksumSha256: copiedArtifact.checksumSha256 || rawArtifact.checksumSha256,
         sizeBytes: copiedArtifact.sizeBytes || rawArtifact.sizeBytes,
         metadata: {
@@ -454,8 +454,8 @@ export class PublishedSupremeCourtSnapshotService {
       id: createId("artifact"),
       runId,
       artifactType: SNAPSHOT_CANDIDATE_ARTIFACT_TYPE,
-      s3Bucket: candidateArtifact.bucket,
-      s3Key: candidateArtifact.key,
+      storageContainer: candidateArtifact.container,
+      objectKey: candidateArtifact.key,
       checksumSha256: candidateArtifact.checksumSha256,
       sizeBytes: candidateArtifact.sizeBytes,
       metadata: {

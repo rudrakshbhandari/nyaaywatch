@@ -15,9 +15,6 @@ const pool = { query: vi.fn() } as never;
 describe("NewsletterService Azure email provider", () => {
   it("skips confirmation delivery when Azure email is incomplete", async () => {
     const service = new NewsletterService(pool, {
-      AWS_REGION: "ap-south-1",
-      SES_SOURCE_EMAIL: undefined,
-      EMAIL_PROVIDER: "azure",
       AZURE_COMMUNICATION_CONNECTION_STRING: undefined,
       AZURE_EMAIL_SENDER: undefined,
     });
@@ -30,9 +27,6 @@ describe("NewsletterService Azure email provider", () => {
     const pollUntilDone = vi.fn().mockResolvedValue({ status: "Succeeded" });
     beginSend.mockResolvedValueOnce({ pollUntilDone });
     const service = new NewsletterService(pool, {
-      AWS_REGION: "ap-south-1",
-      SES_SOURCE_EMAIL: undefined,
-      EMAIL_PROVIDER: "azure",
       AZURE_COMMUNICATION_CONNECTION_STRING: "endpoint=https://example.communication.azure.com/;accesskey=test",
       AZURE_EMAIL_SENDER: "news@nyaaywatch.in",
     });
@@ -50,9 +44,6 @@ describe("NewsletterService Azure email provider", () => {
     const pollUntilDone = vi.fn().mockResolvedValue({ status: "Failed" });
     beginSend.mockResolvedValueOnce({ pollUntilDone });
     const service = new NewsletterService(pool, {
-      AWS_REGION: "ap-south-1",
-      SES_SOURCE_EMAIL: undefined,
-      EMAIL_PROVIDER: "azure",
       AZURE_COMMUNICATION_CONNECTION_STRING: "endpoint=https://example.communication.azure.com/;accesskey=test",
       AZURE_EMAIL_SENDER: "news@nyaaywatch.in",
     });

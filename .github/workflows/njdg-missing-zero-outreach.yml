@@ -19,13 +19,13 @@ jobs:
   outreach:
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: ap-south-1
-      ALARM_TOPIC_ARN: arn:aws:sns:ap-south-1:723951822728:nyaaywatch-production-alerts
       PUBLIC_BASE_URL: https://nyaaywatch.in
-      NJDG_OUTREACH_ARCHIVE_BUCKET: nyaaywatch-production-artifacts-723951822728
+      AZURE_STORAGE_ACCOUNT_URL: https://nyaaywatchproduction.blob.core.windows.net
+      AZURE_STORAGE_CONTAINER: artifacts
+      AZURE_COMMUNICATION_CONNECTION_STRING: ${{ secrets.AZURE_COMMUNICATION_CONNECTION_STRING }}
+      NJDG_OUTREACH_SENDER: ${{ vars.NJDG_OUTREACH_SENDER }}
       NJDG_OUTREACH_TO: ${{ secrets.NJDG_OUTREACH_TO }}
       NJDG_OUTREACH_REPLY_TO: ${{ secrets.NJDG_OUTREACH_REPLY_TO }}
-      SES_SOURCE_EMAIL: data@nyaaywatch.in
 
     steps:
       - name: Checkout repository
@@ -40,11 +40,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - name: Log in to Azure
+        uses: azure/login@eec3c95657c1536435858eda1f3ff5437fee8474
         with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-deploy-role
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Send cadence-limited NJDG outreach when missing monthly movement persists
         id: outreach
@@ -78,7 +79,7 @@ jobs:
               `Workflow run: ${runUrl}`,
               "",
               failed
-                ? "The scheduled NJDG missing-zero outreach workflow is failing. Emails may not have been accepted by SES."
+                ? "The scheduled NJDG missing-zero outreach workflow is failing. Email delivery or evidence archival may have failed."
                 : "The scheduled NJDG missing-zero outreach workflow is green.",
               "",
               "## Check",
@@ -125,34 +126,8 @@ jobs:
             core.setOutput("action", action);
             core.setOutput("issue-number", issueNumber);
 
-      - name: Publish NJDG outreach SNS alert
-        id: publish_sns
-        if: always() && env.ALARM_TOPIC_ARN != '' && (steps.sync_issue.outputs.action == 'created' || steps.sync_issue.outputs.action == 'updated' || steps.sync_issue.outputs.action == 'recovery-pending')
-        env:
-          ACTION: ${{ steps.sync_issue.outputs.action }}
-          OUTREACH_OUTCOME: ${{ steps.outreach.outcome }}
-          OUTREACH_EXIT_CODE: ${{ steps.outreach.outputs.exit-code }}
-        run: |
-          if [[ "$ACTION" == "recovery-pending" ]]; then
-            subject="NyaayWatch NJDG outreach recovered"
-          else
-            subject="NyaayWatch NJDG outreach failure"
-          fi
-
-          {
-            echo "NyaayWatch NJDG missing-zero outreach: $OUTREACH_OUTCOME"
-            echo "Exit code: ${OUTREACH_EXIT_CODE:-unknown}"
-            echo "Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          } > njdg-outreach-alert.txt
-
-          aws sns publish \
-            --region "$AWS_REGION" \
-            --topic-arn "$ALARM_TOPIC_ARN" \
-            --subject "$subject" \
-            --message file://njdg-outreach-alert.txt
-
       - name: Close recovered NJDG outreach issue
-        if: always() && steps.sync_issue.outputs.action == 'recovery-pending' && steps.publish_sns.outcome == 'success'
+        if: always() && steps.sync_issue.outputs.action == 'recovery-pending' && steps.outreach.outcome == 'success'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

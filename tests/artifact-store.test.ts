@@ -1,10 +1,3 @@
-import {
-  CreateBucketCommand,
-  GetObjectCommand,
-  GetBucketTaggingCommand,
-  HeadBucketCommand,
-  PutBucketTaggingCommand,
-} from "@aws-sdk/client-s3";
 import { createHash } from "node:crypto";
 import { Readable } from "node:stream";
 import { describe, expect, it, vi } from "vitest";
@@ -22,6 +15,9 @@ const azureContainer = {
 
 vi.mock("@azure/storage-blob", () => ({
   BlobServiceClient: class {
+    static fromConnectionString() {
+      return { getContainerClient: () => azureContainer };
+    }
     constructor() {}
     getContainerClient() {
       return azureContainer;
@@ -30,144 +26,43 @@ vi.mock("@azure/storage-blob", () => ({
 }));
 
 import { loadConfig } from "../src/config/env.js";
-import { AzureBlobArtifactStore, S3ArtifactStore } from "../src/storage/artifact-store.js";
+import { AzureBlobArtifactStore, createArtifactStore } from "../src/storage/artifact-store.js";
 
-describe("S3ArtifactStore.ensureBucket", () => {
-  it("treats already-owned bucket creation as idempotent and preserves existing bucket tags", async () => {
-    const store = new S3ArtifactStore(
-      loadConfig({
-        NODE_ENV: "test",
-        PORT: "3000",
-        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-        AWS_REGION: "ap-south-1",
-        AWS_ACCESS_KEY_ID: "test",
-        AWS_SECRET_ACCESS_KEY: "test",
-        S3_BUCKET: "nyaaywatch-test-artifacts",
-        DEPLOY_ENV: "staging",
-        OPERATOR_API_TOKEN: "operator-test-token",
-        STATE_CODE: "HP",
-      }),
-    );
-
-    const send = vi
-      .fn()
-      .mockRejectedValueOnce(new Error("missing bucket"))
-      .mockRejectedValueOnce(Object.assign(new Error("already owned"), { name: "BucketAlreadyOwnedByYou" }))
-      .mockResolvedValueOnce({
-        TagSet: [{ Key: "aws:cloudformation:stack-name", Value: "nyaaywatch-staging" }],
-      })
-      .mockResolvedValueOnce({});
-
-    (store as unknown as { client: { send: typeof send } }).client = { send };
-
-    await expect(store.ensureBucket()).resolves.toBeUndefined();
-
-    expect(send).toHaveBeenCalledTimes(4);
-    expect(send.mock.calls[0]?.[0]).toBeInstanceOf(HeadBucketCommand);
-    expect(send.mock.calls[1]?.[0]).toBeInstanceOf(CreateBucketCommand);
-    expect(send.mock.calls[2]?.[0]).toBeInstanceOf(GetBucketTaggingCommand);
-    expect(send.mock.calls[3]?.[0]).toBeInstanceOf(PutBucketTaggingCommand);
-    expect(send.mock.calls[3]?.[0].input.Tagging.TagSet).toEqual([
-      { Key: "aws:cloudformation:stack-name", Value: "nyaaywatch-staging" },
-      { Key: "project", Value: "nyaaywatch" },
-      { Key: "env", Value: "staging" },
-    ]);
-  });
-
-  it("skips bucket retagging when the desired tags are already present", async () => {
-    const store = new S3ArtifactStore(
-      loadConfig({
-        NODE_ENV: "test",
-        PORT: "3000",
-        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-        AWS_REGION: "ap-south-1",
-        AWS_ACCESS_KEY_ID: "test",
-        AWS_SECRET_ACCESS_KEY: "test",
-        S3_BUCKET: "nyaaywatch-test-artifacts",
-        DEPLOY_ENV: "staging",
-        OPERATOR_API_TOKEN: "operator-test-token",
-        STATE_CODE: "HP",
-      }),
-    );
-
-    const send = vi
-      .fn()
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({
-        TagSet: [
-          { Key: "aws:cloudformation:stack-name", Value: "nyaaywatch-staging" },
-          { Key: "project", Value: "nyaaywatch" },
-          { Key: "env", Value: "staging" },
-        ],
-      });
-
-    (store as unknown as { client: { send: typeof send } }).client = { send };
-
-    await expect(store.ensureBucket()).resolves.toBeUndefined();
-
-    expect(send).toHaveBeenCalledTimes(2);
-    expect(send.mock.calls[0]?.[0]).toBeInstanceOf(HeadBucketCommand);
-    expect(send.mock.calls[1]?.[0]).toBeInstanceOf(GetBucketTaggingCommand);
-  });
-});
-
-describe("S3ArtifactStore.downloadJson", () => {
-  it("rejects artifacts whose stored bytes do not match the recorded checksum", async () => {
-    const store = new S3ArtifactStore(
-      loadConfig({
-        NODE_ENV: "test",
-        PORT: "3000",
-        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-        AWS_REGION: "ap-south-1",
-        AWS_ACCESS_KEY_ID: "test",
-        AWS_SECRET_ACCESS_KEY: "test",
-        S3_BUCKET: "nyaaywatch-test-artifacts",
-        DEPLOY_ENV: "staging",
-        OPERATOR_API_TOKEN: "operator-test-token",
-        STATE_CODE: "HP",
-      }),
-    );
-
-    const send = vi.fn().mockResolvedValueOnce({
-      Body: {
-        transformToString: async () => JSON.stringify({ ok: true }),
-      },
-    });
-
-    (store as unknown as { client: { send: typeof send } }).client = { send };
-
-    await expect(
-      store.downloadJson("raw/run.json", {
-        expectedChecksumSha256: "not-the-recorded-sha",
-      }),
-    ).rejects.toThrow("checksum mismatch");
-
-    expect(send).toHaveBeenCalledTimes(1);
-    expect(send.mock.calls[0]?.[0]).toBeInstanceOf(GetObjectCommand);
-  });
-});
+const baseEnv = {
+  NODE_ENV: "test",
+  PORT: "3000",
+  DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
+  AZURE_STORAGE_ACCOUNT_URL: "https://nyaaywatchtest.blob.core.windows.net",
+  AZURE_STORAGE_CONTAINER: "artifacts",
+  DEPLOY_ENV: "staging",
+  OPERATOR_API_TOKEN: "operator-test-token",
+  STATE_CODE: "HP",
+};
 
 describe("AzureBlobArtifactStore", () => {
-  it("uses the configured managed identity and preserves checksums across operations", async () => {
-    const store = new AzureBlobArtifactStore(
-      loadConfig({
-        NODE_ENV: "test",
-        PORT: "3000",
-        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-        AWS_REGION: "ap-south-1",
-        STORAGE_PROVIDER: "azure",
-        AZURE_STORAGE_ACCOUNT_URL: "https://nyaaywatchproduction.blob.core.windows.net",
-        AZURE_STORAGE_CONTAINER: "artifacts",
-        AZURE_CLIENT_ID: "11111111-1111-4111-8111-111111111111",
-        DEPLOY_ENV: "production",
-        OPERATOR_API_TOKEN: "operator-test-token",
-        STATE_CODE: "HP",
-      }),
-    );
+  it("creates the configured container and records its environment metadata", async () => {
+    const store = new AzureBlobArtifactStore(loadConfig(baseEnv));
+
+    await store.ensureContainer();
+
+    expect(azureContainer.createIfNotExists).toHaveBeenCalledOnce();
+    expect(azureContainer.setMetadata).toHaveBeenCalledWith({ project: "nyaaywatch", env: "staging" });
+  });
+
+  it("uses the local Azure Storage connection string when configured", () => {
+    const store = createArtifactStore(loadConfig({
+      ...baseEnv,
+      AZURE_STORAGE_CONNECTION_STRING: "UseDevelopmentStorage=true",
+    }));
+    expect(store).toBeInstanceOf(AzureBlobArtifactStore);
+  });
+
+  it("preserves checksums across upload and download", async () => {
+    const store = new AzureBlobArtifactStore(loadConfig(baseEnv));
     const payload = { ok: true, count: 3 };
     azureBlob.upload.mockResolvedValueOnce({});
     await expect(store.uploadJson("raw/run.json", payload)).resolves.toMatchObject({
-      bucket: "artifacts",
+      container: "artifacts",
       key: "raw/run.json",
       sizeBytes: JSON.stringify(payload, null, 2).length,
     });
@@ -182,45 +77,17 @@ describe("AzureBlobArtifactStore", () => {
     );
   });
 
-  it("requires provider-specific storage configuration", () => {
-    expect(() => loadConfig({
-      NODE_ENV: "test",
-      PORT: "3000",
-      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-      AWS_REGION: "ap-south-1",
-      STORAGE_PROVIDER: "azure",
-      DEPLOY_ENV: "production",
-      OPERATOR_API_TOKEN: "operator-test-token",
-      STATE_CODE: "HP",
-    })).toThrow(/AZURE_STORAGE_ACCOUNT_URL/);
-  });
-
-  it("rejects a checksum-mismatched Azure replay before writing the destination", async () => {
-    const store = new AzureBlobArtifactStore(
-      loadConfig({
-        NODE_ENV: "test",
-        PORT: "3000",
-        DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
-        AWS_REGION: "ap-south-1",
-        STORAGE_PROVIDER: "azure",
-        AZURE_STORAGE_ACCOUNT_URL: "https://nyaaywatchproduction.blob.core.windows.net",
-        AZURE_STORAGE_CONTAINER: "artifacts",
-        AZURE_CLIENT_ID: "11111111-1111-4111-8111-111111111111",
-        DEPLOY_ENV: "production",
-        OPERATOR_API_TOKEN: "operator-test-token",
-        STATE_CODE: "HP",
-      }),
-    );
+  it("rejects a checksum-mismatched replay before writing the destination", async () => {
+    const store = new AzureBlobArtifactStore(loadConfig(baseEnv));
     const sourceBody = JSON.stringify({ source: "bytes" });
     const checksum = createHash("sha256").update(sourceBody).digest("hex");
-    azureBlob.download.mockResolvedValueOnce({ readableStreamBody: Readable.from([Buffer.from(sourceBody)]) });
+    azureBlob.download.mockImplementation(async () => ({ readableStreamBody: Readable.from([Buffer.from(sourceBody)]) }));
     azureBlob.upload.mockClear();
 
     await expect(store.copyObject("raw/source.json", "replay/source.json", { checksumsha256: "wrong" }))
       .rejects.toThrow(/checksum mismatch/);
     expect(azureBlob.upload).not.toHaveBeenCalled();
 
-    azureBlob.download.mockResolvedValueOnce({ readableStreamBody: Readable.from([Buffer.from(sourceBody)]) });
     await expect(store.copyObject("raw/source.json", "replay/source.json", { checksumsha256: checksum }))
       .resolves.toMatchObject({ checksumSha256: checksum, sizeBytes: Buffer.byteLength(sourceBody) });
     expect(azureBlob.upload).toHaveBeenCalledWith(
@@ -228,5 +95,22 @@ describe("AzureBlobArtifactStore", () => {
       Buffer.byteLength(sourceBody),
       expect.objectContaining({ metadata: { checksumsha256: checksum } }),
     );
+  });
+
+  it("requires an Azure account URL or connection string and a container", () => {
+    expect(() => loadConfig({
+      NODE_ENV: "test",
+      PORT: "3000",
+      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/nyaaywatch",
+      DEPLOY_ENV: "production",
+      OPERATOR_API_TOKEN: "operator-test-token",
+      STATE_CODE: "HP",
+    })).toThrow(/AZURE_STORAGE_ACCOUNT_URL/);
+    expect(() => loadConfig({
+      ...baseEnv,
+      AZURE_STORAGE_ACCOUNT_URL: undefined,
+      AZURE_STORAGE_CONTAINER: undefined,
+      AZURE_STORAGE_CONNECTION_STRING: "UseDevelopmentStorage=true",
+    })).toThrow(/AZURE_STORAGE_CONTAINER/);
   });
 });

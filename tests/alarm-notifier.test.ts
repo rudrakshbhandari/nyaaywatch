@@ -79,6 +79,6 @@ describe("alarm notifier", () => {
 
     await createAlarmNotifier({}).publish("subject", "message");
 
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("ALARM_TOPIC_ARN not set; skipping publish"));
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("no alarm destination configured; skipping publish"));
   });
 });
