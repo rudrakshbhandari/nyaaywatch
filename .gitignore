@@ -7,6 +7,9 @@ infra/azure/production/.terraform/
 infra/azure/production/terraform.tfstate
 infra/azure/production/terraform.tfstate.*
 infra/azure/production/terraform.tfvars
+infra/azure/previews/.terraform/
+infra/azure/previews/*.tfplan
+infra/azure/previews/terraform.tfstate*
 dist/
 build/
 coverage/

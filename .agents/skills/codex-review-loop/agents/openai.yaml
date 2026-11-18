@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Review Loop"
+  short_description: "Drive NyaayWatch Codex reviews until the current PR head is clear."
+  default_prompt: "Use $codex-review-loop to get a Codex thumbs-up on this NyaayWatch pull request, fix actionable findings, and keep polling until the current head and required checks are clear."

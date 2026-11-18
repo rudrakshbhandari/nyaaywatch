@@ -109,6 +109,10 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "In
 
 Local development uses PostgreSQL plus Azurite Blob Storage, the same storage API used in production. Copy the `AZURE_STORAGE_CONNECTION_STRING` and `AZURE_STORAGE_CONTAINER` values from `.env.example` for local use.
 
+## Pull Request Previews
+
+Azure PR previews are opt-in through the repository variable `ENABLE_AZURE_PREVIEWS`. The workflow builds same-repository PRs without Azure credentials, passes the image as a short-lived artifact, and deploys it from a trusted default-branch workflow into the isolated fixture-only environment. See [Azure preview infrastructure](../infra/azure/previews/README.md) for setup, identity scope, and cleanup behavior.
+
 ## Commit Examples
 
 ```text

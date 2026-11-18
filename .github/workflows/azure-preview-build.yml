@@ -1,0 +1,33 @@
+name: Azure Preview Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.event.pull_request.head.repo.full_name == github.repository && vars.ENABLE_AZURE_PREVIEWS == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: azure-preview-build-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c
+      - name: Build fixture-backed preview image
+        run: docker build --platform linux/amd64 --tag nyaaywatch-preview:artifact .
+      - name: Save image artifact
+        run: docker save nyaaywatch-preview:artifact | gzip > "$RUNNER_TEMP/preview-image.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: preview-image
+          path: ${{ runner.temp }}/preview-image.tar.gz
+          retention-days: 1
+          if-no-files-found: error
