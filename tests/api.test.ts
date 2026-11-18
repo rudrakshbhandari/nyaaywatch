@@ -249,7 +249,7 @@ describe("HTTP routes", () => {
 
     const moversPage = await request(app).get("/movers");
     expect(moversPage.status).toBe(200);
-    expect(moversPage.text).toContain("Read movement before making a claim.");
+    expect(moversPage.text).toContain("Compare the two readings.");
     expect(moversPage.text).toContain("Download data for these changes.");
     expect(moversPage.text).toContain("Movers citation");
     expect(moversPage.text).toContain("Snapshot Movers for Himachal Pradesh");
