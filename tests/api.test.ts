@@ -179,7 +179,7 @@ describe("HTTP routes", () => {
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
-    expect(himachalOverview.text).toContain("Explore Himachal Pradesh's district courts.");
+    expect(himachalOverview.text).toContain("Explore Himachal Pradesh&#39;s district courts.");
     expect(himachalOverview.text).toContain("Court transparency, Himachal Pradesh");
     expect(himachalOverview.text).not.toContain("Court transparency across India");
 
