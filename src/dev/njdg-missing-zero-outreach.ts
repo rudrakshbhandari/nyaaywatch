@@ -256,8 +256,10 @@ export function deriveOutreachBcc(sourceEmail: string, extraBcc = process.env.NJ
 
 export function validateOutreachSourceEmail(sourceEmail: string): string {
   const normalized = sourceEmail.trim().toLowerCase();
-  if (!normalized.endsWith("@nyaaywatch.in")) {
-    throw new Error("NJDG outreach must use an authenticated @nyaaywatch.in sender. Do not send this outreach from a personal mailbox.");
+  if (!normalized.endsWith("@nyaaywatch.in") && !normalized.endsWith("@outreach.nyaaywatch.in")) {
+    throw new Error(
+      "NJDG outreach must use an authenticated @nyaaywatch.in or @outreach.nyaaywatch.in sender. Do not send this outreach from a personal mailbox.",
+    );
   }
   return normalized;
 }
@@ -281,7 +283,7 @@ async function sendOutreachEmail(
   message: NjdgOutreachMessage,
   context: { baseUrl: string; checkedAt: string; issues: MissingMonthlyMovementIssue[] },
 ): Promise<SendOutreachResult> {
-  const source = validateOutreachSourceEmail(process.env.AZURE_EMAIL_SENDER ?? "");
+  const source = validateOutreachSourceEmail(process.env.NJDG_OUTREACH_SENDER ?? "");
   const emailConnectionString = process.env.AZURE_COMMUNICATION_CONNECTION_STRING?.trim();
   const storageAccountUrl = process.env.AZURE_STORAGE_ACCOUNT_URL?.trim();
   const archiveContainer = process.env.AZURE_STORAGE_CONTAINER?.trim();

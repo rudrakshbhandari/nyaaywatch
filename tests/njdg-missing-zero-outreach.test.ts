@@ -78,9 +78,11 @@ describe("NJDG missing zero outreach", () => {
     ]);
   });
 
-  it("requires authenticated NyaayWatch domain mail for outreach", () => {
+  it("accepts only authenticated NyaayWatch outreach domains", () => {
     expect(validateOutreachSourceEmail(" data@nyaaywatch.in ")).toBe("data@nyaaywatch.in");
-    expect(() => validateOutreachSourceEmail("rudrakshbhandari99@gmail.com")).toThrow("@nyaaywatch.in sender");
+    expect(validateOutreachSourceEmail(" Data@Outreach.NyaayWatch.In ")).toBe("data@outreach.nyaaywatch.in");
+    expect(() => validateOutreachSourceEmail("rudrakshbhandari99@gmail.com")).toThrow("personal mailbox");
+    expect(() => validateOutreachSourceEmail("data@fake-nyaaywatch.in")).toThrow("personal mailbox");
   });
 
   it("uses the source sender as the default reply-to with optional overrides", () => {
