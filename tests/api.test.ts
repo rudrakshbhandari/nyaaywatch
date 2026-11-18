@@ -179,7 +179,7 @@ describe("HTTP routes", () => {
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
-    expect(himachalOverview.text).toContain("Explore this state.");
+    expect(himachalOverview.text).toContain("Follow the state trail.");
     expect(himachalOverview.text).toContain("Court transparency, Himachal Pradesh");
     expect(himachalOverview.text).not.toContain("Court transparency across India");
 
@@ -934,7 +934,7 @@ describe("HTTP routes", () => {
     expect(index.text).toContain("Patna High Court");
     expect(index.text).toContain("Allahabad High Court");
     expect(index.text).toContain("Coverage:</strong> Himachal Pradesh");
-    expect(index.text).toContain("ordered by last-month backlog change first, then clearance pace, then pending load");
+    expect(index.text).toContain("ordered by last-month backlog change, then clearances per 100 filed, then pending cases");
 
     const overview = await request(app).get("/high-courts/himachal");
     expect(overview.status).toBe(200);
@@ -1156,7 +1156,7 @@ describe("HTTP routes", () => {
     expect(data.status).toBe(200);
     expect(data.text).toContain("/v1/supreme-court/stats");
     expect(data.text).toContain("/v1/supreme-court/archive?limit=20&amp;offset=0");
-    expect(data.text).toContain("there are no district-level rows");
+    expect(data.text).toContain("no district-level rows");
 
     const methodology = await request(app).get("/supreme-court/methodology");
     expect(methodology.status).toBe(200);
@@ -1351,7 +1351,7 @@ describe("HTTP routes", () => {
     const ladakhData = await request(app).get("/states/ladakh/data");
     expect(ladakhData.status).toBe(200);
     expect(ladakhData.text).toContain("Territory-wide district table");
-    expect(ladakhData.text).toContain("territory-wide trends");
+    expect(ladakhData.text).toContain("territory-wide stats, district rows and trends");
 
     const ladakhMethodology = await request(app).get("/states/ladakh/methodology");
     expect(ladakhMethodology.status).toBe(200);

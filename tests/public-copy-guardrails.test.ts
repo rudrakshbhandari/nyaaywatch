@@ -181,7 +181,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/methodology",
-        requiredText: "If a source page changes district coverage, date labels, or geography names",
+        requiredText: "If a source changes its district list, date labels, or geography names",
       },
       {
         path: "/states/punjab/api",
