@@ -175,7 +175,7 @@ describe("PublishedSnapshotService", () => {
     expect(captured.candidate?.districts).toHaveLength(22);
     expect(captured.candidate?.districts.some((district) => district.districtName === "Ludhiana")).toBe(true);
     expect(captured.candidate?.districts.some((district) => district.districtName === "Kangra")).toBe(false);
-    expect(captured.artifacts.every((artifact) => artifact.s3Key.includes("/pb/"))).toBe(true);
+    expect(captured.artifacts.every((artifact) => artifact.objectKey.includes("/pb/"))).toBe(true);
   });
 
   it("keeps internal Punjab runs isolated from the Himachal-scoped service", async () => {

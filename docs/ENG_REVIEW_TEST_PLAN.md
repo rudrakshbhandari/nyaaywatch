@@ -73,7 +73,7 @@ Copied from the approved `/plan-eng-review` artifact so implementation in future
 - browser E2E covering the citizen flow, reporter flow, and developer parity flow against a deterministic fixture-backed app server
 - API contract tests enforcing stable schemas for `/v1/stats/himachal`, `/v1/districts`, `/v1/trends`, and the state-scoped Punjab public endpoints
 - Playwright responsive/accessibility QA covering mobile trust surfaces, keyboard navigation, and axe smoke checks across the public routes
-- persistent-stack integration coverage for fetch, publish, replay, and rollback using local Docker PostgreSQL plus LocalStack S3 with the real `pg` and AWS SDK code paths
+- persistent-stack integration coverage for fetch, publish, replay, and rollback using local Docker PostgreSQL plus Azurite Blob Storage with the real `pg` and Azure SDK code paths
 - route-level copy guardrail tests enforcing published-snapshot, non-verdict, non-continuous-refresh public wording across the national homepage, explicit Himachal lower-court overview, and state-scoped Punjab public routes
 
 Staging validation completed on 2026-04-15 with a live AWS `ap-south-1` stack covering `/health`, operator `fetch`, `inspect`, `publish`, `replay`, `rollback`, and confirmation that the public stats endpoint reflects the active publication after rollback.

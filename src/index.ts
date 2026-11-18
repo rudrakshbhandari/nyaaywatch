@@ -21,7 +21,7 @@ const server = runtime.app.listen(runtime.config.PORT, () => {
   logInfo("server_started", {
     port: runtime.config.PORT,
     deployEnv: runtime.config.DEPLOY_ENV,
-    awsRegion: runtime.config.AWS_REGION,
+    region: runtime.config.RUNTIME_REGION,
     stateCode: runtime.config.STATE_CODE,
     appMode: process.env.APP_MODE ?? "default",
   });

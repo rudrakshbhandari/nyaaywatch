@@ -164,7 +164,7 @@ describe("publish-pending sweep review digests", () => {
       if (command === "publications") return [{ run: { id: "committed" } }];
       return candidate("committed", 450000);
     });
-    mocks.publishAlert.mockRejectedValue(new Error("SNS unavailable"));
+    mocks.publishAlert.mockRejectedValue(new Error("email delivery unavailable"));
 
     const summary = await runPublishPendingSweep({});
 
@@ -173,7 +173,7 @@ describe("publish-pending sweep review digests", () => {
       runId: "committed",
       autoPublish: "published",
       ok: false,
-      error: "Cache invalidation warning delivery failed: SNS unavailable",
+      error: "Cache invalidation warning delivery failed: email delivery unavailable",
     });
     expect(() => assertPublishPendingSweepSucceeded(summary)).toThrow("Publish-pending sweep failed for 1 run(s)");
   });
@@ -194,14 +194,14 @@ describe("publish-pending sweep review digests", () => {
   it("records failed digest delivery and continues publishing later scopes", async () => {
     mocks.listRuns.mockResolvedValueOnce([run("held-new", 9), run("held-old", 8)]).mockResolvedValueOnce([run("hp-safe", 8)]);
     mocks.runOperator.mockImplementation(async ({ targetId }) => candidate(targetId, targetId === "hp-safe" ? 450000 : 520038));
-    mocks.publishAlert.mockRejectedValue(new Error("SNS unavailable"));
+    mocks.publishAlert.mockRejectedValue(new Error("email delivery unavailable"));
 
     const summary = await runPublishPendingSweep({});
 
     expect(summary).toMatchObject({ candidatesFound: 3, publishedCount: 1, skippedCount: 0, failedCount: 2 });
     expect(summary.results.filter((result) => !result.ok)).toEqual([
-      expect.objectContaining({ runId: "held-old", autoPublish: "skipped_review", error: "Review digest notification failed: SNS unavailable" }),
-      expect.objectContaining({ runId: "held-new", autoPublish: "skipped_review", error: "Review digest notification failed: SNS unavailable" }),
+      expect.objectContaining({ runId: "held-old", autoPublish: "skipped_review", error: "Review digest notification failed: email delivery unavailable" }),
+      expect.objectContaining({ runId: "held-new", autoPublish: "skipped_review", error: "Review digest notification failed: email delivery unavailable" }),
     ]);
     expect(mocks.runOperator).toHaveBeenCalledWith(expect.objectContaining({ command: "publish", targetId: "hp-safe", stateCode: "HP" }), {});
     expect(() => assertPublishPendingSweepSucceeded(summary)).toThrow("Publish-pending sweep failed for 2 run(s)");

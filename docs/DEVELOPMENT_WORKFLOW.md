@@ -70,7 +70,7 @@ When running multiple AI coding sessions in parallel:
 
 ## Local Stack Commands
 
-For the current PostgreSQL + S3-backed development slice:
+For the current PostgreSQL + Azure Blob development stack:
 
 ```bash
 cp .env.example .env
@@ -107,7 +107,7 @@ For production operator actions, use the authenticated remote lane through the p
 npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "Internal Uttar Pradesh fetch"
 ```
 
-Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` and `AWS_ENDPOINT_URL_S3` pointed at LocalStack; these values exercise the local S3-compatible test adapter, not production storage. Azure Blob Storage is the production artifact store.
+Local development uses PostgreSQL plus Azurite Blob Storage, the same storage API used in production. Copy the `AZURE_STORAGE_CONNECTION_STRING` and `AZURE_STORAGE_CONTAINER` values from `.env.example` for local use.
 
 ## Commit Examples
 

@@ -196,7 +196,7 @@ describe("verifyPublicRelease", () => {
       const url = String(input);
       const path = new URL(url).pathname;
       if (path === "/health") {
-        return jsonResponse({ ok: true, region: "ap-south-1", stateCode: "HP" });
+        return jsonResponse({ ok: true, region: "centralindia", stateCode: "HP" });
       }
       if (path === "/v1/stats/himachal") {
         return jsonResponse({
@@ -281,7 +281,7 @@ describe("verifyPublicRelease", () => {
       const url = String(input);
       const path = new URL(url).pathname;
       if (path === "/health") {
-        return jsonResponse({ ok: true, region: "ap-south-1", stateCode: "HP" });
+        return jsonResponse({ ok: true, region: "centralindia", stateCode: "HP" });
       }
       if (path === "/v1/stats/himachal") {
         return jsonResponse({
@@ -366,7 +366,7 @@ describe("verifyPublicRelease", () => {
       const url = String(input);
       const path = new URL(url).pathname;
       if (path === "/health") {
-        return jsonResponse({ ok: true, region: "ap-south-1", stateCode: "HP" });
+        return jsonResponse({ ok: true, region: "centralindia", stateCode: "HP" });
       }
       if (path === "/v1/stats/himachal") {
         return jsonResponse({
@@ -429,7 +429,7 @@ describe("verifyPublicRelease", () => {
       const path = _request.url ?? "/";
       if (path === "/health") {
         response.setHeader("content-type", "application/json");
-        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        response.end(JSON.stringify({ ok: true, region: "centralindia", stateCode: "HP" }));
         return;
       }
 
@@ -545,7 +545,7 @@ describe("verifyPublicRelease", () => {
       const path = _request.url ?? "/";
       if (path === "/health") {
         response.setHeader("content-type", "application/json");
-        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        response.end(JSON.stringify({ ok: true, region: "centralindia", stateCode: "HP" }));
         return;
       }
 
@@ -662,7 +662,7 @@ describe("verifyPublicRelease", () => {
       const path = _request.url ?? "/";
       if (path === "/health") {
         response.setHeader("content-type", "application/json");
-        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        response.end(JSON.stringify({ ok: true, region: "centralindia", stateCode: "HP" }));
         return;
       }
       if (path === "/v1/stats/himachal") {
@@ -735,7 +735,7 @@ describe("verifyPublicRelease", () => {
       const path = _request.url ?? "/";
       if (path === "/health") {
         response.setHeader("content-type", "application/json");
-        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        response.end(JSON.stringify({ ok: true, region: "centralindia", stateCode: "HP" }));
         return;
       }
       if (path === "/v1/stats/himachal") {
@@ -810,7 +810,7 @@ describe("verifyPublicRelease", () => {
       const path = _request.url ?? "/";
       if (path === "/health") {
         response.setHeader("content-type", "application/json");
-        response.end(JSON.stringify({ ok: true, region: "ap-south-1", stateCode: "HP" }));
+        response.end(JSON.stringify({ ok: true, region: "centralindia", stateCode: "HP" }));
         return;
       }
       if (path === "/v1/stats/himachal") {

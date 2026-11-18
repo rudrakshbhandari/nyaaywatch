@@ -1,4 +1,4 @@
-name: Azure migration target
+name: Azure production
 
 on:
   push:
@@ -7,17 +7,17 @@ on:
   workflow_dispatch:
     inputs:
       apply:
-        description: "Provision or update the Azure migration target"
+        description: "Provision or update Azure production infrastructure"
         required: true
         default: false
         type: boolean
       enable_scheduled_jobs:
-        description: "Enable Azure writers; use only after the documented cutover freeze"
+        description: "Enable the scheduled Azure jobs"
         required: true
         default: false
         type: boolean
       enable_application:
-        description: "Start an Azure application replica; use only after restoring data and artifacts"
+        description: "Start the Azure application replica"
         required: true
         default: false
         type: boolean
@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   verify:
-    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && (vars.ACTIVE_PRODUCTION_PROVIDER || 'azure') == 'azure')
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -55,7 +55,7 @@ jobs:
           npm test -- --run
 
   provision:
-    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && (vars.ACTIVE_PRODUCTION_PROVIDER || 'azure') == 'azure')
+    if: (github.event_name == 'workflow_dispatch' && inputs.apply == true && github.ref == 'refs/heads/main') || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: verify
     runs-on: ubuntu-latest
     concurrency:
@@ -81,9 +81,8 @@ jobs:
       TF_VAR_public_base_url: https://nyaaywatch.in
       TF_VAR_enable_scheduled_jobs: ${{ github.event_name == 'push' && 'true' || inputs.enable_scheduled_jobs }}
       TF_VAR_enable_application: ${{ github.event_name == 'push' && 'true' || inputs.enable_application }}
-      # Once Azure is the active provider, normal main pushes must preserve the
-      # imported and managed public-hostname bindings. Keep this opt-in for
-      # manual provisioning so rehearsal applies cannot claim the live domain.
+      # Normal main pushes preserve the imported public hostname binding. Keep
+      # this opt-in for manual provisioning so rehearsal applies cannot claim it.
       TF_VAR_manage_public_hostname: ${{ github.event_name == 'push' && 'true' || inputs.manage_public_hostname }}
       TF_VAR_project_name: nyaaywatch
       TF_VAR_environment_name: production
@@ -154,6 +153,35 @@ jobs:
             exit 1
           fi
           export TF_VAR_container_image="${existing_image:-mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
+          # The existing image still requires provider selectors. Keep them until
+          # the new image is built and installed by the second apply.
+          export TF_VAR_preserve_legacy_azure_runtime_env=true
+          # Keep the command each deployed job already uses. On later releases
+          # the current image has the renamed entrypoints, so a fixed legacy
+          # command list would break every scheduled job during this apply.
+          preserved_commands='{}'
+          while IFS=: read -r job_key job_suffix; do
+            job_name="nyaaywatch-production-${job_suffix}"
+            if command_json="$(az containerapp job show \
+              --name "$job_name" \
+              --resource-group nyaaywatch-production \
+              --query 'properties.template.containers[0].command' \
+              --output json 2>&1)"; then
+              if [[ -n "$command_json" && "$command_json" != "null" ]]; then
+                preserved_commands="$(jq --arg key "$job_key" --argjson command "$command_json" '. + {($key): $command}' <<< "$preserved_commands")"
+              fi
+            elif ! grep -q 'ResourceNotFound' <<< "$command_json"; then
+              printf '%s\n' "$command_json" >&2
+              exit 1
+            fi
+          done <<'JOBS'
+          weekday-internal-fetch:fetch
+          supreme-court-internal-fetch:sc-fetch
+          high-courts-internal-fetch:hc-fetch
+          publish-pending-sweep:publish
+          public-alpha-ops-monitor:alpha-ops
+          JOBS
+          export TF_VAR_preserved_scheduled_job_commands="$preserved_commands"
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Build and publish the application image in ACR
@@ -165,6 +193,7 @@ jobs:
         run: |
           registry="$(terraform -chdir=infra/azure/production output -raw container_registry_login_server)"
           export TF_VAR_container_image="${registry}/nyaaywatch:${GITHUB_SHA}"
+          export TF_VAR_preserve_legacy_azure_runtime_env=false
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Verify the deployed revision is healthy

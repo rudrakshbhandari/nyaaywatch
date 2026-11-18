@@ -36,8 +36,8 @@ export interface ArtifactRecord {
   id: string;
   runId: string;
   artifactType: string;
-  s3Bucket: string;
-  s3Key: string;
+  storageContainer: string;
+  objectKey: string;
   checksumSha256: string;
   sizeBytes: number;
   metadata: Record<string, unknown>;
@@ -116,8 +116,8 @@ interface ArtifactInsert {
   id: string;
   runId: string;
   artifactType: string;
-  s3Bucket: string;
-  s3Key: string;
+  storageContainer: string;
+  objectKey: string;
   checksumSha256: string;
   sizeBytes: number;
   metadata?: Record<string, unknown>;
@@ -251,8 +251,8 @@ export class PgWarehouseStore {
         input.id,
         input.runId,
         input.artifactType,
-        input.s3Bucket,
-        input.s3Key,
+        input.storageContainer,
+        input.objectKey,
         input.checksumSha256,
         input.sizeBytes,
         JSON.stringify(input.metadata ?? {}),
@@ -607,8 +607,8 @@ function mapArtifact(row: QueryResultRow): ArtifactRecord {
     id: row.id,
     runId: row.run_id,
     artifactType: row.artifact_type,
-    s3Bucket: row.s3_bucket,
-    s3Key: row.s3_key,
+    storageContainer: row.s3_bucket,
+    objectKey: row.s3_key,
     checksumSha256: row.checksum_sha256,
     sizeBytes: Number(row.size_bytes),
     metadata: typeof row.metadata === "string" ? JSON.parse(row.metadata) : row.metadata,

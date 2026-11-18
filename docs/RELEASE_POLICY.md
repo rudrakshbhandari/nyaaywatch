@@ -52,7 +52,7 @@ The environment split is:
 - an isolated environment suitable for release rehearsal when the scope requires one
 - production public alpha at `https://nyaaywatch.in` as `nyaaywatch-production`
 
-Do not treat production as a sandbox for destructive rehearsal. Production operator actions should use `npm run operator:production`, be release-scoped, be recorded, and be backed by an explicit rollback target.
+Do not treat production as a sandbox for destructive rehearsal. Production operator actions should use the authenticated `npm run operator:remote` lane, be release-scoped, be recorded, and be backed by an explicit rollback target.
 
 ## Publish Authority
 
