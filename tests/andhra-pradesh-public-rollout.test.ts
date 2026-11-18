@@ -89,7 +89,7 @@ describe("Andhra Pradesh public rollout preflight", () => {
     const app = await createAndhraPradeshPublicApp();
 
     const routes = [
-      { path: "/states/andhra-pradesh", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/andhra-pradesh", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/andhra-pradesh/districts", requiredText: "Browse district data." },
       {
         path: "/states/andhra-pradesh/districts/ananthapur",

@@ -88,7 +88,7 @@ describe("Meghalaya public rollout preflight", () => {
     const app = await createMeghalayaPublicApp();
 
     const routes = [
-      { path: "/states/meghalaya", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/meghalaya", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/meghalaya/districts", requiredText: "Browse district data." },
       {
         path: "/states/meghalaya/districts/east-khasi-hills",

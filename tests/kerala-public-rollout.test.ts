@@ -88,7 +88,7 @@ describe("Kerala public rollout preflight", () => {
     const app = await createKeralaPublicApp();
 
     const routes = [
-      { path: "/states/kerala", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/kerala", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/kerala/districts", requiredText: "Browse district data." },
       {
         path: "/states/kerala/districts/ernakulam",

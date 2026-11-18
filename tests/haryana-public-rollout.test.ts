@@ -88,7 +88,7 @@ describe("Haryana public rollout preflight", () => {
     const app = await createHaryanaPublicApp();
 
     const routes = [
-      { path: "/states/haryana", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/haryana", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/haryana/districts", requiredText: "Browse district data." },
       {
         path: "/states/haryana/districts/faridabad",

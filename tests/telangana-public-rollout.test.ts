@@ -92,7 +92,7 @@ describeTelanganaPublic("Telangana public rollout preflight", () => {
     const app = await createTelanganaPublicApp();
 
     const routes = [
-      { path: "/states/telangana", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/telangana", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/telangana/districts", requiredText: "Browse district data." },
       {
         path: "/states/telangana/districts/adilabad",

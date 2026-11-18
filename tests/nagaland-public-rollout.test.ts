@@ -88,7 +88,7 @@ describe("Nagaland public rollout preflight", () => {
     const app = await createNagalandPublicApp();
 
     const routes = [
-      { path: "/states/nagaland", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/nagaland", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/nagaland/districts", requiredText: "Browse district data." },
       {
         path: "/states/nagaland/districts/dimapur",

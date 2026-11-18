@@ -88,7 +88,7 @@ describe("Tripura public rollout preflight", () => {
     const app = await createTripuraPublicApp();
 
     const routes = [
-      { path: "/states/tripura", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/tripura", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/tripura/districts", requiredText: "Browse district data." },
       {
         path: "/states/tripura/districts/west-tripura",

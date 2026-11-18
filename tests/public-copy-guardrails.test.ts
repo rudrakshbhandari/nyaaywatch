@@ -161,7 +161,7 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/states/punjab",
-        requiredText: "All numbers on this site come from the NJDG public district dashboards",
+        requiredText: "NyaayWatch publishes dated court figures.",
       },
       {
         path: "/states/punjab/districts",

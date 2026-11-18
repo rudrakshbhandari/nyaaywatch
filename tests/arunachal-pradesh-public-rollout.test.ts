@@ -89,7 +89,7 @@ describe("Arunachal Pradesh public rollout preflight", () => {
     const app = await createArunachalPradeshPublicApp();
 
     const routes = [
-      { path: "/states/arunachal-pradesh", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
+      { path: "/states/arunachal-pradesh", requiredText: "NyaayWatch publishes dated court figures." },
       { path: "/states/arunachal-pradesh/districts", requiredText: "Browse district data." },
       {
         path: "/states/arunachal-pradesh/districts/lohit",
