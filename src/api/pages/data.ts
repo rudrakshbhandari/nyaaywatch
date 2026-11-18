@@ -102,7 +102,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
       <article class="card download">
         <div class="download__meta"><span class="download__kind">JSON</span><code class="download__path">${escapeHtml(context.routes.archiveApi)}?limit=20&amp;offset=0</code></div>
         <h3>Snapshot archive</h3>
-        <p>Each distinct version that appeared on the site is listed once. Raw page captures and unpublished data are not included.</p>
+        <p>Each record is a published snapshot. Republishing the same source reading can add another record. Raw page captures and unpublished data are not included.</p>
         <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open archive JSON</a></p>
       </article>
     </section>

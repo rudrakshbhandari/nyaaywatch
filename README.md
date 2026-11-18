@@ -129,7 +129,7 @@ GET /states/:stateSlug/data/evidence/state.json
 GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
-Archive endpoints return one full normalized record for each distinct version shown on the site. Results are paginated (`limit` 1–100, default 20; `offset` default 0). Follow `pagination.nextOffset` until it is `null` to fetch every page. Raw captures and data not shown on the site are not included.
+Archive endpoints return full normalized records for published snapshots. Republishing the same source reading can add another record. Results are paginated (`limit` 1–100, default 20; `offset` default 0). Follow `pagination.nextOffset` until it is `null` to fetch every page. Raw captures and unpublished data are not included.
 
 This example prints every snapshot for a lower-court geography as one JSON record per line:
 

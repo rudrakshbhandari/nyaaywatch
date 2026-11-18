@@ -154,10 +154,10 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("This month&#39;s clearance pace is shown separately.");
     expect(homepage.text).not.toContain("Pending trend");
     expect(homepage.text).toContain("Backlog growing");
-    expect(homepage.text).toContain("Explore each court tier.");
+    expect(homepage.text).toContain("Supreme Court");
     expect(homepage.text).toContain('href="/learn#pressure-signals"');
     expect(homepage.text).toContain("Lower courts show the broadest pressure.");
-    expect(homepage.text).toContain("Explore each court tier.");
+    expect(homepage.text).toContain("District and subordinate courts");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
