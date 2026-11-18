@@ -194,7 +194,7 @@ describe("HTTP routes", () => {
     expect(districtsPage.text).toContain("Browse district data.");
     expect(districtsPage.text).toContain("Only districts to watch");
     expect(districtsPage.text).toContain("Snapshot movers");
-    expect(districtsPage.text).toContain("Turn a district list into a trail.");
+    expect(districtsPage.text).toContain("Explore the district list.");
     expect(districtsPage.text).toContain("Kangra");
     expect(districtsPage.text.indexOf("Haryana")).toBeLessThan(districtsPage.text.indexOf("Himachal Pradesh"));
     expect(districtsPage.text.indexOf("Himachal Pradesh")).toBeLessThan(districtsPage.text.indexOf("Punjab"));
