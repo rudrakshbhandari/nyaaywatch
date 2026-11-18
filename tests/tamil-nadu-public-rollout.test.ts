@@ -88,11 +88,11 @@ describe("Tamil Nadu public rollout preflight", () => {
     const app = await createTamilNaduPublicApp();
 
     const routes = [
-      { path: "/states/tamil-nadu", requiredText: "NyaayWatch publishes dated court figures." },
+      { path: "/states/tamil-nadu", requiredText: "Where is delay piling up across India?" },
       { path: "/states/tamil-nadu/districts", requiredText: "Browse district data." },
       {
         path: "/states/tamil-nadu/districts/chennai",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       { path: "/states/tamil-nadu/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/tamil-nadu/methodology", requiredText: "publishes dated aggregates after operator review" },

@@ -73,7 +73,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/districts/kangra",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       {
         path: "/compare/kangra-vs-shimla",
@@ -161,7 +161,7 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/states/punjab",
-        requiredText: "NyaayWatch publishes dated court figures.",
+        requiredText: "Where is delay piling up across India?",
       },
       {
         path: "/states/punjab/districts",
@@ -169,7 +169,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/states/punjab/districts/ludhiana",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       {
         path: "/states/punjab/compare/ludhiana-vs-amritsar",

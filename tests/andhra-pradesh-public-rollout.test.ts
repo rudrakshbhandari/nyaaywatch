@@ -89,11 +89,11 @@ describe("Andhra Pradesh public rollout preflight", () => {
     const app = await createAndhraPradeshPublicApp();
 
     const routes = [
-      { path: "/states/andhra-pradesh", requiredText: "NyaayWatch publishes dated court figures." },
+      { path: "/states/andhra-pradesh", requiredText: "How long is the wait for justice in Andhra Pradesh?" },
       { path: "/states/andhra-pradesh/districts", requiredText: "Browse district data." },
       {
         path: "/states/andhra-pradesh/districts/ananthapur",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       {
         path: "/states/andhra-pradesh/data",

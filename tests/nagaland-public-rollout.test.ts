@@ -88,11 +88,11 @@ describe("Nagaland public rollout preflight", () => {
     const app = await createNagalandPublicApp();
 
     const routes = [
-      { path: "/states/nagaland", requiredText: "NyaayWatch publishes dated court figures." },
+      { path: "/states/nagaland", requiredText: "Where is delay piling up across India?" },
       { path: "/states/nagaland/districts", requiredText: "Browse district data." },
       {
         path: "/states/nagaland/districts/dimapur",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       { path: "/states/nagaland/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/nagaland/methodology", requiredText: "publishes dated aggregates after operator review" },

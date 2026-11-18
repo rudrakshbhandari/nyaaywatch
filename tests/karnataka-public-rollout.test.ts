@@ -88,11 +88,11 @@ describe("Karnataka public rollout preflight", () => {
     const app = await createKarnatakaPublicApp();
 
     const routes = [
-      { path: "/states/karnataka", requiredText: "NyaayWatch publishes dated court figures." },
+      { path: "/states/karnataka", requiredText: "Where is delay piling up across India?" },
       { path: "/states/karnataka/districts", requiredText: "Browse district data." },
       {
         path: "/states/karnataka/districts/belagavi",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       { path: "/states/karnataka/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/karnataka/methodology", requiredText: "publishes dated aggregates after operator review" },

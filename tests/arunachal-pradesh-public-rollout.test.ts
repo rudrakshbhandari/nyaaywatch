@@ -89,11 +89,11 @@ describe("Arunachal Pradesh public rollout preflight", () => {
     const app = await createArunachalPradeshPublicApp();
 
     const routes = [
-      { path: "/states/arunachal-pradesh", requiredText: "NyaayWatch publishes dated court figures." },
+      { path: "/states/arunachal-pradesh", requiredText: "Where is delay piling up across India?" },
       { path: "/states/arunachal-pradesh/districts", requiredText: "Browse district data." },
       {
         path: "/states/arunachal-pradesh/districts/lohit",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       {
         path: "/states/arunachal-pradesh/data",

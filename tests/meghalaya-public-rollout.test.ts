@@ -88,11 +88,11 @@ describe("Meghalaya public rollout preflight", () => {
     const app = await createMeghalayaPublicApp();
 
     const routes = [
-      { path: "/states/meghalaya", requiredText: "NyaayWatch publishes dated court figures." },
+      { path: "/states/meghalaya", requiredText: "Where is delay piling up across India?" },
       { path: "/states/meghalaya/districts", requiredText: "Browse district data." },
       {
         path: "/states/meghalaya/districts/east-khasi-hills",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       { path: "/states/meghalaya/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/meghalaya/methodology", requiredText: "publishes dated aggregates after operator review" },

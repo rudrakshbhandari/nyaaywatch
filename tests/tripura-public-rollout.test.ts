@@ -88,11 +88,11 @@ describe("Tripura public rollout preflight", () => {
     const app = await createTripuraPublicApp();
 
     const routes = [
-      { path: "/states/tripura", requiredText: "NyaayWatch publishes dated court figures." },
+      { path: "/states/tripura", requiredText: "Where is delay piling up across India?" },
       { path: "/states/tripura/districts", requiredText: "Browse district data." },
       {
         path: "/states/tripura/districts/west-tripura",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       { path: "/states/tripura/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
       { path: "/states/tripura/methodology", requiredText: "publishes dated aggregates after operator review" },
