@@ -156,6 +156,32 @@ jobs:
           # The existing image still requires provider selectors. Keep them until
           # the new image is built and installed by the second apply.
           export TF_VAR_preserve_legacy_azure_runtime_env=true
+          # Keep the command each deployed job already uses. On later releases
+          # the current image has the renamed entrypoints, so a fixed legacy
+          # command list would break every scheduled job during this apply.
+          preserved_commands='{}'
+          while IFS=: read -r job_key job_suffix; do
+            job_name="nyaaywatch-production-${job_suffix}"
+            if command_json="$(az containerapp job show \
+              --name "$job_name" \
+              --resource-group nyaaywatch-production \
+              --query 'properties.template.containers[0].command' \
+              --output json 2>&1)"; then
+              if [[ -n "$command_json" && "$command_json" != "null" ]]; then
+                preserved_commands="$(jq --arg key "$job_key" --argjson command "$command_json" '. + {($key): $command}' <<< "$preserved_commands")"
+              fi
+            elif ! grep -q 'ResourceNotFound' <<< "$command_json"; then
+              printf '%s\n' "$command_json" >&2
+              exit 1
+            fi
+          done <<'JOBS'
+          weekday-internal-fetch:fetch
+          supreme-court-internal-fetch:sc-fetch
+          high-courts-internal-fetch:hc-fetch
+          publish-pending-sweep:publish
+          public-alpha-ops-monitor:alpha-ops
+          JOBS
+          export TF_VAR_preserved_scheduled_job_commands="$preserved_commands"
           terraform -chdir=infra/azure/production apply -auto-approve -input=false
 
       - name: Build and publish the application image in ACR

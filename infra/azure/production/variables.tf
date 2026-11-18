@@ -119,6 +119,12 @@ variable "preserve_legacy_azure_runtime_env" {
   default     = false
 }
 
+variable "preserved_scheduled_job_commands" {
+  description = "Keep each currently deployed Azure job command during the infrastructure bootstrap apply."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "container_cpu" {
   description = "Container Apps vCPU allocation."
   type        = number

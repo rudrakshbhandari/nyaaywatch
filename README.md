@@ -277,7 +277,7 @@ the previous implementation remains recoverable from Git history.
 ## Data sources
 
 NyaayWatch starts from official aggregate dashboards and documents its source boundary in the repository and on the public methodology pages:
-Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `AZURE_EMAIL_SENDER` is an authenticated `@nyaaywatch.in` sender and Azure Blob Storage is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, and archives the outbound payload in Azure Blob Storage.
+Use `npm run ops:njdg-missing-zero-outreach -- --base-url=https://nyaaywatch.in` to scan public lower-court snapshots for rows where NJDG reports pending cases but `0` filed and `0` cleared cases for last month. The command routes unresolved rows to the official NJDG CPC contact for each affected state or Union Territory. Add `--send` only when `NJDG_OUTREACH_SENDER` is an authenticated `@nyaaywatch.in` or `@outreach.nyaaywatch.in` sender and Azure Blob Storage is configured; the send path BCCs the verified sender, sets `Reply-To` from `NJDG_OUTREACH_REPLY_TO` when configured, and archives the outbound payload in Azure Blob Storage.
 
 - [Supreme Court NJDG](https://scdg.sci.gov.in/scnjdg/)
 - [High Court NJDG](https://njdg.ecourts.gov.in/hcnjdg_v2/)

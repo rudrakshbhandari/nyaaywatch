@@ -48,14 +48,6 @@ locals {
     }
   }
 
-  legacy_scheduled_job_commands = {
-    weekday-internal-fetch       = ["node", "dist/src/dev/ecs-scheduled-fetch-entrypoint.js"]
-    supreme-court-internal-fetch = ["node", "dist/src/dev/ecs-scheduled-supreme-court-fetch-entrypoint.js"]
-    high-courts-internal-fetch   = ["node", "dist/src/dev/ecs-scheduled-high-court-fetch-entrypoint.js"]
-    publish-pending-sweep        = ["node", "dist/src/dev/ecs-publish-pending-entrypoint.js"]
-    public-alpha-ops-monitor     = ["node", "dist/src/dev/ecs-public-alpha-ops-entrypoint.js"]
-  }
-
   legacy_hostname_list = [
     for host in split(",", var.legacy_hosts) : trimspace(host)
     if trimspace(host) != "" && trimspace(host) != var.canonical_host
@@ -512,7 +504,7 @@ resource "azurerm_container_app_job" "scheduled" {
       image   = var.container_image
       cpu     = var.container_cpu
       memory  = var.container_memory
-      command = var.preserve_legacy_azure_runtime_env ? local.legacy_scheduled_job_commands[each.key] : each.value.command
+      command = lookup(var.preserved_scheduled_job_commands, each.key, each.value.command)
       args    = each.value.args
 
       env {
