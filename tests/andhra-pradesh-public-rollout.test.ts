@@ -99,7 +99,7 @@ describe("Andhra Pradesh public rollout preflight", () => {
         path: "/states/andhra-pradesh/data",
         requiredText: "Raw NJDG page captures and internal operator files are not available for download",
       },
-      { path: "/states/andhra-pradesh/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/andhra-pradesh/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/andhra-pradesh/api", requiredText: "currently shown on the site" },
     ] as const;
 

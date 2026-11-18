@@ -157,7 +157,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("Explore each court tier.");
     expect(homepage.text).toContain('href="/learn#pressure-signals"');
     expect(homepage.text).toContain("Lower courts show the broadest pressure.");
-    expect(homepage.text).toContain("Where is delay piling up across India?");
+    expect(homepage.text).toContain("Explore each court tier.");
     expect(homepage.text).toContain("Coverage: Himachal Pradesh");
     expect(homepage.text).toContain("Coverage: Andhra Pradesh");
     expect(homepage.text).not.toContain('aria-label="Supported states"');
@@ -179,7 +179,7 @@ describe("HTTP routes", () => {
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
-    expect(himachalOverview.text).toContain("Follow the state trail.");
+    expect(himachalOverview.text).toContain("Explore this state.");
     expect(himachalOverview.text).toContain("Court transparency, Himachal Pradesh");
     expect(himachalOverview.text).not.toContain("Court transparency across India");
 
@@ -250,7 +250,7 @@ describe("HTTP routes", () => {
     const moversPage = await request(app).get("/movers");
     expect(moversPage.status).toBe(200);
     expect(moversPage.text).toContain("Read movement before making a claim.");
-    expect(moversPage.text).toContain("Download the evidence behind these movers.");
+    expect(moversPage.text).toContain("Download data for these changes.");
     expect(moversPage.text).toContain("Movers citation");
     expect(moversPage.text).toContain("Snapshot Movers for Himachal Pradesh");
     expect(moversPage.text).toContain("Copy citation");
@@ -907,7 +907,7 @@ describe("HTTP routes", () => {
 
     const index = await request(app).get("/high-courts");
     expect(index.status).toBe(200);
-    expect(index.text).toContain("India&#39;s High Courts, ranked by pressure");
+    expect(index.text).toContain("High Court snapshots");
     expect(index.text).toContain("High Court of Himachal Pradesh");
     expect(index.text).toContain("High Court of Andhra Pradesh");
     expect(index.text).toContain("Bombay High Court");
@@ -1288,7 +1288,7 @@ describe("HTTP routes", () => {
 
     const punjabMovers = await request(app).get("/states/punjab/movers");
     expect(punjabMovers.status).toBe(200);
-    expect(punjabMovers.text).toContain("Download the evidence behind these movers.");
+    expect(punjabMovers.text).toContain("Download data for these changes.");
     expect(punjabMovers.text).toContain("Snapshot Movers for Punjab");
     expect(punjabMovers.text).toContain("Copy citation");
     expect(punjabMovers.text).toContain("/states/punjab/data/evidence/state.json");
@@ -1351,7 +1351,7 @@ describe("HTTP routes", () => {
     const ladakhData = await request(app).get("/states/ladakh/data");
     expect(ladakhData.status).toBe(200);
     expect(ladakhData.text).toContain("Territory-wide district table");
-    expect(ladakhData.text).toContain("territory-wide trend series");
+    expect(ladakhData.text).toContain("territory-wide trends");
 
     const ladakhMethodology = await request(app).get("/states/ladakh/methodology");
     expect(ladakhMethodology.status).toBe(200);

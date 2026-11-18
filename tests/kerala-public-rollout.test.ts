@@ -88,14 +88,14 @@ describe("Kerala public rollout preflight", () => {
     const app = await createKeralaPublicApp();
 
     const routes = [
-      { path: "/states/kerala", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/kerala", requiredText: "How long is the wait for justice in Kerala?" },
       { path: "/states/kerala/districts", requiredText: "Browse district data." },
       {
         path: "/states/kerala/districts/ernakulam",
         requiredText: "District flags describe these figures.",
       },
       { path: "/states/kerala/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
-      { path: "/states/kerala/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/kerala/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/kerala/api", requiredText: "currently shown on the site" },
     ] as const;
 

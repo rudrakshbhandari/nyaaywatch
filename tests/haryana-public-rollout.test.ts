@@ -88,14 +88,14 @@ describe("Haryana public rollout preflight", () => {
     const app = await createHaryanaPublicApp();
 
     const routes = [
-      { path: "/states/haryana", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/haryana", requiredText: "How long is the wait for justice in Haryana?" },
       { path: "/states/haryana/districts", requiredText: "Browse district data." },
       {
         path: "/states/haryana/districts/faridabad",
         requiredText: "District flags describe these figures.",
       },
       { path: "/states/haryana/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
-      { path: "/states/haryana/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/haryana/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/haryana/api", requiredText: "currently shown on the site" },
     ] as const;
 

@@ -161,7 +161,7 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/states/punjab",
-        requiredText: "Where is delay piling up across India?",
+        requiredText: "How long is the wait for justice in Punjab?",
       },
       {
         path: "/states/punjab/districts",

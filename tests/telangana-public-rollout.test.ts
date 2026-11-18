@@ -92,14 +92,14 @@ describeTelanganaPublic("Telangana public rollout preflight", () => {
     const app = await createTelanganaPublicApp();
 
     const routes = [
-      { path: "/states/telangana", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/telangana", requiredText: "How long is the wait for justice in Telangana?" },
       { path: "/states/telangana/districts", requiredText: "Browse district data." },
       {
         path: "/states/telangana/districts/adilabad",
         requiredText: "District flags describe these figures.",
       },
       { path: "/states/telangana/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
-      { path: "/states/telangana/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/telangana/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/telangana/api", requiredText: "currently shown on the site" },
     ] as const;
 

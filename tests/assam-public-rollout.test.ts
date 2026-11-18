@@ -88,14 +88,14 @@ describe("Assam public rollout preflight", () => {
     const app = await createAssamPublicApp();
 
     const routes = [
-      { path: "/states/assam", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/assam", requiredText: "How long is the wait for justice in Assam?" },
       { path: "/states/assam/districts", requiredText: "Browse district data." },
       {
         path: "/states/assam/districts/tinsukia",
         requiredText: "District flags describe these figures.",
       },
       { path: "/states/assam/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
-      { path: "/states/assam/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/assam/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/assam/api", requiredText: "currently shown on the site" },
     ] as const;
 

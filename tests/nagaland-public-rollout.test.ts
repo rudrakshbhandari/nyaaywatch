@@ -88,14 +88,14 @@ describe("Nagaland public rollout preflight", () => {
     const app = await createNagalandPublicApp();
 
     const routes = [
-      { path: "/states/nagaland", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/nagaland", requiredText: "How long is the wait for justice in Nagaland?" },
       { path: "/states/nagaland/districts", requiredText: "Browse district data." },
       {
         path: "/states/nagaland/districts/dimapur",
         requiredText: "District flags describe these figures.",
       },
       { path: "/states/nagaland/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
-      { path: "/states/nagaland/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/nagaland/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/nagaland/api", requiredText: "currently shown on the site" },
     ] as const;
 

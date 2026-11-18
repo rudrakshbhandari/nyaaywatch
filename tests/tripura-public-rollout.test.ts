@@ -88,14 +88,14 @@ describe("Tripura public rollout preflight", () => {
     const app = await createTripuraPublicApp();
 
     const routes = [
-      { path: "/states/tripura", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/tripura", requiredText: "How long is the wait for justice in Tripura?" },
       { path: "/states/tripura/districts", requiredText: "Browse district data." },
       {
         path: "/states/tripura/districts/west-tripura",
         requiredText: "District flags describe these figures.",
       },
       { path: "/states/tripura/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
-      { path: "/states/tripura/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/tripura/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/tripura/api", requiredText: "currently shown on the site" },
     ] as const;
 

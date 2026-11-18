@@ -88,14 +88,14 @@ describe("Karnataka public rollout preflight", () => {
     const app = await createKarnatakaPublicApp();
 
     const routes = [
-      { path: "/states/karnataka", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/karnataka", requiredText: "How long is the wait for justice in Karnataka?" },
       { path: "/states/karnataka/districts", requiredText: "Browse district data." },
       {
         path: "/states/karnataka/districts/belagavi",
         requiredText: "District flags describe these figures.",
       },
       { path: "/states/karnataka/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
-      { path: "/states/karnataka/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/karnataka/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/karnataka/api", requiredText: "currently shown on the site" },
     ] as const;
 

@@ -89,7 +89,7 @@ describe("Arunachal Pradesh public rollout preflight", () => {
     const app = await createArunachalPradeshPublicApp();
 
     const routes = [
-      { path: "/states/arunachal-pradesh", requiredText: "Where is delay piling up across India?" },
+      { path: "/states/arunachal-pradesh", requiredText: "How long is the wait for justice in Arunachal Pradesh?" },
       { path: "/states/arunachal-pradesh/districts", requiredText: "Browse district data." },
       {
         path: "/states/arunachal-pradesh/districts/lohit",
@@ -99,7 +99,7 @@ describe("Arunachal Pradesh public rollout preflight", () => {
         path: "/states/arunachal-pradesh/data",
         requiredText: "Raw NJDG page captures and internal operator files are not available for download",
       },
-      { path: "/states/arunachal-pradesh/methodology", requiredText: "publishes dated aggregates after operator review" },
+      { path: "/states/arunachal-pradesh/methodology", requiredText: "The site publishes dated aggregates after review." },
       { path: "/states/arunachal-pradesh/api", requiredText: "currently shown on the site" },
     ] as const;
 
