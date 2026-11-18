@@ -179,7 +179,7 @@ describe("HTTP routes", () => {
     const himachalOverview = await request(app).get("/states/himachal");
     expect(himachalOverview.status).toBe(200);
     expect(himachalOverview.text).toContain("How long is the wait for justice in Himachal Pradesh?");
-    expect(himachalOverview.text).toContain("Follow the state trail.");
+    expect(himachalOverview.text).toContain("Explore Himachal Pradesh's district courts.");
     expect(himachalOverview.text).toContain("Court transparency, Himachal Pradesh");
     expect(himachalOverview.text).not.toContain("Court transparency across India");
 
@@ -958,7 +958,7 @@ describe("HTTP routes", () => {
     const methodology = await request(app).get("/high-courts/himachal/methodology");
     expect(methodology.status).toBe(200);
     expect(methodology.text).toContain("Every public High Court number comes from one published aggregate snapshot.");
-    expect(methodology.text).toContain("High Court caveats are separate");
+    expect(methodology.text).toContain("High Court coverage and dates follow the High Court NJDG dashboard.");
     expect(methodology.text).toContain("coveredGeographies[]");
     expect(methodology.text).toContain("Current coverage on this page: Himachal Pradesh.");
     expect(methodology.text).toContain("captured_at");
