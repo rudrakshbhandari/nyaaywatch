@@ -24,7 +24,7 @@ test("citizen flow loads the homepage, district workspace, and district permalin
   await page.getByRole("link", { name: /Faridabad|Ludhiana|Kangra/ }).first().click();
   await expect(page).toHaveURL(/(\/states\/[a-z-]+\/districts\/[a-z-]+|\/districts\/[a-z-]+)$/);
   await expect(page.getByRole("heading", { name: /Faridabad|Ludhiana|Kangra/ })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "District history" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "District history", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download district history CSV" })).toBeVisible();
 });
 
