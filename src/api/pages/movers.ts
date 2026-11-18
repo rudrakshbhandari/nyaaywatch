@@ -38,41 +38,41 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
   const body = `
     <section class="movers-hero">
       <p class="movers-hero__eyebrow">SNAPSHOT MOVERS</p>
-      <h1 class="movers-hero__hed">What moved between snapshots?</h1>
-      <p class="movers-hero__lede">Comparing the ${escapeHtml(currentDate)} snapshot against ${escapeHtml(previousDate)}. Every row is citeable — both snapshots are published and archived.</p>
+      <h1 class="movers-hero__hed">What changed between readings?</h1>
+      <p class="movers-hero__lede">Comparing data dated ${escapeHtml(currentDate)} with data dated ${escapeHtml(previousDate)}. Both readings are available in the archive.</p>
       <p class="movers-hero__meta">${escapeHtml(result.currentSnapshot.stateName)} · Source: ${escapeHtml(result.currentSnapshot.sourceAttribution)}</p>
     </section>
 
     ${renderInvestigationWorkflow({
-      headline: "Read movement before making a claim.",
+      headline: "Compare the two readings.",
       lede:
-        "Movers compare two published snapshots. Use them to choose what deserves closer inspection, then open the district evidence pages before citing the change.",
+        "These tables show how district figures changed between the dates above. Open a district page to check its history and source details.",
       steps: [
         {
           eyebrow: "01",
           title: "Start with increases",
-          body: "Look for districts where the pending load grew most since the previous published snapshot.",
+          body: "See which districts had the largest increase in pending cases.",
           href: "#biggest-backlog-increases",
           cta: "See increases",
         },
         {
           eyebrow: "02",
           title: "Compare two movers",
-          body: "Put two high-movement districts side by side to separate scale, wait, clearance pace, and rank change.",
+          body: "Compare two districts by case count, wait, clearance pace, and rank change.",
           href: comparisonHref,
           cta: "Open comparison",
         },
         {
           eyebrow: "03",
-          title: "Inspect evidence",
-          body: "Open the district page to see whether the signal persists across history or appears only in one snapshot window.",
+          title: "Check district history",
+          body: "Open the district page to see whether the change appears in earlier readings too.",
           href: biggestJumps[0] ? context.routes.district(biggestJumps[0].districtId) : context.routes.districts,
           cta: "Open top mover",
         },
         {
           eyebrow: "04",
-          title: "Cite the snapshot",
-          body: "Use CSV and methodology links so the movement window and reference date remain visible beside the number.",
+          title: "Check the source dates",
+          body: "Check the source dates and method on the data page.",
           href: context.routes.data,
           cta: "Open data",
         },
@@ -80,13 +80,13 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     })}
 
     ${renderEvidenceEntryPoints({
-      headline: "Download the evidence behind these movers.",
+      headline: "Download data for these changes.",
       lede:
-        "Use the state pack for the full movers list, then open district packs when you need a specific reference date, method, CSV link, citation text, and caveats together.",
+        "The state pack includes geography totals, top district data, and links. District packs include each district's dates, method, citation, and caveats.",
       entries: [
         {
           title: "Movers citation",
-          body: "Use this when citing the movement window itself.",
+          body: "Citation for this comparison of two readings.",
           href: context.routes.movers,
           cta: "Open movers",
           codeLabel: context.routes.movers,
@@ -94,7 +94,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
         },
         {
           title: "State evidence pack",
-          body: "Best for checking the overall geography, top districts, and links to reusable exports.",
+          body: "Geography totals, top district data, and download links. The movers list is on this page.",
           href: context.routes.stateEvidencePack,
           cta: "Download state JSON",
           codeLabel: context.routes.stateEvidencePack,
@@ -102,8 +102,8 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
         {
           title: "Top mover pack",
           body: biggestJumps[0]
-            ? `Best for quoting ${biggestJumps[0].districtName} with its own evidence page, citation text, and CSV link.`
-            : "Best for quoting a district with its own evidence page, citation text, and CSV link.",
+            ? `Metrics, history, citation, and CSV link for ${biggestJumps[0].districtName}.`
+            : "District metrics, history, citation, and CSV link.",
           href: biggestJumps[0] ? context.routes.districtEvidencePack(biggestJumps[0].districtId) : context.routes.stateEvidencePack,
           cta: biggestJumps[0] ? "Download top mover JSON" : "Download JSON",
           codeLabel: biggestJumps[0] ? context.routes.districtEvidencePack(biggestJumps[0].districtId) : context.routes.stateEvidencePack,
@@ -111,7 +111,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
         },
         {
           title: "Data download page",
-          body: "Use this when you need CSV files, API paths, and the public-data boundary in one place.",
+          body: "Find CSV downloads and API routes.",
           href: context.routes.data,
           cta: "Open data downloads",
           codeLabel: context.routes.data,
@@ -122,19 +122,19 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     <section class="movers-section" id="biggest-backlog-increases">
       ${renderSectionHead({
         headline: "Biggest backlog increases.",
-        lede: "Districts where the backlog grew most since the previous published snapshot.",
+        lede: "Districts where pending cases increased most between the two readings.",
       })}
       ${renderMoversTable(biggestJumps, "backlog-increase", context)}
     </section>
 
     <section class="movers-section">
       ${renderSectionHead({
-        headline: "Fastest improving.",
-        lede: "Districts where the backlog shrank most since the previous published snapshot.",
+        headline: "Largest backlog decreases.",
+        lede: "Districts where pending cases decreased most between the two readings.",
       })}
       ${fastestImproving.length > 0
         ? renderMoversTable(fastestImproving, "backlog-decrease", context)
-        : `<p class="movers-empty">No districts showed a backlog decrease in this snapshot window.</p>`
+        : `<p class="movers-empty">No districts showed a decrease in pending cases between these dates.</p>`
       }
     </section>
 
@@ -145,7 +145,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
       })}
       ${biggestRankRises.length > 0
         ? renderRankTable(biggestRankRises, context)
-        : `<p class="movers-empty">No significant rank changes in this snapshot window.</p>`
+        : `<p class="movers-empty">No significant rank changes between these dates.</p>`
       }
     </section>
     ${EVIDENCE_ENTRY_POINTS_SCRIPT}
@@ -168,7 +168,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     pageCss: MOVERS_PAGE_CSS + INVESTIGATION_WORKFLOW_CSS + EVIDENCE_ENTRY_POINTS_CSS,
     og: {
       title: `Snapshot Movers — ${result.currentSnapshot.stateName} — NyaayWatch`,
-      description: `Which districts moved most between the ${previousDate} and ${currentDate} published snapshots? Biggest backlog increases, fastest-improving, and biggest rank changes.`,
+      description: `Which districts changed most between ${previousDate} and ${currentDate}? Largest backlog increases and decreases, and biggest rank changes.`,
     },
   });
 }
@@ -253,7 +253,7 @@ function renderRankTable(movers: DistrictMover[], context: PublicPageContext): s
 export function renderMoversUnavailable(context: PublicPageContext): string {
   return renderPageShell({
     title: "Movers — NyaayWatch",
-    body: `<section style="padding:60px 0"><h1>Movers not available yet</h1><p>Mover calculations require at least two published snapshots. Check back after the next publication.</p><p><a href="${context.routes.districts}">← All districts</a></p></section>`,
+    body: `<section style="padding:60px 0"><h1>Movers not available yet</h1><p>There is not enough history to compare districts yet. The comparison needs two readings.</p><p><a href="${context.routes.districts}">← All districts</a></p></section>`,
     brandHref: context.brandHref,
     brandTag: context.brandTag,
     navLinks: context.navLinks,

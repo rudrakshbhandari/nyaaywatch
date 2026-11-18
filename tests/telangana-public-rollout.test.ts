@@ -92,21 +92,26 @@ describeTelanganaPublic("Telangana public rollout preflight", () => {
     const app = await createTelanganaPublicApp();
 
     const routes = [
-      { path: "/states/telangana", requiredText: "All numbers on this site come from the NJDG public district dashboards" },
-      { path: "/states/telangana/districts", requiredText: "Scan the districts under the most pressure." },
+      { path: "/states/telangana", requiredText: "How long is the wait for justice in Telangana?" },
+      { path: "/states/telangana/districts", requiredText: "Browse district data." },
       {
         path: "/states/telangana/districts/adilabad",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
-      { path: "/states/telangana/data", requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary" },
-      { path: "/states/telangana/methodology", requiredText: "publishes dated aggregates after operator review" },
-      { path: "/states/telangana/api", requiredText: "currently on the public site" },
+      { path: "/states/telangana/data", requiredText: "Raw NJDG page captures and internal operator files are not available for download" },
+      { path: "/states/telangana/methodology", requiredText: "The site publishes dated aggregates after review." },
+      { path: "/states/telangana/api", requiredText: "currently shown on the site" },
     ] as const;
 
     for (const route of routes) {
       const response = await request(app).get(route.path);
       expect(response.status, route.path).toBe(200);
       expect(response.text, route.path).toContain(route.requiredText);
+      if (/^\/states\/[^/]+$/.test(route.path)) {
+        expect(response.text, `${route.path} source provenance is present`).toContain("Source: National Judicial Data Grid public district dashboard");
+        expect(response.text, `${route.path} publication date is present`).toContain("Numbers published ");
+        expect(response.text, `${route.path} methodology version is present`).toContain("Method ");
+      }
       expect(response.text, `${route.path} should not mention live dashboards`).not.toMatch(/\blive (?:feed|status|data|dashboard|monitoring)\b/i);
       expect(response.text, `${route.path} should not mention predictive claims`).not.toMatch(/\bpredictive\b/i);
       expect(response.text, `${route.path} should not mention verdicts`).not.toMatch(/\bverdicts?\b/i);

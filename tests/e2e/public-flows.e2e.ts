@@ -18,13 +18,13 @@ test("citizen flow loads the homepage, district workspace, and district permalin
   await expect(page).toHaveURL(/\/states\/[a-z-]+$/);
   await page.getByRole("navigation").getByRole("link", { name: "Districts" }).click();
   await expect(page).toHaveURL(/(\/states\/[a-z-]+\/districts|\/districts)$/);
-  await expect(page.getByRole("heading", { name: "Scan the districts under the most pressure." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Browse district data." })).toBeVisible();
   await expect(page.getByLabel("View")).toBeVisible();
 
   await page.getByRole("link", { name: /Faridabad|Ludhiana|Kangra/ }).first().click();
   await expect(page).toHaveURL(/(\/states\/[a-z-]+\/districts\/[a-z-]+|\/districts\/[a-z-]+)$/);
   await expect(page.getByRole("heading", { name: /Faridabad|Ludhiana|Kangra/ })).toBeVisible();
-  await expect(page.getByText("Published district history")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "District history", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download district history CSV" })).toBeVisible();
 });
 
@@ -35,12 +35,12 @@ test("reporter flow reaches methodology and public download surfaces from distri
   await page.getByRole("navigation").getByRole("link", { name: "Data" }).click();
 
   await expect(page).toHaveURL(/\/data$/);
-  await expect(page.getByRole("heading", { name: "Download exactly what the public site is showing." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Download court data and published snapshots." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download CSV" })).toBeVisible();
 
   await page.getByRole("navigation").getByRole("link", { name: "Method" }).click();
   await expect(page).toHaveURL(/\/methodology$/);
-  await expect(page.getByRole("heading", { name: "Every public number comes from one stored published snapshot." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Public figures come from reviewed snapshots." })).toBeVisible();
   await expect(page.getByText("How the public metrics are derived")).toBeVisible();
   await expect(page.getByText("Published methodology and snapshot lineage")).toBeVisible();
 });
@@ -57,7 +57,7 @@ test("education flow explains the court system without requiring data context", 
   await expect(page.getByRole("heading", { name: "How to read delay data" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Common mistakes to avoid" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "A simple way to cite a number" })).toBeVisible();
-  await expect(page.getByText("NyaayWatch pages are reviewed snapshots, not a running ticker.")).toBeVisible();
+  await expect(page.getByText("Each page shows figures from a dated reading; it does not update live.")).toBeVisible();
   await expect(page.getByText("Zero and N/A mean different things.")).toBeVisible();
   await expect(page.getByText("Pending is not blame")).toBeVisible();
   await expect(page.getByText("Do not turn flags into accusations.")).toBeVisible();

@@ -108,35 +108,35 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
     </p>
 
     ${renderInvestigationWorkflow({
-      headline: "Use concentration to choose the right scale of inspection.",
+      headline: "Compare how backlogs are spread across districts.",
       lede:
-        "A concentrated backlog can point to a few districts that need closer reading. A broad backlog can point to pressure spread across the geography.",
+        "A high top-five share means more pending cases sit in a few districts. A lower share means the backlog is spread across more districts.",
       steps: [
         {
           eyebrow: "01",
           title: "Start with top-5 share",
-          body: "Read how much of the geography's pending pile is held by the five largest district backlogs.",
+          body: "The top-five share is the portion of pending cases in the five districts with the largest backlogs.",
           href: "#geography-table",
           cta: "See geographies",
         },
         {
           eyebrow: "02",
           title: "Open the largest districts",
-          body: "Use district shares to see whether one place dominates the signal or several districts share it.",
+          body: "Compare district shares to see how much each district contributes to the geography's backlog.",
           href: "#district-table",
           cta: "See districts",
         },
         {
           eyebrow: "03",
           title: "Check the state page",
-          body: "Open the geography page to read concentration beside old-case burden, clearance pace, and caveats.",
+          body: "The geography page shows concentration with old-case burden, clearance pace, and caveats.",
           href: topGeographyRoutes?.home ?? "/districts",
           cta: "Open top geography",
         },
         {
           eyebrow: "04",
           title: "Cite evidence",
-          body: "Use the evidence pack so the source date, method, and public-data boundary travel with the concentration signal.",
+          body: "Check the source date, method, and caveats in the evidence pack.",
           href: "#evidence",
           cta: "Use evidence",
         },
@@ -145,9 +145,9 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
 
     <div id="evidence">
     ${renderEvidenceEntryPoints({
-      headline: "Carry the evidence with the concentration signal.",
+      headline: "Check the source data.",
       lede:
-        "Use these links when a concentration signal needs to be checked, cited, or exported. Raw captures and operator notes stay outside the public boundary.",
+        "The JSON packs include source dates, methods, and caveats. Raw captures and operator notes are not public.",
       entries: [
         {
           title: "Watchroom citation",
@@ -160,8 +160,8 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
         {
           title: "Top geography pack",
           body: topGeography
-            ? `Use this to check ${topGeography.entry.profile.stateName} with source date, method, links, and caveats.`
-            : "Use state evidence packs when concentration signals are available.",
+            ? `Includes ${topGeography.entry.profile.stateName} data, source date, and caveats.`
+            : "No state evidence pack is available.",
           href: topGeographyRoutes?.stateEvidencePack ?? "/data",
           cta: topGeography ? "Download state JSON" : "Open data",
           codeLabel: topGeographyRoutes?.stateEvidencePack ?? "/data",
@@ -169,8 +169,8 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
         {
           title: "Top district pack",
           body: topDistrict
-            ? `Use this before quoting ${topDistrict.district.districtName}'s share of the pending pile.`
-            : "Use district evidence packs when district shares are available.",
+            ? `Includes ${topDistrict.district.districtName}'s district data and history. The geography-wide share shown here is not in the pack.`
+            : "No district evidence pack is available.",
           href: topDistrict && topDistrictRoutes ? topDistrictRoutes.districtEvidencePack(topDistrict.district.districtId) : "/districts",
           cta: topDistrict ? "Download district JSON" : "Open districts",
           codeLabel: topDistrict && topDistrictRoutes ? topDistrictRoutes.districtEvidencePack(topDistrict.district.districtId) : "/districts",

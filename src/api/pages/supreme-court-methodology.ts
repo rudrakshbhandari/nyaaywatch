@@ -17,22 +17,22 @@ export function renderSupremeCourtMethodologyPage(
       eyebrow: "SUPREME COURT METHOD",
       headline: "Every public Supreme Court number comes from one published aggregate snapshot.",
       lede:
-        "The public Supreme Court page keeps the same trust discipline as the rest of NyaayWatch: stored evidence, published snapshots, explicit methodology versioning, and no leakage from unpublished operator runs.",
+        "Only reviewed aggregate snapshots appear here. Each carries a methodology version; new captures stay private until reviewed and published.",
       isHero: true,
     })}
 
     <section class="method">
-      ${renderSectionHead({ headline: "Scope and posture" })}
+      ${renderSectionHead({ headline: "Scope" })}
       <div class="card-grid card-grid--2">
         <article class="card">
           <h3>What this page covers</h3>
-          <p>Supreme Court aggregate observability only: pending load, registered and unregistered treatment, last-month institution and disposal, current-year movement, and published trend points.</p>
+          <p>Supreme Court aggregate figures: pending cases, registered and unregistered totals, cases filed and cleared last month, current-year totals, and published trend points.</p>
           <p>It is a Supreme Court module inside NyaayWatch, not a national all-courts summary alias and not a case-search surface.</p>
         </article>
         <article class="card">
           <h3>What it does not do</h3>
           <p>It does not predict outcomes, judge judges, or imply direct comparability with High Court or district/subordinate metrics in one ranking layer.</p>
-          <p>When the source does not expose a trustworthy source snapshot timestamp, the page says so directly and shows capture time instead.</p>
+          <p>When the source has no source date, the page shows when it was captured.</p>
         </article>
       </div>
     </section>
@@ -46,14 +46,14 @@ export function renderSupremeCourtMethodologyPage(
           <p>Pending registered, pending unregistered, pending total, and the civil, criminal, or total institution and disposal counts come directly from the official Supreme Court NJDG aggregate dashboard.</p>
         </article>
         <article class="card" id="metric-framing">
-          ${renderAnchorLink("metric-framing", "NyaayWatch framing")}
-          <h3>NyaayWatch framing</h3>
-          <p>NyaayWatch adds publication timestamps, freshness, methodology versioning, and an explicit rule for which date to show so the snapshot is citeable and auditable.</p>
+          ${renderAnchorLink("metric-framing", "Fields added by NyaayWatch")}
+          <h3>Fields added by NyaayWatch</h3>
+          <p>NyaayWatch adds the publication date, freshness, methodology version, and date basis.</p>
         </article>
         <article class="card" id="metric-backlog-movement">
           ${renderAnchorLink("metric-backlog-movement", "Backlog movement")}
           <h3>Backlog movement as share of pending load</h3>
-          <p>Calculated as cases filed this month minus cases cleared this month, divided by pending cases. It gives a scale-aware view of whether the pending pile is growing or shrinking in the current publication.</p>
+          <p>Calculated as cases filed this month minus cases cleared this month, divided by pending cases. A positive value means the backlog grew; a negative value means it shrank.</p>
         </article>
         <article class="card" id="metric-break-even-clearances">
           ${renderAnchorLink("metric-break-even-clearances", "Break-even clearances")}
@@ -68,7 +68,7 @@ export function renderSupremeCourtMethodologyPage(
         <article class="card" id="metric-civil-criminal-imbalance">
           ${renderAnchorLink("metric-civil-criminal-imbalance", "Civil-criminal imbalance")}
           <h3>Civil-criminal imbalance</h3>
-          <p>Compares the criminal share of pending cases with the criminal share of current monthly clearances. The result is a docket signal for inspection, not a cause or blame claim.</p>
+          <p>Compares the criminal share of pending cases with the criminal share of current monthly clearances. This describes a difference in the published data; it does not explain why the difference exists.</p>
         </article>
       </div>
     </section>
@@ -77,15 +77,15 @@ export function renderSupremeCourtMethodologyPage(
       ${renderSectionHead({ headline: "Which date we show" })}
       <div class="card-grid card-grid--2">
         <article class="card" id="reference-date-source">
-          ${renderAnchorLink("reference-date-source", "Source-exposed reference date")}
-          <h3>When Supreme Court NJDG exposes a source date</h3>
+          ${renderAnchorLink("reference-date-source", "Source date available")}
+          <h3>When Supreme Court NJDG provides a source date</h3>
           <p>The page can show a source snapshot date directly.</p>
         </article>
         <article class="card" id="reference-date-captured">
-          ${renderAnchorLink("reference-date-captured", "Captured-at reference date")}
+          ${renderAnchorLink("reference-date-captured", "Capture-time reference date")}
           <h3>When the source does not expose one</h3>
-          <p>The page uses the captured page timestamp as <code>referenceDateAt</code> and labels it as <code>captured_at</code> instead of inventing a source date.</p>
-          <p>This is the current public Supreme Court posture.</p>
+          <p>The page uses the capture time as <code>referenceDateAt</code> and labels it <code>captured_at</code>.</p>
+          <p>Current Supreme Court pages use the capture time.</p>
         </article>
       </div>
     </section>
@@ -96,14 +96,14 @@ export function renderSupremeCourtMethodologyPage(
         <article class="card" id="trend-pending">
           ${renderAnchorLink("trend-pending", "Pending total trend")}
           <h3>Pending total</h3>
-          <p>Pending total is a point-in-time stock — each published snapshot is one meaningful reading. The sparkline plots one dot per recent snapshot, in chronological order.</p>
+          <p>Pending total is measured at a point in time. The sparkline plots one point per published snapshot, in date order.</p>
         </article>
         <article class="card" id="trend-monthly-finalized">
           ${renderAnchorLink("trend-monthly-finalized", "Monthly finalized trend")}
           <h3>Cleared / 100 filed, disposed, and backlog change</h3>
           <p>The NJDG "instituted in last month" and "disposal in last month" fields are accumulators that reset at each calendar-month boundary (IST). The headline number on these tiles is the current month-to-date reading.</p>
-          <p>For the trend line we keep only <em>finalized</em> months: when we observe the accumulator drop between two consecutive captures, the earlier capture holds the last-known pre-reset totals for its month, and those become that month's finalized values. Months still in progress, or months where we lack captures on both sides of the boundary, are deliberately omitted from the sparkline.</p>
-          <p>This keeps each dot on the trend line directly comparable to the next. It also means the trend line will stay empty until at least two calendar-month boundaries have been observed in the capture history.</p>
+          <p>The chart shows finalized months. When an accumulator drops between two captures, the earlier capture holds the last totals before the reset; those totals become the finalized values for that month. Months still in progress or without captures on both sides of month-end are omitted.</p>
+          <p>A month appears after NyaayWatch captures the accumulator drop at the month boundary. If captures do not show both sides of a boundary, that month's totals are omitted.</p>
         </article>
       </div>
     </section>
@@ -111,7 +111,7 @@ export function renderSupremeCourtMethodologyPage(
     <section class="method" id="snapshot-lineage">
       ${renderSectionHead({
         headline: "Published snapshot lineage",
-        lede: "One row per Supreme Court reference date, sorted newest first, showing the publication that ended up live for that date. Operator events like rollbacks or same-day re-publishes are kept in the operator publication history, not duplicated here.",
+        lede: "One row per Supreme Court reference date, newest first. The table shows the snapshot selected for each date. Rollbacks and same-day republishes appear in operator publication history.",
       })}
       ${history.length > 0 ? renderHistoryTable(dedupeLineageByReferenceDate(history, {
         referenceDateLabel: (entry) => describeReferenceDate(entry.snapshot),

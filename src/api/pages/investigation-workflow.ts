@@ -16,9 +16,9 @@ export interface InvestigationWorkflowOptions {
 
 export function renderInvestigationWorkflow(options: InvestigationWorkflowOptions): string {
   return `
-    <section class="investigation-flow" aria-label="Investigation path">
+    <section class="investigation-flow" aria-label="Next steps">
       <header class="investigation-flow__head">
-        <p class="investigation-flow__eyebrow">INVESTIGATION PATH</p>
+        <p class="investigation-flow__eyebrow">NEXT STEPS</p>
         <h2>${escapeHtml(options.headline)}</h2>
         <p>${escapeHtml(options.lede)}</p>
       </header>

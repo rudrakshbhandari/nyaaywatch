@@ -165,8 +165,8 @@ export function renderNationalHome(input: {
         }</h1>
         <p class="national-hero__lede">${
           model.supremeCourt.snapshot
-            ? "NyaayWatch tracks backlog pressure, clearance pace, and monthly backlog change across the Supreme Court, High Courts, and lower courts so citizens, reporters, and civic groups can see where delay is building and where scrutiny is most needed."
-            : "NyaayWatch publishes reviewed court snapshots so the public can track delay in India's court system without pretending these numbers update continuously or forecast outcomes."
+            ? "The page shows pending cases, clearance pace, and monthly backlog change for the Supreme Court, High Courts, and lower courts."
+            : "NyaayWatch publishes dated court figures. They show past changes, not live conditions or future outcomes."
         }</p>
         <div class="national-hero__cta">
           <a class="btn btn--primary" href="${model.supremeCourt.snapshot ? supremeRoutes.home : lowerCourtSelectorHref}">${
@@ -241,7 +241,7 @@ export function renderNationalHome(input: {
               ${renderStatTile({
                 label: "Public lower-court geographies",
                 value: model.lowerCourts.publicStateCount.toLocaleString("en-IN"),
-                note: "Each State or Union Territory page stays tied to its own published snapshot and supporting notes.",
+                note: "Each page shows lower-court figures for one state or Union Territory.",
                 tone: "accent",
               })}
             `
@@ -251,35 +251,35 @@ export function renderNationalHome(input: {
 
     <div id="investigation" data-section="investigation">
       ${renderInvestigationWorkflow({
-        headline: "Follow the court system without flattening it.",
+        headline: "Explore each court tier.",
         lede:
-          "Start at the Supreme Court, move into High Courts, then open lower-court geographies and districts. Each layer keeps its own method, source caveats, and evidence boundary.",
+          "Supreme Court, High Court, and lower-court figures use different measures.",
         steps: [
           {
             eyebrow: "01",
             title: "Start with the Supreme Court",
-            body: "Use the top-level aggregate to read current backlog pressure and monthly movement without treating it as comparable to district rows.",
+            body: "See nationwide Supreme Court totals and monthly changes.",
             href: supremeRoutes.home,
             cta: "Open Supreme Court",
           },
           {
             eyebrow: "02",
             title: "Move to High Courts",
-            body: "Scan High Court pages court by court, with coverage labels and source-specific caveats kept beside the numbers.",
+            body: "Compare High Courts with their coverage labels and source notes.",
             href: "/high-courts",
             cta: "Browse High Courts",
           },
           {
             eyebrow: "03",
             title: "Drill into lower courts",
-            body: "Use the map to open a State or Union Territory page, then inspect districts, movers, comparisons, and exports inside that snapshot.",
+            body: "Open a state or Union Territory page to compare district figures and download the data.",
             href: "#map",
             cta: "Use pressure map",
           },
           {
             eyebrow: "04",
             title: "Cite or reuse",
-            body: "Use press notes, CSVs, API routes, and methodology pages instead of copying raw capture files or treating snapshots as continuous feeds.",
+            body: "Use the press kit, CSV downloads, API, and methodology pages when citing these figures.",
             href: "/press",
             cta: "Open press kit",
           },

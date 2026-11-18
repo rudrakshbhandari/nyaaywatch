@@ -23,13 +23,13 @@ export function renderHighCourtsIndexPage(
   const body = `
     ${renderSectionHead({
       eyebrow: "HIGH COURTS",
-      headline: `India's High Courts, ranked by pressure`,
+      headline: "High Court snapshots",
       lede:
-        `${entries.length} published High Court snapshots, ordered by last-month backlog change first, then clearance pace, then pending load. Select a court to read its detail page.`,
+        `${entries.length} published High Court snapshots, ordered by last-month backlog change, then clearances per 100 filed, then pending cases. Open a court to see its figures.`,
       isHero: true,
     })}
 
-    <section class="card-grid hc-index-grid" aria-label="Published High Court snapshots">
+    <section class="card-grid hc-index-grid" aria-label="High Court snapshots">
       ${sortedEntries
         .map(
           ({ profile, snapshot }, index) => {
@@ -37,7 +37,7 @@ export function renderHighCourtsIndexPage(
             const isTop = rank <= 2;
             return `
             <article class="card hc-card${isTop ? " hc-card--top" : ""}">
-              <div class="hc-card__rank">#${rank}${isTop ? ' <span class="hc-card__rank-note">highest pressure</span>' : ""}</div>
+              <div class="hc-card__rank">#${rank}${isTop ? ' <span class="hc-card__rank-note">top signal</span>' : ""}</div>
               <h2>${profile.courtName}</h2>
               <p>Latest reference: ${
                 snapshot.snapshot.referenceDateKind === "captured_at"
@@ -74,7 +74,7 @@ export function renderHighCourtsIndexPage(
                   ),
                 })}
               </div>
-              <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Inspect High Court</a></p>
+              <p><a class="btn btn--primary btn--small" href="${buildPublicHighCourtRoutes(profile).home}">Open High Court</a></p>
             </article>
           `;
           },

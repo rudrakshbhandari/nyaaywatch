@@ -6,20 +6,17 @@ import { renderSectionHead, renderStatTile } from "../design/ui.js";
 import { formatDate } from "../home/view-model.js";
 
 /**
- * /data — machine-readable access. Lists the CSV downloads that mirror what's
- * on the public site, plus a reminder that raw capture bundles stay private.
- * This is where reporters, researchers, and civic orgs land when they want
- * the rows behind the homepage.
+ * /data — CSV and JSON access to the lower-court figures on the public site.
  */
 export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageContext): string {
   const aggregateAdjective = context.lowerCourtCopy.aggregateAdjective;
   const aggregateAdjectiveTitle = context.lowerCourtCopy.aggregateAdjectiveTitle;
   const body = `
     ${renderSectionHead({
-      eyebrow: "CSV AND API",
-      headline: "Download exactly what the public site is showing.",
+      eyebrow: "DATA AND DOWNLOADS",
+      headline: "Download court data and published snapshots.",
       lede:
-        "Use these downloads when you need the exact rows behind the public site. They stay pinned to the active publication until a newer run is reviewed and published.",
+        "These downloads match the figures on this page. Current files update when new figures are approved; the archive includes the current and earlier published snapshots.",
       isHero: true,
     })}
 
@@ -27,31 +24,30 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
       ${renderStatTile({
         label: "District rows",
         value: snapshot.districts.length.toString(),
-        note: `One row per district in the active ${snapshot.snapshot.stateName} publication.`,
+        note: "One row for each district in this file.",
       })}
       ${renderStatTile({
-        label: "CSV/API parity",
-        value: "Aligned",
-        note: `The ${aggregateAdjective} CSV mirrors the same fields exposed by the JSON endpoints.`,
+        label: "Formats",
+        value: "CSV + JSON",
+        note: "Download the district table as CSV or use the JSON API.",
       })}
       ${renderStatTile({
-        label: "Reference date",
+        label: "Data date",
         value: formatDate(snapshot.snapshot.referenceDateAt),
-        note: "Every download carries this date and the methodology version so a citation stays valid.",
+        note: "This is the source date, or the date the page was captured if no source date was available.",
       })}
       ${renderStatTile({
-        label: "Publish boundary",
-        value: "Published only",
+        label: "Data status",
+        value: "Published",
         tone: "accent",
-        note: "If a newer run is incomplete, the downloads remain pinned to the last safe publication.",
+        note: "These files match the current public figures.",
       })}
     </section>
 
     <section class="downloads">
       ${renderSectionHead({
-        headline: "Available files",
-        lede:
-          "District-specific history CSVs are linked from each district's permalink page so every download is one click from its narrative context.",
+        headline: "Files and API",
+        lede: "District history CSVs are linked from each district page.",
       })}
       <div class="card-grid card-grid--3">
         <article class="card download">
@@ -60,7 +56,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
             <code class="download__path">${escapeHtml(context.routes.districtsCsv)}</code>
           </div>
           <h3>${aggregateAdjectiveTitle} district table</h3>
-          <p>One row per district with rank, pending cases, cases filed and cleared last month, cases cleared per 100 filed, typical wait, old-case burden, file-clear gap, backlog movement, repeat signal, and flag reason. Includes the source snapshot date, methodology version, freshness, and source attribution as columns so the download is self-describing.</p>
+          <p>One row per district, with pending cases, cases filed and cleared last month, cases cleared per 100 filed, estimated wait, old-case share, backlog change, and flags. Each row includes the data date, method version, freshness and source.</p>
           <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.districtsCsv}">Download CSV</a></p>
         </article>
         <article class="card download">
@@ -68,8 +64,8 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
             <span class="download__kind">JSON</span>
             <code class="download__path">${escapeHtml(context.routes.statsApi)}</code>
           </div>
-          <h3>Public JSON endpoints</h3>
-          <p>Three endpoints cover ${aggregateAdjective} stats, district rows, and the ${aggregateAdjective} trend series. Same fields as the CSV, fetched as machine-readable JSON for dashboards, notebooks, or downstream tooling.</p>
+          <h3>JSON API</h3>
+          <p>Use the JSON endpoints to get ${aggregateAdjective} stats, district rows and trends in scripts or notebooks. They use the same figures as the CSV.</p>
           <p class="download__cta"><a class="btn btn--ghost btn--small" href="${context.routes.api}">See API reference</a></p>
         </article>
         <article class="card download">
@@ -78,38 +74,36 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
             <code class="download__path">${escapeHtml(context.routes.stateEvidencePack)}</code>
           </div>
           <h3>Evidence packs</h3>
-          <p>State and district JSON packs keep the visible metrics, reference date, source date when available, methodology version, citation text, CSV/API links, and caveats together. District packs are also linked from each district evidence page.</p>
+          <p>State and district JSON packs include the figures, data and source dates, method version, caveats and links. Each district page links to its evidence pack.</p>
           <p class="download__cta"><a class="btn btn--ghost btn--small" href="${context.routes.stateEvidencePack}">Open state pack</a></p>
         </article>
       </div>
     </section>
 
     <section class="data__boundary">
-      ${renderSectionHead({ headline: "What these files contain, and what they don't" })}
+      ${renderSectionHead({ headline: "What the downloads include" })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>What is in the CSV</h3>
-          <p>Normalized fields only: the same numbers, labels, derived pressure signals, and flag reasons that appear on the public pages.</p>
-          <p>Each row references the source snapshot date and methodology version so a published number is always citeable.</p>
+          <h3>Included</h3>
+          <p>Normalized figures and flags shown on the site, with the data date and method version.</p>
         </article>
         <article class="card">
-          <h3>What is not in the CSV</h3>
-          <p>Raw capture bundles and operator evidence artifacts stay outside the public download boundary. Those belong to the review trail, not to the reader product.</p>
-          <p>For formula details, see the methodology page. For narrative context, start from a district's permalink.</p>
+          <h3>Not included</h3>
+          <p>Raw NJDG page captures and internal operator files are not available for download. See the Methodology page for how we calculate the figures.</p>
         </article>
       </div>
     </section>
 
     <section class="data__archive">
       ${renderSectionHead({
-        headline: "Download published history",
-        lede: "Page through earlier published normalized snapshots for this geography as JSON. Each record carries its source date, publication date, methodology version, and quality labels.",
+        headline: "Published snapshots",
+        lede: "Each archive entry includes its data date, publish date, method version and quality status.",
       })}
       <article class="card download">
         <div class="download__meta"><span class="download__kind">JSON</span><code class="download__path">${escapeHtml(context.routes.archiveApi)}?limit=20&amp;offset=0</code></div>
         <h3>Snapshot archive</h3>
-        <p>Only snapshots that were published are included. Raw source captures, replay files, and unpublished candidates remain private.</p>
-        <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open first page</a></p>
+        <p>Each record is a published snapshot. Republishing the same source reading can add another record. Raw page captures and unpublished data are not included.</p>
+        <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open archive JSON</a></p>
       </article>
     </section>
   `;

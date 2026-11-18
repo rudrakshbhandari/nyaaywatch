@@ -69,19 +69,19 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/districts",
-        requiredText: "Scan the districts under the most pressure.",
+        requiredText: "Browse district data.",
       },
       {
         path: "/districts/kangra",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       {
         path: "/compare/kangra-vs-shimla",
-        requiredText: "Use this comparison as a starting point.",
+        requiredText: "Compare the district records.",
       },
       {
         path: "/data",
-        requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
+        requiredText: "Raw NJDG page captures and internal operator files are not available for download",
       },
       {
         path: "/methodology",
@@ -89,7 +89,7 @@ describe("public copy guardrails", () => {
       },
       {
         path: "/api",
-        requiredText: "currently on the public site",
+        requiredText: "currently shown on the site",
       },
       {
         path: "/learn",
@@ -161,31 +161,31 @@ describe("public copy guardrails", () => {
     const routes = [
       {
         path: "/states/punjab",
-        requiredText: "All numbers on this site come from the NJDG public district dashboards",
+        requiredText: "How long is the wait for justice in Punjab?",
       },
       {
         path: "/states/punjab/districts",
-        requiredText: "Scan the districts under the most pressure.",
+        requiredText: "Browse district data.",
       },
       {
         path: "/states/punjab/districts/ludhiana",
-        requiredText: "do not assign responsibility, explain intent, or guarantee that upstream court records have already refreshed",
+        requiredText: "District flags describe these figures.",
       },
       {
         path: "/states/punjab/compare/ludhiana-vs-amritsar",
-        requiredText: "Use this comparison as a starting point.",
+        requiredText: "Compare the district records.",
       },
       {
         path: "/states/punjab/data",
-        requiredText: "Raw capture bundles and operator evidence artifacts stay outside the public download boundary",
+        requiredText: "Raw NJDG page captures and internal operator files are not available for download",
       },
       {
         path: "/states/punjab/methodology",
-        requiredText: "If a source page changes district coverage, date labels, or geography names",
+        requiredText: "If a source changes its district list, date labels, or geography names",
       },
       {
         path: "/states/punjab/api",
-        requiredText: "currently on the public site",
+        requiredText: "currently shown on the site",
       },
     ] as const;
 
@@ -193,6 +193,11 @@ describe("public copy guardrails", () => {
       const response = await request(app).get(route.path);
       expect(response.status, route.path).toBe(200);
       expect(response.text, route.path).toContain(route.requiredText);
+      if (route.path === "/states/punjab") {
+        expect(response.text).toContain("Source: National Judicial Data Grid public district dashboard");
+        expect(response.text).toContain("Numbers published ");
+        expect(response.text).toContain("Method ");
+      }
 
       for (const pattern of disallowedPublicPhrases) {
         expect(response.text, `${route.path} should not match ${pattern}`).not.toMatch(pattern);

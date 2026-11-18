@@ -30,7 +30,7 @@ export const GLOSSARY: Record<
     term: "cases cleared per 100 filed",
     short: "How many cases courts finish for every 100 new ones they get.",
     long:
-      "If this number is 100, courts are keeping pace with new filings. Below 100 means the backlog is growing. Above 100 means courts are catching up. We calculate it from the monthly filing and disposal totals published in the source dashboard.",
+      "A rate of 100 means filings and clearances matched during that period. Below 100 means more cases were filed than cleared; above 100 means more were cleared than filed. The rate uses the monthly totals in the source dashboard.",
   },
   typicalWait: {
     term: "typical wait",
@@ -52,21 +52,21 @@ export const GLOSSARY: Record<
   },
   freshness: {
     term: "freshness",
-    short: "How many days old the source numbers are.",
+    short: "How many days have passed since the date shown for the data.",
     long:
-      "Court dashboards are not live. We capture new source runs on a regular schedule and publish only after review. Freshness tells you how many days have passed since the source numbers were captured.",
+      "Court dashboards are not live. Freshness is measured from the date shown on the page. That is the source date when one is provided, or the page capture date when it is not.",
   },
   quality: {
     term: "data quality",
-    short: "Whether we got a clean, complete pull this time.",
+    short: "Whether the data passed completeness and freshness checks.",
     long:
-      "\u201CComplete\u201D means we captured every expected district for the state on the latest pull. \u201CPartial\u201D means some districts were missing, in which case we do not publish. \u201CStale\u201D means the last clean pull is older than our freshness threshold.",
+      "\u201CComplete\u201D means all expected districts are present. \u201CPartial\u201D means some districts are missing, so NyaayWatch does not publish that reading. \u201CStale\u201D means the available data is older than the freshness limit.",
   },
   source: {
     term: "where the numbers come from",
     short: "The National Judicial Data Grid public district aggregates.",
     long:
-      "All numbers on this site come from the NJDG public district dashboards. We do not add, estimate, or adjust the underlying figures. We reorganize them so they are easier to read and compare.",
+      "NJDG provides the source figures. NyaayWatch also calculates estimates and flags using the methods linked on each page.",
   },
   methodology: {
     term: "methodology",
@@ -119,7 +119,7 @@ export function buildCopy(
     bigNumbers: {
       pending: {
         label: "pending cases",
-        caption: "Every one of these is a person waiting for their day in court.",
+        caption: "Each case is still pending in court.",
       },
       wait: {
         label: "typical wait",
@@ -131,7 +131,7 @@ export function buildCopy(
       },
       flagged: {
         label: "districts flagged",
-        caption: "Where the backlog is heaviest, or the wait is longest, or the pace is slowest.",
+        caption: "Districts with high backlogs, long waits, or slow clearance.",
       },
     },
 
@@ -144,11 +144,11 @@ export function buildCopy(
 
     sectionTrend: `How the ${lowerCourtCopy.aggregateAdjective} backlog has moved`,
     sectionTrendLede:
-      `Each bar is a previously published ${lowerCourtCopy.aggregateAdjective} snapshot. It shows how the backlog has moved across publication dates, not a continuously refreshed surface.`,
+      `Each bar shows a dated reading of the ${lowerCourtCopy.aggregateAdjective} backlog. The chart is not live.`,
 
     sectionWhat: "Why this site exists",
     sectionWhatBody:
-      `NyaayWatch is an independent view of public court aggregates. ${publicScopeDescription} It publishes reviewed snapshots instead of a continuously refreshed surface, so citizens, reporters, and civic groups can inspect the numbers, cite them, and ask sharper questions.`,
+      `NyaayWatch publishes reviewed readings of public court data. ${publicScopeDescription} Compare dated figures, check the source and method, and download the published data.`,
   } as const;
 }
 
@@ -162,11 +162,10 @@ function buildHeroLede(
   const base = `${model.pendingLakh} cases are waiting in ${model.snapshot.snapshot.stateName}'s district courts. The middle of the backlog has already been waiting about ${model.typicalWaitMonths} months.`;
   if (longWaitCount > 0 && longWaitMonths > model.typicalWaitMonths) {
     return (
-      `${base} In ${longWaitCount} district${longWaitCount === 1 ? "" : "s"}, the middle is closer to ${longWaitMonths} months. ` +
-      `A backlog this big is not going to move on its own.`
+      `${base} In ${longWaitCount} district${longWaitCount === 1 ? "" : "s"}, the middle is closer to ${longWaitMonths} months.`
     );
   }
-  return `${base} A backlog this big is not going to move on its own.`;
+  return base;
 }
 
 function buildClearanceCaption(model: HomeViewModel): string {
@@ -179,10 +178,10 @@ function buildClearanceCaption(model: HomeViewModel): string {
   }
   const rate = model.clearanceRate;
   if (rate >= 100) {
-    return "Courts are finally clearing faster than new cases come in. The backlog built up over years is another story.";
+    return "Last month, clearances matched or exceeded filings. The pending count may still be high.";
   }
   if (rate >= 90) {
-    return "Courts are nearly keeping pace with new filings. The backlog is still growing.";
+    return "Last month, courts cleared nearly as many cases as were filed.";
   }
   return "For every 100 new cases, only " + Math.round(rate) + " are being cleared. The backlog keeps growing.";
 }

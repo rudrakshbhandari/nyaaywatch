@@ -53,9 +53,9 @@ NyaayWatch is a public alpha publishing reviewed snapshots. Coverage means that 
 
 | Court layer | Public surface | Coverage |
 | --- | --- | --- |
-| Supreme Court | [`/supreme-court`](https://nyaaywatch.in/supreme-court) and `/v1/supreme-court/...` | Aggregate public snapshot |
-| High Courts | [`/high-courts`](https://nyaaywatch.in/high-courts) and `/v1/high-courts/:slug/...` | All 25 High Court NJDG selectors |
-| Lower courts | [`/states/:slug`](https://nyaaywatch.in/states/punjab) and `/v1/states/:slug/...` | All 36 state and Union Territory NJDG selectors |
+| Supreme Court | [`/supreme-court`](https://nyaaywatch.in/supreme-court) and `/v1/supreme-court/...` | Court-wide aggregate snapshots and history; no district breakdown |
+| High Courts | [`/high-courts`](https://nyaaywatch.in/high-courts) and `/v1/high-courts/:slug/...` | All 25 High Court NJDG selectors, each with its own aggregate history |
+| Lower courts | [`/states/:slug`](https://nyaaywatch.in/states/punjab) and `/v1/states/:slug/...` | All 36 state and Union Territory NJDG selectors, with district data and history |
 
 The home page is the national entry point, followed by explicit state, Union Territory, High Court, and Supreme Court routes.
 
@@ -97,14 +97,14 @@ The rules are deliberately plain:
 
 - Data is snapshot-based, not live.
 - Every public metric has reproducible provenance from stored evidence.
-- `sourceSnapshotAt` is used when the upstream evidence exposes a defensible source date; otherwise the public contract labels the capture date used for freshness.
+- `sourceSnapshotAt` is used when the source provides a date; otherwise the API labels the page capture date.
 - Anomalies are signals to inspect, not verdicts about a court or judge.
 - The project makes no predictive, AI-forward, or legal-analysis claims.
 - Raw upstream artifacts are kept out of the public API and downloads.
 
 ## Use the API
 
-The public API serves the same published snapshot that powers the site.
+The public API returns the figures currently shown on the site.
 
 ```bash
 STATE_SLUG=your-state-slug
@@ -117,6 +117,8 @@ curl "https://nyaaywatch.in/v1/high-courts/$COURT_SLUG/trends" | jq
 curl https://nyaaywatch.in/v1/supreme-court/stats | jq
 ```
 
+The site's **Data** page links to the archive for that scope. `/data` is the Himachal Pradesh lower-court shortcut; use `/states/:stateSlug/data` for another state or Union Territory, `/high-courts/:courtSlug/data` for a High Court, or `/supreme-court/data` for the Supreme Court.
+
 Useful public routes include:
 
 ```text
@@ -127,7 +129,24 @@ GET /states/:stateSlug/data/evidence/state.json
 GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
 
-Archive endpoints return full published normalized snapshot payloads in pages (`limit` 1–100, default 20; `offset` default 0). They include publication metadata and never serve raw captures or unpublished candidates.
+Archive endpoints return full normalized records for published snapshots. Republishing the same source reading can add another record. Results are paginated (`limit` 1–100, default 20; `offset` default 0). Follow `pagination.nextOffset` until it is `null` to fetch every page. Raw captures and unpublished data are not included.
+
+This example prints every snapshot for a lower-court geography as one JSON record per line:
+
+```bash
+STATE_SLUG=himachal
+ARCHIVE_URL="https://nyaaywatch.in/v1/states/$STATE_SLUG/archive"
+offset=0
+while :; do
+  page=$(curl -fsS "$ARCHIVE_URL?limit=100&offset=$offset")
+  jq -c '.snapshots[]' <<< "$page"
+  next_offset=$(jq -r '.pagination.nextOffset // empty' <<< "$page")
+  [ -n "$next_offset" ] || break
+  offset=$next_offset
+done
+```
+
+Use the same loop with `/v1/high-courts/$COURT_SLUG/archive` or `/v1/supreme-court/archive` for those court tiers. Supreme Court records are court-wide aggregates; NyaayWatch has no Supreme Court district data.
 
 ```mermaid
 flowchart TD

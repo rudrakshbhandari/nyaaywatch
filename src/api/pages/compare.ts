@@ -78,7 +78,7 @@ export function renderComparePage(
 
     <section class="compare-share-section">
       <h2 class="compare-share__hed">Share this comparison</h2>
-      <p class="compare-share__lede">This route keeps the same two districts and reflects the current published snapshot for this geography.</p>
+      <p class="compare-share__lede">This page compares the same two districts using the current data for this geography.</p>
       <div class="compare-share__actions">
         <code class="compare-share__url">${escapeHtml(compareUrl)}</code>
         <a class="btn btn--ghost btn--small" href="https://wa.me/?text=${encodeURIComponent(`${a.districtName} vs ${b.districtName} — backlog, wait times, and clearance rates compared. ${compareUrl}`)}" rel="noopener noreferrer" target="_blank">Share on WhatsApp</a>
@@ -88,11 +88,11 @@ export function renderComparePage(
     ${renderEvidenceEntryPoints({
       headline: "Download both evidence packs.",
       lede:
-        "Use these packs when the comparison needs to travel with reference dates, source dates when available, methodology version, CSV links, citation text, and caveats for each district.",
+        "Each pack includes district metrics, history, dates, methods, CSV links, citation text, and caveats.",
       entries: [
         {
           title: "Comparison citation",
-          body: "Use this when citing the side-by-side comparison route.",
+          body: "Citation for this comparison.",
           href: comparePath,
           cta: "Open comparison",
           codeLabel: comparePath,
@@ -100,7 +100,7 @@ export function renderComparePage(
         },
         {
           title: `${a.districtName} pack`,
-          body: "Use this for the first district's metrics, history, citation text, and public-data links.",
+          body: "Metrics, history, citation, and data links for the first district.",
           href: context.routes.districtEvidencePack(a.districtId),
           cta: "Download JSON",
           codeLabel: context.routes.districtEvidencePack(a.districtId),
@@ -108,7 +108,7 @@ export function renderComparePage(
         },
         {
           title: `${b.districtName} pack`,
-          body: "Use this for the second district's metrics, history, citation text, and public-data links.",
+          body: "Metrics, history, citation, and data links for the second district.",
           href: context.routes.districtEvidencePack(b.districtId),
           cta: "Download JSON",
           codeLabel: context.routes.districtEvidencePack(b.districtId),
@@ -116,7 +116,7 @@ export function renderComparePage(
         },
         {
           title: "State pack",
-          body: "Use this to place the two districts inside the full lower-court geography.",
+          body: "State or Union Territory totals and district rows.",
           href: context.routes.stateEvidencePack,
           cta: "Download state JSON",
           codeLabel: context.routes.stateEvidencePack,
@@ -125,35 +125,35 @@ export function renderComparePage(
     })}
 
     ${renderInvestigationWorkflow({
-      headline: "Use this comparison as a starting point.",
+      headline: "Compare the district records.",
       lede:
-        "The comparison shows differences inside one lower-court geography. Open the evidence pages and methodology before turning the contrast into a public claim.",
+        "The comparison covers two districts in one lower-court geography. Check each district page for history and caveats.",
       steps: [
         {
           eyebrow: "01",
           title: `${a.districtName} evidence`,
-          body: "Open the full district page for history, caveats, citation text, and CSV export.",
+          body: "See the district's history, caveats, citation, and CSV export.",
           href: context.routes.district(a.districtId),
           cta: "Open evidence",
         },
         {
           eyebrow: "02",
           title: `${b.districtName} evidence`,
-          body: "Check the same fields for the second district before quoting the side-by-side gap.",
+          body: "See the same details for the second district.",
           href: context.routes.district(b.districtId),
           cta: "Open evidence",
         },
         {
           eyebrow: "03",
           title: "Check movement",
-          body: "Use movers to see whether either district changed between the two most recent published snapshots.",
+          body: "See how either district changed between the two most recent readings.",
           href: context.routes.movers,
           cta: "Open movers",
         },
         {
           eyebrow: "04",
           title: "Cite the method",
-          body: "Use the methodology and data pages to explain which snapshot and metric definition support the comparison.",
+          body: "Check the method and source dates behind the comparison.",
           href: context.routes.methodology,
           cta: "Open methodology",
         },
@@ -248,7 +248,7 @@ function roundTo1(n: number): number {
 export function renderCompareNotFound(context: PublicPageContext): string {
   return renderPageShell({
     title: "District Not Found — NyaayWatch",
-    body: `<section style="padding:60px 0"><h1>District not found</h1><p>One or both of the districts in this comparison could not be found in the current published snapshot.</p><p><a href="${context.routes.districts}">← Back to all districts</a></p></section>`,
+    body: `<section style="padding:60px 0"><h1>District not found</h1><p>One or both districts are not in the current district list.</p><p><a href="${context.routes.districts}">← Back to all districts</a></p></section>`,
     brandHref: context.brandHref,
     brandTag: context.brandTag,
     navLinks: context.navLinks,

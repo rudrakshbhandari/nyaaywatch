@@ -58,7 +58,7 @@ export function renderHighCourtOverviewPage(
         eyebrow: "HIGH COURT",
         headline: `What does the latest data show for ${profile.courtName}?`,
         lede:
-          `${context.coverageSentence} This page highlights backlog pressure, clearance pace, monthly backlog change, and age-bucket burden from the latest High Court data. It stays court-first and explicit about what the source does and does not support.`,
+          `${context.coverageSentence} This page shows backlog pressure, clearance pace, monthly backlog change, and the age of pending cases.`,
         isHero: true,
       })}
 
@@ -66,7 +66,7 @@ export function renderHighCourtOverviewPage(
         ${renderStatTile({
           label: "Pending cases",
           value: snapshot.stats.pendingTotalCases.toLocaleString("en-IN"),
-          note: "Open civil and criminal matters combined in the active publication.",
+          note: "Open civil and criminal cases combined.",
         })}
         ${renderStatTile({
           label: "Cleared / 100 filed",
@@ -96,35 +96,35 @@ export function renderHighCourtOverviewPage(
     </div>
 
     ${renderInvestigationWorkflow({
-      headline: "Read this High Court in context.",
+      headline: "Explore this High Court",
       lede:
-        "Stay court-first, then move to the High Court index or lower-court geography pages without treating separate tiers as one ranking.",
+        "Compare this court with other High Courts on their own pages. Lower-court pages report a different court tier.",
       steps: [
         {
           eyebrow: "01",
           title: "Start with this court",
-          body: "Use pending load, clearance pace, backlog change, and age-bucket burden inside this High Court's own source boundary.",
+          body: "Review pending cases, clearance pace, backlog change, and case ages for this High Court.",
           href: context.routes.methodology,
           cta: "Read methodology",
         },
         {
           eyebrow: "02",
           title: "Scan High Courts",
-          body: "Return to the index when you need to compare High Court pages with their coverage labels and source caveats visible.",
+          body: "Compare High Court figures alongside each court's coverage and source notes.",
           href: "/high-courts",
           cta: "Open High Courts",
         },
         {
           eyebrow: "03",
           title: "Move to lower courts",
-          body: "Use the national map to enter lower-court geographies as a separate drilldown, not a direct High Court ranking.",
+          body: "Use the map to open state, Union Territory, and district pages. They report lower-court figures.",
           href: "/#map",
           cta: "Open map",
         },
         {
           eyebrow: "04",
           title: "Cite or reuse",
-          body: "Use the data and API pages for published fields, and the press kit for careful public wording.",
+          body: "Use the data and API pages for figures, or the press kit for citation wording.",
           href: context.routes.data,
           cta: "Open data",
         },
@@ -133,9 +133,9 @@ export function renderHighCourtOverviewPage(
 
     <section class="hc-section">
       ${renderSectionHead({
-        headline: "Scale-aware pressure signals",
+        headline: "Filing and clearance measures",
         lede:
-          "These derived metrics compare last month's movement against the size and shape of this High Court's pending load. They are descriptive signals, not forecasts.",
+          "These metrics compare last month's filings and clearances with this High Court's pending cases. They describe recent changes, not future outcomes.",
       })}
       <div class="stat-grid">
         ${renderStatTile({
@@ -172,26 +172,25 @@ export function renderHighCourtOverviewPage(
         <article class="card">
           <h3>Coverage</h3>
           <p><strong>Current coverage:</strong> ${escapeHtml(context.coverageLabel)}</p>
-          <p>This page follows one High Court publication, even when the court serves more than one state or union territory.</p>
+          <p>This page reports one High Court's figures, including when its jurisdiction covers more than one state or Union Territory.</p>
         </article>
         <article class="card">
           <h3>Page scope</h3>
           <p>${escapeHtml(context.publicScopeDescription)}</p>
-          <p>The court itself stays explicit here, even when its jurisdiction spans more than one geography.</p>
         </article>
       </div>
     </section>
 
     <section class="hc-section">
       ${renderSectionHead({
-        headline: "How to read this page",
+        headline: "Snapshot and source dates",
         lede:
-          "This High Court page stays anchored to one published aggregate snapshot, with explicit methodology and official source links.",
+          "The figures below come from one published aggregate snapshot. The methodology and source links are listed here.",
       })}
       <div class="card-grid card-grid--2">
         <article class="card">
-          <h3>Snapshot basis</h3>
-          <p>${escapeHtml(context.coverageSentence)} It is snapshot-based, not live, and every public number comes from a stored published artifact.</p>
+          <h3>Snapshot</h3>
+          <p>${escapeHtml(context.coverageSentence)} The figures are snapshot-based, not live. Each number comes from a stored publication.</p>
           <p>${renderBadge({ label: snapshot.snapshot.qualityState, tone: snapshot.snapshot.qualityState === "complete" ? "complete" : "flag" })}</p>
         </article>
         <article class="card">
@@ -199,8 +198,8 @@ export function renderHighCourtOverviewPage(
           <p>${escapeHtml(referenceLabel)}</p>
           <p>${
             snapshot.snapshot.referenceDateKind === "captured_at"
-              ? "HC NJDG did not expose a trustworthy source snapshot timestamp, so NyaayWatch shows the page capture time instead of inventing one."
-              : "The official source exposed a usable source snapshot timestamp, so that source date is shown directly."
+              ? "HC NJDG does not provide a source date, so this page shows when it was captured."
+              : "This page shows the date provided by the official source."
           }</p>
         </article>
       </div>
@@ -208,9 +207,9 @@ export function renderHighCourtOverviewPage(
 
     <section class="hc-section">
       ${renderSectionHead({
-        headline: "Age-bucket burden",
+        headline: "Age of pending cases",
         lede:
-          "These buckets come directly from the official High Court dashboard. They show where the pending load is sitting, not the story of any individual case.",
+          "The official High Court dashboard groups pending cases by age. These counts show age ranges, not individual cases.",
       })}
       <div class="stat-grid stat-grid--5">
         ${renderAgeBucket("Less than 1 year", snapshot.ageBuckets.lessThanOneYear, ageTotal)}
@@ -247,9 +246,9 @@ export function renderHighCourtOverviewPage(
 
     <section class="hc-section">
       ${renderSectionHead({
-        headline: "Official source links",
+        headline: "Official High Court sources",
         lede:
-          "Use these links to go from public accountability data to the official court systems and institutional sources behind it.",
+          "Check these figures on HC NJDG or visit the official High Court sites.",
       })}
       <div class="card-grid card-grid--3">
         <article class="card">
