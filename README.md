@@ -171,7 +171,8 @@ flowchart TD
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.
 - Azure is the production target. Deployment configuration lives under
-  `infra/azure/production/`.
+  `infra/azure/production/`. Pull request previews use a separate,
+  fixture-backed Container Apps environment under `infra/azure/previews/`.
 
 ## Repository Map
 
@@ -187,8 +188,8 @@ flowchart TD
 | `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
 | `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
 | `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
-| `infra/azure/` | Azure production Terraform and deployment configuration |
-| `.github/workflows/` | CI, Azure deployment, watchdog, outreach, and scheduled-operations workflows |
+| `infra/azure/` | Azure production and isolated PR preview Terraform and deployment configuration |
+| `.github/workflows/` | CI, Azure deployment and preview, watchdog, outreach, and scheduled-operations workflows |
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
 | `docs/` | Design, methodology, release, operations, source reviews, and coverage audit docs |
