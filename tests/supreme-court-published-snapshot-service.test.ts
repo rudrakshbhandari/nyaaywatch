@@ -45,6 +45,12 @@ describe("PublishedSupremeCourtSnapshotService", () => {
     expect(history).toHaveLength(2);
     expect(history[0]?.run.replayOfRunId).toBe(published.run.id);
     expect(history[0]?.stats.pendingTotalCases).toBe(92245);
+
+    const firstArchivePage = await context.service.listSnapshotArchive(0, 1);
+    const secondArchivePage = await context.service.listSnapshotArchive(1, 1);
+    expect(firstArchivePage.total).toBe(2);
+    expect(firstArchivePage.snapshots).toHaveLength(1);
+    expect(secondArchivePage.snapshots).toHaveLength(1);
   });
 });
 

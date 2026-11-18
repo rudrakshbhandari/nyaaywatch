@@ -95,6 +95,11 @@ describe("PublishedSnapshotService", () => {
     expect(history[0]?.isActive).toBe(true);
     expect(history[0]?.snapshot.id).toBe(seeded.snapshot.id);
     expect(history[1]?.publication.id).toBe(replayed.publication.id);
+
+    const archive = await context.service.listSnapshotArchive(0, 1);
+    expect(archive.total).toBe(2);
+    expect(archive.snapshots).toHaveLength(1);
+    expect((await context.service.listSnapshotArchive(1, 1)).snapshots).toHaveLength(1);
   });
 
   it("derives district history, snapshot history, and CSV exports from published snapshots", async () => {
@@ -118,10 +123,25 @@ describe("PublishedSnapshotService", () => {
         },
       },
     });
-    await seedTestSnapshot(context.service);
+    const current = await seedTestSnapshot(context.service);
+    await context.pool.query(
+      `INSERT INTO runs (
+        id, scope_type, scope_code, state_code, source_label, source_snapshot_at, methodology_version, status, quality_state, completed_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
+      ["run_unpublished", "lower_court_state", "HP", "HP", "test", "2026-05-01T00:00:00.000Z", "test", "completed", "complete"],
+    );
+    await context.pool.query(
+      `INSERT INTO published_snapshots (
+        id, run_id, scope_type, scope_code, state_code, payload_version, payload, checksum_sha256
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)`,
+      ["snapshot_unpublished", "run_unpublished", "lower_court_state", "HP", "HP", 1, JSON.stringify(current.snapshot.payload), "unpublished-checksum"],
+    );
 
     const detail = await context.service.getDistrictDetail("kangra");
     const history = await context.service.listSnapshotHistory();
+    const archive = await context.service.listSnapshotArchive(0, 1);
+    const archiveSecondPage = await context.service.listSnapshotArchive(1, 1);
+    const archivePastEnd = await context.service.listSnapshotArchive(2, 1);
     const statewideCsv = await context.service.renderDistrictCsv();
     const districtCsv = await context.service.renderDistrictHistoryCsv("kangra");
 
@@ -130,6 +150,10 @@ describe("PublishedSnapshotService", () => {
     expect(detail?.history[1]?.snapshotDate).toBe("2026-04-10T00:00:00.000Z");
     expect(history).toHaveLength(2);
     expect(history[0]?.snapshot.methodologyVersion).toBe("2026.03-alpha");
+    expect(archive.total).toBe(2);
+    expect(archive.snapshots[0]?.snapshot.referenceDateAt).toBe("2026-03-31T00:00:00.000Z");
+    expect(archiveSecondPage.snapshots[0]?.snapshot.referenceDateAt).toBe("2026-04-10T00:00:00.000Z");
+    expect(archivePastEnd.snapshots).toEqual([]);
     expect(statewideCsv).toContain("snapshot_date,source_snapshot_at,reference_date_kind,published_at,methodology_version");
     expect(statewideCsv).toContain("summary");
     expect(districtCsv).toContain("2026-03-31T00:00:00.000Z");
@@ -168,5 +192,7 @@ describe("PublishedSnapshotService", () => {
     expect(await himachalService.getPublishedSnapshot()).toBeNull();
     expect((await punjabService.getPublishedSnapshot())?.stateCode).toBe("PB");
     expect((await punjabService.getPublishedSnapshot())?.scopeType).toBe("lower_court_state");
+    expect((await himachalService.listSnapshotArchive()).total).toBe(0);
+    expect((await punjabService.listSnapshotArchive()).total).toBe(1);
   });
 });

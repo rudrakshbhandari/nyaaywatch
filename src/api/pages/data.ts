@@ -99,6 +99,19 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
         </article>
       </div>
     </section>
+
+    <section class="data__archive">
+      ${renderSectionHead({
+        headline: "Download published history",
+        lede: "Page through earlier published normalized snapshots for this geography as JSON. Each record carries its source date, publication date, methodology version, and quality labels.",
+      })}
+      <article class="card download">
+        <div class="download__meta"><span class="download__kind">JSON</span><code class="download__path">${escapeHtml(context.routes.archiveApi)}?limit=20&amp;offset=0</code></div>
+        <h3>Snapshot archive</h3>
+        <p>Only snapshots that were published are included. Raw source captures, replay files, and unpublished candidates remain private.</p>
+        <p class="download__cta"><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open first page</a></p>
+      </article>
+    </section>
   `;
 
   return renderPageShell({
@@ -133,5 +146,5 @@ const DATA_PAGE_CSS = `
   }
   .download__path { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; background: transparent; padding: 0; color: var(--ink-soft); }
   .download__cta { margin-top: auto; padding-top: 4px; }
-  .data__boundary { margin-bottom: 72px; }
+  .data__boundary, .data__archive { margin-bottom: 72px; }
 `;

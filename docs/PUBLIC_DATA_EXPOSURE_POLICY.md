@@ -43,6 +43,7 @@ Downloadable public evidence packs that bundle raw upstream HTML are out of scop
 | Homepage, district pages, methodology, API docs | App read model | Yes | Public trust surface built from the active published snapshot only |
 | Supreme Court, High Court, and lower-court public JSON endpoints | PostgreSQL published snapshot payload | Yes | Narrow machine-readable published snapshot boundary |
 | Lower-court and district history CSV exports | Published snapshot payload plus published history | Yes | Normalized exports with snapshot date, methodology version, freshness, and source attribution |
+| Paginated published snapshot archive JSON | PostgreSQL published snapshot payloads | Yes | Contains only snapshots that entered publication history; response preserves dates, methodology versions, quality labels, and court-specific schemas |
 | District permalinks and citation metadata | Published snapshot payload | Yes | Needed for durable public citation and responsible sharing |
 | Raw NJDG HTML capture bundles | Private Azure Blob artifacts | No | Redistribution posture is not cleared for public bulk exposure |
 | Replay copies of raw artifacts | Private Azure Blob replay objects | No | Internal operator artifacts only |
@@ -54,15 +55,17 @@ Downloadable public evidence packs that bundle raw upstream HTML are out of scop
 
 For the public alpha:
 
-1. Public downloads must stay inside the published snapshot schema.
+1. Public downloads and archive endpoints must stay inside the published snapshot schema.
 2. Every public export must carry snapshot date, publication date, methodology version, and source attribution.
 3. Public pages may describe source provenance, but they must not embed or redistribute raw upstream HTML.
 4. Public district evidence is provided through permalinks, narrative explanation, metadata, and CSV/API exports rather than raw evidence bundles.
 5. Any new public download format must be reviewed against this policy before shipping.
 
+The published snapshot archive is an approved extension of the existing boundary. It exposes paginated historical payloads that were published at least once; it does not expose raw captures, replay copies, candidates, run notes, or operator-only state.
+
 ## Future Expansion Gate
 
-Do not widen public exposure unless a later review answers all of the following in writing:
+Do not expose raw captures, replay copies, unpublished candidates, or deeper upstream source material unless a later review answers all of the following in writing:
 
 - Is the source material first-party eCourts content or court-specific third-party material?
 - Is there clear permission for redistribution, not just viewing?

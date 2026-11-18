@@ -279,12 +279,15 @@ Current public endpoints:
 - `GET /v1/states/:stateSlug/stats`
 - `GET /v1/states/:stateSlug/districts`
 - `GET /v1/states/:stateSlug/trends`
+- `GET /v1/states/:stateSlug/archive`
 - `GET /v1/high-courts/:courtSlug/stats`
 - `GET /v1/high-courts/:courtSlug/trends`
+- `GET /v1/high-courts/:courtSlug/archive`
 - `GET /v1/supreme-court/stats`
 - `GET /v1/supreme-court/trends`
+- `GET /v1/supreme-court/archive`
 
-The API should expose the same evidence model the public page uses. No hidden richer truth than the public trust surface supports.
+The API should expose the same evidence model the public page uses. Historical archives are paginated and include only snapshots that entered publication history. Raw captures, unpublished candidates, and operator-only evidence remain private.
 
 ## Time To Justice Index
 

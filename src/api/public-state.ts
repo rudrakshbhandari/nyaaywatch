@@ -20,6 +20,7 @@ export interface PublicStateRoutes {
   statsApi: string;
   districtsApi: string;
   trendsApi: string;
+  archiveApi: string;
 }
 
 export interface PublicStateLink {
@@ -94,11 +95,13 @@ export function buildPublicStateRoutes(profile: NjdgStateProfile, scope: "nation
         stats: "/v1/stats/himachal",
         districts: "/v1/districts",
         trends: "/v1/trends",
+        archive: "/v1/archive",
       }
     : {
         stats: `/v1/states/${profile.stateSlug}/stats`,
         districts: `/v1/states/${profile.stateSlug}/districts`,
         trends: `/v1/states/${profile.stateSlug}/trends`,
+        archive: `/v1/states/${profile.stateSlug}/archive`,
       };
 
   return {
@@ -120,6 +123,7 @@ export function buildPublicStateRoutes(profile: NjdgStateProfile, scope: "nation
     statsApi: apiBase.stats,
     districtsApi: apiBase.districts,
     trendsApi: apiBase.trends,
+    archiveApi: apiBase.archive,
   };
 }
 

@@ -172,6 +172,16 @@ export class PublishedSnapshotService {
     }));
   }
 
+  async listSnapshotArchive(offset = 0, limit = 20) {
+    const page = await this.store.listPublishedSnapshots(this.profile.stateCode, "lower_court_state", offset, limit);
+    return {
+      total: page.total,
+      offset,
+      limit,
+      snapshots: page.records.map((record) => record.payload),
+    };
+  }
+
   async listMovers(): Promise<DistrictMoversResult | null> {
     const history = await this.loadHistoricalSnapshots();
     if (history.length < 2) return null;

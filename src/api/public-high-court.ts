@@ -8,6 +8,7 @@ export interface PublicHighCourtRoutes {
   data: string;
   statsApi: string;
   trendsApi: string;
+  archiveApi: string;
 }
 
 export interface PublicHighCourtLink {
@@ -43,6 +44,7 @@ export function buildPublicHighCourtRoutes(profile: HighCourtProfile): PublicHig
     data: `${htmlBase}/data`,
     statsApi: `/v1/high-courts/${profile.courtSlug}/stats`,
     trendsApi: `/v1/high-courts/${profile.courtSlug}/trends`,
+    archiveApi: `/v1/high-courts/${profile.courtSlug}/archive`,
   };
 }
 
