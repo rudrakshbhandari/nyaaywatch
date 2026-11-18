@@ -472,7 +472,10 @@ export class PgWarehouseStore {
             SELECT ph.published_snapshot_id FROM publication_history ph
             WHERE ph.scope_type = $1 AND ph.scope_code = $2
           )
-        ORDER BY ps.payload->'snapshot'->>'referenceDateAt' ASC,
+        ORDER BY COALESCE(
+          ps.payload->'snapshot'->>'referenceDateAt',
+          ps.payload->'snapshot'->>'sourceSnapshotAt'
+        ) ASC,
           ps.payload->'snapshot'->>'publishedAt' ASC, ps.id ASC
         LIMIT $3 OFFSET $4`,
         [scopeType, scopeCode, limit, offset],
