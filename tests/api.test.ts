@@ -204,7 +204,7 @@ describe("HTTP routes", () => {
     expect(districtPage.text).toContain("District history");
     expect(districtPage.text).toContain("What to check next.");
     expect(districtPage.text).toContain("Download and cite this district.");
-    expect(districtPage.text).toContain("Raw captures and operator notes stay private.");
+    expect(districtPage.text).toContain("Raw captures and operator notes are private.");
     expect(districtPage.text).toContain("/data/districts/kangra.csv");
     expect(districtPage.text).toContain("/data/evidence/districts/kangra.json");
     expect(districtPage.text).toContain("/data/evidence/state.json");
