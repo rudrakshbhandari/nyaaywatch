@@ -14,7 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     concurrency:
       group: azure-preview-pr-${{ github.event.workflow_run.pull_requests[0].number }}
-      cancel-in-progress: true
+      # Keep a running deploy alive; a later completed build must not cancel
+      # it before that run can validate whether its PR head is still current.
+      cancel-in-progress: false
     permissions:
       actions: read
       contents: read
@@ -62,6 +64,27 @@ jobs:
           path: ${{ runner.temp }}/preview
       - name: Load built image
         run: gzip -dc "$RUNNER_TEMP/preview/preview-image.tar.gz" | docker load
+      - name: Revalidate pull request head before Azure access
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        env:
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          EXPECTED_PR_NUMBER: ${{ steps.validate.outputs.number }}
+          EXPECTED_PR_SHA: ${{ steps.validate.outputs.sha }}
+        with:
+          script: |
+            const run = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: Number(process.env.SOURCE_RUN_ID),
+            });
+            const pull = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: Number(process.env.EXPECTED_PR_NUMBER),
+            });
+            if (run.data.event !== "pull_request" || pull.data.state !== "open" || pull.data.head.sha !== process.env.EXPECTED_PR_SHA || pull.data.head.repo?.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              core.setFailed("Pull request changed while the image was loading; refusing stale deployment.");
+            }
       - name: Log in to Azure using the preview-only identity
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5
         with:

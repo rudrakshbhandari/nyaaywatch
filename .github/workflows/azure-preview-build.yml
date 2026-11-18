@@ -11,6 +11,9 @@ jobs:
   build:
     if: github.event.pull_request.head.repo.full_name == github.repository && vars.ENABLE_AZURE_PREVIEWS == 'true'
     runs-on: ubuntu-latest
+    concurrency:
+      group: azure-preview-build-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       contents: read
     steps:
