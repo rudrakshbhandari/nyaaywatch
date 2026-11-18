@@ -26,7 +26,7 @@ export function renderSupremeCourtDataPage(
       ${renderStatTile({
         label: "JSON routes",
         value: "3",
-        note: "Stats, trends, and earlier Supreme Court snapshots.",
+        note: "Stats, trends, and published Supreme Court snapshots.",
       })}
       ${renderStatTile({
         label: "Trend points",
@@ -58,7 +58,7 @@ export function renderSupremeCourtDataPage(
         <article class="card">
           <h3>Supreme Court trends</h3>
           <p><code>${context.routes.trendsApi}</code></p>
-          <p>Trend points for pending cases and cases filed or cleared last month.</p>
+          <p>Trend points for pending cases and filing and clearance counts accumulated so far in each calendar month.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.trendsApi}">Open trends JSON</a></p>
         </article>
         <article class="card">

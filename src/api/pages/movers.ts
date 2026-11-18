@@ -82,7 +82,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
     ${renderEvidenceEntryPoints({
       headline: "Download data for these changes.",
       lede:
-        "The state pack includes the movers list. District packs include each district's dates, method, citation, and caveats.",
+        "The state pack includes geography totals, top district data, and links. District packs include each district's dates, method, citation, and caveats.",
       entries: [
         {
           title: "Movers citation",
@@ -94,7 +94,7 @@ export function renderMoversPage(result: DistrictMoversResult, context: PublicPa
         },
         {
           title: "State evidence pack",
-          body: "Geography totals, district data, and download links.",
+          body: "Geography totals, top district data, and download links. The movers list is on this page.",
           href: context.routes.stateEvidencePack,
           cta: "Download state JSON",
           codeLabel: context.routes.stateEvidencePack,

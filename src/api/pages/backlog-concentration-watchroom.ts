@@ -169,7 +169,7 @@ export function renderBacklogConcentrationWatchroomPage(entries: BacklogConcentr
         {
           title: "Top district pack",
           body: topDistrict
-            ? `Includes ${topDistrict.district.districtName}'s district share, source date, and caveats.`
+            ? `Includes ${topDistrict.district.districtName}'s district data and history. The geography-wide share shown here is not in the pack.`
             : "No district evidence pack is available.",
           href: topDistrict && topDistrictRoutes ? topDistrictRoutes.districtEvidencePack(topDistrict.district.districtId) : "/districts",
           cta: topDistrict ? "Download district JSON" : "Open districts",

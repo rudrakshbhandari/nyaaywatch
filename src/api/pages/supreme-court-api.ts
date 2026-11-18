@@ -59,7 +59,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.trendsApi}</code>
-          <p>Trend points show pending cases and cases filed or cleared last month.</p>
+          <p>Trend points show pending cases and filing and clearance counts accumulated so far in each calendar month.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{
