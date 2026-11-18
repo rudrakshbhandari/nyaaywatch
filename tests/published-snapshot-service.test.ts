@@ -113,6 +113,7 @@ describe("PublishedSnapshotService", () => {
       sourceSnapshotAt: "2026-03-31T00:00:00.000Z",
       publishedAt: "2026-04-01T09:00:00.000Z",
       methodologyVersion: "2026.03-alpha",
+      omitReferenceDateAt: true,
       districtOverrides: {
         kangra: {
           rank: 2,

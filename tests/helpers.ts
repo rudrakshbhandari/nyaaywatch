@@ -135,6 +135,7 @@ export async function insertHistoricalPublishedSnapshot(
     publishedAt: string;
     methodologyVersion?: string;
     qualityState?: "complete" | "partial" | "stale";
+    omitReferenceDateAt?: boolean;
     pendingCases?: number;
     flaggedDistricts?: number;
     districtOverrides?: Partial<Record<string, Partial<PublishedSnapshot["districts"][number]>>>;
@@ -143,6 +144,9 @@ export async function insertHistoricalPublishedSnapshot(
   const payload = loadFixturePublishedSnapshot();
   payload.snapshot.sourceSnapshotAt = overrides.sourceSnapshotAt;
   payload.snapshot.referenceDateAt = overrides.sourceSnapshotAt;
+  if (overrides.omitReferenceDateAt) {
+    delete (payload.snapshot as Partial<typeof payload.snapshot>).referenceDateAt;
+  }
   payload.snapshot.referenceDateKind = "source_snapshot_at";
   payload.snapshot.publishedAt = overrides.publishedAt;
   payload.snapshot.methodologyVersion = overrides.methodologyVersion ?? payload.snapshot.methodologyVersion;
