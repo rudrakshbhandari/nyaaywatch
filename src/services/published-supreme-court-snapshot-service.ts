@@ -70,6 +70,16 @@ export class PublishedSupremeCourtSnapshotService {
     return record ? { snapshot: record.payload.snapshot, trends: record.payload.trends } : null;
   }
 
+  async listSnapshotArchive(offset = 0, limit = 20) {
+    const page = await this.store.listPublishedSupremeCourtSnapshots(this.profile.courtCode, offset, limit);
+    return {
+      total: page.total,
+      offset,
+      limit,
+      snapshots: page.records.map((record) => record.payload),
+    };
+  }
+
   async listRuns(): Promise<RunRecord[]> {
     return this.store.listRuns(this.profile.courtCode, "supreme_court");
   }

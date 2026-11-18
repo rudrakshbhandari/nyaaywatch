@@ -45,6 +45,7 @@ The project is built for people who need to inspect, explain, or cite court data
 - Compare districts within the same lower-court geography instead of collapsing unlike court tiers into one ranking.
 - Inspect flagged pressure signals and the reasons behind them.
 - Download evidence packs, use the JSON API, subscribe to snapshot updates, or embed a district or state view.
+- Page through the historical archive of published normalized snapshots for each court or lower-court geography.
 
 NyaayWatch is a public alpha publishing reviewed snapshots. Coverage means that a court or geography has a configured public snapshot surface. It does not mean case-level search, a live feed, or a claim that every court tier can be compared directly.
 
@@ -111,6 +112,7 @@ COURT_SLUG=your-court-slug
 curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/stats" | jq
 curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/districts" | jq '.districts[0]'
 curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/trends" | jq
+curl "https://nyaaywatch.in/v1/states/$STATE_SLUG/archive?limit=20&offset=0" | jq
 curl "https://nyaaywatch.in/v1/high-courts/$COURT_SLUG/trends" | jq
 curl https://nyaaywatch.in/v1/supreme-court/stats | jq
 ```
@@ -118,12 +120,14 @@ curl https://nyaaywatch.in/v1/supreme-court/stats | jq
 Useful public routes include:
 
 ```text
-GET /v1/states/:stateSlug/{stats,districts,trends}
-GET /v1/high-courts/:courtSlug/{stats,trends}
-GET /v1/supreme-court/{stats,trends}
+GET /v1/states/:stateSlug/{stats,districts,trends,archive}
+GET /v1/high-courts/:courtSlug/{stats,trends,archive}
+GET /v1/supreme-court/{stats,trends,archive}
 GET /states/:stateSlug/data/evidence/state.json
 GET /states/:stateSlug/data/evidence/districts/:districtId.json
 ```
+
+Archive endpoints return full published normalized snapshot payloads in pages (`limit` 1–100, default 20; `offset` default 0). They include publication metadata and never serve raw captures or unpublished candidates.
 
 ```mermaid
 flowchart TD

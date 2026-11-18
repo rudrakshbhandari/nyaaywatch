@@ -82,6 +82,11 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
 }</pre>
           </details>
         </article>
+        <article class="card endpoint">
+          <code class="endpoint__verb">GET</code>
+          <code class="endpoint__path">${context.routes.archiveApi}?limit=20&amp;offset=0</code>
+          <p>Paginated full normalized snapshot payloads that were published for the Supreme Court. Use <code>limit</code> from 1 to 100 and a non-negative <code>offset</code>.</p>
+        </article>
       </div>
     </section>
 

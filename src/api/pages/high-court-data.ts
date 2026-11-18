@@ -27,8 +27,8 @@ export function renderHighCourtDataPage(
     <section class="stat-grid">
       ${renderStatTile({
         label: "Public endpoints",
-        value: "2",
-        note: `Stats and trends for the active ${profile.courtName} publication.`,
+        value: "3",
+        note: `Stats, trends, and published history for ${profile.courtName}.`,
       })}
       ${renderStatTile({
         label: "Trend points",
@@ -50,7 +50,7 @@ export function renderHighCourtDataPage(
 
     <section class="hc-section">
       ${renderSectionHead({ headline: "Available machine-readable routes" })}
-      <div class="card-grid card-grid--2">
+      <div class="card-grid card-grid--3">
         <article class="card">
           <h3>High Court stats</h3>
           <p><code>${context.routes.statsApi}</code></p>
@@ -62,6 +62,12 @@ export function renderHighCourtDataPage(
           <p><code>${context.routes.trendsApi}</code></p>
           <p>Published court-wide trend points for pending load and last-month institution / disposal totals. This page does not split trends by covered geography.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.trendsApi}">Open trends JSON</a></p>
+        </article>
+        <article class="card">
+          <h3>Published snapshot archive</h3>
+          <p><code>${context.routes.archiveApi}?limit=20&amp;offset=0</code></p>
+          <p>Paginated full normalized snapshots that were published, with dates, methodology versions, and quality labels.</p>
+          <p><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open archive JSON</a></p>
         </article>
       </div>
     </section>

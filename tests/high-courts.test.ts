@@ -534,6 +534,7 @@ describe("high court routes", () => {
       data: "/high-courts/himachal/data",
       statsApi: "/v1/high-courts/himachal/stats",
       trendsApi: "/v1/high-courts/himachal/trends",
+      archiveApi: "/v1/high-courts/himachal/archive",
     });
 
     expect(uttarPradeshRoutes).toEqual({
@@ -544,6 +545,7 @@ describe("high court routes", () => {
       data: "/high-courts/uttar-pradesh/data",
       statsApi: "/v1/high-courts/uttar-pradesh/stats",
       trendsApi: "/v1/high-courts/uttar-pradesh/trends",
+      archiveApi: "/v1/high-courts/uttar-pradesh/archive",
     });
   });
 

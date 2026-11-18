@@ -88,6 +88,12 @@ describe("PublishedHighCourtSnapshotService", () => {
     expect(history[0]?.isActive).toBe(true);
     expect(history[0]?.snapshot.id).toBe(seeded.snapshot.id);
     expect(history[1]?.publication.id).toBe(replayed.publication.id);
+
+    const firstArchivePage = await context.service.listSnapshotArchive(0, 1);
+    const secondArchivePage = await context.service.listSnapshotArchive(1, 1);
+    expect(firstArchivePage.total).toBe(2);
+    expect(firstArchivePage.snapshots).toHaveLength(1);
+    expect(secondArchivePage.snapshots).toHaveLength(1);
   });
 });
 

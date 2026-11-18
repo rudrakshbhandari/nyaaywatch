@@ -7,6 +7,7 @@ export interface PublicSupremeCourtRoutes {
   data: string;
   statsApi: string;
   trendsApi: string;
+  archiveApi: string;
 }
 
 export interface PublicSupremeCourtPageContext {
@@ -29,6 +30,7 @@ export function buildPublicSupremeCourtRoutes(): PublicSupremeCourtRoutes {
     data: "/supreme-court/data",
     statsApi: "/v1/supreme-court/stats",
     trendsApi: "/v1/supreme-court/trends",
+    archiveApi: "/v1/supreme-court/archive",
   };
 }
 
