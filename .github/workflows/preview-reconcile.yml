@@ -1,4 +1,4 @@
-name: Preview Reconcile
+name: Azure Preview Reconcile
 
 on:
   schedule:
@@ -7,47 +7,49 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   reconcile:
-    # Production is Azure-native. This job still talks to the retired AWS preview
-    # role, so it must follow the same opt-in gate as the PR preview job.
-    # Without the gate it assumes that role every hour and fails closed.
-    if: vars.ENABLE_AWS_PREVIEWS == 'true'
+    if: vars.ENABLE_AZURE_PREVIEWS == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
     env:
-      AWS_REGION: ap-south-1
-
+      AZURE_RESOURCE_GROUP: nyaaywatch-previews
+      AZURE_CONTAINER_REGISTRY: nyaaywatchpreview
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e7f100cf4c008499ea8adda475de1042d6975c7b
+      - name: Log in to Azure using the preview-only identity
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5
         with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::723951822728:role/nyaaywatch-github-preview-role
-
-      - name: Compute active preview allowlist
-        id: preview-allowlist
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+          client-id: ${{ secrets.AZURE_PREVIEW_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Compute open pull request numbers
+        id: open-prs
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require("fs");
-            const path = `${process.env.RUNNER_TEMP}/open-preview-services.txt`;
-            const pulls = await github.paginate(github.rest.pulls.list, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: "open",
-              per_page: 100,
-            });
-            const lines = pulls.map((pull) => `nyaaywatch-pr-${pull.number}`);
-            fs.writeFileSync(path, lines.join("\n") + (lines.length > 0 ? "\n" : ""));
-            core.setOutput("path", path);
-
-      - name: Reconcile stale preview services
+            const pulls = await github.paginate(github.rest.pulls.list, { owner: context.repo.owner, repo: context.repo.repo, state: "open", per_page: 100 });
+            core.setOutput("numbers", pulls.map((pull) => pull.number).join(" "));
+      - name: Remove preview apps for closed pull requests
+        env:
+          OPEN_PR_NUMBERS: ${{ steps.open-prs.outputs.numbers }}
         run: |
-          chmod +x infra/aws/preview/reconcile-services.sh infra/aws/preview/delete-service.sh
-          ./infra/aws/preview/reconcile-services.sh "${{ steps.preview-allowlist.outputs.path }}"
+          set -euo pipefail
+          apps="$(az containerapp list --resource-group "$AZURE_RESOURCE_GROUP" --query '[].name' --output tsv)"
+          for app in $apps; do
+            case "$app" in
+              nyaaywatch-pr-*)
+                number="${app#nyaaywatch-pr-}"
+                if ! printf ' %s ' "$OPEN_PR_NUMBERS" | grep -q " $number "; then
+                  az containerapp delete --resource-group "$AZURE_RESOURCE_GROUP" --name "$app" --yes
+                  tags="$(az acr repository show-tags --name "$AZURE_CONTAINER_REGISTRY" --repository nyaaywatch --query "[?starts_with(@, 'pr-$number-')]" --output tsv 2>/dev/null || true)"
+                  while IFS= read -r tag; do
+                    [ -z "$tag" ] || az acr repository delete --name "$AZURE_CONTAINER_REGISTRY" --image "nyaaywatch:$tag" --yes
+                  done <<< "$tags"
+                fi
+                ;;
+            esac
+          done

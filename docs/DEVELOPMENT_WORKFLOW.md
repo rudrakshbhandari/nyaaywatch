@@ -109,6 +109,10 @@ npm run operator:remote -- --base-url=https://nyaaywatch.in --state=UP fetch "In
 
 Local development uses PostgreSQL plus LocalStack S3. Keep `AWS_REGION=ap-south-1` and `AWS_ENDPOINT_URL_S3` pointed at LocalStack; these values exercise the local S3-compatible test adapter, not production storage. Azure Blob Storage is the production artifact store.
 
+## Pull Request Previews
+
+Azure PR previews are opt-in through the repository variable `ENABLE_AZURE_PREVIEWS`. The workflow builds same-repository PRs without Azure credentials, passes the image as a short-lived artifact, and deploys it from a trusted default-branch workflow into the isolated fixture-only environment. See [Azure preview infrastructure](../infra/azure/previews/README.md) for setup, identity scope, and cleanup behavior.
+
 ## Commit Examples
 
 ```text

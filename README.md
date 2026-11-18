@@ -153,8 +153,9 @@ flowchart TD
 - A daily publish-pending sweep walks quality-complete runs per scope from the past 3 days and runs each through the same gate. It sends one review digest per scope with held run IDs and gate values, excluding runs superseded by a later successful publication. Unresolved runs in that window appear in each daily reminder; publish failures still alert immediately.
 - Published snapshot read models drive every public surface; rollback is one operator call.
 - Azure is the production target. Provider-specific deployment configuration
-  lives under `infra/azure/production/`; legacy AWS scripts remain in the
-  repository for gated recovery and optional PR previews.
+  lives under `infra/azure/production/`. Pull request previews use a separate,
+  fixture-backed Azure Container Apps environment under `infra/azure/previews/`;
+  legacy AWS scripts are retained only for recovery tooling.
 
 ## Repository Map
 
@@ -170,8 +171,8 @@ flowchart TD
 | `src/dev/` | Operator CLIs, release helpers, schedule entrypoints, readiness checks, and local bootstrap scripts |
 | `src/ops/` | Auto-publish gate, publish-pending runner, and alarm notification |
 | `src/config/`, `src/lib/`, `src/preview/` | Environment parsing, shared utilities, and preview runtime helpers |
-| `infra/aws/` | Legacy AWS recovery and optional preview scripts; gated when Azure is active |
-| `infra/azure/` | Azure production Terraform and deployment configuration |
+| `infra/aws/` | Legacy AWS recovery tooling |
+| `infra/azure/` | Azure production and isolated PR preview Terraform and deployment configuration |
 | `.github/workflows/` | CI, deploy, preview cleanup/reconcile, watchdog, outreach, and publish-pending workflows |
 | `fixtures/`, `tests/` | Captured NJDG fixtures and regression coverage |
 | `brand/`, `assets/` | Brand system, logo assets, and bundled fonts |
