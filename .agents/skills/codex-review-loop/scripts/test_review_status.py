@@ -187,6 +187,16 @@ class ReviewLoopClassifierTest(unittest.TestCase):
         self.assertEqual(verdict["action"], "ready")
         self.assertTrue(verdict["terminal"])
 
+    def test_clean_comment_from_prior_head_does_not_approve_current_head(self):
+        stale_comment = {
+            "user": {"login": "openai-codex"},
+            "created_at": "2026-08-01T12:01:00Z",
+            "body": "No issues found on bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        }
+        verdict = review_status.classify(fixture(comments=[stale_comment]), NOW)
+        self.assertEqual(verdict["action"], "wait")
+        self.assertFalse(verdict["terminal"])
+
     def test_boilerplate_review_does_not_mask_a_clean_reaction(self):
         review = {"user": {"login": "openai-codex"}, "commit_id": HEAD, "submitted_at": REQUESTED_AT, "state": "COMMENTED", "body": "### 💡 Codex Review\n**Reviewed commit:** `abc`\nAbout Codex in GitHub"}
         reaction = {"content": "+1", "created_at": REQUESTED_AT, "user": {"login": "openai-codex"}}

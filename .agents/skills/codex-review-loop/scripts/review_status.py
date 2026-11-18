@@ -283,10 +283,6 @@ def classify(snapshot: Snapshot, now: datetime | None = None) -> dict[str, Any]:
         and review_matches_head(review, snapshot.head)
         and review.get("submitted_at", "") >= requested_at
     ]
-    current_comments = [
-        comment for comment in snapshot.comments
-        if is_codex(comment) and comment.get("created_at", "") >= requested_at
-    ]
     requested_changes = [review for review in current_reviews if review.get("state") == "CHANGES_REQUESTED"]
     comment_feedback = [
         review for review in current_reviews
@@ -317,14 +313,13 @@ def classify(snapshot: Snapshot, now: datetime | None = None) -> dict[str, Any]:
         )
         for review in current_reviews
     )
-    clean_comment = any(clean_text(str(comment.get("body") or "")) for comment in current_comments)
     clean_reaction = any(
         reaction.get("content") == "+1"
         and is_codex(reaction)
         and reaction.get("created_at", "") >= requested_at
         for reaction in snapshot.reactions
     )
-    if clean_review or clean_comment or clean_reaction:
+    if clean_review or clean_reaction:
         if pending_checks:
             return result(snapshot, "wait", "Codex is clear; required checks are pending", terminal=False)
         return result(snapshot, "ready", "Codex is clear and all required checks pass", terminal=True)
