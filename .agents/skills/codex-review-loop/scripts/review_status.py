@@ -148,7 +148,10 @@ def is_codex(item: dict[str, Any]) -> bool:
 
 def clean_text(text: str) -> bool:
     normalized = text.lower()
-    return "didn't find any major issues" in normalized or "no issues found" in normalized
+    return (
+        "didn't find any major issues" in normalized.replace("’", "'")
+        or "no issues found" in normalized
+    )
 
 
 def is_boilerplate_review(text: str) -> bool:
