@@ -26,7 +26,7 @@ export function renderMethodologyPage(
       eyebrow: "HOW THE NUMBERS ARE BUILT",
       headline: "Public figures come from reviewed snapshots.",
       lede:
-        "The site shows the latest reviewed publication. Each number carries its source date and methodology version.",
+        "The site shows the latest reviewed publication. Each number carries its reference date and methodology version. When NJDG does not provide a source date, the reference date is when the page was captured.",
       isHero: true,
     })}
 

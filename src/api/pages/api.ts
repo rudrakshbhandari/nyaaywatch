@@ -202,7 +202,7 @@ export function renderApiPage(context: PublicPageContext, scope: "national" | "s
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${documentedRoutes.trends}</code>
-          <p>Trend points from earlier snapshots for the ${aggregateAdjective} data.</p>
+          <p>Trend points from published snapshots for the ${aggregateAdjective} data.</p>
           <details class="code-sample-reveal">
             <summary>Sample response</summary>
             <pre class="code-sample">{

@@ -64,7 +64,7 @@ export function renderHighCourtDataPage(
           <p><a class="btn btn--primary btn--small" href="${context.routes.trendsApi}">Open trends JSON</a></p>
         </article>
         <article class="card">
-          <h3>Earlier snapshots</h3>
+          <h3>Published snapshots, including current</h3>
           <p><code>${context.routes.archiveApi}?limit=20&amp;offset=0</code></p>
           <p>Each record includes its dates, method version, and quality status. Use the archive URL to fetch more records.</p>
           <p><a class="btn btn--primary btn--small" href="${context.routes.archiveApi}?limit=20&amp;offset=0">Open archive JSON</a></p>

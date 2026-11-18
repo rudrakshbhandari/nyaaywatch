@@ -121,6 +121,11 @@ describe("public copy guardrails", () => {
       const response = await request(app).get(route.path);
       expect(response.status, route.path).toBe(200);
       expect(response.text, route.path).toContain(route.requiredText);
+      if (route.path === "/states/punjab") {
+        expect(response.text).toContain("Source: National Judicial Data Grid public district dashboard");
+        expect(response.text).toContain("Numbers published ");
+        expect(response.text).toContain("Method ");
+      }
       expect(response.text, `${route.path} should not dump a joined state list`).not.toContain(
         "Himachal Pradesh and Punjab and Haryana",
       );

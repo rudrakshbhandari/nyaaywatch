@@ -103,6 +103,11 @@ describe("Kerala public rollout preflight", () => {
       const response = await request(app).get(route.path);
       expect(response.status, route.path).toBe(200);
       expect(response.text, route.path).toContain(route.requiredText);
+      if (/^\/states\/[^/]+$/.test(route.path)) {
+        expect(response.text, `${route.path} source provenance is present`).toContain("Source: National Judicial Data Grid public district dashboard");
+        expect(response.text, `${route.path} publication date is present`).toContain("Numbers published ");
+        expect(response.text, `${route.path} methodology version is present`).toContain("Method ");
+      }
       expect(response.text, `${route.path} should not mention live dashboards`).not.toMatch(/\blive (?:feed|status|data|dashboard|monitoring)\b/i);
       expect(response.text, `${route.path} should not mention predictive claims`).not.toMatch(/\bpredictive\b/i);
       expect(response.text, `${route.path} should not mention verdicts`).not.toMatch(/\bverdicts?\b/i);

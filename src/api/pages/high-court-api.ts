@@ -91,7 +91,7 @@ export function renderHighCourtApiPage(context: PublicHighCourtPageContext): str
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.archiveApi}?limit=20&amp;offset=0</code>
-          <p>Earlier snapshots for this High Court. Each record contains the full data shown for that date. Set <code>limit</code> from 1 to 100 and use <code>offset</code> to fetch more records.</p>
+          <p>Published snapshots for this High Court, including the current snapshot. Each record contains the full data shown for that date. Set <code>limit</code> from 1 to 100 and use <code>offset</code> to fetch more records.</p>
         </article>
       </div>
     </section>

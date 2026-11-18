@@ -85,7 +85,7 @@ export function renderSupremeCourtApiPage(context: PublicSupremeCourtPageContext
         <article class="card endpoint">
           <code class="endpoint__verb">GET</code>
           <code class="endpoint__path">${context.routes.archiveApi}?limit=20&amp;offset=0</code>
-          <p>Earlier Supreme Court-wide snapshots. Each record contains aggregate data for that date; there are no district-level rows. Set <code>limit</code> from 1 to 100 and use <code>offset</code> to fetch more records.</p>
+          <p>Published Supreme Court-wide snapshots, including the current snapshot. Each record contains aggregate data for that date; there are no district-level rows. Set <code>limit</code> from 1 to 100 and use <code>offset</code> to fetch more records.</p>
         </article>
       </div>
     </section>
