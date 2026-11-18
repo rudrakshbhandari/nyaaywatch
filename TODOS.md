@@ -1,6 +1,6 @@
 # Roadmap and open work
 
-> Maintainer planning source. Last reviewed: 2026-10-29.
+> Maintainer planning source. Last reviewed: 2026-11-17.
 
 ## Current roadmap
 
@@ -15,7 +15,7 @@ The [long-term data strategy](docs/LONG_TERM_DATA_STRATEGY.md) records source bo
 
 ## Open work
 
-The current in-flight maintenance item is [PR #406](https://github.com/rudrakshbhandari/nyaaywatch/pull/406), which fixes the Azure Ops Watchdog argument-size failure; its PR records the passing CI and pending post-merge scheduled-run check. Add other implementation tasks here only when they have an owner or clear next action, a reason they are in scope, and a verifiable completion condition. Keep release evidence in the operator ledgers rather than duplicating it here:
+There are no active implementation tasks currently tracked here. The Azure Ops Watchdog fix in [PR #406](https://github.com/rudrakshbhandari/nyaaywatch/pull/406) is merged, and its first post-merge scheduled run succeeded. Add new implementation tasks only when they have an owner or clear next action, a reason they are in scope, and a verifiable completion condition. Keep release evidence in the operator ledgers rather than duplicating it here:
 
 - `docs/internal/DEPLOYMENT_STATUS.md`
 - `docs/internal/RELEASE_HISTORY.md`
