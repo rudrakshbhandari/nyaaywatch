@@ -26,7 +26,7 @@ Read `action`, `terminal`, and `reason` first. Follow the action table:
 
 ## Loop rules
 
-1. Only a human comment containing `@codex review` and the exact full-head marker counts as a request for the current head. Post exactly the helper's command.
+1. Only a human comment containing `@codex review` and the exact full-head marker counts as a request for the current head. Post exactly the helper's command. A clean Codex review receipt, exact-head review, or 👍 reaction on that exact request is accepted as approval evidence.
 2. A push or rebase starts a new review cycle. Before editing, run `git fetch origin main`, verify `git merge-base --is-ancestor origin/main HEAD`, and sync the task branch with `origin/main` if needed.
 3. Never resolve review threads until the fixes are pushed. After the push, resolve only threads actually addressed, then run the helper again. Request a fresh review for the new head.
 4. Do not merge the PR as part of this skill. Stop only at `ready` or a genuine `paused` condition.

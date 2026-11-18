@@ -280,6 +280,7 @@ def classify(snapshot: Snapshot, now: datetime | None = None) -> dict[str, Any]:
         )
 
     requested_at = snapshot.request["created_at"]
+    request_comment_id = str(snapshot.request.get("id") or "")
     current_reviews = [
         review for review in snapshot.reviews
         if is_codex(review)
@@ -322,7 +323,14 @@ def classify(snapshot: Snapshot, now: datetime | None = None) -> dict[str, Any]:
         and reaction.get("created_at", "") >= requested_at
         for reaction in snapshot.reactions
     )
-    if clean_review or clean_reaction:
+    exact_head_receipt = any(
+        is_codex(comment)
+        and comment.get("created_at", "") >= requested_at
+        and bool(request_comment_id)
+        and str(comment.get("body") or "").strip() == f"👍 {request_comment_id}"
+        for comment in snapshot.comments
+    )
+    if clean_review or clean_reaction or exact_head_receipt:
         if pending_checks:
             return result(snapshot, "wait", "Codex is clear; required checks are pending", terminal=False)
         return result(snapshot, "ready", "Codex is clear and all required checks pass", terminal=True)

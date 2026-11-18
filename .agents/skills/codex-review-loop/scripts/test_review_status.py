@@ -29,7 +29,7 @@ def fixture(**overrides):
         "url": "https://github.com/rudrakshbhandari/nyaaywatch/pull/428",
         "state": "OPEN",
         "head": HEAD,
-        "request": {"created_at": REQUESTED_AT},
+        "request": {"id": 100, "created_at": REQUESTED_AT},
         "reviews": [],
         "comments": [],
         "reactions": [],
@@ -196,6 +196,15 @@ class ReviewLoopClassifierTest(unittest.TestCase):
         verdict = review_status.classify(fixture(comments=[stale_comment]), NOW)
         self.assertEqual(verdict["action"], "wait")
         self.assertFalse(verdict["terminal"])
+
+    def test_exact_request_thumbsup_comment_is_a_clean_verdict(self):
+        comment = {
+            "user": {"login": "openai-codex"},
+            "created_at": REQUESTED_AT,
+            "body": "👍 100",
+        }
+        verdict = review_status.classify(fixture(comments=[comment]), NOW)
+        self.assertEqual(verdict["action"], "ready")
 
     def test_exact_head_clean_comment_receipt_is_accepted(self):
         self.assertTrue(review_status.clean_text("Codex Review: Didn’t find any major issues."))
