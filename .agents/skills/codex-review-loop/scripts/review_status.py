@@ -20,6 +20,10 @@ CODEX_ACTORS = {
     "openai-codex-connector",
     "openai-codex-connector[bot]",
 }
+CODEX_CLEAN_PHRASES = (
+    "didn't find any major issues",
+    "no issues found",
+)
 class GitHubError(RuntimeError):
     """A GitHub read failed, so monitoring must stop rather than guess."""
 
@@ -147,11 +151,20 @@ def is_codex(item: dict[str, Any]) -> bool:
 
 
 def clean_text(text: str) -> bool:
-    normalized = text.lower()
-    return (
-        "didn't find any major issues" in normalized.replace("’", "'")
-        or "no issues found" in normalized
-    )
+    normalized = text.lower().replace("’", "'")
+    return any(phrase in normalized for phrase in CODEX_CLEAN_PHRASES)
+
+
+def clean_comment_matches_request(comment: dict[str, Any], head: str, request: dict[str, Any]) -> bool:
+    if not is_codex(comment):
+        return False
+    body = str(comment.get("body") or "")
+    if body.strip() == f"👍 {request.get('id')}":
+        return True
+    if not clean_text(body):
+        return False
+    reviewed = re.search(r"\*\*reviewed commit:\*\*\s*`?([0-9a-f]{7,40})", body, re.IGNORECASE)
+    return bool(reviewed and head.lower().startswith(reviewed.group(1).lower()))
 
 
 def is_boilerplate_review(text: str) -> bool:
@@ -324,10 +337,8 @@ def classify(snapshot: Snapshot, now: datetime | None = None) -> dict[str, Any]:
         for reaction in snapshot.reactions
     )
     exact_head_receipt = any(
-        is_codex(comment)
-        and comment.get("created_at", "") >= requested_at
-        and bool(request_comment_id)
-        and str(comment.get("body") or "").strip() == f"👍 {request_comment_id}"
+        comment.get("created_at", "") >= requested_at
+        and clean_comment_matches_request(comment, snapshot.head, snapshot.request)
         for comment in snapshot.comments
     )
     if clean_review or clean_reaction or exact_head_receipt:

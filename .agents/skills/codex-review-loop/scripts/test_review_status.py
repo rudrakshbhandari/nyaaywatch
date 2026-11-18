@@ -209,6 +209,16 @@ class ReviewLoopClassifierTest(unittest.TestCase):
     def test_exact_head_clean_comment_receipt_is_accepted(self):
         self.assertTrue(review_status.clean_text("Codex Review: Didn’t find any major issues."))
 
+    def test_clean_receipt_comment_must_name_current_head(self):
+        comment = {
+            "user": {"login": "openai-codex"},
+            "created_at": REQUESTED_AT,
+            "body": f"Codex Review: Didn’t find any major issues. **Reviewed commit:** `{HEAD[:12]}`",
+        }
+        self.assertTrue(review_status.clean_comment_matches_request(comment, HEAD, {"id": 100}))
+        stale = {**comment, "body": "Codex Review: Didn’t find any major issues. **Reviewed commit:** `bbbbbbb`"}
+        self.assertFalse(review_status.clean_comment_matches_request(stale, HEAD, {"id": 100}))
+
     def test_boilerplate_review_does_not_mask_a_clean_reaction(self):
         review = {"user": {"login": "openai-codex"}, "commit_id": HEAD, "submitted_at": REQUESTED_AT, "state": "COMMENTED", "body": "### 💡 Codex Review\n**Reviewed commit:** `abc`\nAbout Codex in GitHub"}
         reaction = {"content": "+1", "created_at": REQUESTED_AT, "user": {"login": "openai-codex"}}
