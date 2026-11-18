@@ -35,7 +35,7 @@ test("reporter flow reaches methodology and public download surfaces from distri
   await page.getByRole("navigation").getByRole("link", { name: "Data" }).click();
 
   await expect(page).toHaveURL(/\/data$/);
-  await expect(page.getByRole("heading", { name: "Download court data and past snapshots." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Download court data and published snapshots." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Download CSV" })).toBeVisible();
 
   await page.getByRole("navigation").getByRole("link", { name: "Method" }).click();

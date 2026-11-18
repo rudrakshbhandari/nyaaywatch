@@ -154,7 +154,7 @@ describe("HTTP routes", () => {
     expect(homepage.text).toContain("This month&#39;s clearance pace is shown separately.");
     expect(homepage.text).not.toContain("Pending trend");
     expect(homepage.text).toContain("Backlog growing");
-    expect(homepage.text).toContain("Supreme Court");
+    expect(homepage.text).toContain("Explore each court tier.");
     expect(homepage.text).toContain('href="/learn#pressure-signals"');
     expect(homepage.text).toContain("Lower courts show the broadest pressure.");
     expect(homepage.text).toContain("District and subordinate courts");
@@ -319,7 +319,7 @@ describe("HTTP routes", () => {
     expect(dataPage.status).toBe(200);
     expect(dataPage.headers["cache-control"]).toContain("no-store");
     expect(dataPage.headers["cloudflare-cdn-cache-control"]).toBe("no-store");
-    expect(dataPage.text).toContain("Download court data and past snapshots.");
+    expect(dataPage.text).toContain("Download court data and published snapshots.");
     expect(dataPage.text).toContain("CSV + JSON");
     expect(dataPage.text).toContain("Evidence packs");
     expect(dataPage.text).toContain("/data/evidence/state.json");

@@ -18,7 +18,7 @@ export function renderSupremeCourtDataPage(
       eyebrow: "SUPREME COURT DATA",
       headline: "Supreme Court data and history",
       lede:
-        "Use the JSON links below for current figures and earlier snapshots. The archive contains Supreme Court-wide totals and has no district-level rows.",
+        "Use the JSON links below for current and earlier published snapshots. The archive contains Supreme Court-wide totals and has no district-level rows.",
       isHero: true,
     })}
 

@@ -20,7 +20,7 @@ export function renderHighCourtDataPage(
       eyebrow: "HIGH COURT DATA",
       headline: "High Court data and history",
       lede:
-        `Use the JSON links below for current figures and earlier snapshots for ${profile.courtName} across ${context.coverageLabel}.`,
+        `Use the JSON links below for current and earlier published snapshots for ${profile.courtName} across ${context.coverageLabel}.`,
       isHero: true,
     })}
 
@@ -28,7 +28,7 @@ export function renderHighCourtDataPage(
       ${renderStatTile({
         label: "JSON routes",
         value: "3",
-        note: `Stats, trends, and earlier snapshots for ${profile.courtName}.`,
+        note: `Stats, trends, and published snapshots for ${profile.courtName}.`,
       })}
       ${renderStatTile({
         label: "Trend points",

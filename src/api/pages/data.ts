@@ -14,9 +14,9 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
   const body = `
     ${renderSectionHead({
       eyebrow: "DATA AND DOWNLOADS",
-      headline: "Download court data and past snapshots.",
+      headline: "Download court data and published snapshots.",
       lede:
-        "These downloads match the figures on this page. Current files update when new figures are approved; the archive holds earlier versions.",
+        "These downloads match the figures on this page. Current files update when new figures are approved; the archive includes the current and earlier published snapshots.",
       isHero: true,
     })}
 
@@ -96,7 +96,7 @@ export function renderDataPage(snapshot: PublishedSnapshot, context: PublicPageC
 
     <section class="data__archive">
       ${renderSectionHead({
-        headline: "Past snapshots",
+        headline: "Published snapshots",
         lede: "Each archive entry includes its data date, publish date, method version and quality status.",
       })}
       <article class="card download">

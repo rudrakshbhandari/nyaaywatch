@@ -52,9 +52,9 @@ export const GLOSSARY: Record<
   },
   freshness: {
     term: "freshness",
-    short: "How many days old the source numbers are.",
+    short: "How many days have passed since the date shown for the data.",
     long:
-      "Court dashboards are not live. Freshness is the number of days since the source date shown on the page.",
+      "Court dashboards are not live. Freshness is measured from the date shown on the page. That is the source date when one is provided, or the page capture date when it is not.",
   },
   quality: {
     term: "data quality",
